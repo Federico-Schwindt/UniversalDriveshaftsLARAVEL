@@ -1,0 +1,33 @@
+<svg width="75" height="100" viewBox="0 0 74 100" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com"><style>path,line,polyline,ellipse,polygon{stroke:#0b1a33!important;stroke-width:.45!important}[fill="#ffffff"]{fill:#f6f8fc!important}[fill="#9d9fa2"]{fill:#b7cdf0!important}[stroke="#bcbec0"]{stroke:#5c6879!important;stroke-width:.3!important}.points{display:none}</style>
+  <g>
+    <title>background</title>
+    <rect x="-1" y="-1" width="14.49998" height="18.66664" id="canvas_background" fill="none"/>
+  </g>
+  <g id="pipe">
+    <line stroke="#231f20" id="svg_4" stroke-width="0.75" y2="40" y1="40" x2="75" x1="34.312" style=""/>
+    <line stroke="#231f20" id="svg_5" stroke-width="0.75" y2="60" y1="60" x2="75" x1="34.549" style=""/>
+    <rect x="32.584" y="38.764" width="3.48" height="22.472" style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" rx="1.339" ry="1.339"/>
+    <rect style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" x="2.098" y="43.237" width="5.67" height="13.525"/>
+    <path style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" d="M 6.6 42.148 H 12.596 V 57.853 H 6.6 A 0.771 0.771 0 0 1 5.829 57.082 V 42.919 A 0.771 0.771 0 0 1 6.6 42.148 Z" bx:shape="rect 5.829 42.148 6.767 15.705 0.771 0 0 0.771 1@7243ad01"/>
+    <rect x="12.525" y="34.651" width="4.758" height="30.698" style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" rx="1.058" ry="1.058"/>
+    <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" d="M 56.033 14.392"/>
+    <g transform="matrix(1, 0, 0, 1, -2, -0.132502)"/>
+    <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" d="M 4.314 40.517"/>
+    <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" d="M 41.309 38.353"/>
+    <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); stroke-linecap: round; stroke-width: 1.5;" d="M 40 39.731 L 40 60.269"/>
+    <line style="stroke: rgb(0, 0, 0);" x1="33.075" y1="60.966" x2="26.061" y2="63.871"/>
+    <line style="stroke: rgb(0, 0, 0);" x1="32.748" y1="39.035" x2="25.733" y2="36.129"/>
+    <rect x="23.408" y="50.525" width="4.791" height="31.586" style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" transform="matrix(0.999993, 0.003814, -0.003814, 0.999993, -1.369581, -16.415951)" rx="0.819" ry="0.819"/>
+    <rect x="16.769" y="32.781" width="5.495" height="34.439" style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" rx="0.918" ry="0.918"/>
+    <line style="stroke: rgb(0, 0, 0); stroke-width: 0.5px;" x1="24.165" y1="65.67" x2="24.165" y2="34.33"/>
+    <rect style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" x="1.262" y="42.293" width="2.199" height="15.414" rx="0.161" ry="0.161"/>
+  </g>
+  <g class="points" id="svg_2">
+    <circle id="svg_7" fill="red" r="1" cy="39" cx="1.171" class="a"/>
+    <circle id="svg_7" fill="green" r="1" cy="39" cx="1.171" class="b"/>
+    <circle id="svg_7" fill="purple" r="1" cy="39" cx="1.171" class="f"/>
+    <circle id="svg_7" fill="blue" r="1" cy="39" cx="1.171" class="c"/>
+    <circle id="svg_8" fill="brown" r="1" cy="37" cx="40" class="w"/>
+    <circle id="svg_9" fill="orange" r="1" cy="60" cx="46" class="t"/>
+  </g>
+</svg>

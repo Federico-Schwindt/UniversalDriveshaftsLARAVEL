@@ -1,0 +1,33 @@
+<svg width="75" height="100" viewBox="0 0 75 100" xmlns="http://www.w3.org/2000/svg">
+  <g>
+    <title>background</title>
+    <rect x="-1" y="-1" width="14.49998" height="18.66664" id="canvas_background" fill="none"/>
+  </g>
+  <g id="pipe">
+    <line stroke="#231f20" id="svg_4" stroke-width="0.75" y2="40" y1="40" x2="75" x1="40.897"/>
+    <line stroke="#231f20" id="svg_5" stroke-width="0.75" y2="60" y1="60" x2="75" x1="40.706"/>
+    <rect x="38.584" y="38.764" width="3.48" height="22.472" style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" rx="1.339" ry="1.339"/>
+    <rect x="13.072" y="38.807" width="6.578" height="22.385" style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" rx="1.058" ry="1.058"/>
+    <rect x="7.451" y="37.988" width="7.609" height="24.023" style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" rx="0.918" ry="0.918"/>
+    <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" d="M 56.033 14.392"/>
+    <g transform="matrix(1, 0, 0, 1, -2, -0.132502)">
+      <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" d="M 21.765 42.156 L 37.828 40.416"/>
+      <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" d="M 21.497 57.707 C 21.497 57.707 37.561 59.849 37.694 59.849"/>
+    </g>
+    <rect x="32.695" y="38.093" width="6.693" height="23.814" style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" rx="0.918" ry="0.918"/>
+    <path style="stroke: rgb(0, 0, 0); fill: none;" d="M 5.419 40.649 L 0.929 43.736 L 0.929 50.645"/>
+    <path style="stroke: rgb(0, 0, 0); fill: none;" d="M 5.419 59.351 L 0.929 56.264 L 0.929 47.636"/>
+    <rect x="5.192" y="34.917" width="3.496" height="30.167" style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" rx="0.134" ry="0.134"/>
+    <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" d="M 4.314 40.517"/>
+    <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" d="M 41.309 38.353"/>
+    <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); stroke-linecap: round; stroke-width: 1.5;" d="M 46 39.731 L 46 60.269"/>
+  </g>
+  <g class="points" id="svg_2">
+    <circle id="svg_7" fill="red" r="1" cy="31" cx="5.5" class="a"/>
+    <circle id="svg_7" fill="green" r="1" cy="31" cx="5.5" class="b"/>
+    <circle id="svg_7" fill="purple" r="1" cy="31" cx="5.5" class="f"/>
+    <circle id="svg_7" fill="blue" r="1" cy="31" cx="5.5" class="c"/>
+    <circle id="svg_8" fill="brown" r="1" cy="37" cx="46" class="w"/>
+    <circle id="svg_9" fill="orange" r="1" cy="60" cx="52" class="t"/>
+  </g>
+</svg>

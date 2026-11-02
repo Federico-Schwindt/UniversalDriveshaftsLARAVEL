@@ -1,0 +1,173 @@
+/* Homepage candidate (Oct 2026): classic treatment of the "Night Shift" direction in brand colors.
+   White chrome with the full-color logo, brand fonts (Poppins / Hanken / Plex Mono), navy reserved for
+   the hero and the builder band, brand blue for actions, logo red as the one accent. Scoped to body.night. */
+body.night{--n-navy:#0b1a33;--n-navy-2:#122244;--n-blue:#1246ab;--n-blue-h:#1657cf;--n-red:#e11b22;--n-red-ink:#c0151c;--n-red-light:#ff5a5f;
+  --n-fg:#eef2f8;--n-fg-2:#b7c2d9;--n-fg-3:#8a98b5;--n-dline:rgba(255,255,255,.12)}
+
+/* ---- primitives ---- */
+body.night .n-wrap{width:min(var(--wrap),100%);padding-inline:var(--gutter);margin-inline:auto;box-sizing:border-box}
+body.night .n-sec{padding-block:clamp(3rem,2rem + 4vw,5.5rem)}
+body.night .n-sec--tint{background:var(--paper-2)}
+body.night .n-kicker{display:inline-flex;align-items:center;gap:.6rem;font-family:var(--font-m);font-size:.74rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--n-red-ink)}
+body.night .n-kicker::before{content:"";width:1.5rem;height:2px;background:currentColor}
+body.night .n-h{font-family:var(--font-h);font-weight:700;letter-spacing:-.02em;line-height:1.08;margin:0;text-wrap:balance;color:var(--ink)}
+body.night .n-h2{font-size:clamp(1.75rem,1.3rem + 1.8vw,2.6rem);margin-top:.6rem}
+body.night .n-lead{color:var(--ink-2);font-size:clamp(1rem,.95rem + .25vw,1.12rem);line-height:1.6;max-width:58ch;margin:0}
+body.night .n-head{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem 2rem;flex-wrap:wrap;margin-bottom:clamp(1.5rem,1rem + 2vw,2.5rem)}
+body.night .n-head p{margin:.6rem 0 0}
+body.night .n-link{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--font-h);font-weight:600;color:var(--n-blue);min-height:44px}
+body.night .n-link .i{transition:transform var(--dur-2) var(--ease)}
+body.night .n-link:hover .i{transform:translateX(3px)}
+body.night .n-mono{font-family:var(--font-m);font-variant-numeric:tabular-nums}
+/* dark surfaces share one token set */
+body.night .n-dark{background:var(--n-navy);color:var(--n-fg)}
+body.night .n-dark .n-h{color:#fff}
+body.night .n-dark .n-lead{color:var(--n-fg-2)}
+body.night .n-dark .n-kicker{color:var(--n-red-light)}
+body.night .n-btn-ghost{--btn-bg:transparent;--btn-fg:#fff;--btn-bd:rgba(255,255,255,.45)}
+body.night .n-btn-ghost:hover{--btn-bg:rgba(255,255,255,.08);--btn-bd:#fff;--btn-fg:#fff}
+
+/* ---- 1. hero: the part over navy, then the vehicle bar ---- */
+body.night .n-hero{position:relative;isolation:isolate;overflow:hidden}
+body.night .n-hero__glow{position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(55% 75% at 78% 42%,rgba(18,70,171,.55),transparent 62%),radial-gradient(40% 50% at 10% 0%,rgba(22,45,86,.9),transparent 70%),
+    linear-gradient(0deg,transparent 29px,rgba(255,255,255,.04) 29px,rgba(255,255,255,.04) 30px,transparent 30px) 0 0/100% 30px,
+    linear-gradient(90deg,transparent 29px,rgba(255,255,255,.04) 29px,rgba(255,255,255,.04) 30px,transparent 30px) 0 0/30px 100%}
+body.night .n-hero__grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:2rem 3rem;align-items:center;padding-block:clamp(3rem,2rem + 4vw,5.5rem) clamp(2rem,1.5rem + 2vw,3rem)}
+body.night .n-hero__in{display:grid;gap:1.1rem;max-width:38rem}
+body.night .n-hero h1{font-size:clamp(2.25rem,1.5rem + 3.4vw,4.1rem)}
+body.night .n-hero h1 em{font-style:normal;color:var(--n-red-light)}
+body.night .n-hero__cta{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:.4rem}
+body.night .n-hero__part{position:relative;display:grid;justify-items:center;gap:.8rem}
+body.night .n-hero__part img{width:min(92%,520px);height:auto;transform:rotate(-8deg);filter:drop-shadow(0 36px 44px rgba(0,0,0,.6)) drop-shadow(0 0 50px rgba(18,70,171,.35))}
+body.night .n-hero__tag{font-size:.82rem;color:var(--n-fg-3);text-align:center}
+body.night .n-hero__tag b{color:var(--n-fg);font-weight:600;margin-right:.4rem}
+@media (max-width:900px){
+  body.night .n-hero__grid{grid-template-columns:1fr;gap:.5rem;padding-top:1.5rem}
+  body.night .n-hero__part{order:-1}
+  body.night .n-hero__part img{width:min(62%,340px);transform:rotate(-6deg)}
+  body.night .n-hero__tag{display:none}
+}
+@media (max-width:560px){body.night .n-hero__cta .btn{flex:1 1 auto;justify-content:center}}
+@media (prefers-reduced-motion:no-preference){
+  body.night .n-hero__part img{animation:nFloat 7s ease-in-out infinite alternate}
+  @keyframes nFloat{from{transform:rotate(-8deg) translateY(0)}to{transform:rotate(-7deg) translateY(-10px)}}
+}
+/* vehicle bar: the classic parts-counter "select your vehicle" strip, sitting on the hero's bottom edge */
+body.night .n-vehicle{position:relative;z-index:2;margin-top:-1px;padding-bottom:1.5rem}
+body.night .n-vehicle__box{background:#fff;color:var(--ink);border-radius:var(--r-lg);box-shadow:var(--sh-3);padding:1rem 1.1rem;display:grid;gap:.75rem}
+body.night .n-vehicle__t{display:flex;align-items:center;gap:.6rem;font-family:var(--font-h);font-weight:600;font-size:.95rem}
+body.night .n-vehicle__t .i{color:var(--n-blue);font-size:1.15em}
+body.night .n-vehicle__t small{font-family:var(--font-b);font-weight:400;color:var(--ink-faint);font-size:.85rem}
+body.night .n-vehicle__row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:.6rem}
+@media (max-width:760px){body.night .n-vehicle__row{grid-template-columns:1fr 1fr}body.night .n-vehicle__row .btn{grid-column:1/-1}}
+body.night .n-vehicle .n-sel{position:relative;min-width:0}
+body.night .n-vehicle .n-sel>.i{position:absolute;right:.8rem;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--ink-faint);font-size:1.05rem;transition:color var(--dur-2) var(--ease)}
+body.night .n-vehicle .n-sel .n-sel__k{position:absolute;left:.85rem;top:.45rem;font-family:var(--font-m);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);pointer-events:none}
+body.night .n-vehicle select{-webkit-appearance:none;appearance:none;width:100%;height:54px;border:1.5px solid var(--line-strong);border-radius:var(--r-sm);background:#fff;font-family:var(--font-h);font-weight:600;font-size:.98rem;padding:1.05rem 2.4rem 0 .85rem;color:var(--ink);min-width:0;cursor:pointer;transition:border-color var(--dur-2) var(--ease),box-shadow var(--dur-2) var(--ease)}
+body.night .n-vehicle select:hover:not(:disabled){border-color:var(--blue-200)}
+body.night .n-vehicle select:disabled{background:var(--paper-2);color:var(--ink-faint);cursor:not-allowed;border-style:dashed}
+body.night .n-vehicle .n-sel.is-set select{border-color:var(--n-blue);box-shadow:inset 0 0 0 1px var(--n-blue)}
+body.night .n-vehicle .n-sel.is-set>.i{color:var(--n-blue)}
+body.night .n-vehicle select:focus-visible{outline:2px solid var(--n-blue);outline-offset:2px}
+body.night .n-vehicle .btn{height:54px}
+body.night .n-vehicle__hint{font-size:.82rem;color:var(--ink-faint);margin:0}
+body.night .n-vehicle__hint b{color:var(--ink);font-weight:600}
+body.night .n-proof{background:#fff;border-bottom:1px solid var(--line)}
+body.night .n-proof .n-wrap{display:grid;grid-template-columns:repeat(4,1fr)}
+body.night .n-proof .n-wrap>div{padding:1.1rem 1rem 1.1rem 0;border-right:1px solid var(--line);margin-right:1rem}
+body.night .n-proof .n-wrap>div:last-child{border-right:0;margin-right:0}
+body.night .n-proof b{display:block;font-family:var(--font-m);font-weight:600;font-size:clamp(1.3rem,1rem + 1.2vw,1.9rem);letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums}
+body.night .n-proof span{font-size:.82rem;color:var(--ink-faint)}
+@media (max-width:760px){body.night .n-proof .n-wrap{grid-template-columns:1fr 1fr}body.night .n-proof .n-wrap>div:nth-child(2){border-right:0}}
+
+/* ---- 2. three paths ---- */
+body.night .n-paths{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem}
+@media (max-width:900px){body.night .n-paths{grid-template-columns:1fr}}
+body.night .n-path{display:grid;grid-template-rows:auto 1fr;background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;transition:transform var(--dur-2) var(--ease),box-shadow var(--dur-2) var(--ease),border-color var(--dur-2) var(--ease)}
+body.night .n-path:hover{transform:translateY(-3px);box-shadow:var(--sh-2);border-color:var(--blue-200)}
+body.night .n-path__media{aspect-ratio:16/10;background:var(--paper-2);overflow:hidden;display:grid;place-items:center}
+body.night .n-path__media img{width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease)}
+body.night .n-path__media--fit img{object-fit:contain;padding:1.25rem}
+body.night .n-path:hover .n-path__media img{transform:scale(1.04)}
+body.night .n-path__body{padding:1.1rem 1.2rem 1.25rem;display:grid;gap:.4rem;align-content:start}
+body.night .n-path__body small{font-family:var(--font-m);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+body.night .n-path__body b{font-family:var(--font-h);font-weight:700;font-size:1.2rem;line-height:1.2;letter-spacing:-.01em;color:var(--ink)}
+body.night .n-path__body p{margin:0;color:var(--ink-2);font-size:.95rem;line-height:1.55}
+body.night .n-path__go{margin-top:.45rem;display:inline-flex;align-items:center;gap:.4rem;font-family:var(--font-h);font-weight:600;color:var(--n-blue)}
+body.night .n-path__go .i{transition:transform var(--dur-2) var(--ease)}
+body.night .n-path:hover .n-path__go .i{transform:translateX(3px)}
+
+/* ---- 3. shop by component ---- */
+body.night .n-groups{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1rem}
+@media (max-width:900px){body.night .n-groups{grid-template-columns:1fr 1fr}}
+body.night .n-group{position:relative;display:block;aspect-ratio:4/3;border-radius:var(--r-lg);overflow:hidden;background:var(--n-navy-2);color:#fff;isolation:isolate}
+body.night .n-group img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform .6s var(--ease)}
+body.night .n-group::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(11,26,51,0) 35%,rgba(11,26,51,.9) 100%)}
+body.night .n-group:hover img{transform:scale(1.05)}
+body.night .n-group__t{position:absolute;left:1rem;right:1rem;bottom:1rem;display:grid;gap:.15rem}
+body.night .n-group__t small{font-family:var(--font-m);font-size:.72rem;letter-spacing:.08em;color:var(--n-fg-2)}
+body.night .n-group__t b{font-family:var(--font-h);font-weight:700;font-size:1.1rem;line-height:1.15}
+body.night .n-cats{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem}
+@media (max-width:1000px){body.night .n-cats{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:640px){body.night .n-cats{grid-template-columns:1fr 1fr}}
+body.night .n-cat{display:flex;align-items:center;gap:.8rem;padding:.6rem .8rem .6rem .6rem;background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:var(--r);min-height:64px;transition:transform var(--dur-2) var(--ease),border-color var(--dur-2) var(--ease)}
+body.night .n-cat:hover{transform:translateY(-2px);border-color:var(--blue-200)}
+body.night .n-cat img{width:46px;height:46px;object-fit:contain;flex:none;background:var(--paper-2);border-radius:var(--r-xs)}
+body.night .n-cat b{display:block;font-family:var(--font-h);font-weight:600;font-size:.88rem;line-height:1.25}
+body.night .n-cat span{display:block;font-family:var(--font-m);font-size:.72rem;color:var(--ink-faint);margin-top:.15rem}
+body.night .n-cat--all{background:var(--n-navy);color:#fff;border-color:var(--n-navy);justify-content:center;font-family:var(--font-h);font-weight:600}
+
+/* ---- 4. best sellers ---- */
+body.night .n-rail{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(210px,1fr);gap:.9rem;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:.5rem;scrollbar-width:thin}
+@media (min-width:1100px){body.night .n-rail{grid-auto-flow:row;grid-template-columns:repeat(4,1fr);overflow:visible}}
+body.night .n-prod{scroll-snap-align:start;display:grid;grid-template-rows:auto 1fr;background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;transition:transform var(--dur-2) var(--ease),box-shadow var(--dur-2) var(--ease)}
+body.night .n-prod:hover{transform:translateY(-3px);box-shadow:var(--sh-2)}
+body.night .n-prod__media{aspect-ratio:1;background:#fff;display:grid;place-items:center;padding:.6rem}
+body.night .n-prod__media img{width:100%;height:100%;object-fit:contain}
+body.night .n-prod__body{padding:.8rem .9rem 1rem;display:grid;gap:.3rem;border-top:1px solid var(--line)}
+body.night .n-prod__sku{font-family:var(--font-m);font-size:.74rem;font-weight:600;letter-spacing:.03em;color:var(--n-blue)}
+body.night .n-prod__name{font-size:.9rem;line-height:1.35;color:var(--ink);min-height:2.6em}
+body.night .n-prod__foot{display:flex;align-items:center;justify-content:space-between;margin-top:.3rem}
+body.night .n-prod__price{font-family:var(--font-m);font-weight:600;font-size:1.05rem;font-variant-numeric:tabular-nums;color:var(--ink)}
+body.night .n-prod__stock{font-family:var(--font-m);font-size:.68rem;letter-spacing:.06em;color:var(--ok)}
+
+/* ---- 5. builder band (content sits on the site grid, not its own box) ---- */
+body.night .n-band{position:relative;isolation:isolate;overflow:hidden}
+body.night .n-band__media{position:absolute;inset:0;z-index:-2}
+body.night .n-band__media img{width:100%;height:100%;object-fit:cover;filter:saturate(.75)}
+body.night .n-band::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(11,26,51,.96) 0%,rgba(11,26,51,.86) 48%,rgba(11,26,51,.4) 100%)}
+body.night .n-band__in{padding-block:clamp(3rem,2rem + 5vw,6rem);display:grid;gap:1rem;max-width:40rem}
+body.night .n-band__specs{display:flex;gap:1rem 2rem;flex-wrap:wrap;list-style:none;margin:.5rem 0 0;padding:0;color:var(--n-fg-2);font-size:.92rem}
+body.night .n-band__specs li{display:inline-flex;align-items:center;gap:.45rem}
+body.night .n-band__specs .i{color:var(--n-red-light)}
+
+/* ---- 6. series + assurance ---- */
+body.night .n-series{display:flex;flex-wrap:wrap;gap:.5rem;list-style:none;padding:0;margin:0}
+body.night .n-series li{font-family:var(--font-m);font-size:.9rem;padding:.45rem .8rem;border:1px solid var(--line-strong);border-radius:var(--r-xs);color:var(--ink)}
+body.night .n-series li.is-more{border-style:dashed;color:var(--ink-faint)}
+body.night .n-assure{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);margin-top:clamp(2rem,1rem + 3vw,3.5rem)}
+@media (max-width:760px){body.night .n-assure{grid-template-columns:1fr 1fr}}
+body.night .n-assure>div{padding:1.4rem 1.2rem 0 0;display:grid;grid-template-columns:auto 1fr;gap:.8rem;align-items:start}
+body.night .n-assure>div>div{display:block}
+body.night .n-assure .i{font-size:1.5rem;color:var(--n-blue);margin-top:.1rem}
+body.night .n-assure b{display:block;color:var(--ink);font-family:var(--font-h);font-weight:600}
+body.night .n-assure span{display:block;color:var(--ink-faint);font-size:.88rem;margin-top:.15rem}
+
+@media (prefers-reduced-motion:reduce){
+  body.night .n-path,body.night .n-prod,body.night .n-cat,body.night .n-group img,body.night .n-path__media img,body.night .n-hero__part img{transition:none;animation:none}
+  body.night .n-path:hover,body.night .n-prod:hover,body.night .n-cat:hover{transform:none}
+}
+
+/* card media variants: make-logo mosaic (finder), framed screenshot (builder) */
+body.night .n-path__media--logos{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;padding:1.1rem;background:#fff;place-items:stretch}
+body.night .n-path__media--logos img{width:100%;height:100%;aspect-ratio:1;object-fit:contain;padding:.35rem;background:var(--paper-2);border-radius:var(--r-xs);transition:none}
+body.night .n-path:hover .n-path__media--logos img{transform:none}
+body.night .n-path__media--shot{background:var(--n-navy-2);padding:1.1rem 1.1rem 0;align-items:end;
+  background-image:radial-gradient(60% 80% at 50% 110%,rgba(18,70,171,.6),transparent 70%)}
+body.night .n-path__media--shot img{height:100%;width:100%;object-fit:cover;object-position:top left;border-radius:10px 10px 0 0;box-shadow:0 -12px 32px rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.12);border-bottom:0}
+body.night .n-path:hover .n-path__media--shot img{transform:translateY(-4px)}
+
+/* on the navy hero and builder band the primary stays brand blue (white text) in all states */
+body.night .n-dark .btn-primary,body.night .n-dark .btn-primary:hover,body.night .n-dark .btn-primary:focus-visible{--btn-bg:var(--n-blue);--btn-fg:#fff;background:var(--n-blue);color:#fff}
+body.night .n-dark .btn-primary:hover{background:var(--n-blue-h)}

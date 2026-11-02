@@ -1,0 +1,40 @@
+<svg width="75" height="100" viewBox="0 0 75 100" xmlns="http://www.w3.org/2000/svg"><style>path,line,polyline,ellipse,polygon{stroke:#0b1a33!important;stroke-width:.45!important}[fill="#ffffff"]{fill:#f6f8fc!important}[fill="#9d9fa2"]{fill:#b7cdf0!important}[stroke="#bcbec0"]{stroke:#5c6879!important;stroke-width:.3!important}.points{display:none}</style>
+  <g>
+    <title>background</title>
+    <rect x="-1" y="-1" width="11.26296" height="14.35061" id="canvas_background" fill="none"/>
+  </g>
+  <g>
+    <title>Layer 1</title>
+    <g id="svg_2">
+      <g id="pipe">
+        <line stroke="#231f20" x1="53" x2="75" y1="40" y2="40" id="svg_4" stroke-width="0.75"/>
+        <line x1="53" x2="75" y1="60" y2="60" id="svg_5" stroke-width="0.75" stroke="#231f20"/>
+      </g>
+      <path fill="none" stroke="#231f20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="4" d="M 53.538 40.173 L 53.538 59.827" id="path24"/>
+      <rect x="19.954" y="45.748" width="20.164" height="8.604" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); stroke-width: 0.75px; stroke-linejoin: round;"/>
+      <path stroke="#231f20" stroke-width="0.75" stroke-miterlimit="4" d="M 28.197 55.116 C 29.626 55.13 29.711 44.984 28.196 44.987 L 1.946 44.987 C 1.378 44.987 0.944 45.563 0.927 46.27 L 0.927 53.836 C 0.924 54.543 1.378 55.116 1.946 55.116 L 9.739 55.116 L 28.197 55.116 Z" id="path54" style="fill: rgb(255, 255, 255);" transform="matrix(-1, 0, 0, -1, 30.22771, 100.103016)"/>
+      <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-miterlimit="4" d="M 1.03 45.753 L 24.71 45.885 C 24.71 45.885 25.294 46.04 24.71 46.238 C 24.151 46.429 1.055 46.459 1.055 46.459" id="path56" style="" transform="matrix(-1, 0, 0, -1, 25.999554, 92.211998)"/>
+      <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-miterlimit="4" d="M 1.029 53.615 L 24.709 53.748 C 24.709 53.748 25.245 53.907 24.709 54.102 C 24.151 54.304 1.054 54.322 1.054 54.322" id="path58" style="" transform="matrix(-1, 0, 0, -1, 25.976223, 107.937)"/>
+      <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-miterlimit="4" d="M 1.03 46.946 L 24.71 47.127 C 24.71 47.127 25.347 47.363 24.71 47.613 C 24.152 47.832 1.055 47.918 1.055 47.918" id="path60" style="" transform="matrix(-1, 0, 0, -1, 26.02311, 94.863998)"/>
+      <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-miterlimit="4" d="M 1.03 52.025 L 24.71 52.208 C 24.71 52.208 25.34 52.399 24.71 52.694 C 24.158 52.952 1.055 52.997 1.055 52.997" id="path62" style="" transform="matrix(-1, 0, 0, -1, 26.019999, 105.022003)"/>
+      <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-miterlimit="4" d="M 1.03 48.49 L 24.71 48.732 C 24.71 48.732 25.582 49.019 24.71 49.372 C 24.15 49.599 1.055 49.773 1.055 49.773" id="path64" style="" transform="matrix(-1, 0, 0, -1, 26.127554, 98.263)"/>
+      <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-miterlimit="4" d="M 1.029 50.303 L 24.709 50.543 C 24.709 50.543 25.511 50.849 24.709 51.182 C 24.15 51.416 1.054 51.582 1.054 51.582" id="path66" style="" transform="matrix(-1, 0, 0, -1, 26.094446, 101.885002)"/>
+      <rect x="40.995" y="42.929" width="2.932" height="14.242" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); stroke-width: 0.75px; stroke-linejoin: round;"/>
+      <rect x="43.851" y="41.5" width="1.649" height="17.1" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); stroke-width: 0.75px; stroke-linejoin: round;"/>
+      <path style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 0.75px;"/>
+      <path style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 0.75px; stroke-linecap: round;" d="M 53.258 59.517 C 53.258 59.517 52.459 55.54 50.931 54.759 C 49.403 53.978 48.105 54.656 47.707 54.869 C 46.403 55.569 45.806 57.06 45.806 57.06"/>
+      <rect x="39.662" y="41.702" width="1.749" height="16.696" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); stroke-width: 0.75px; stroke-linejoin: round;"/>
+      <path style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 0.75px; stroke-linecap: round;" d="M 53.258 40.483 C 53.258 40.483 52.459 44.46 50.931 45.241 C 49.403 46.022 48.105 45.344 47.707 45.131 C 46.403 44.431 45.806 42.94 45.806 42.94"/>
+      <rect x="26.832" y="44.338" width="3.015" height="11.423" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); stroke-width: 0.75px; stroke-linejoin: round;" rx="0.525" ry="0.525"/>
+      <rect x="21.207" y="45.007" width="1.214" height="10.094" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); stroke-width: 0.25px;"/>
+    </g>
+  </g>
+  <g class="points" id="svg_2">
+    <circle id="svg_3" fill="red" r="1" cy="42" class="a" cx="1"/>
+    <circle id="svg_6" fill="green" r="1" cy="42" class="b" cx="1"/>
+    <circle id="svg_6" fill="purple" r="1" cy="42" class="f" cx="1"/>
+    <circle id="svg_7" fill="blue" r="1" cy="42" class="c" cx="1"/>
+    <circle id="svg_8" fill="brown" r="1" cy="37" cx="53.5" class="w"/>
+    <circle id="svg_9" fill="orange" r="1" cy="60" cx="69" class="t"/>
+  </g>
+</svg>

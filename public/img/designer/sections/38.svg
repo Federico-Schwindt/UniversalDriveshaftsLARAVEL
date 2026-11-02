@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="75" height="100" viewBox="0 0 75 100" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <g transform="matrix(1, 0, 0, 1, -0.712789, 0.035511)">
+    <title>background</title>
+    <rect fill="white" id="canvas_background" height="100" width="75" y="0" x="0" style="stroke-linejoin: round; stroke-linecap: round;"/>
+  </g>
+  <g transform="matrix(1, 0, 0, 1, -0.008976, -0.012266)">
+    <title>Layer 1</title>
+    <g id="svg_1" style="">
+      <path fill="none" stroke="#231f20" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="4" d="M 15.371 40.039 L 41.535 40 L 47.65 40 L 157.219 40" id="path42" style=""/>
+      <path fill="none" stroke="#231f20" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="4" d="M 14.99 60.039 L 41.833 60 L 156.815 60" id="path20" style=""/>
+      <path fill="none" stroke="#231f20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="4" d="M 21.499 60.098 L 21.497 40.064" id="path22"/>
+      <g stroke="null" id="g-1" transform="matrix(1, 0, 0, 1, 39.85128, 0.07707)" style="">
+        <title>Prong</title>
+        <path stroke="#231f20" fill="none" stroke-width="0.75" stroke-miterlimit="4" d="M 26.248 80.779 C 26.248 78.461 24.367 76.577 22.047 76.577 C 19.727 76.577 17.845 78.461 17.845 80.779 C 17.845 83.1 19.727 84.979 22.047 84.979 C 24.367 84.979 26.248 83.1 26.248 80.779 Z" id="path-4"/>
+        <path stroke="#231f20" fill="none" stroke-width="0.75" stroke-miterlimit="4" d="m29.84824,80.72804c0,-4.28581 -3.48053,-7.7716 -7.7709,-7.7716c-4.29002,0 -7.76984,3.48579 -7.76984,7.7716c0,4.29388 3.47983,7.76914 7.76984,7.76914c4.29037,0 7.7709,-3.47526 7.7709,-7.76914z" id="path-5"/>
+        <path stroke="#231f20" fill="none" stroke-width="0.75" stroke-miterlimit="4" d="m30.92944,68.94023c0,-1.07523 -0.87268,-1.94966 -1.9486,-1.94966c-1.07593,0 -1.94931,0.87443 -1.94931,1.94966c0,1.07663 0.87338,1.94825 1.94931,1.94825c1.07593,0 1.9486,-0.87162 1.9486,-1.94825z" id="path-6"/>
+        <path stroke="#231f20" fill="none" stroke-width="0.25" stroke-miterlimit="4" d="m29.86334,68.95322c0,-0.44898 -0.36402,-0.81195 -0.81195,-0.81195c-0.44898,0 -0.8116,0.36297 -0.8116,0.81195c0,0.44757 0.36262,0.8116 0.8116,0.8116c0.44792,0 0.81195,-0.36402 0.81195,-0.8116z" id="path-7"/>
+        <path stroke="#231f20" fill="none" stroke-width="0.75" stroke-miterlimit="4" d="m23.30773,73.11932l3.92424,-5.02755" id="path-8"/>
+        <path stroke="#231f20" fill="none" stroke-width="0.75" stroke-miterlimit="4" d="m28.16362,75.92761l2.50394,-6.00729" id="path-9"/>
+        <path stroke="#231f20" fill="none" stroke-width="0.75" stroke-miterlimit="4" d="m28.60241,94.06568c0.95798,0.48724 2.13255,0.10636 2.62119,-0.85232c0.48829,-0.95833 0.10636,-2.1329 -0.85161,-2.62154c-0.95973,-0.48864 -2.1329,-0.10672 -2.62119,0.85267c-0.48829,0.95798 -0.10812,2.13149 0.85161,2.62119z" id="path-10"/>
+        <path stroke="#231f20" fill="none" stroke-width="0.25" stroke-miterlimit="4" d="m29.07491,93.1091c0.39913,0.2029 0.88918,0.04388 1.09243,-0.35525c0.20325,-0.39948 0.04423,-0.88812 -0.35525,-1.09137c-0.39913,-0.20325 -0.88812,-0.04493 -1.09137,0.35525c-0.20325,0.39913 -0.04493,0.88777 0.3542,1.09137z" id="path-11"/>
+        <path stroke="#231f20" fill="none" stroke-width="0.75" stroke-miterlimit="4" d="m28.33773,85.37647l2.69982,5.77876" id="path-12" style=""/>
+        <path stroke="#231f20" fill="none" stroke-width="0.75" stroke-miterlimit="4" d="m23.55872,88.35571l4.28897,5.03106" id="path-13" style=""/>
+        <path stroke="#231f20" fill="none" stroke-width="0.75" stroke-miterlimit="4" d="M 15.175 84.196 L 12.937 84.152" id="path-2" style=""/>
+        <path stroke="#231f20" fill="none" stroke-width="0.75" stroke-miterlimit="4" d="M 14.662 78.697 L 12.994 78.998" id="path-3" style=""/>
+        <circle style="stroke: rgb(0, 0, 0); fill: none;" cx="22.046" cy="80.778" r="17.644"/>
+        <g style="" transform="matrix(2.825711, 0, 0, 2.825711, -21.00107, -149.890182)">
+          <path stroke-miterlimit="4" d="M 6.421 78.901 C 4.776 80.062 4.381 82.334 5.538 83.98 C 6.696 85.625 8.969 86.019 10.609 84.865 C 12.257 83.707 12.654 81.432 11.495 79.785 C 10.341 78.145 8.067 77.745 6.421 78.901 Z" id="path-17" style="stroke-width: 0.176947px; stroke: rgb(163, 163, 163); fill: rgb(255, 255, 255);"/>
+          <path stroke="#231f20" fill="none" stroke-miterlimit="4" d="M 7.382 80.415 C 6.502 81.033 6.289 82.249 6.907 83.131 C 7.527 84.01 8.743 84.222 9.623 83.603 C 10.504 82.984 10.715 81.769 10.097 80.888 C 9.478 80.008 8.263 79.795 7.382 80.415 Z" id="path-14" style="stroke-width: 0.53084px;"/>
+          <path stroke="#231f20" fill="none" stroke-miterlimit="4" d="M 8.005 81.28 C 7.638 81.538 7.55 82.044 7.808 82.411 C 8.066 82.778 8.573 82.866 8.938 82.609 C 9.306 82.35 9.394 81.844 9.136 81.476 C 8.879 81.111 8.372 81.022 8.005 81.28 Z" id="path-15" style="stroke-width: 0.353893px;"/>
+          <path d="M 8.231 79.735 L 11.049 79.326 C 11.525 79.425 11.115 79.636 11.491 79.824 L 8.887 80.2 C 8.88 80.2 8.883 80.033 8.883 80.03 L 8.221 79.742 C 8.221 79.739 8.224 79.737 8.231 79.735 Z" style="fill: rgb(35, 31, 32); stroke-width: 0.53084px;" transform="matrix(0.999326, -0.036707, 0.036707, 0.999326, -2.925124, 0.424551)"/>
+          <path d="M 8.469 83.762 L 11.219 84.036 C 11.053 84.236 11.003 84.4 10.753 84.544 L 8.432 84.309 C 8.417 84.308 8.405 84.297 8.405 84.285 L 8.44 83.784 C 8.44 83.771 8.452 83.762 8.469 83.762 Z" style="fill: rgb(35, 31, 32); stroke-width: 0.53084px;" transform="matrix(0.990268, 0.139173, -0.139173, 0.990268, 11.786349, -0.425749)" bx:origin="0.268088 0.5"/>
+          <path stroke-miterlimit="4" d="M 6.421 78.901 C 4.776 80.062 4.381 82.334 5.538 83.98 C 6.696 85.625 8.969 86.019 10.609 84.865 C 12.257 83.707 12.654 81.432 11.495 79.785 C 10.341 78.145 8.067 77.745 6.421 78.901 Z" id="path-1" style="fill: rgba(0, 0, 0, 0); stroke-width: 0.176947px; stroke: rgb(163, 163, 163);"/>
+        </g>
+      </g>
+      <g transform="matrix(1, 0, 0, 1, 5, 0)">
+        <title>end</title>
+        <path fill="#ffffff" fill-rule="nonzero" d="M 8.286 43.286 C 8.286 42.938 8.002 42.655 7.655 42.655 C 7.307 42.655 7.026 42.938 7.026 43.286 L 7.026 45.87 C 7.026 46.217 7.307 46.501 7.655 46.501 C 8.002 46.501 8.286 46.217 8.286 45.87 L 8.286 43.286 Z" id="path34"/>
+        <path fill="none" stroke="#231f20" stroke-width="0.5" stroke-linecap="round" stroke-miterlimit="4" d="M 8.286 58.046 C 8.286 57.699 8.002 57.416 7.655 57.416 C 7.307 57.416 7.026 57.699 7.026 58.046 L 7.026 60.63 C 7.026 60.978 7.307 61.261 7.655 61.261 C 8.002 61.261 8.286 60.978 8.286 60.63 L 8.286 58.046 Z" id="path32" style="stroke-dasharray: 1;"/>
+        <path fill="none" stroke="#231f20" stroke-width="0.5" stroke-linecap="round" stroke-miterlimit="4" d="M 8.183 39.431 C 8.183 39.083 7.899 38.8 7.552 38.8 C 7.204 38.8 6.923 39.083 6.923 39.431 L 6.923 42.015 C 6.923 42.362 7.204 42.646 7.552 42.646 C 7.899 42.646 8.183 42.362 8.183 42.015 L 8.183 39.431 Z" id="path36" style="stroke-dasharray: 1;"/>
+        <path stroke="#231f20" stroke-width="0.75" stroke-miterlimit="4" d="M 8.274 62.623 C 8.274 63.16 8.325 63.603 8.387 63.603 L 11.305 63.603 C 11.37 63.603 11.418 63.16 11.418 62.623 L 11.418 37.373 C 11.418 36.833 11.37 36.397 11.305 36.397 L 8.387 36.397 C 8.325 36.397 8.274 36.833 8.274 37.373 L 8.274 62.623 Z" id="path40" style="fill: rgb(255, 255, 255);"/>
+        <rect x="6.154" y="45.269" width="2.09" height="9.462" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); stroke-width: 0.5; stroke-linejoin: round; stroke-dasharray: 1;"/>
+        <rect x="0.823" y="46.281" width="5.621" height="7.106" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); stroke-width: 0.5; stroke-linejoin: round; stroke-dasharray: 1, 0, 0;"/>
+        <path stroke="#231f20" stroke-width="0.75" stroke-miterlimit="4" d="M -3.807 65.617 C -3.807 66.294 -3.609 66.851 -3.369 66.851 L 7.939 66.851 C 8.191 66.851 8.377 66.294 8.377 65.617 L 8.377 33.814 C 8.377 33.135 8.191 32.586 7.939 32.586 L -3.369 32.586 C -3.609 32.586 -3.807 33.135 -3.807 33.814 L -3.807 65.617 Z" id="path-16" style="fill: none;"/>
+      </g>
+      <g transform="matrix(4.634581, 0, 0, 1, -39.620502, 5.430923)" style="">
+        <title>damp</title>
+      </g>
+    </g>
+  </g>
+  <g id="svg_2" class="points" style="">
+    <circle id="svg_3" fill="red" r="1" cy="31.5" cx="13" class="a" style=""/>
+    <circle id="svg_4" fill="red" r="1" cy="31.5" cx="13" class="b" style=""/>
+    <circle id="svg_5" fill="purple" r="1" cy="31.5" cx="13" class="f" style=""/>
+    <circle id="svg_5" fill="red" r="1" cy="31.5" cx="13" class="c" style=""/>
+    <circle id="svg_10" class="n1" r="1" cy="45" cx="5.5" fill="brown" style=""/>
+    <circle id="svg_11" class="n1" r="1" cy="31" cx="13" fill="brown" style=""/>
+    <circle id="svg_6" fill="red" r="1" cy="39.5" cx="21.5" class="w" style=""/>
+    <circle id="svg_7" fill="red" r="1" cy="60" cx="28" class="t" style=""/>
+    <circle id="svg_8" class="y1" r="1" cy="92.441" cx="69.344" fill="red"/>
+    <circle id="svg_9" class="y1" r="1" cy="69.005" cx="68.959" fill="red"/>
+    <circle id="circle-1" class="x1" r="1" cy="78.75" cx="39.264" fill="hotpink"/>
+    <circle id="circle-2" class="z1" r="1" cy="84.09" cx="40.688" fill="purple"/>
+  </g>
+</svg>

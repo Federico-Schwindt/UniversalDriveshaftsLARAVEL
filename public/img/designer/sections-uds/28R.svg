@@ -1,0 +1,34 @@
+<svg width="75" height="100" viewBox="0 0 75 100" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com"><style>path,line,polyline,ellipse,polygon{stroke:#0b1a33!important;stroke-width:.45!important}[fill="#ffffff"]{fill:#f6f8fc!important}[fill="#9d9fa2"]{fill:#b7cdf0!important}[stroke="#bcbec0"]{stroke:#5c6879!important;stroke-width:.3!important}.points{display:none}</style>
+  
+  <line stroke-width="0.75" id="svg_4" y2="40" y1="40" x2="17" x1="0" stroke="#231f20"/>
+  <line stroke-width="0.75" id="svg_5" y2="60" y1="60" x2="17" x1="0" stroke="#231f20"/>
+
+  <g transform="matrix(1, 0, 0, -1, -0.712521, 99.900993)">
+    <g id="svg_9" transform="matrix(1, 0, 0, 1, -21.404903, 0.664498)">
+      <g id="svg_1">
+        <g id="pipe">
+          <path fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="4" d="M 39.255 39.336 L 39.256 59.168" id="path44" stroke="#231f20" style="stroke-width: 1.5;"/>
+          <line id="svg_4" y2="39.336" y1="39.336" x2="39.281" stroke="#231f20" x1="21.46" style="stroke-width: 0.75;"/>
+          <line x1="21.871" stroke="#231f20" id="svg_5" y2="59.336" y1="59.336" x2="39.158" style="stroke-width: 0.75;"/>
+          <path d="M 49.865 43.777 C 49.865 43.777 45.099 44.078 43.027 43.027 C 41.387 42.195 39.407 39.129 39.407 39.129" style="fill: none; stroke: black; stroke-width: 0.75;"/>
+          <path d="M 50.018 54.997 C 50.018 54.997 45.252 54.696 43.18 55.747 C 41.54 56.579 39.56 59.645 39.56 59.645" style="fill: none; stroke: black; stroke-width: 0.75;"/>
+        </g>
+      </g>
+    </g>
+    <rect transform="matrix(-0.999998, 0, 0, 1, 108.509177, 17.782791)" x="77.481" y="26.7" width="2.408" height="11.19" style="stroke-linecap: round; stroke-linejoin: round; stroke: rgb(0, 0, 0); fill: none; stroke-width: 0.750001;"/>
+    <rect transform="matrix(NaN, NaN, NaN, NaN, NaN, NaN)" style="fill: rgb(216, 216, 216);"/>
+    <path transform="matrix(-1, 0, 0, 1, 0, 0)" style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 0.75;" d="M -39.53 39.951 H -32.374 A 1.345 1.345 0 0 1 -31.029 41.296 V 58.605 A 1.345 1.345 0 0 1 -32.374 59.95 H -39.53 V 39.951 Z" bx:shape="rect -39.53 39.951 8.501 19.999 0 1.345 1.345 0 1@fe2a43d3"/>
+    <rect transform="matrix(-1, 0, 0, 1, 0, 0)" x="-43.31" y="37.572" width="3.765" height="24.757" style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 0.75;" rx="0.306" ry="0.306"/>
+    <path transform="matrix(-1, 0, 0, 1, 0, 0)" style="stroke-linejoin: round; stroke-linecap: round; stroke: rgb(0, 0, 0); fill: none; stroke-width: 0.75;" d="M -47.989 38.288 H -43.3 V 61.614 H -47.989 A 4.689 4.71 0 0 1 -52.678 56.904 V 42.998 A 4.689 4.71 0 0 1 -47.989 38.288 Z" bx:shape="rect -52.678 38.288 9.378 23.326 4.71 0 0 4.71 1@cd7f9043"/>
+    <path d="M 57.846 54.504 C 62.824 54.508 74.987 54.504 74.987 54.504 L 74.987 45.514 C 74.987 45.514 63.453 45.564 57.846 45.514 C 56.383 45.561 56.285 48.503 56.299 50.131 C 56.312 51.682 56.396 54.503 57.846 54.504 Z" style="stroke-linejoin: round; stroke-linecap: round; fill: none; stroke: rgb(0, 0, 0); stroke-width: 0.75;" transform="matrix(-1, 0, 0, -1, 131.284896, 100.019776)"/>
+    <path transform="matrix(-1.000001, 0, 0, 1, 0.000001, 0.023048)" style="stroke: rgb(0, 0, 0); fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-width: 0.75;" d="M -55.247 44.575 H -52.763 A 0.061 0.061 0 0 1 -52.702 44.636 V 55.217 A 0.061 0.061 0 0 1 -52.763 55.278 H -55.247 A 1.04 1.04 0 0 1 -56.287 54.238 V 45.615 A 1.04 1.04 0 0 1 -55.247 44.575 Z" bx:shape="rect -56.287 44.575 3.585 10.703 1.04 0.061 0.061 1.04 1@17c000fd"/>
+    <rect transform="matrix(-0.999996, 0, 0, 1, -143.685165, 99.493523)" x="-172.895" y="-56.188" width="3.178" height="13.289" style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); stroke-width: 0.750001;" rx="0.245" ry="0.245"/>
+  </g>
+  <g id="svg_2" class="points" >
+    <circle class="a" cx="73" cy="42" r="1" fill="red" id="svg_3"/>
+    <circle class="b" cx="73" cy="42" r="1" fill="green" id="svg_6"/>
+    <circle class="f" cx="73" cy="42" r="1" fill="purple" id="svg_6"/>
+    <circle class="c" cx="73" cy="42" r="1" fill="blue" id="svg_7"/>
+    <circle class="w" cx="17.192" cy="37" r="1" fill="brown" id="svg_8"/>
+  </g>
+</svg>

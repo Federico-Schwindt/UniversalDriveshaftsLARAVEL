@@ -1,0 +1,61 @@
+<svg width="75" height="100" viewBox="0 0 75 100" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <g>
+    <title>background</title>
+    <rect fill="none" id="canvas_background" height="26.99997" width="20.74998" y="-1" x="-1"/>
+  </g>
+  <g>
+    <title>Layer 1</title>
+    <g id="svg_1" style="">
+      <g>
+        <path id="path20" d="m65.00465,57.7155l-15.356,0c-1.617,0 -2.426,2.2845 -4.715,2.2845l-5.523,0l-111.559,0" stroke-miterlimit="4" stroke-linejoin="round" stroke-linecap="round" stroke-width="0.75" stroke="#231f20" fill="none"/>
+        <path id="path22" d="m60.16866,57.8175l0.002,-15.625" stroke-miterlimit="4" stroke-linejoin="round" stroke-linecap="round" stroke-width="1.5" stroke="#231f20" fill="none"/>
+        <path id="path24" d="m68.77366,43.5985l5.893,1.713l0,9.215l-5.893,1.715l0,-12.643z" fill-rule="nonzero" fill="#ffffff"/>
+        <path id="path26" d="m68.77366,43.5985l5.893,1.713l0,9.215l-5.893,1.715l0,-12.643z" stroke-miterlimit="4" stroke-width="0.5" stroke="#231f20" fill="none"/>
+        <path id="path28" d="m67.91666,43.5985l5.894,0.858l0,10.927l-5.894,0.858l0,-12.643z" fill-rule="nonzero" fill="#ffffff"/>
+        <path id="path30" d="m67.91666,43.5985l5.894,0.858l0,10.927l-5.894,0.858l0,-12.643z" stroke-miterlimit="4" stroke-width="0.5" stroke="#231f20" fill="none"/>
+        <path id="path32" d="m68.38166,58.0455c0,-0.347 0.283,-0.63 0.631,-0.63c0.347,0 0.628,0.283 0.628,0.63l0,2.584c0,0.348 -0.281,0.631 -0.628,0.631c-0.348,0 -0.631,-0.283 -0.631,-0.631l0,-2.584z" stroke-miterlimit="4" stroke-linecap="round" stroke-width="0.5" stroke="#231f20" fill="none"/>
+        <path id="path34" d="m68.38166,43.2865c0,-0.348 0.283,-0.631 0.631,-0.631c0.347,0 0.628,0.283 0.628,0.631l0,2.584c0,0.347 -0.281,0.631 -0.628,0.631c-0.348,0 -0.631,-0.284 -0.631,-0.631l0,-2.584z" fill-rule="nonzero" fill="#ffffff"/>
+        <path id="path36" d="m68.38166,43.2865c0,-0.348 0.283,-0.631 0.631,-0.631c0.347,0 0.628,0.283 0.628,0.631l0,2.584c0,0.347 -0.281,0.631 -0.628,0.631c-0.348,0 -0.631,-0.284 -0.631,-0.631l0,-2.584z" stroke-miterlimit="4" stroke-linecap="round" stroke-width="0.5" stroke="#231f20" fill="none"/>
+        <path id="path38" d="m68.39266,62.6225c0,0.537 -0.05,0.98 -0.113,0.98l-2.918,0c-0.064,0 -0.113,-0.443 -0.113,-0.98l0,-25.25c0,-0.539 0.049,-0.975 0.113,-0.975l2.918,0c0.063,0 0.113,0.436 0.113,0.975l0,25.25z" fill-rule="nonzero" fill="#ffffff"/>
+        <path id="path40" d="m68.39266,62.6225c0,0.537 -0.05,0.98 -0.113,0.98l-2.918,0c-0.064,0 -0.113,-0.443 -0.113,-0.98l0,-25.25c0,-0.539 0.049,-0.975 0.113,-0.975l2.918,0c0.063,0 0.113,0.436 0.113,0.975l0,25.25z" stroke-miterlimit="4" stroke-width="0.75" stroke="#231f20" fill="none"/>
+        <path id="path42" d="m65.21165,42.1355l-16.035,0c-2.289,0 -3.098,-2.1355 -4.715,-2.1355c-1.616,0 -3.232,0 -4.848,0l-5.93,0l-106.235,0" stroke-miterlimit="4" stroke-linejoin="round" stroke-linecap="round" stroke-width="0.75" stroke="#231f20" fill="none"/>
+      </g>
+    </g>
+  </g>
+  <g stroke="null" id="g-1" transform="matrix(-0.993697, -0.112101, 0.112101, -0.993697, 24.879395, 164.125092)" style="">
+    <title>Prong</title>
+    <path stroke="#231f20" fill="none" stroke-width="0.75" stroke-miterlimit="4" d="m26.2782,80.72909c0,-2.31789 -1.88121,-4.20226 -4.20086,-4.20226c-2.31965,0 -4.20226,1.88436 -4.20226,4.20226c0,2.32141 1.88261,4.2005 4.20226,4.2005c2.31965,0 4.20086,-1.8791 4.20086,-4.2005z" id="path-4"/>
+    <path stroke="#231f20" fill="none" stroke-width="0.75" stroke-miterlimit="4" d="m29.84824,80.72804c0,-4.28581 -3.48053,-7.7716 -7.7709,-7.7716c-4.29002,0 -7.76984,3.48579 -7.76984,7.7716c0,4.29388 3.47983,7.76914 7.76984,7.76914c4.29037,0 7.7709,-3.47526 7.7709,-7.76914z" id="path-5"/>
+    <path stroke="#231f20" fill="none" stroke-width="0.75" stroke-miterlimit="4" d="m30.92944,68.94023c0,-1.07523 -0.87268,-1.94966 -1.9486,-1.94966c-1.07593,0 -1.94931,0.87443 -1.94931,1.94966c0,1.07663 0.87338,1.94825 1.94931,1.94825c1.07593,0 1.9486,-0.87162 1.9486,-1.94825z" id="path-6"/>
+    <path stroke="#231f20" fill="none" stroke-width="0.25" stroke-miterlimit="4" d="m29.86334,68.95322c0,-0.44898 -0.36402,-0.81195 -0.81195,-0.81195c-0.44898,0 -0.8116,0.36297 -0.8116,0.81195c0,0.44757 0.36262,0.8116 0.8116,0.8116c0.44792,0 0.81195,-0.36402 0.81195,-0.8116z" id="path-7"/>
+    <path stroke="#231f20" fill="none" stroke-width="0.75" stroke-miterlimit="4" d="m23.30773,73.11932l3.92424,-5.02755" id="path-8"/>
+    <path stroke="#231f20" fill="none" stroke-width="0.75" stroke-miterlimit="4" d="m28.16362,75.92761l2.50394,-6.00729" id="path-9"/>
+    <path stroke="#231f20" fill="none" stroke-width="0.75" stroke-miterlimit="4" d="m28.60241,94.06568c0.95798,0.48724 2.13255,0.10636 2.62119,-0.85232c0.48829,-0.95833 0.10636,-2.1329 -0.85161,-2.62154c-0.95973,-0.48864 -2.1329,-0.10672 -2.62119,0.85267c-0.48829,0.95798 -0.10812,2.13149 0.85161,2.62119z" id="path-10"/>
+    <path stroke="#231f20" fill="none" stroke-width="0.25" stroke-miterlimit="4" d="m29.07491,93.1091c0.39913,0.2029 0.88918,0.04388 1.09243,-0.35525c0.20325,-0.39948 0.04423,-0.88812 -0.35525,-1.09137c-0.39913,-0.20325 -0.88812,-0.04493 -1.09137,0.35525c-0.20325,0.39913 -0.04493,0.88777 0.3542,1.09137z" id="path-11"/>
+    <path stroke="#231f20" fill="none" stroke-width="0.75" stroke-miterlimit="4" d="m28.33773,85.37647l2.69982,5.77876" id="path-12" style=""/>
+    <path stroke="#231f20" fill="none" stroke-width="0.75" stroke-miterlimit="4" d="m23.55872,88.35571l4.28897,5.03106" id="path-13" style=""/>
+    <path stroke="#231f20" fill="none" stroke-width="0.75" stroke-miterlimit="4" d="M 15.175 84.196 L 12.937 84.152" id="path-2" style=""/>
+    <path stroke="#231f20" fill="none" stroke-width="0.75" stroke-miterlimit="4" d="M 14.662 78.697 L 12.994 78.998" id="path-3" style=""/>
+    <g style="" transform="matrix(2.825711, 0, 0, 2.825711, -21.00107, -149.890182)">
+      <path stroke="#231f20" fill="none" stroke-miterlimit="4" d="M 7.382 80.415 C 6.502 81.033 6.289 82.249 6.907 83.131 C 7.527 84.01 8.743 84.222 9.623 83.603 C 10.504 82.984 10.715 81.769 10.097 80.888 C 9.478 80.008 8.263 79.795 7.382 80.415 Z" id="path-14" style="stroke-width: 0.53084px;"/>
+      <path stroke="#231f20" fill="none" stroke-miterlimit="4" d="M 8.005 81.28 C 7.638 81.538 7.55 82.044 7.808 82.411 C 8.066 82.778 8.573 82.866 8.938 82.609 C 9.306 82.35 9.394 81.844 9.136 81.476 C 8.879 81.111 8.372 81.022 8.005 81.28 Z" id="path-15" style="stroke-width: 0.353893px;"/>
+      <path d="M 8.231 79.735 L 11.049 79.326 C 11.525 79.425 11.115 79.636 11.491 79.824 L 8.887 80.2 C 8.88 80.2 8.883 80.033 8.883 80.03 L 8.221 79.742 C 8.221 79.739 8.224 79.737 8.231 79.735 Z" style="fill: rgb(35, 31, 32); stroke-width: 0.53084px;" transform="matrix(0.999326, -0.036707, 0.036707, 0.999326, -2.925124, 0.424551)"/>
+      <path d="M 8.469 83.762 L 11.219 84.036 C 11.053 84.236 11.003 84.4 10.753 84.544 L 8.432 84.309 C 8.417 84.308 8.405 84.297 8.405 84.285 L 8.44 83.784 C 8.44 83.771 8.452 83.762 8.469 83.762 Z" style="fill: rgb(35, 31, 32); stroke-width: 0.53084px;" transform="matrix(0.990268, 0.139173, -0.139173, 0.990268, 11.786349, -0.425749)" bx:origin="0.268088 0.5"/>
+      <path stroke-miterlimit="4" d="M 6.421 78.901 C 4.776 80.062 4.381 82.334 5.538 83.98 C 6.696 85.625 8.969 86.019 10.609 84.865 C 12.257 83.707 12.654 81.432 11.495 79.785 C 10.341 78.145 8.067 77.745 6.421 78.901 Z" id="path-1" style="fill: rgba(0, 0, 0, 0); stroke-width: 0.176947px; stroke: rgb(163, 163, 163);"/>
+    </g>
+  </g>
+  <g id="svg_3" class="points" style="">
+    <title>points</title>
+    <circle id="svg_4" fill="red" r="1" cy="34" cx="68.16667" class="a"/>
+    <circle id="svg_5" fill="red" r="1" cy="34" cx="68.16667" class="b"/>
+    <circle id="svg_6" fill="purple" r="1" cy="34" cx="68.16667" class="f"/>
+    <circle id="svg_6" fill="red" r="1" cy="34" cx="68.16667" class="c"/>
+    <circle id="svg_7" fill="red" r="1" cy="39.5" cx="60.16667" class="w"/>
+    <circle fill="red" cx="3.8" cy="92.424" r="1" class="y2" id="svg_8"/>
+    <circle fill="red" cx="5.935" cy="68.971" r="1" class="y2" id="svg_9"/>
+    <circle id="circle-1" class="x2" r="1" cy="79.126" cx="34.272" fill="hotpink"/>
+    <circle id="circle-2" class="z2" r="1" cy="84.724" cx="33.059" fill="purple"/>
+    <circle id="svg_10" class="n2" r="1" cy="42.409" cx="68.09" fill="blue"/>
+    <circle id="svg_11" class="n2" r="1" cy="42.409" cx="74.09" fill="blue"/>
+  </g>
+</svg>

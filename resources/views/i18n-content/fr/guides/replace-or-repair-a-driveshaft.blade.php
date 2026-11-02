@@ -1,0 +1,57 @@
+<p>Un arbre de transmission se compose de quelques pièces d'usure montées sur un tube qui ne s'use pas. Presque toutes les pannes proviennent de l'une de ces pièces, et remplacer cette pièce est une réparation qui vous laisse le tube d'origine et le point d'équilibrage d'origine. Certaines pannes touchent le tube lui-même ou les fourches, et celles-ci nécessitent un remplacement. Le travail consiste à faire la distinction entre les deux, ce qui prend dix minutes et une lampe de poche. Ce guide vous indique l'inspection, classe ce que vous trouvez entre réparation et remplacement, et compare les coûts afin que vous puissiez décider avant de commander quoi que ce soit.</p>
+
+<h2 id="inspect">L'inspection</h2>
+<p>Véhicule au point mort, frein à main desserré, roues calées et, si possible, roues arrière en l'air sur des chandelles placées sous le pont. Travaillez de la transmission vers l'arrière.</p>
+<ol class="guide-steps">
+<li><strong>Fourche coulissante.</strong> Saisissez l'arbre de transmission près de l'avant et faites-le pivoter contre la transmission : le jeu en rotation dans la cannelure indique une usure. Vérifiez si le corps présente une rainure là où le joint travaille et s'il y a des fuites d'huile. Assurez-vous qu'il lui reste de la course : poussez l'arbre de transmission vers l'avant et vers l'arrière.</li>
+<li><strong>Croisillon avant.</strong> Faites pivoter et soulevez l'arbre de transmission contre la fourche coulissante. Tout mouvement, de la poussière de rouille sur les tasses, de l'humidité ou un grincement indique un croisillon usé. Regardez les oreilles de la fourche : un trou de tasse brillant, marqué ou ovalisé signifie que la fourche est également hors service.</li>
+<li><strong>Tube.</strong> Passez votre main et la lumière sur toute la longueur. Bosses, marques profondes, pli, masses d'équilibrage manquantes (un rectangle propre ou une marque de soudure), rouille épaisse, soudure qui semble réparée ou courbure visible. Faites tourner l'arbre de transmission à la main avec un pointeur près du tube : plus d'environ 0,010 pouce de voile aux extrémités constitue un faux-rond.</li>
+<li><strong>Palier central</strong> (en deux pièces). Saisissez chaque côté et vérifiez s'il y a du jeu ; inspectez le caoutchouc pour déceler des fissures ou un affaissement ; faites-le tourner et écoutez s'il émet un bruit de sable.</li>
+<li><strong>Croisillon arrière et fourche de pignon.</strong> Le même test qu'à l'avant. Vérifiez que la fourche de pignon elle-même n'a pas de jeu sur le pignon (un écrou de pignon desserré ressemble à un croisillon endommagé).</li>
+<li><strong>Phase.</strong> Regardez le long de l'arbre de transmission ; les oreilles des fourches à chaque extrémité doivent être alignées. Sur un modèle en deux pièces, vérifiez les repères sur le joint coulissant.</li>
+</ol>
+<p>Notez ce que vous avez trouvé. Le <a href="/guides/driveshaft-vibration-and-noise-diagnosis">guide des vibrations</a> associe chaque constat au symptôme qui vous a amené ici.</p>
+
+<h2 id="repair">Pannes réparables</h2>
+<div class="dtable-wrap"><table class="dtable">
+<thead><tr><th>Constat</th><th>Réparation</th><th>Pièces</th><th>Remarques</th></tr></thead>
+<tbody>
+<tr><td>Croisillon usé ou sec, oreilles de fourche en bon état</td><td>Remplacer le ou les croisillons</td><td><a href="/shop/driveshaft-components/u-joints">Croisillon</a> de la bonne série, de 10 $ à 50 $</td><td>Remplacez les deux ; l'autre a le même âge. Identifiez la série avec le <a href="/guides/u-joint-series-identification-chart">tableau</a></td></tr>
+<tr><td>Palier central bruyant ou affaissé</td><td>Remplacer le roulement</td><td><a href="/shop/driveshaft-components/center-support-bearing">Palier</a>, de 20 $ à 60 $</td><td>Marquez la phase d'abord. <a href="/guides/center-support-bearing-replacement">Étape par étape</a></td></tr>
+<tr><td>Jeu dans la cannelure de la fourche coulissante ou rainure de joint</td><td>Remplacer la fourche coulissante</td><td><a href="/shop/driveshaft-components/slip-yoke">Fourche coulissante</a>, de 20 $ à 80 $</td><td>Vérifiez également la cannelure de sortie de la transmission</td></tr>
+<tr><td>Masse d'équilibrage perdue, sans autre dommage</td><td>Rééquilibrer</td><td>Main-d'œuvre d'atelier</td><td>Comprend la vérification du faux-rond et le redressement d'une légère courbure</td></tr>
+<tr><td>Léger faux-rond, tube par ailleurs droit</td><td>Redresser et équilibrer</td><td>Main-d'œuvre d'atelier</td><td>Jusqu'à quelques centièmes ; au-delà, il faut changer le tube</td></tr>
+<tr><td>Hors phase (arbre de transmission en deux pièces mal réassemblé)</td><td>Réindexer sur le joint coulissant</td><td>Aucune</td><td>Gratuit, et c'est la première chose à vérifier après toute intervention</td></tr>
+<tr><td>Oreilles de fourche à souder usées, tube en bon état</td><td>Remplacer la fourche à souder</td><td><a href="/shop/driveshaft-components/weld-yoke">Fourche à souder</a>, de 11 $ à 40 $, plus main-d'œuvre</td><td>Travail d'atelier : extraction à la presse, soudure, redressement, équilibrage</td></tr>
+<tr><td>Tube bosselé ou rouillé, fourches en bon état</td><td>Remplacer le tube</td><td><a href="/shop/custom-cut-tubing/tubing">Tube DOM</a> au pied, plus main-d'œuvre</td><td>C'est également le moyen de raccourcir ou d'allonger un arbre de transmission</td></tr>
+</tbody></table></div>
+<p>Les croisillons et les roulements sont des travaux réalisables par le propriétaire avec une presse ou un grand étau et les douilles appropriées. Tout ce qui implique de la soudure ou de l'équilibrage est un travail d'atelier, et un atelier qui répare des arbres de transmission tous les jours le fait plus rapidement et plus droit qu'un atelier de mécanique générale avec un marteau.</p>
+
+<h2 id="replace">Pannes obligeant au remplacement</h2>
+<ul class="guide-x">
+<li><strong>Tube tordu, plié ou vrillé.</strong> L'acier qui a cédé ne redevient pas droit après redressement. Un tube tordu (marques en spirale, torsion visible) a été surchargé et présente des fissures internes même s'il a l'air intact.</li>
+<li><strong>Bosses profondes.</strong> Une bosse retire du métal du cercle équilibré et amincit la paroi sur les bords. Les petits impacts peu profonds peuvent être compensés par l'équilibrage ; pas un enfoncement où l'on peut loger un doigt.</li>
+<li><strong>Plusieurs fourches usées et un tube usé.</strong> Lorsque la liste des réparations comprend un tube neuf, deux fourches à souder, une fourche coulissante et trois croisillons, vous venez de décrire un arbre de transmission neuf avec des frais de main-d'œuvre accrus.</li>
+<li><strong>Fourche ou soudure fissurée.</strong> Une fissure dans l'oreille, le corps ou la soudure est une panne en cours. Remplacez la fourche ; si la zone de soudure du tube est fissurée, remplacez l'arbre de transmission.</li>
+<li><strong>Série trop petite pour l'utilisation.</strong> Un arbre de transmission 1310 derrière un moteur préparé, sous un pick-up surélevé et fatigué, ou sur un véhicule qui tracte et détruit les croisillons, n'est pas un problème de réparation. Passer à une série supérieure signifie un arbre de transmission neuf.</li>
+<li><strong>Mauvaise longueur.</strong> Après une surélévation, un abaissement ou un changement de transmission ou de pont, l'ancien arbre de transmission est la mauvaise pièce. Remplacer le tube à une nouvelle longueur est possible si les fourches conviennent au nouveau véhicule ; sinon, fabriquez-en un nouveau.</li>
+</ul>
+
+<h2 id="cost">Comparaison des coûts</h2>
+<div class="dtable-wrap"><table class="dtable">
+<thead><tr><th>Cas</th><th>Si vous réparez</th><th>Si vous remplacez</th><th>Décision</th></tr></thead>
+<tbody>
+<tr><td>Choc, un croisillon usé, tube droit</td><td>Deux croisillons, de 25 $ à 100 $ en pièces, un après-midi</td><td>Arbre de transmission neuf, plusieurs centaines</td><td>Réparer</td></tr>
+<tr><td>Bourdonnement du palier central, 150 k miles</td><td>Palier de 20 $ à 60 $ plus les deux croisillons voisins</td><td>Arbre de transmission neuf en deux pièces, environ le double d'un modèle en une pièce</td><td>Réparer</td></tr>
+<tr><td>Vibration, masse d'équilibrage perdue, tout le reste correct</td><td>Équilibrage en atelier</td><td>Arbre de transmission neuf</td><td>Réparer</td></tr>
+<tr><td>Tube bosselé par une pierre, fourches en bon état</td><td>Remplacer le tube et équilibrer</td><td>Arbre de transmission neuf, un peu plus cher</td><td>Au choix ; changez le tube si les fourches proviennent d'une série difficile à trouver</td></tr>
+<tr><td>Tube bosselé, oreilles ovalisées, fourche coulissante usée</td><td>Tube neuf, deux fourches, fourche coulissante, croisillons, équilibrage</td><td>Arbre de transmission neuf</td><td>Remplacer</td></tr>
+<tr><td>Surélevé de 4 pouces, vibre désormais</td><td>Rien à réparer ; modification de la longueur et des angles</td><td>Arbre de transmission neuf, probablement avec joint CV à l'avant</td><td>Remplacer</td></tr>
+</tbody></table></div>
+<p>La règle générale utilisée par les ateliers : si la facture de réparation approche les 60 ou 70 pour cent du prix d'un arbre de transmission neuf, remplacez-le. Vous repartez avec du neuf, un équilibrage de production actuelle et une garantie sur l'ensemble, et non seulement sur la pièce. Le <a href="/guides/custom-driveshaft-cost-and-lead-time">guide des coûts</a> explique ce qui entre dans le prix d'un arbre de transmission neuf.</p>
+
+<h2 id="upgrade">Quand il est préférable d'améliorer plutôt que de remplacer</h2>
+<p>Une panne qui se répète est une information. Un croisillon qui dure un an fonctionne avec un angle trop prononcé, un couple trop élevé pour sa série, ou sans graisse. Un tube qui perd ses masses d'équilibrage à répétition n'a jamais été droit. Si le véhicule a changé (puissance, surélévation, pneus, remorquage) depuis la fabrication de l'arbre de transmission, profitez du remplacement pour passer à une série supérieure, opter pour un tube plus large ou en aluminium, ajouter une tête CV à l'extrémité à angle fort, ou convertir à bride là où le pignon le permet. Le <a href="/guides/driveshaft-angles-and-pinion-angle">guide des angles</a> et le <a href="/guides/choosing-driveshaft-tubing">guide des tubes</a> couvrent chaque décision ; le <a href="/online-builder">Configurateur d'arbre de transmission</a> permet d'obtenir un devis pour le résultat.</p>
+
+<h2 id="next">Étape suivante</h2>
+<p><strong>Réparer :</strong> identifiez la série et commandez les pièces sur le <a href="/shop/driveshaft-components">catalogue de composants</a>, ou envoyez-nous l'arbre de transmission ; nous pressons les croisillons et les roulements, changeons les tubes, redressons et équilibrons dans notre atelier et vous le renvoyons dans la même semaine. <strong>Remplacer :</strong> si le véhicule est d'origine, le <a href="/catalog/driveshafts">moteur de recherche par véhicule</a> peut afficher un <a href="/shop/complete-driveshafts">arbre de transmission préassemblé</a> en stock. Sinon, prenez les mesures (<a href="/guides/how-to-measure-a-driveshaft">guide</a>) et utilisez le <a href="/online-builder">Configurateur d'arbre de transmission</a>. Des questions après l'inspection ? Prenez des photos de vos constatations et <a href="/contact">envoyez-les à l'atelier</a>, ou appelez le (813) 524-6491. Nous préférons vous dire qu'il s'agit d'un croisillon à 12 $ plutôt que de vous vendre un arbre de transmission.</p>

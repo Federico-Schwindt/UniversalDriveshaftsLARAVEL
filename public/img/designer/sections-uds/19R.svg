@@ -1,0 +1,35 @@
+<svg width="75" height="100" viewBox="0 0 75 100" xmlns="http://www.w3.org/2000/svg"><style>path,line,polyline,ellipse,polygon{stroke:#0b1a33!important;stroke-width:.45!important}[fill="#ffffff"]{fill:#f6f8fc!important}[fill="#9d9fa2"]{fill:#b7cdf0!important}[stroke="#bcbec0"]{stroke:#5c6879!important;stroke-width:.3!important}.points{display:none}</style>
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="14.49999" width="11.37499" y="-1" x="-1"/>
+ </g>
+
+ <g>
+  <title>Layer 1</title>
+  <g id="pipe">
+   <line x2="21" y1="40" y2="40" stroke="#231f20" id="svg_4" stroke-width="0.75"/>
+   <line x2="21" y1="60" y2="60" stroke="#231f20" id="svg_5" stroke-width="0.75"/>
+  </g>
+  <g id="svg_2" transform="rotate(180 48.231 50)">
+   <path id="path24" d="m75,40.173l0,19.65399" stroke-miterlimit="4" stroke-linejoin="round" stroke-linecap="round" stroke-width="1.5" stroke="#231f20" fill="none"/>
+   <path id="path54" d="m67.457,45.302c0,-0.19899 0.79999,-0.368 -1.662,-0.36499l-42.67101,0c-0.923,0 -1.629,0.576 -1.65601,1.28299l0,7.56601c-0.006,0.707 0.733,1.28 1.65601,1.28l42.672,0c2.323,0.01401 1.66101,-0.16299 1.66101,-0.362l0,-9.40201z" stroke-miterlimit="4" stroke-width="0.75" stroke="#231f20" fill="none"/>
+   <path id="path56" d="m21.465,45.703l40.53,0.132c0,0 0.99899,0.155 0,0.353c-0.95699,0.19101 -40.487,0.22101 -40.487,0.22101" stroke-miterlimit="4" stroke-width="0.25" stroke="#231f20" fill="none"/>
+   <path id="path58" d="m21.465,53.565l40.53,0.133c0,0 0.91801,0.159 0,0.354c-0.95599,0.202 -40.487,0.22 -40.487,0.22" stroke-miterlimit="4" stroke-width="0.25" stroke="#231f20" fill="none"/>
+   <path id="path60" d="m21.465,46.89601l40.53,0.181c0,0 1.091,0.23599 0,0.48599c-0.95499,0.21901 -40.487,0.30501 -40.487,0.30501" stroke-miterlimit="4" stroke-width="0.25" stroke="#231f20" fill="none"/>
+   <path id="path62" d="m21.465,51.97501l40.53,0.18301c0,0 1.07801,0.19098 0,0.48599c-0.945,0.258 -40.487,0.30301 -40.487,0.30301" stroke-miterlimit="4" stroke-width="0.25" stroke="#231f20" fill="none"/>
+   <path id="path64" d="m21.465,48.44l40.53,0.242c0,0 1.493,0.287 0,0.64c-0.959,0.22701 -40.487,0.401 -40.487,0.401" stroke-miterlimit="4" stroke-width="0.25" stroke="#231f20" fill="none"/>
+   <path id="path66" d="m21.465,50.25301l40.53,0.24001c0,0 1.37199,0.306 0,0.63901c-0.95699,0.23398 -40.487,0.39999 -40.487,0.39999" stroke-miterlimit="4" stroke-width="0.25" stroke="#231f20" fill="none"/>
+   <path id="path68" d="m74.448,41.32101c0,-0.375 -0.028,-0.68501 -0.06302,-0.68501l-1.642,0c-0.035,0 -0.06398,0.31001 -0.06398,0.68501l0,17.659c0,0.375 0.02898,0.681 0.06398,0.681l1.642,0c0.03502,0 0.06302,-0.306 0.06302,-0.681l0,-17.659z" stroke-miterlimit="4" stroke-width="0.75" stroke="#231f20" fill="none"/>
+   <path id="path70" d="m72.659,43.52802c0,-0.27901 -0.02701,-0.50801 -0.062,-0.50801l-1.64301,0c-0.03499,0 -0.062,0.229 -0.062,0.50801l0,13.09399c0,0.27802 0.02702,0.50598 0.062,0.50598l1.64301,0c0.035,0 0.062,-0.22797 0.062,-0.50598l0,-13.09399z" stroke-miterlimit="4" stroke-width="0.75" stroke="#231f20" fill="none"/>
+   <path id="path72" d="m70.87099,44.563c0,-0.23399 -0.05199,-0.425 -0.118,-0.425l-3.09602,0c-0.06599,0 -0.11899,0.19101 -0.11899,0.425l0,10.95c0,0.23102 0.05299,0.423 0.11899,0.423l3.09602,0c0.06601,0 0.118,-0.19199 0.118,-0.423l0,-10.95z" fill-rule="nonzero" fill="#ffffff"/>
+   <path id="path74" d="m70.87099,44.563c0,-0.23399 -0.05199,-0.425 -0.118,-0.425l-3.09602,0c-0.06599,0 -0.11899,0.19101 -0.11899,0.425l0,10.95c0,0.23102 0.05299,0.423 0.11899,0.423l3.09602,0c0.06601,0 0.118,-0.19199 0.118,-0.423l0,-10.95z" stroke-miterlimit="4" stroke-width="0.75" stroke="#231f20" fill="none" transform="rotate(180 69.2045 50.037)"/>
+  </g>
+ </g>
+       <g class="points" id="svg_2">
+   <circle id="svg_3" fill="red" r="1" cy="35" cx="75" class="a"/>
+   <circle id="svg_6" fill="green" r="1" cy="35" cx="75" class="b"/>
+   <circle id="svg_6" fill="purple" r="1" cy="35" cx="75" class="f"/>
+   <circle id="svg_7" fill="blue" r="1" cy="35" cx="75" class="c"/>
+   <circle id="svg_8" fill="brown" r="1" cy="37" cx="21.5" class="w"/>
+  </g>
+</svg>

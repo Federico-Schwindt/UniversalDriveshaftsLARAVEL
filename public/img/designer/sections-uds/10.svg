@@ -1,0 +1,59 @@
+<svg width="75" height="100" viewBox="0 0 75 100" xmlns="http://www.w3.org/2000/svg"><style>path,line,polyline,ellipse,polygon{stroke:#0b1a33!important;stroke-width:.45!important}[fill="#ffffff"]{fill:#f6f8fc!important}[fill="#9d9fa2"]{fill:#b7cdf0!important}[stroke="#bcbec0"]{stroke:#5c6879!important;stroke-width:.3!important}.points{display:none}</style>
+
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="8.24999" width="6.68749" y="-1" x="-1"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <g id="svg_1">
+   <path fill="none" stroke="#231f20" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="4" d="m57.69599,42.78051l-0.24799,17.09199c0,0.418 -6.718,0.668 -7.742,0.847c-0.851,0.147 -1.10899,0.916 -1.10899,0.916l-8.43,0l0,-3.757l6.041,0l1.35,-1.35l7.804,-0.996" id="path24"/>
+   <path fill="none" stroke="#231f20" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="4" d="m57.446,56.9695l0.001,-16.841c0,-0.418 -6.717,-0.668 -7.741,-0.848c-0.851,-0.145 -1.11,-0.914 -1.10899,-0.914c-0.00201,0 -4.752,0 -8.431,-0.002l0,3.758l6.042,0l1.348,1.349l7.806,0.997" id="path26"/>
+   <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-linecap="round" stroke-miterlimit="4" d="m47.694,56.8625l-0.73,-0.73l-0.771,0" id="path28"/>
+   <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-linecap="round" stroke-miterlimit="4" d="m46.964,56.1125l0,-2.586" id="path30"/>
+   <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-linecap="round" stroke-miterlimit="4" d="m47.693,43.3485l-0.729,0.729l-0.771,0" id="path32"/>
+   <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-linecap="round" stroke-miterlimit="4" d="m46.964,44.0985l0,2.362" id="path34"/>
+   <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-linecap="round" stroke-miterlimit="4" d="m41.297,57.7415l0,-0.816l5.86,0" id="path36"/>
+   <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-linecap="round" stroke-miterlimit="4" d="m41.296,56.8645l0.731,-0.73l4.317,0" id="path38"/>
+   <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-linecap="round" stroke-miterlimit="4" d="m42.027,56.1125l0,-1.291" id="path40"/>
+   <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-linecap="round" stroke-miterlimit="4" d="m41.298,42.3395l0,0.947l6.109,0" id="path42"/>
+   <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-linecap="round" stroke-miterlimit="4" d="m41.298,43.3485l0.73,0.729l4.504,0" id="path44"/>
+   <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-linecap="round" stroke-miterlimit="4" d="m42.027,44.0985l0,1.168" id="path46"/>
+   <path fill="none" stroke="#231f20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="4" d="m57.736,60.2905l-0.00101,-20.5" id="path48"/>
+   <path fill="none" stroke="#231f20" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="4" d="m51.784,60.4565l2.729,-0.791c0,0 3.28101,-9.543 -0.06,-19.014c-0.014,-0.037 -2.734,-1.127 -2.734,-1.127" id="path50"/>
+   <path fill="none" stroke="#231f20" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="4" d="m52.046,55.7765l0,-11.502" id="path52"/>
+   <path fill="none" stroke="#231f20" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="4" d="m49.105,49.8415c0,2.425 -1.719,4.222 -3.827,4.386c-2.167,0.17 -9.97001,2.518 -10.66,3.422l-0.425,0.608l-2.463,0.027l0,-16.545l2.463,0.027l0.425,0.608c0.69,0.904 8.493,3.252 10.66,3.422c2.10799,0.164 3.827,1.961 3.827,4.388" id="path54"/>
+   <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-miterlimit="4" d="m41.405,55.3645l0,-2.164c0,0 -2.796,-2.941 -0.07,-6.061c0.072,-0.086 0.002,-2.244 0.002,-2.244" id="path56"/>
+   <path fill="#9d9fa2" fill-rule="nonzero" d="m47.069,48.9365l-3.2,-1.691" id="path58"/>
+   <path fill="none" stroke="#bcbec0" stroke-width="0.25" stroke-linejoin="round" stroke-miterlimit="4" d="m47.069,48.9365l-3.2,-1.691" id="path60"/>
+   <path fill="#9d9fa2" fill-rule="nonzero" d="m47.072,51.4695l-5.257,-3.023" id="path62"/>
+   <path fill="none" stroke="#bcbec0" stroke-width="0.25" stroke-linejoin="round" stroke-miterlimit="4" d="m47.072,51.4695l-5.257,-3.023" id="path64"/>
+   <path fill="#9d9fa2" fill-rule="nonzero" d="m47.277,50.3115l-4.77,-2.658" id="path66"/>
+   <path fill="none" stroke="#bcbec0" stroke-width="0.25" stroke-linejoin="round" stroke-miterlimit="4" d="m47.277,50.3115l-4.77,-2.658" id="path68"/>
+   <path fill="#9d9fa2" fill-rule="nonzero" d="m45.368,52.8995l-3.816,-2.215" id="path70"/>
+   <path fill="none" stroke="#bcbec0" stroke-width="0.25" stroke-linejoin="round" stroke-miterlimit="4" d="m45.368,52.8995l-3.816,-2.215" id="path72"/>
+   <path fill="#9d9fa2" fill-rule="nonzero" d="m46.39,52.2885l-4.838,-2.85" id="path74"/>
+   <path fill="none" stroke="#bcbec0" stroke-width="0.25" stroke-linejoin="round" stroke-miterlimit="4" d="m46.39,52.2885l-4.838,-2.85" id="path76"/>
+   <path fill="none" stroke="#231f20" stroke-width="0.5" stroke-miterlimit="4" d="m41.518,49.9955c0,1.648 1.307,2.986 2.918,2.986c1.612,0 2.917,-1.338 2.917,-2.986c0,-1.645 -1.305,-2.985 -2.917,-2.985c-1.611,0 -2.918,1.34 -2.918,2.985z" id="path78"/>
+   <path fill="none" stroke="#231f20" stroke-width="0.75" stroke-miterlimit="4" d="m31.652,45.6885c0,-0.187 -0.681,-0.342 -1.553,-0.342l-28.549,0c-0.861,0 -1.548,0.155 -1.548,0.342l0,8.787c0,0.188 0.687,0.34 1.549,0.34l28.548,0c0.872,0 1.553,-0.152 1.553,-0.34l0,-8.787z" id="path80"/>
+   <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-miterlimit="4" d="m0,46.0635l28.262,0.123c0,0 0.932,0.145 0,0.33c-0.896,0.178 -28.222,0.207 -28.222,0.207" id="path82"/>
+   <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-miterlimit="4" d="m0,53.4135l28.262,0.123c0,0 0.858,0.148 0,0.33c-0.894,0.189 -28.222,0.207 -28.222,0.207" id="path84"/>
+   <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-miterlimit="4" d="m0,47.1765l28.262,0.17c0,0 1.019,0.221 0,0.455c-0.893,0.206 -28.222,0.286 -28.222,0.286" id="path86"/>
+   <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-miterlimit="4" d="m0,51.9255l28.262,0.171c0,0 1.008,0.178 0,0.454c-0.884,0.242 -28.222,0.285 -28.222,0.285" id="path88"/>
+   <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-miterlimit="4" d="m0,48.6225l28.262,0.224c0,0 1.395,0.27 0,0.6c-0.897,0.213 -28.222,0.375 -28.222,0.375" id="path90"/>
+   <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-miterlimit="4" d="m0,50.3155l28.262,0.225c0,0 1.282,0.285 0,0.597c-0.895,0.219 -28.222,0.375 -28.222,0.375" id="path92"/>
+  </g>
+  <g id="pipe">
+   <line stroke-width="0.75" id="svg_4" stroke="#231f20" y2="40" y1="40" x2="75" x1="58"/>
+   <line stroke-width="0.75" id="svg_5" stroke="#231f20" y2="60" y1="60" x2="75" x1="58"/>
+  </g>
+ </g>
+ <g class="points" id="svg_2">
+   <circle class="a" cx="0" cy="42" r="1" fill="red" id="svg_7"/>
+   <circle class="b" cx="0" cy="42" r="1" fill="red" id="svg_7"/>
+   <circle class="f" cx="0" cy="42" r="1" fill="red" id="svg_7"/>
+   <circle class="c" cx="44.5" cy="50" r="1" fill="blue" id="svg_7"/>
+   <circle class="w" cx="58" cy="37" r="1" fill="brown" id="svg_8"/>
+   <circle class="t" cx="63" cy="60" r="1" fill="orange" id="svg_9"/>
+  </g>
+</svg>

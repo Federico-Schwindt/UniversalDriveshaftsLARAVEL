@@ -1,0 +1,33 @@
+<svg width="75" height="100" viewBox="0 0 75 100" xmlns="http://www.w3.org/2000/svg"><style>path,line,polyline,ellipse,polygon{stroke:#0b1a33!important;stroke-width:.45!important}[fill="#ffffff"]{fill:#f6f8fc!important}[fill="#9d9fa2"]{fill:#b7cdf0!important}[stroke="#bcbec0"]{stroke:#5c6879!important;stroke-width:.3!important}.points{display:none}</style>
+  <g transform="matrix(-1, 0, 0, 1, 74.999992, 0)">
+    <g id="svg_9" transform="matrix(1,0,0,1,-1.555005,0.664498) ">
+      <g id="svg_1">
+        <g id="svg_10">
+          <path id="svg_11" fill="none" stroke-linecap="round" stroke="#000000" stroke-width="0.75" d="m73.486,41.958l0,15.922"/>
+          <path id="svg_12" fill="none" stroke-linecap="round" stroke="#000000" stroke-width="0.75" d="m63.972,37.516c0,0 -0.271,-0.2 -0.602,-0.442c-0.506,-0.37 -0.693,-0.456 -1.183,-0.832c-0.154,-0.313 0.092,-1.57 -0.191,-1.721c-0.619,-0.026 -1.388,-0.021 -1.948,-0.035c-0.673,-0.018 -1.127,-0.048 -1.749,0.035c-0.298,0.04 -0.337,0.638 -0.638,0.637c-0.198,-0.001 -0.431,-0.001 -0.685,-0.002c-1.514,-0.002 -3.776,0.002 -3.776,0.002c0,0 -2.886,0.991 -3.697,2.167"/>
+          <path id="svg_13" fill="none" stroke-linecap="round" stroke="#000000" stroke-width="0.75" d="m63.972,61.155c0,0 -0.271,0.2 -0.602,0.442c-0.506,0.37 -0.693,0.456 -1.183,0.832c-0.154,0.313 0.092,1.57 -0.191,1.721c-0.619,0.026 -1.388,0.021 -1.948,0.035c-0.673,0.018 -1.127,0.048 -1.749,-0.035c-0.298,-0.04 -0.337,-0.638 -0.638,-0.637c-0.198,0.001 -0.431,0.001 -0.685,0.002c-1.514,0.002 -3.776,-0.002 -3.776,-0.002c0,0 -2.886,-0.991 -3.697,-2.167"/>
+          <path id="svg_14" fill="none" stroke-linecap="round" stroke="#000000" stroke-width="0.75" d="m49.563,37.191l0,24.383"/>
+          <path id="svg_15" fill="none" stroke-linecap="round" stroke="#000000" stroke-width="0.75" d="m63.812,37.235l0,24.223"/>
+          <path id="svg_16" fill="none" stroke-linecap="round" stroke="#000000" stroke-width="0.75" d="m62.12,36.107l0,26.639"/>
+          <path id="svg_17" fill="none" stroke-linecap="round" stroke="#000000" stroke-width="0.75" d="m57.771,35.282l0,28.089"/>
+          <path id="svg_18" fill="none" stroke-linecap="round" stroke="#000000" stroke-width="0.75" d="m53.241,35.403l0,12.262l0,15.766"/>
+          <path id="svg_19" fill="none" stroke-linecap="round" stroke="#000000" stroke-width="0.75" d="m64.032,37.651c0,0 1.907,-0.001 3.883,-0.001c0.185,0 0.37,0 0.555,0c1.355,0 4.572,0.091 4.572,0.091c0.389,0.299 0.324,3.304 0.548,4.483c0.081,0.237 0.68,0.326 1.027,0.566c0.27,0.171 0.606,1.931 0.776,3.612c0.158,1.553 0.162,3.042 0.162,3.042"/>
+          <path id="svg_20" fill="none" stroke-linecap="round" stroke="#000000" stroke-width="0.75" d="m64.032,61.231c0,0 1.907,0.001 3.883,0.001c0.185,0 0.37,0 0.555,0c1.355,0 4.572,-0.091 4.572,-0.091c0.389,-0.299 0.324,-3.304 0.548,-4.483c0.081,-0.237 0.68,-0.326 1.027,-0.566c0.27,-0.171 0.606,-1.931 0.776,-3.612c0.158,-1.553 0.162,-3.042 0.162,-3.042"/>
+        </g>
+        <g id="pipe">
+          <path fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="4" d="m45.255,39.336l0.001,19.832" id="path44" stroke="#231f20"/>
+          <line id="svg_4" stroke-width="0.75" y2="39.336" y1="39.336" x2="49.555" stroke="#231f20" x1="1.555"/>
+          <line x1="1.555" stroke="#231f20" id="svg_5" stroke-width="0.75" y2="59.336" y1="59.336" x2="49.555"/>
+        </g>
+      </g>
+    </g>
+  </g>
+  <g id="svg_2" class="points">
+    <circle class="a" cx="1" cy="42" r="1" fill="red" id="svg_3"/>
+    <circle class="b" cx="1" cy="42" r="1" fill="green" id="svg_6"/>
+    <circle class="f" cx="1" cy="42" r="1" fill="purple" id="svg_6"/>
+    <circle class="c" cx="1" cy="42" r="1" fill="blue" id="svg_7"/>
+    <circle class="w" cx="31.25" cy="37" r="1" fill="brown" id="svg_8"/>
+    <circle class="t" cx="37" cy="60" r="1" fill="brown" id="svg_8"/>
+  </g>
+</svg>

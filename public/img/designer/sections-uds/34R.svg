@@ -1,0 +1,32 @@
+<svg width="75" height="100" viewBox="0 0 74 100" xmlns="http://www.w3.org/2000/svg"><style>path,line,polyline,ellipse,polygon{stroke:#0b1a33!important;stroke-width:.45!important}[fill="#ffffff"]{fill:#f6f8fc!important}[fill="#9d9fa2"]{fill:#b7cdf0!important}[stroke="#bcbec0"]{stroke:#5c6879!important;stroke-width:.3!important}.points{display:none}</style>
+  <g>
+    <title>background</title>
+    <rect x="-1" y="-1" width="14.49998" height="18.66664" id="canvas_background" fill="none"/>
+  </g>
+  <g id="pipe">
+    <line stroke="#231f20" id="svg_4" stroke-width="0.75" y2="40" y1="40" x2="33.103" x1="-1" transform="matrix(-1, 0, 0, -1, 32.103001, 80)"/>
+    <line stroke="#231f20" id="svg_5" stroke-width="0.75" y2="60" y1="60" x2="33.294" x1="-1" transform="matrix(-1, 0, 0, -1, 32.294, 120.000003)"/>
+    <rect x="-35.416" y="38.764" width="3.48" height="22.472" style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" rx="1.339" ry="1.339" transform="matrix(-1, 0, 0, 1, 0, 0)"/>
+    <rect x="61.928" y="-38.807" width="6.578" height="22.385" style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" rx="1.058" ry="1.058" transform="matrix(-0.999999, 0, 0, 1, 122.855967, 77.614002)"/>
+    <rect x="-66.549" y="37.988" width="7.609" height="24.023" style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" rx="0.918" ry="0.918" transform="matrix(-1, 0, 0, 1, 0, 0)"/>
+    <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" d="M 17.967 14.392" transform="matrix(-1, 0, 0, -1, 35.934003, 28.783999)"/>
+    <g transform="matrix(-1, 0, 0, 1, 75.999992, -0.132502)">
+      <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" d="M 21.765 42.156 L 37.828 40.416"/>
+      <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" d="M 21.497 57.707 C 21.497 57.707 37.561 59.849 37.694 59.849"/>
+    </g>
+    <rect x="-41.305" y="38.093" width="6.693" height="23.814" style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" rx="0.918" ry="0.918" transform="matrix(-1, 0, 0, 1, 0, 0)"/>
+    <path style="stroke: rgb(0, 0, 0); fill: none;" d="M 73.071 50.645 L 68.581 47.558 L 68.581 40.649" transform="matrix(-1, 0, 0, -1, 141.652006, 91.294)"/>
+    <path style="stroke: rgb(0, 0, 0); fill: none;" d="M 73.071 47.636 L 68.581 50.723 L 68.581 59.351" transform="matrix(-1, 0, 0, -1, 141.652006, 106.987)"/>
+    <rect x="-5.192" y="-34.917" width="3.496" height="30.167" style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" rx="0.134" ry="0.134" transform="matrix(-1.000001, 0, 0, 1, 63.615984, 69.834)"/>
+    <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" d="M 69.686 40.517" transform="matrix(-1, 0, 0, -1, 139.37199, 81.033997)"/>
+    <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" d="M 32.691 38.353" transform="matrix(-1, 0, 0, -1, 65.382002, 76.706003)"/>
+    <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); stroke-linecap: round; stroke-width: 1.5;" d="M 28 60.269 L 28 39.731" transform="matrix(-1, 0, 0, -1, 56.000003, 99.999998)"/>
+  </g>
+  <g class="points" id="svg_2">
+    <circle id="svg_7" fill="red" r="1" cy="31" cx="68.5" class="a"/>
+    <circle id="svg_7" fill="green" r="1" cy="31" cx="68.5" class="b"/>
+    <circle id="svg_7" fill="purple" r="1" cy="31" cx="68.5" class="f"/>
+    <circle id="svg_7" fill="blue" r="1" cy="31" cx="68.5" class="c"/>
+    <circle id="svg_8" fill="brown" r="1" cy="37" cx="28" class="w"/>
+  </g>
+</svg>

@@ -1,0 +1,55 @@
+<p>Un arbre de transmission ne fait qu'une seule chose : il tourne à une vitesse fixée par les roues et le rapport de pont. Cela rend ses vibrations prévisibles. Tout ce qui est causé par l'arbre de transmission suivra la <strong>vitesse du véhicule</strong>, et non le régime moteur, et apparaîtra sur tous les rapports à la même vitesse. Commencez par confirmer cela, puis utilisez le symptôme pour choisir le composant. L'ordre ci-dessous va du plus probable au moins probable, et du plus économique au plus coûteux à vérifier.</p>
+
+<h2 id="first">Premièrement : est-ce l'arbre de transmission ?</h2>
+<p>Trois tests rapides permettent de distinguer l'arbre de transmission des roues, du moteur et de la transmission.</p>
+<ol class="guide-steps">
+<li><strong>Vitesse ou tr/min ?</strong> Repérez la vitesse à laquelle le problème est le plus prononcé et changez de rapport à cette même vitesse. Si la vibration persiste, elle se situe après la transmission : arbre de transmission, essieu ou roues. Si elle change avec le régime moteur, il s'agit du moteur, du convertisseur de couple ou de la transmission.</li>
+<li><strong>Roulez au point mort.</strong> À la vitesse problématique, passez au point mort et laissez le véhicule rouler par inertie. Une vibration due à un balourd ou à un faux-rond de l'arbre de transmission reste identique ; une vibration due à un angle de croisillon s'atténue généralement car la charge de couple disparaît ; un problème de roues est rigoureusement identique dans les deux cas.</li>
+<li><strong>Fréquence.</strong> L'arbre de transmission tourne 3 à 4 fois plus vite que les roues (selon le rapport de pont). Le déséquilibrage d'une roue provoque une secousse lente entre 55 et 65 mph (88 et 105 km/h) ressentie dans le siège et le volant. Le déséquilibrage de l'arbre de transmission se traduit par un bourdonnement plus rapide ressenti dans le plancher, la console et le levier de vitesses, qui rend souvent un rétroviseur flou.</li>
+</ol>
+
+<h2 id="symptoms">Tableau des symptômes</h2>
+<div class="dtable-wrap"><table class="dtable">
+<thead><tr><th>Symptôme</th><th>Cause la plus probable</th><th>Comment le confirmer</th></tr></thead>
+<tbody>
+<tr><td>Bourdonnement augmentant avec la vitesse, identique sur tous les rapports</td><td>Déséquilibre, masselotte perdue, tube tordu</td><td>Recherchez une zone propre à l'emplacement d'une ancienne masselotte ; vérifiez le faux-rond</td></tr>
+<tr><td>Vibration uniquement à l'accélération, disparaît au lever de pied</td><td>Angles de travail, angle de pignon</td><td>Mesurez les angles à hauteur de caisse (<a href="/guides/driveshaft-angles-and-pinion-angle">guide des angles</a>)</td></tr>
+<tr><td>Claquement lors du passage en marche avant ou arrière, ou au démarrage de l'accélération</td><td>Croisillon usé, fourche coulissante usée, écrou de pignon desserré</td><td>Manœuvrez l'arbre de transmission à la main au point mort ; observez si un croisillon présente du jeu</td></tr>
+<tr><td>Grincement à allure de piéton, souvent un par tour</td><td>Croisillon sec, joint endommagé</td><td>Poussière de rouille sur les coupelles</td></tr>
+<tr><td>Bruit sourd ou bourdonnement augmentant avec la vitesse, arbre de transmission en deux parties</td><td>Palier central</td><td>Saisissez l'arbre de transmission de chaque côté du roulement et vérifiez le jeu</td></tr>
+<tr><td>Secousse au démarrage à l'arrêt, entre 5 et 20 mph (8 et 32 km/h)</td><td>Yoke (fourche coulissante) grippé, rotule de centrage CV endommagée, angle excessif</td><td>Vérifiez la graisse et la course du yoke (fourche coulissante) ; inspectez la tête de double croisillon</td></tr>
+<tr><td>La vibration est apparue après une surélévation, un abaissement ou un changement de pont</td><td>Angles, longueur ou arbre de transmission fonctionnant désormais à une longueur excessive pour sa vitesse</td><td>Mesurez les angles et la longueur totale par rapport à la <a href="/guides/choosing-driveshaft-tubing">vitesse critique</a></td></tr>
+<tr><td>La vibration est apparue après le réassemblage d'un arbre de transmission en deux parties</td><td>Hors phase</td><td>Regardez le long de l'arbre de transmission : les chapes des fourches à chaque extrémité doivent être alignées</td></tr>
+</tbody></table></div>
+
+<h2 id="ujoints">Croisillons usés</h2>
+<p>Un croisillon s'use au niveau des roulements à aiguilles de chaque coupelle. Le premier signe est un grincement sec dû à un manque de graisse ; le suivant est le jeu, ressenti comme un coup lorsque le couple s'inverse (au passage des vitesses, en passant du lâcher de pied à l'accélération). Le jeu permet à l'arbre de transmission de s'excentrer, et un arbre excentré n'est plus équilibré. Par conséquent, un croisillon usé finit également par provoquer des vibrations.</p>
+<p>Pour l'inspection : transmission au point mort, frein de stationnement desserré, roues calées. Saisissez l'arbre de transmission près de chaque croisillon et essayez de le faire tourner par rapport à la fourche, puis poussez-le de haut en bas. Tout mouvement visible ou perceptible est excessif. Recherchez sur chaque coupelle un anneau de poussière de rouille brun-rougeâtre : ce sont les roulements à aiguilles réduits en poudre. Vérifiez si les alésages des fourches sont devenus ovales à cause d'une coupelle desserrée qui a frappé en service. Les croisillons de rechange sont répertoriés par série dans la section <a href="/shop/driveshaft-components/u-joints">croisillons</a> ; identifiez la série à l'aide du <a href="/guides/u-joint-series-identification-chart">tableau</a>. Si les fourches sont usées, il faut remplacer la fourche, et non seulement le croisillon.</p>
+
+<h2 id="balance">Équilibrage et masselottes perdues</h2>
+<p>Un arbre de transmission est équilibré sur une machine par soudage de petites masselottes sur le tube, près de chaque extrémité. Recherchez un rectangle propre ou une trace de soudure sans masselotte : la masselotte s'est détachée. La boue et l'antirouille accumulés d'un côté du tube provoquent également un déséquilibre, tout comme une bosse causée par une pierre ou un cric. Une bosse modifie la répartition de l'épaisseur de la paroi et ne peut pas être compensée de manière fiable par un simple équilibrage.</p>
+<p>Le faux-rond est l'autre ennemi de l'équilibrage. Faites tourner l'arbre de transmission sur le véhicule (roues arrière levées, au point mort, à la main) à l'aide d'un comparateur à cadran ou d'un pointeur fixe positionné contre le tube. Un faux-rond total supérieur à environ 0,010 pouce près des extrémités ou 0,015 au milieu signifie que le tube ou une fourche est tordu, et aucune masselotte ne pourra éliminer les vibrations. Un atelier peut rectifier un léger faux-rond avant l'équilibrage ; un faux-rond important nécessite un tube neuf.</p>
+
+<h2 id="phasing">Mise en phase</h2>
+<p>Les deux croisillons d'un arbre de transmission doivent être installés avec leurs fourches <strong>alignées</strong> entre elles (en phase). Chaque croisillon accélère et décélère deux fois par tour lorsqu'il fonctionne avec un angle ; lorsque les fourches sont alignées, le second croisillon annule l'effet du premier. Décalez un croisillon de 90 degrés et les effets s'additionnent au lieu de s'annuler, faisant vibrer l'arbre de transmission à deux fois sa vitesse de rotation. Un arbre de transmission monobloc ne peut se désynchroniser que s'il a été coupé et resoudé. Un modèle en deux parties se désynchronise chaque fois que le manchon cannelé coulissant entre les deux moitiés est réassemblé sans faire coïncider les repères. Regardez le long de l'arbre de transmission depuis une extrémité : les chapes des fourches avant et arrière doivent être alignées. S'ils sont décalés de 90 degrés, la correction est gratuite.</p>
+
+<h2 id="angles">Angles de travail</h2>
+<p>L'angle de fonctionnement d'un croisillon est la différence entre l'axe central de l'arbre de transmission et la fourche qu'il entraîne. Un angle excessif, ou des angles aux deux extrémités qui ne sont ni égaux ni opposés, génèrent une vibration qui apparaît sous charge et s'amplifie avec la vitesse. Les camions surélevés, les voitures surbaissées et tout véhicule dont l'essieu ou la transmission a été modifié sont les coupables habituels. Le <a href="/guides/driveshaft-angles-and-pinion-angle">guide des angles</a> explique comment mesurer et corriger ces valeurs ; en résumé, chaque croisillon doit travailler entre 1 et 3 degrés, les deux doivent correspondre à un demi-degré près et le pignon doit être réglé de manière à s'aligner sous charge.</p>
+
+<h2 id="csb">Palier central</h2>
+<p>Sur un arbre de transmission en deux parties, le palier central soutient la partie médiane de la transmission dans un support en caoutchouc. Lorsque le roulement est défectueux, il émet un bourdonnement ou un grondement proportionnel à la vitesse. Lorsque le caoutchouc est détérioré, l'arbre de transmission s'affaisse ou oscille, ce qui modifie les angles des deux croisillons adjacents et provoque des vibrations ou des secousses au démarrage. Inspectez-le hors charge : saisissez chaque côté du roulement pour vérifier s'il y a du jeu ; recherchez des fissures ou des ruptures dans le caoutchouc, ou un arbre visiblement décentré dans son support. Son remplacement est une intervention simple expliquée dans le <a href="/guides/center-support-bearing-replacement">guide de remplacement du palier central</a>, et nous proposons des <a href="/shop/driveshaft-components/center-support-bearing">paliers centraux pour la plupart des camions</a> classés par diamètre d'arbre.</p>
+
+<h2 id="inspect">Inspection en dix minutes</h2>
+<ul class="guide-x">
+<li>Présence de poussière de rouille ou d'humidité sur les coupelles de croisillons</li>
+<li>Jeu perceptible dans un croisillon lors de la manipulation de l'arbre de transmission</li>
+<li>Chapes de fourches ovalisées ou marquées par des chocs</li>
+<li>Zone propre où une masselotte était soudée</li>
+<li>Bosses, rayures profondes ou courbure visible sur le tube</li>
+<li>Chapes des fourches aux deux extrémités alignées (en phase)</li>
+<li>Cannelures du yoke (fourche coulissante) : sèches, rouillées ou présentant un jeu de rotation visible</li>
+<li>Caoutchouc du palier central intact et arbre bien centré dans le support</li>
+<li>Écrou de pignon serré et bride de pignon sans jeu</li>
+<li>Angles mesurés à hauteur de caisse et consignés</li>
+</ul>
+<p>Si l'inspection révèle une pièce usée sur un tube droit, l'arbre de transmission peut être réparé : le remplacement des croisillons, du roulement, du yoke (fourche coulissante) et l'équilibrage sont des travaux d'atelier. Si vous constatez un tube cabossé ou des fourches usées, le <a href="/guides/replace-or-repair-a-driveshaft">guide de réparation ou de remplacement</a> vous aidera à prendre une décision, et notre outil <a href="/online-builder">Concevez votre arbre de transmission</a> vous permettra d'obtenir un devis pour un remplacement sur mesure. Vous ne savez pas exactement ce que vous observez ? <a href="/contact">Envoyez-nous des photos</a> ; nous manipulons des arbres de transmission toute la journée.</p>

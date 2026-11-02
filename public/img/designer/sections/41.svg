@@ -1,0 +1,51 @@
+<svg width="75" height="100" viewBox="0 0 75 100" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <g>
+    <title>background</title>
+    <rect x="-1" y="-1" width="14.49998" height="18.66664" id="canvas_background" fill="none"/>
+  </g>
+  <g id="pipe">
+    <line stroke="#231f20" id="svg_4" stroke-width="0.75" y2="40" y1="40" x2="75" x1="48" style=""/>
+    <line stroke="#231f20" id="svg_5" stroke-width="0.75" y2="60" y1="60" x2="75" x1="48" style=""/>
+    <rect x="42.564" y="45.319" width="3.48" height="9.351" style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" rx="0.504" ry="0.504"/>
+    <rect style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" x="1.07" y="-55.254" width="13.579" height="10.734" rx="0.161" ry="0.161" transform="matrix(1, 0, 0, -1, 0, 0)"/>
+    <g style="" transform="matrix(1, 0, 0, 0.73187, 0.103, 13.406503)">
+      <title>thread</title>
+      <line style="stroke: rgb(0, 0, 0); stroke-width: 0.25px;" x1="14.982" y1="57.515" x2="14.137" y2="42.485"/>
+      <line style="stroke: rgb(0, 0, 0); stroke-width: 0.25px;" x1="14.154" y1="57.515" x2="13.309" y2="42.485"/>
+      <line style="stroke: rgb(0, 0, 0); stroke-width: 0.25px;" x1="1.742" y1="57.515" x2="0.897" y2="42.485"/>
+      <line style="stroke: rgb(0, 0, 0); stroke-width: 0.25px;" x1="2.569" y1="57.515" x2="1.724" y2="42.485"/>
+      <line style="stroke: rgb(0, 0, 0); stroke-width: 0.25px;" x1="3.397" y1="57.515" x2="2.552" y2="42.485"/>
+      <line style="stroke: rgb(0, 0, 0); stroke-width: 0.25px;" x1="4.224" y1="57.515" x2="3.379" y2="42.485"/>
+      <line style="stroke: rgb(0, 0, 0); stroke-width: 0.25px;" x1="5.052" y1="57.515" x2="4.207" y2="42.485"/>
+      <line style="stroke: rgb(0, 0, 0); stroke-width: 0.25px;" x1="5.879" y1="57.515" x2="5.034" y2="42.485"/>
+      <line style="stroke: rgb(0, 0, 0); stroke-width: 0.25px;" x1="7.534" y1="57.515" x2="6.689" y2="42.485"/>
+      <line style="stroke: rgb(0, 0, 0); stroke-width: 0.25px;" x1="8.362" y1="57.515" x2="7.517" y2="42.485"/>
+      <line style="stroke: rgb(0, 0, 0); stroke-width: 0.25px;" x1="9.189" y1="57.515" x2="8.344" y2="42.485"/>
+      <line style="stroke: rgb(0, 0, 0); stroke-width: 0.25px;" x1="10.017" y1="57.515" x2="9.172" y2="42.485"/>
+      <line style="stroke: rgb(0, 0, 0); stroke-width: 0.25px;" x1="10.844" y1="57.515" x2="9.999" y2="42.485"/>
+      <line style="stroke: rgb(0, 0, 0); stroke-width: 0.25px;" x1="11.672" y1="57.515" x2="10.827" y2="42.485"/>
+      <line style="stroke: rgb(0, 0, 0); stroke-width: 0.25px;" x1="12.499" y1="57.515" x2="11.654" y2="42.485"/>
+      <line style="stroke: rgb(0, 0, 0); stroke-width: 0.25px;" x1="13.327" y1="57.515" x2="12.481" y2="42.485"/>
+      <line style="stroke: rgb(0, 0, 0); stroke-width: 0.25px;" x1="6.707" y1="57.515" x2="5.861" y2="42.485"/>
+    </g>
+    <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" d="M 56.033 14.392"/>
+    <g transform="matrix(1, 0, 0, 1, -2, -0.132502)"/>
+    <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" d="M 4.314 40.517"/>
+    <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" d="M 41.309 38.353"/>
+    <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); stroke-linecap: round; stroke-width: 1.5;" d="M 52 39.718 L 52 60.282"/>
+    <rect x="23.763" y="20.626" width="4.864" height="12.894" style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" transform="matrix(0.999993, 0.003814, -0.003814, 0.999993, -16.370022, 22.827284)" rx="0.819" ry="0.819"/>
+    <path style="stroke: rgb(0, 0, 0); fill: none; stroke-linecap: round;" d="M 48.197 59.888 C 47.68 55.928 48.64 55.179 45.72 54.628"/>
+    <rect x="40.798" y="45.286" width="3.48" height="9.351" style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" rx="0.504" ry="0.504"/>
+    <path style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" d="M 14.978 39.513 H 39.311 A 2.135 2.135 0 0 1 41.446 41.648 V 58.48 A 2.135 2.135 0 0 1 39.311 60.615 H 14.978 A 3.932 3.932 0 0 1 11.046 56.683 V 43.445 A 3.932 3.932 0 0 1 14.978 39.513 Z" bx:shape="rect 11.046 39.513 30.4 21.102 3.932 2.135 2.135 3.932 1@cee42522"/>
+    <rect x="29.304" y="38.238" width="6.304" height="23.513" style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" rx="0.504" ry="0.504"/>
+    <path style="stroke: rgb(0, 0, 0); fill: none; stroke-linecap: round;" d="M 48.197 40.101 C 47.68 44.061 48.64 44.81 45.72 45.361"/>
+  </g>
+  <g class="points" id="svg_2">
+    <circle id="svg_7" fill="red" r="1" cy="39" cx="1.171" class="a"/>
+    <circle id="svg_7" fill="green" r="1" cy="39" cx="1.171" class="b"/>
+    <circle id="svg_7" fill="purple" r="1" cy="39" cx="1.171" class="f"/>
+    <circle id="svg_7" fill="blue" r="1" cy="39" cx="1.171" class="c"/>
+    <circle id="svg_8" fill="brown" r="1" cy="37" cx="52" class="w"/>
+    <circle id="svg_9" fill="orange" r="1" cy="60" cx="58" class="t"/>
+  </g>
+</svg>

@@ -1,0 +1,153 @@
+/* Online builder, Oct 2026 redesign: classic engineering-sheet look on the UDS tokens.
+   Loaded after dsb.css; #ubs-dsb raises specificity over the !important rules in uds-2026.css. */
+#ubs-dsb{
+  --ink-navy:#0b1a33; --sheet-line:#d6dfee; --sheet-grid:rgba(18,70,171,.06); --sheet-paper:#fbfcfe;
+  max-width:none;border:1px solid var(--sheet-line);border-radius:16px;box-shadow:0 1px 0 rgba(11,26,51,.04),0 18px 40px -28px rgba(11,26,51,.35);overflow:visible;background:#fff
+}
+#ubs-dsb .dsb-layout{display:grid;grid-template-columns:minmax(0,1fr) 352px;align-items:start}
+#ubs-dsb .dsb-main{min-width:0;border-right:1px solid var(--sheet-line)}
+
+/* steps: drawing-sheet tabs */
+#ubs-dsb .dsb-crumbs{gap:0;padding:0;background:var(--sheet-paper);border-bottom:1px solid var(--sheet-line);border-radius:16px 0 0 0;scrollbar-width:none}
+#ubs-dsb .dsb-crumbs::-webkit-scrollbar{display:none}
+#ubs-dsb .dsb-crumb{flex:1 1 0;min-width:118px;border:0!important;border-radius:0!important;background:transparent;padding:14px 14px 13px;gap:10px;border-right:1px solid var(--sheet-line)!important;position:relative}
+#ubs-dsb .dsb-crumb:last-child{border-right:0!important}
+#ubs-dsb .dsb-crumb::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:transparent}
+#ubs-dsb .dsb-crumb-num{width:24px;height:24px;background:#fff;border:1px solid var(--sheet-line);color:var(--ink-3)}
+#ubs-dsb .dsb-crumb-label{font-size:.78rem;font-weight:600;color:var(--ink-2)}
+#ubs-dsb .dsb-crumb-value{font-size:.72rem;color:var(--ink-faint);max-width:120px}
+#ubs-dsb .dsb-crumb.completed{background:transparent}
+#ubs-dsb .dsb-crumb.completed .dsb-crumb-num{background:var(--ink-navy);border-color:var(--ink-navy);color:#fff}
+#ubs-dsb .dsb-crumb.completed .dsb-crumb-value{color:var(--blue)}
+#ubs-dsb .dsb-crumb.active{background:#fff!important}
+#ubs-dsb .dsb-crumb.active::after{background:var(--blue)}
+#ubs-dsb .dsb-crumb.active .dsb-crumb-num{background:var(--blue)!important;border-color:var(--blue);color:#fff!important}
+#ubs-dsb .dsb-crumb.active .dsb-crumb-label{color:var(--ink)!important}
+#ubs-dsb .dsb-crumb.active .dsb-crumb-value{color:var(--blue)!important}
+#ubs-dsb .dsb-crumb:hover:not(.active){background:#fff}
+
+#ubs-dsb .dsb-stage{padding:clamp(18px,2.4vw,32px)}
+#ubs-dsb .dsb-step-title{font-size:1.28rem;letter-spacing:-.01em}
+#ubs-dsb .dsb-step-head{padding-bottom:16px;margin-bottom:20px;border-bottom:1px dashed var(--sheet-line)}
+
+/* option cards */
+#ubs-dsb .dsb-card,#ubs-dsb .dsb-mode-card,#ubs-dsb .dsb-app-card{border:1px solid var(--sheet-line)!important;background:#fff;box-shadow:none}
+#ubs-dsb .dsb-card:hover,#ubs-dsb .dsb-mode-card:hover,#ubs-dsb .dsb-app-card:hover{border-color:var(--blue)!important;box-shadow:0 10px 24px -18px rgba(18,70,171,.55);transform:translateY(-2px)}
+#ubs-dsb .dsb-mode-card--selected,#ubs-dsb .dsb-app-card--selected{border-color:var(--blue)!important;box-shadow:inset 0 0 0 1px var(--blue);background:var(--blue-050,#f1f5fd)}
+#ubs-dsb .dsb-app-cards{grid-template-columns:repeat(auto-fill,156px);justify-content:start;gap:12px}
+#ubs-dsb .dsb-app-card{width:156px;height:100%;min-height:190px;display:flex;flex-direction:column}
+#ubs-dsb .dsb-app-card{position:relative;padding:12px;border-radius:12px!important}
+#ubs-dsb .dsb-app-card--selected::before{content:"";position:absolute;top:10px;right:10px;width:18px;height:18px;border-radius:50%;background:var(--blue) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E") center/12px no-repeat;z-index:1}
+#ubs-dsb .dsb-app-card-img--line{display:grid;place-items:center;height:96px;flex:none;border-radius:8px;border:1px solid var(--sheet-line);
+  background:var(--sheet-paper) linear-gradient(var(--sheet-grid) 1px,transparent 1px) 0 0/12px 12px,var(--sheet-paper) linear-gradient(90deg,var(--sheet-grid) 1px,transparent 1px) 0 0/12px 12px}
+#ubs-dsb .dsb-app-card-label{font-weight:600;font-size:.9rem;line-height:1.3;margin-top:10px}
+
+/* designer line drawings (sections) */
+.dsb-art{display:block;width:100%;height:100%;padding:6px 8px;box-sizing:border-box}
+.dsb-art svg{width:100%;height:100%;display:block;overflow:visible}
+.dsb-art .points,.dsb-art title,.dsb-art #canvas_background{display:none}
+.dsb-art path,.dsb-art line,.dsb-art polyline,.dsb-art ellipse,.dsb-art circle,.dsb-art polygon,.dsb-art rect{stroke:var(--ink-navy,#0b1a33)!important}
+.dsb-art [fill="#ffffff"],.dsb-art [fill="#fff"],.dsb-art [fill="white"]{fill:#fff!important}
+
+/* measuring on the drawing */
+#ubs-dsb .dsb-plan{position:relative;border:1px solid var(--ink-navy);border-radius:4px;background:#fff;margin:0 0 20px;overflow:hidden}
+#ubs-dsb .dsb-plan-head,#ubs-dsb .dsb-plan-foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:9px 14px;font-size:.78rem}
+#ubs-dsb .dsb-plan-head{background:var(--ink-navy);color:#fff}
+#ubs-dsb .dsb-plan-head span:first-child{display:inline-flex;align-items:center;gap:.45rem}
+#ubs-dsb .dsb-plan-head svg{width:15px;height:15px}
+#ubs-dsb .dsb-plan-code{font-family:var(--font-m);color:#b7cdf0}
+#ubs-dsb .dsb-plan-foot{border-top:1px solid var(--sheet-line);font-family:var(--font-m);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);font-size:.68rem}
+.dsb-plan-svg{display:block;padding:10px 12px 4px;
+  background:linear-gradient(var(--sheet-grid,rgba(18,70,171,.06)) 1px,transparent 1px) 0 0/16px 16px,linear-gradient(90deg,var(--sheet-grid,rgba(18,70,171,.06)) 1px,transparent 1px) 0 0/16px 16px,#fbfcfe}
+.dsb-plan-svg svg{display:block;width:100%;height:auto;max-height:380px;overflow:hidden}
+.dsb-plan-svg text.dim-text{cursor:default}
+#ubs-dsb .dsb-plan .dsb-plan-svg text.dim-text[data-field]{cursor:pointer;fill:#1246ab;font-family:var(--font-m),monospace!important;font-weight:600!important;font-size:9px!important;transition:fill .15s}
+#ubs-dsb .dsb-plan .dsb-plan-svg text.dim-text[data-field]:hover,#ubs-dsb .dsb-plan .dsb-plan-svg text.dim-text[data-field]:focus{fill:#c0392b;outline:none}
+.dsb-plan-svg text.dim-text.is-set{fill:#0b1a33!important;font-family:var(--font-m),monospace!important}
+#ubs-dsb .dsb-plan .dsb-plan-svg text.dim-text.is-editing{opacity:0}
+#ubs-dsb .dsb-plan-input{position:absolute;z-index:3;width:128px;height:40px;padding:0 10px;text-align:center;font:600 1rem/1 var(--font-m);color:var(--ink-navy);
+  background:#fff;border:2px solid var(--blue)!important;border-radius:8px!important;box-shadow:0 10px 24px -10px rgba(18,70,171,.55)!important}
+#ubs-dsb .dsb-fields{gap:16px}
+#ubs-dsb .dsb-hint{font-size:.8rem;color:var(--ink-3)}
+
+/* review drawing */
+#ubs-dsb .dsb-review-plan{border:1px solid var(--sheet-line);border-radius:8px;margin-bottom:10px}
+
+/* build sheet */
+#ubs-dsb .dsb-sheet{position:sticky;top:92px;display:flex;flex-direction:column;background:#fff;border-radius:0 16px 16px 0}
+#ubs-dsb .dsb-sheet-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:14px 18px;background:var(--ink-navy);color:#fff;border-radius:0 15px 0 0}
+#ubs-dsb .dsb-sheet-kicker{font-family:var(--font-h);font-weight:600;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase}
+#ubs-dsb .dsb-sheet-type{font-family:var(--font-m);font-size:.72rem;color:#b7cdf0}
+#ubs-dsb .dsb-sheet-draw{min-height:150px;display:grid;place-items:center;gap:6px;padding:12px;border-bottom:1px solid var(--sheet-line);
+  background:linear-gradient(var(--sheet-grid) 1px,transparent 1px) 0 0/14px 14px,linear-gradient(90deg,var(--sheet-grid) 1px,transparent 1px) 0 0/14px 14px,var(--sheet-paper)}
+#ubs-dsb .dsb-sheet-draw .dsb-art{width:60%;height:110px}
+#ubs-dsb .dsb-sheet-draw .dsb-plan-svg{background:none;padding:0;width:100%}
+#ubs-dsb .dsb-sheet-draw .dsb-plan-svg svg{max-height:190px}
+#ubs-dsb .dsb-sheet-draw img{max-width:100%;max-height:150px;object-fit:contain}
+#ubs-dsb .dsb-sheet-empty{max-width:24ch;text-align:center;font-size:.84rem;color:var(--ink-3);line-height:1.5}
+#ubs-dsb .dsb-sheet-hint{font-family:var(--font-m);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--blue)}
+#ubs-dsb .dsb-sheet-specs{margin:0;padding:10px 18px 12px;display:grid}
+#ubs-dsb .dsb-sheet-specs > div{display:flex;align-items:baseline;gap:8px;padding:7px 0;font-size:.85rem;border-bottom:1px dotted var(--sheet-line)}
+#ubs-dsb .dsb-sheet-specs > div:last-child{border-bottom:0}
+#ubs-dsb .dsb-sheet-specs dt{flex:none;width:76px;color:var(--ink-3);font-family:var(--font-m);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em}
+#ubs-dsb .dsb-sheet-specs dd{margin:0;color:var(--ink);font-weight:500;min-width:0;overflow-wrap:anywhere}
+#ubs-dsb .dsb-sheet-specs .is-empty dt{width:auto;text-transform:none;letter-spacing:0;font-family:var(--font-b,inherit);font-size:.85rem}
+#ubs-dsb .dsb-sheet-price{display:grid;gap:2px;padding:14px 18px;border-top:1px solid var(--sheet-line);background:var(--sheet-paper)}
+#ubs-dsb .dsb-sheet-price .dsb-hero-price-label{font-family:var(--font-m);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3)}
+#ubs-dsb .dsb-sheet-price .dsb-hero-price-value{font-size:2rem;line-height:1.1;color:var(--ink-navy);letter-spacing:-.02em}
+#ubs-dsb .dsb-sheet-price small{color:var(--ink-3);font-size:.78rem}
+#ubs-dsb .dsb-sheet .dsb-cart-footer{padding:14px 18px 18px;background:#fff;border-top:1px solid var(--sheet-line);border-radius:0 0 16px 0;display:grid;gap:12px}
+#ubs-dsb .dsb-sheet .dsb-cart-row{display:grid;gap:10px}
+#ubs-dsb .dsb-sheet .dsb-add-btn{width:100%;justify-content:space-between}
+#ubs-dsb .dsb-sheet .dsb-cart-status{font-size:.8rem;margin:0}
+
+/* mobile price bar */
+.dsb-mbar{display:none}
+@media (max-width:1023px){
+  #ubs-dsb .dsb-layout{grid-template-columns:minmax(0,1fr)}
+  #ubs-dsb .dsb-main{border-right:0;border-bottom:1px solid var(--sheet-line)}
+  #ubs-dsb .dsb-crumbs{border-radius:16px 16px 0 0}
+  #ubs-dsb .dsb-sheet{position:static;border-radius:0 0 16px 16px}
+  #ubs-dsb .dsb-sheet-head{border-radius:0}
+  #ubs-dsb .dsb-sheet .dsb-cart-footer{border-radius:0 0 16px 16px}
+  .dsb-mbar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--sheet-line,#d6dfee);box-shadow:0 -10px 24px -18px rgba(11,26,51,.45);transition:transform .25s}
+  .dsb-mbar.is-off{transform:translateY(110%)}
+  .dsb-mbar small{display:block;font-family:var(--font-m);font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3)}
+  .dsb-mbar b{font-family:var(--font-m);font-size:1.25rem;color:#0b1a33}
+  .dsb-mbar .dsb-btn{padding:.7rem 1.1rem!important}
+  body:has(.dsb-mbar:not(.is-off)) .floaty{bottom:84px}
+  #ubs-dsb .dsb-app-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  #ubs-dsb .dsb-app-card{width:auto}
+}
+@media (max-width:560px){
+  #ubs-dsb{border-radius:12px}
+  #ubs-dsb .dsb-crumb{min-width:104px;padding:11px 10px}
+  #ubs-dsb .dsb-crumb-value{max-width:84px}
+  .dsb-plan-svg{padding:6px 4px 2px}
+  #ubs-dsb .dsb-plan .dsb-plan-svg text.dim-text[data-field]{font-size:11px!important}
+}
+@media (prefers-reduced-motion:reduce){#ubs-dsb .dsb-card:hover,#ubs-dsb .dsb-mode-card:hover,#ubs-dsb .dsb-app-card:hover{transform:none}.dsb-mbar{transition:none}}
+@media print{.dsb-mbar,#ubs-dsb .dsb-sheet .dsb-cart-footer{display:none!important}}
+.dsb-art--flip svg{transform:scaleX(-1)}
+#ubs-dsb .dsb-app-card-img{height:96px;flex:none}#ubs-dsb .dsb-app-card-img img{max-height:96px}
+
+/* yoke catalog: every card the same size (owner, 2026-10-25) */
+#ubs-dsb .dsb-catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));grid-auto-rows:1fr;gap:14px}
+#ubs-dsb .dsb-catalog-card{display:flex;flex-direction:column;gap:6px;height:100%;padding:12px;text-align:left;background:#fff;border:1px solid var(--sheet-line)!important;border-radius:12px!important;box-shadow:none!important;cursor:pointer;transition:border-color .15s,box-shadow .2s,transform .2s}
+#ubs-dsb .dsb-catalog-card:hover,#ubs-dsb .dsb-catalog-card:focus-visible{border-color:var(--blue)!important;box-shadow:0 10px 24px -18px rgba(18,70,171,.55)!important;transform:translateY(-2px);outline:none}
+#ubs-dsb .dsb-cat-img{display:grid;place-items:center;height:132px;flex:none;border-radius:8px;border:1px solid var(--sheet-line);overflow:hidden;
+  background:linear-gradient(var(--sheet-grid) 1px,transparent 1px) 0 0/12px 12px,linear-gradient(90deg,var(--sheet-grid) 1px,transparent 1px) 0 0/12px 12px,var(--sheet-paper)}
+#ubs-dsb .dsb-cat-img img{display:block;width:auto;height:auto;max-width:88%;max-height:118px;object-fit:contain}
+#ubs-dsb .dsb-cat-img:empty::after{content:"";width:46px;height:46px;opacity:.35;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230b1a33' stroke-width='1.5'%3E%3Cpath d='M21 8 12 3 3 8v8l9 5 9-5z'/%3E%3Cpath d='M3 8l9 5 9-5M12 13v8'/%3E%3C/svg%3E") center/contain no-repeat}
+#ubs-dsb .dsb-cat-sku{margin-top:4px;font-family:var(--font-m);font-size:.74rem;font-weight:600;color:var(--blue);letter-spacing:.01em}
+#ubs-dsb .dsb-cat-name{font-size:.84rem;font-weight:500;line-height:1.35;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.7em}
+#ubs-dsb .dsb-cat-specs{display:grid;margin-top:2px;border-top:1px dotted var(--sheet-line)}
+#ubs-dsb .dsb-cat-specs > span{display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px dotted var(--sheet-line);font-size:.74rem;min-height:1.6em}
+#ubs-dsb .dsb-cat-specs i{font-style:normal;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#ubs-dsb .dsb-cat-specs b{font-family:var(--font-m);font-weight:600;color:var(--ink);white-space:nowrap}
+#ubs-dsb .dsb-cat-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding-top:8px}
+#ubs-dsb .dsb-cat-price{font-family:var(--font-m);font-weight:700;font-size:1.02rem;color:var(--ink-navy)}
+#ubs-dsb .dsb-cat-select{display:inline-flex;align-items:center;min-height:34px;padding:0 14px;border-radius:999px;background:var(--blue);color:#fff;font-family:var(--font-h);font-weight:600;font-size:.8rem}
+#ubs-dsb .dsb-catalog-card:hover .dsb-cat-select{background:var(--blue-700,#0d337d)}
+@media (max-width:560px){#ubs-dsb .dsb-catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}#ubs-dsb .dsb-cat-img{height:104px}#ubs-dsb .dsb-cat-img img{max-height:92px}#ubs-dsb .dsb-cat-specs > span{font-size:.68rem}}

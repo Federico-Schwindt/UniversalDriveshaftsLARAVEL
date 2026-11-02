@@ -1,0 +1,32 @@
+<svg width="75" height="100" viewBox="0 0 75 100" xmlns="http://www.w3.org/2000/svg"><style>path,line,polyline,ellipse,polygon{stroke:#0b1a33!important;stroke-width:.45!important}[fill="#ffffff"]{fill:#f6f8fc!important}[fill="#9d9fa2"]{fill:#b7cdf0!important}[stroke="#bcbec0"]{stroke:#5c6879!important;stroke-width:.3!important}.points{display:none}</style>
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="14.49981" width="11.37486" y="-1" x="-1"/>
+ </g>
+
+ <g>
+  <title>Layer 1</title>
+  <g id="svg_1">
+   <path id="path24" d="m17.594,39.697l0,20.5" stroke-miterlimit="4" stroke-linejoin="round" stroke-linecap="round" stroke-width="1.5" stroke="#231f20" fill="none"/>
+   <path id="path26" d="m17.279,43.032c0,0 0,16.841 0.003,16.84c0,0.417 -6.72,0.669 -7.741,0.848c-0.854,0.146 -1.112,0.914 -1.112,0.914c0,0 -4.75,0.001 -8.429,0.001l0,-3.756l6.041,0l1.35,-1.349l7.804,-0.997" fill-rule="nonzero" fill="#ffffff"/>
+   <path id="path28" d="m17.279,43.032c0,0 0,16.841 0.003,16.84c0,0.417 -6.72,0.669 -7.741,0.848c-0.854,0.146 -1.112,0.914 -1.112,0.914c0,0 -4.75,0.001 -8.429,0.001l0,-3.756l6.041,0l1.35,-1.349l7.804,-0.997" stroke-miterlimit="4" stroke-linejoin="round" stroke-linecap="round" stroke-width="0.75" stroke="#231f20" fill="none"/>
+   <path id="path30" d="m17.279,56.97c0,0 0,-16.842 0.003,-16.841c0,-0.418 -6.72,-0.668 -7.744,-0.847c-0.851,-0.147 -1.109,-0.915 -1.109,-0.915c0,0 -4.75,-0.001 -8.429,-0.002l0,3.756l6.041,0l1.349,1.351l7.805,0.996" fill-rule="nonzero" fill="#ffffff"/>
+   <path id="path32" d="m17.279,56.97c0,0 0,-16.842 0.003,-16.841c0,-0.418 -6.72,-0.668 -7.744,-0.847c-0.851,-0.147 -1.109,-0.915 -1.109,-0.915c0,0 -4.75,-0.001 -8.429,-0.002l0,3.756l6.041,0l1.349,1.351l7.805,0.996" stroke-miterlimit="4" stroke-linejoin="round" stroke-linecap="round" stroke-width="0.75" stroke="#231f20" fill="none"/>
+   <path id="path34" d="m11.617,60.455l2.729,-0.791c0,0 3.281,-9.542 -0.059,-19.011c-0.016,-0.038 -2.733,-1.127 -2.733,-1.127" stroke-miterlimit="4" stroke-linejoin="round" stroke-linecap="round" stroke-width="0.5" stroke="#231f20" fill="none"/>
+   <path id="path36" d="m11.879,55.776l0,-11.501" stroke-miterlimit="4" stroke-linejoin="round" stroke-linecap="round" stroke-width="0.5" stroke="#231f20" fill="none"/>
+  </g>
+  <g id="pipe">
+   <line stroke="#231f20" x1="18" x2="75" y1="40" y2="40" id="svg_4" stroke-width="0.75"/>
+   <line x1="18" x2="75" y1="60" y2="60" id="svg_5" stroke-width="0.75" stroke="#231f20"/>
+  </g>
+
+ </g>
+   <g id="svg_2" class="points">
+   <circle id="svg_3" fill="red" r="1" cy="35" cx="4" class="a"/>
+   <circle cx="4" id="svg_6" fill="green" r="1" cy="35" class="b"/>
+   <circle cx="4" id="svg_6" fill="green" r="1" cy="35" class="f"/>
+   <circle id="svg_7" fill="blue" r="1" cy="35" cx="4" class="c"/>
+   <circle id="svg_8" fill="brown" r="1" cy="37" cx="17.75012" class="w"/>
+   <circle id="svg_9" fill="orange" r="1" cy="60" cx="24.25012" class="t"/>
+  </g>
+</svg>

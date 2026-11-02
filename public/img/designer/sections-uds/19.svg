@@ -1,0 +1,35 @@
+<svg width="75" height="100" viewBox="0 0 75 100" xmlns="http://www.w3.org/2000/svg"><style>path,line,polyline,ellipse,polygon{stroke:#0b1a33!important;stroke-width:.45!important}[fill="#ffffff"]{fill:#f6f8fc!important}[fill="#9d9fa2"]{fill:#b7cdf0!important}[stroke="#bcbec0"]{stroke:#5c6879!important;stroke-width:.3!important}.points{display:none}</style>
+  <g>
+    <title>background</title>
+    <rect x="-1" y="-1" width="11.26296" height="14.35061" id="canvas_background" fill="none"/>
+  </g>
+  <g>
+    <title>Layer 1</title>
+    <g id="svg_2">
+      <g id="pipe">
+        <line stroke="#231f20" x1="53" x2="75" y1="40" y2="40" id="svg_4" stroke-width="0.75"/>
+        <line x1="53" x2="75" y1="60" y2="60" id="svg_5" stroke-width="0.75" stroke="#231f20"/>
+      </g>
+      <path fill="none" stroke="#231f20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="4" d="m53.53801,40.173l0,19.654" id="path24"/>
+      <path fill="none" stroke="#231f20" stroke-width="0.75" stroke-miterlimit="4" d="M 45.997 45.302 C 45.997 45.103 46.782 44.934 44.368 44.937 L 2.524 44.937 C 1.619 44.937 0.927 45.513 0.9 46.22 L 0.9 53.786 C 0.895 54.493 1.619 55.066 2.524 55.066 L 44.369 55.066 C 46.647 55.08 45.997 54.903 45.997 54.704 L 45.997 45.302 Z" id="path54" style=""/>
+      <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-miterlimit="4" d="M 1.003 45.703 L 41.533 45.835 C 41.533 45.835 42.532 45.99 41.533 46.188 C 40.576 46.379 1.046 46.409 1.046 46.409" id="path56"/>
+      <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-miterlimit="4" d="M 1.003 53.565 L 41.533 53.698 C 41.533 53.698 42.451 53.857 41.533 54.052 C 40.577 54.254 1.046 54.272 1.046 54.272" id="path58"/>
+      <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-miterlimit="4" d="M 1.003 46.896 L 41.533 47.077 C 41.533 47.077 42.624 47.313 41.533 47.563 C 40.578 47.782 1.046 47.868 1.046 47.868" id="path60"/>
+      <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-miterlimit="4" d="M 1.003 51.975 L 41.533 52.158 C 41.533 52.158 42.611 52.349 41.533 52.644 C 40.588 52.902 1.046 52.947 1.046 52.947" id="path62"/>
+      <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-miterlimit="4" d="M 1.003 48.44 L 41.533 48.682 C 41.533 48.682 43.026 48.969 41.533 49.322 C 40.574 49.549 1.046 49.723 1.046 49.723" id="path64"/>
+      <path fill="none" stroke="#231f20" stroke-width="0.25" stroke-miterlimit="4" d="M 1.003 50.253 L 41.533 50.493 C 41.533 50.493 42.905 50.799 41.533 51.132 C 40.576 51.366 1.046 51.532 1.046 51.532" id="path66"/>
+      <path fill="none" stroke="#231f20" stroke-width="0.75" stroke-miterlimit="4" d="m52.98601,41.321c0,-0.375 -0.028,-0.685 -0.063,-0.685l-1.64198,0c-0.035,0 -0.06401,0.31 -0.06401,0.685l0,17.659c0,0.375 0.02901,0.681 0.06401,0.681l1.64198,0c0.035,0 0.063,-0.306 0.063,-0.681l0,-17.659z" id="path68"/>
+      <path fill="none" stroke="#231f20" stroke-width="0.75" stroke-miterlimit="4" d="m51.19702,43.528c0,-0.279 -0.02701,-0.508 -0.062,-0.508l-1.64302,0c-0.03499,0 -0.062,0.229 -0.062,0.508l0,13.094c0,0.278 0.02701,0.506 0.062,0.506l1.64302,0c0.03499,0 0.062,-0.228 0.062,-0.506l0,-13.094z" id="path70"/>
+      <path fill="#ffffff" fill-rule="nonzero" d="m49.40901,44.563c0,-0.234 -0.05199,-0.425 -0.118,-0.425l-3.09599,0c-0.06601,0 -0.119,0.191 -0.119,0.425l0,10.95c0,0.231 0.05299,0.423 0.119,0.423l3.09599,0c0.06601,0 0.118,-0.192 0.118,-0.423l0,-10.95z" id="path72"/>
+      <path fill="none" stroke="#231f20" stroke-width="0.75" stroke-miterlimit="4" d="m49.40901,44.563c0,-0.234 -0.05199,-0.425 -0.118,-0.425l-3.09599,0c-0.06601,0 -0.119,0.191 -0.119,0.425l0,10.95c0,0.231 0.05299,0.423 0.119,0.423l3.09599,0c0.06601,0 0.118,-0.192 0.118,-0.423l0,-10.95z" id="path74"/>
+    </g>
+  </g>
+  <g class="points" id="svg_2">
+    <circle id="svg_3" fill="red" r="1" cy="35" class="a" cx="1"/>
+    <circle id="svg_6" fill="green" r="1" cy="35" class="b" cx="1"/>
+    <circle id="svg_6" fill="purple" r="1" cy="35" class="f" cx="1"/>
+    <circle id="svg_7" fill="blue" r="1" cy="35" class="c" cx="1"/>
+    <circle id="svg_8" fill="brown" r="1" cy="37" cx="53.5" class="w"/>
+    <circle id="svg_9" fill="orange" r="1" cy="60" cx="58.5" class="t"/>
+  </g>
+</svg>

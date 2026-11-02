@@ -1,0 +1,31 @@
+<svg width="75" height="100" viewBox="0 0 75 100" xmlns="http://www.w3.org/2000/svg">
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="14.49988" width="11.37491" y="-1" x="-1"/>
+ </g>
+
+ <g>
+  <title>Layer 1</title>
+  <g id="svg_1">
+   <path id="path24" d="m57.406,60.3035l0,-20.5" stroke-miterlimit="4" stroke-linejoin="round" stroke-linecap="round" stroke-width="1.5" stroke="#231f20" fill="none"/>
+   <path id="path26" d="m57.721,56.9685c0,0 0,-16.841 -0.002,-16.84c0,-0.417 6.719,-0.669 7.74,-0.848c0.854,-0.147 1.113,-0.914 1.113,-0.914c0,0 4.75,-0.001 8.428,-0.001l0,3.756l-6.041,0l-1.35,1.349l-7.804,0.996" fill-rule="nonzero" fill="#ffffff"/>
+   <path id="path28" d="m57.721,56.9685c0,0 0,-16.841 -0.002,-16.84c0,-0.417 6.719,-0.669 7.74,-0.848c0.854,-0.147 1.113,-0.914 1.113,-0.914c0,0 4.75,-0.001 8.428,-0.001l0,3.756l-6.041,0l-1.35,1.349l-7.804,0.996" stroke-miterlimit="4" stroke-linejoin="round" stroke-linecap="round" stroke-width="0.75" stroke="#231f20" fill="none"/>
+   <path id="path30" d="m57.721,43.0305c0,0 0,16.842 -0.002,16.841c0,0.418 6.719,0.668 7.744,0.847c0.85,0.147 1.109,0.914 1.109,0.914c0,0 4.75,0.001 8.428,0.002l0,-3.755l-6.041,0l-1.35,-1.351l-7.804,-0.996" fill-rule="nonzero" fill="#ffffff"/>
+   <path id="path32" d="m57.721,43.0305c0,0 0,16.842 -0.002,16.841c0,0.418 6.719,0.668 7.744,0.847c0.85,0.147 1.109,0.914 1.109,0.914c0,0 4.75,0.001 8.428,0.002l0,-3.755l-6.041,0l-1.35,-1.351l-7.804,-0.996" stroke-miterlimit="4" stroke-linejoin="round" stroke-linecap="round" stroke-width="0.75" stroke="#231f20" fill="none"/>
+   <path id="path34" d="m63.383,39.5455l-2.729,0.791c0,0 -3.281,9.542 0.059,19.011c0.016,0.037 2.734,1.127 2.734,1.127" stroke-miterlimit="4" stroke-linejoin="round" stroke-linecap="round" stroke-width="0.5" stroke="#231f20" fill="none"/>
+   <path id="path36" d="m63.121,44.2245l0,11.501" stroke-miterlimit="4" stroke-linejoin="round" stroke-linecap="round" stroke-width="0.5" stroke="#231f20" fill="none"/>
+  </g>
+  <g id="pipe">
+   <line stroke="#231f20" x1="0" x2="57" y1="40" y2="40" id="svg_4" stroke-width="0.75"/>
+   <line x1="0" x2="57" y1="60" y2="60" id="svg_5" stroke-width="0.75" stroke="#231f20"/>
+  </g>
+  
+ </g>
+ <g class="points" id="svg_2">
+   <circle class="a" cx="71" cy="35" r="1" fill="red" id="svg_3"/>
+   <circle class="b" cy="35" r="1" fill="green" id="svg_6" cx="71"/>
+   <circle class="f" cy="35" r="1" fill="purple" id="svg_6" cx="71"/>
+   <circle class="c" cx="71" cy="35" r="1" fill="blue" id="svg_7"/>
+   <circle class="w" cx="57.25009" cy="37" r="1" fill="brown" id="svg_8"/>
+  </g>
+</svg>

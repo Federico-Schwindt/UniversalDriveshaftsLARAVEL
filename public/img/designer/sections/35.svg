@@ -1,0 +1,23 @@
+<svg width="75" height="100" viewBox="0 0 75 100" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <g>
+    <g id="pipe">
+      <line x1="37.9" x2="75" y1="40" y2="40" id="svg_4" stroke-width="0.75" stroke="#231f20"/>
+      <line stroke="#231f20" x1="37.939" x2="75" y1="60" y2="60" id="svg_5" stroke-width="0.75"/>
+    </g>
+    <g transform="matrix(1, 0, 0, 1, -15, 0)">
+      <path style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); stroke-width: 0.75; stroke-linecap: round; stroke-linejoin: round;" d="M 18.751 41.926 H 21.874 V 58.073 H 18.751 A 0.131 0.131 0 0 1 18.62 57.942 V 42.057 A 0.131 0.131 0 0 1 18.751 41.926 Z" bx:shape="rect 18.62 41.926 3.254 16.147 0.131 0 0 0.131 1@a116cc21"/>
+      <path style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); stroke-width: 0.75; stroke-linecap: round; stroke-linejoin: round;" d="M 20.769 41.276 H 49.416 V 58.725 H 20.769 A 0.131 0.131 0 0 1 20.638 58.594 V 41.407 A 0.131 0.131 0 0 1 20.769 41.276 Z" bx:shape="rect 20.638 41.276 28.778 17.449 0.131 0 0 0.131 1@14e27f3b"/>
+      <path style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); stroke-width: 0.75; stroke-linecap: round; stroke-linejoin: round;" d="M 49.381 39.843 H 52.994 V 60.157 H 49.381 A 1.954 1.954 0 0 1 47.427 58.203 V 41.797 A 1.954 1.954 0 0 1 49.381 39.843 Z" bx:shape="rect 47.427 39.843 5.567 20.314 1.954 0 0 1.954 1@ab132cd7"/>
+      <path style="fill: rgb(255, 255, 255); stroke: rgb(0, 0, 0); stroke-width: 0.75; stroke-linecap: round; stroke-linejoin: round;" d="M 17.969 41.276 H 19.336 V 58.724 H 17.969 A 1.367 1.954 0 0 1 16.602 56.77 V 43.23 A 1.367 1.954 0 0 1 17.969 41.276 Z" bx:shape="rect 16.602 41.276 2.734 17.448 1.954 0 0 1.954 1@53579c33"/>
+      <line style="stroke: rgb(0, 0, 0); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;" x1="52.956" y1="39.321" x2="52.956" y2="60.68"/>
+    </g>
+  </g>
+  <g class="points" id="svg_2">
+    <circle class="a" cx="2" cy="38" r="1" fill="red" id="svg_3"/>
+    <circle class="b" cx="2" cy="38" r="1" fill="green" id="svg_6"/>
+    <circle class="f" cx="2" cy="38" r="1" fill="purple" id="svg_6"/>
+    <circle class="c" cx="2" cy="38" r="1" fill="blue" id="svg_7"/>
+    <circle class="w" cx="38" cy="37" r="1" fill="brown" id="svg_8"/>
+    <circle class="t" cx="48" cy="60" r="1" fill="brown" id="svg_9"/>
+  </g>
+</svg>
