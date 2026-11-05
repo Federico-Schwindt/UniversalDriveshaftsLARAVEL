@@ -2,7 +2,7 @@
 
 A ground-up rebuild of [universaldriveshafts.com](https://universaldriveshafts.com) (a driveline manufacturer and parts store in Florida) from WordPress/WooCommerce into a Laravel 13 / PHP 8.3 storefront. Staging: [dev.udshafts.com](https://dev.udshafts.com). Launch: November 20, 2026.
 
-Built and maintained by [Federico Leonel Schwindt](https://github.com/kiwiplusapp). Online sales went from $2,982 (Oct 2024) to $18,819 (Oct 2026) with the same catalog and warehouse.
+Built and maintained by [Federico Leonel Schwindt](https://github.com/Federico-Schwindt). Online sales went from $2,982 (Oct 2024) to $18,819 (Oct 2026) with the same catalog and warehouse.
 
 ![Home page](docs/screenshots/home.jpg)
 

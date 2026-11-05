@@ -92,8 +92,8 @@
       <div class="card__head"><h2>Cross-reference &amp; SEO</h2></div>
       <div class="card__body form-grid">
         <div class="field span-2"><label>Interchange / OEM numbers</label><input class="input mono" name="interchange" value="{{ old('interchange', $p['interchange']) }}" placeholder="5-153X, 1310, GMB 210-0153, …"><span class="hint">Comma-separated. Searchable on the storefront (cross-reference search).</span></div>
-        <div class="field span-2"><label>SEO title <span class="muted">(blank = automatic)</span></label><input class="input" name="seo_title" value="{{ old('seo_title', $p['seo_title']) }}" maxlength="160"></div>
-        <div class="field span-2"><label>Meta description</label><textarea class="input" name="seo_desc" rows="2" maxlength="320">{{ old('seo_desc', $p['seo_desc']) }}</textarea></div>
+        <div class="field span-2"><label>SEO title <span class="muted">(blank = automatic)</span></label><input class="input" name="seo_title" value="{{ old('seo_title', $p['seo_title']) }}" maxlength="160" placeholder="{{ $autoSeo['title'] ?? '' }}">@if($autoSeo)<span class="hint">Automatic: {{ $autoSeo['title'] }} ({{ mb_strlen($autoSeo['title']) }} chars)</span>@endif</div>
+        <div class="field span-2"><label>Meta description</label><textarea class="input" name="seo_desc" rows="2" maxlength="320" placeholder="{{ $autoSeo['desc'] ?? '' }}">{{ old('seo_desc', $p['seo_desc']) }}</textarea>@if($focusKw)<span class="hint">Keyword the old site targeted (Rank Math): <b class="mono">{{ $focusKw }}</b></span>@endif</div>
       </div>
     </div>
   </div>

@@ -117,7 +117,16 @@ class ProductsController extends Controller
         $pti = $p['id'] ? DB::table('pti_parts')->where('wp_product_id', $p['id'])->first() : null;
         $activity = $p['id'] ? AdminLog::for('product', $p['id'], 10) : collect();
         $publicUrl = $p['id'] && $p['status'] === 'publish' ? '/product/' . $p['slug'] : null;
-        return view('admin.products.form', compact('p', 'categories', 'allAttrs', 'order', 'stats', 'orders', 'inv', 'pti', 'activity', 'publicUrl'));
+        // what the storefront writes when the SEO fields are blank, and the keyword the old site (Rank Math) targeted
+        $autoSeo = null; $focusKw = null;
+        if ($p['id']) {
+            try {
+                $catalog = app(\App\Services\CatalogService::class);
+                if ($live = $catalog->productById((int) $p['id'])) $autoSeo = $catalog->productSeo($live, $catalog->primaryCategory((int) $p['id'])['slug'] ?? null);
+            } catch (\Throwable $e) {}
+            $focusKw = DB::connection('wp')->table('wp_postmeta')->where('post_id', $p['id'])->whereIn('meta_key', ['rank_math_focus_keyword', '_yoast_wpseo_focuskw'])->orderByRaw("meta_key = 'rank_math_focus_keyword' DESC")->value('meta_value');
+        }
+        return view('admin.products.form', compact('p', 'categories', 'allAttrs', 'order', 'stats', 'orders', 'inv', 'pti', 'activity', 'publicUrl', 'autoSeo', 'focusKw'));
     }
 
     private function rules(?int $id): array

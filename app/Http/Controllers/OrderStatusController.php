@@ -100,6 +100,7 @@ class OrderStatusController extends Controller
         $cancelled = $order->status === 'cancelled';
         $paid = $order->payment_status === 'paid';
         $payAtPickup = $order->payment_method === 'pay_at_pickup';
+        $netTerms = $order->payment_method === 'net_terms';
         $shipped = (bool) $order->tracking_number || (bool) $order->shipped_at;
         $delivered = (bool) $order->delivered_at;
         $completed = $order->status === 'completed';
@@ -114,6 +115,13 @@ class OrderStatusController extends Controller
         if ($payAtPickup && !$paid) {
             $steps[] = ['key' => 'paid', 'title' => __('Payment at pickup'), 'state' => 'todo', 'at' => null,
                 'sub' => __('Due at the counter when you collect: $:amount. Bring your order number.', ['amount' => number_format((float) $order->total, 2)])];
+        } elseif ($netTerms && !$paid) {
+            // business account on terms: the invoice is due later and the build starts right away
+            $due = $order->terms_due_at ? \Carbon\Carbon::parse($order->terms_due_at)->translatedFormat('F j, Y') : null;
+            $steps[] = ['key' => 'paid', 'title' => __('Invoice on Net :d terms', ['d' => \App\Services\B2bAccounts::termsDays()]), 'state' => 'done',
+                'at' => $at('placed') ?: \Carbon\Carbon::parse($order->created_at),
+                'sub' => $due ? __('Invoice :n is due :date. Production does not wait for payment.', ['n' => $order->order_number, 'date' => $due])
+                    : __('Invoice :n will be e-mailed with the due date. Production does not wait for payment.', ['n' => $order->order_number])];
         } else {
             $steps[] = ['key' => 'paid', 'title' => $paid ? __('Payment confirmed') : __('Payment pending'), 'state' => $paid ? 'done' : 'current',
                 'at' => $paid ? $at('paid') : null,
@@ -123,7 +131,7 @@ class OrderStatusController extends Controller
 
         $prodTitle = $pickup ? __('Being prepared') : __('In production / packing');
         $steps[] = ['key' => 'processing', 'title' => $prodTitle,
-            'state' => $inProd ? 'done' : ($paid || $payAtPickup ? 'current' : 'todo'),
+            'state' => $inProd ? 'done' : ($paid || $payAtPickup || $netTerms ? 'current' : 'todo'),
             'at' => $inProd ? ($at('processing') ?: ($at('paid') ?: null)) : null,
             'sub' => $inProd
                 ? __('Stock parts are pulled; custom shafts are cut, welded and balanced.')

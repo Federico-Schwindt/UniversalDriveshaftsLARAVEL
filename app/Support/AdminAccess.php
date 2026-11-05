@@ -16,7 +16,7 @@ class AdminAccess
     private const ALLOW = [
         'staff' => ['dashboard', 'orders', 'chats', 'driveshafts', 'inventory', 'customers', 'leads', 'rma', 'products', 'categories', 'designs', 'labels'],
         'manager' => ['dashboard', 'orders', 'chats', 'driveshafts', 'inventory', 'customers', 'leads', 'rma', 'products', 'categories', 'designs',
-            'coupons', 'wholesale', 'recovery', 'reports', 'activity', 'refunds', 'purchases', 'labels', 'catalog_write', 'exports'],
+            'coupons', 'wholesale', 'recovery', 'reports', 'activity', 'refunds', 'purchases', 'labels', 'catalog_write', 'exports', 'seo'],
     ];
 
     public static function role($user = null): string

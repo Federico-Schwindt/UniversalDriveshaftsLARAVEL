@@ -1,0 +1,3 @@
+const { chromium } = require(process.env.PWC);(async()=>{const b=await chromium.launch({headless:true});const p=await b.newPage({viewport:{width:1440,height:900}});await p.goto('https://dev.udshafts.com/online-builder',{waitUntil:'networkidle'});
+const r=await p.evaluate(()=>{const g=el=>{const r=document.querySelector(el).getBoundingClientRect();return `${Math.round(r.left)}..${Math.round(r.right)}`};return {wrap:g('.bldwrap .wrap'),builder:g('#ubs-dsb'),help:g('.bldhelp')}});console.log(JSON.stringify(r));
+await p.evaluate(()=>document.querySelector('.bldhelp').scrollIntoView());await p.waitForTimeout(300);await p.screenshot({path:process.env.SP+'/builder-desk.png',fullPage:false});await b.close();})();

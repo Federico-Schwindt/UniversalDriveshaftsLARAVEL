@@ -33,13 +33,15 @@ class OrderMailer
 
     public function send(object $order, iterable $items): void
     {
+        if (OrderEvents::imported($order)) return;   // old-store history: never mailed
         $items = self::items($items);
         $name = trim($order->billing_first_name ?: 'there');
         $pickup = $order->shipping_method === CartService::PICKUP_ID;
+        $terms = $order->payment_method === 'net_terms';
         $unpaid = ($order->payment_status ?? 'unpaid') === 'unpaid' && $order->payment_method !== 'pay_at_pickup';
         $data = ['order' => $order, 'items' => $items, 'statusUrl' => OrderEvents::statusUrl($order), 'payUrl' => $unpaid && PayLink::payable($order) ? PayLink::url($order) : null,
             'hero' => ['kicker' => 'Order ' . $order->order_number, 'title' => "Thanks, {$name} — we have your order.", 'text' => $pickup ? 'We will let you know as soon as it is ready for pickup in Florida.' : 'Stock parts leave Florida the same business day when ordered before 2 pm ET; custom shafts are built to order.'],
-            'preheader' => 'Order ' . $order->order_number . ' · $' . number_format($order->total, 2) . ($unpaid ? ' · payment pending' : '')];
+            'preheader' => 'Order ' . $order->order_number . ' · $' . number_format($order->total, 2) . ($unpaid ? ($terms ? ' · invoice on terms' : ' · payment pending') : '')];
         try { Mailer::send($order->email, "Order {$order->order_number} confirmed — Universal Driveshafts", 'emails.order.confirmation', $data, ['replyTo' => [config('uds.email')]]); } catch (\Throwable $e) { report($e); }
         if (!\App\Support\Settings::get('notify.new_order', true)) return;
         try {
@@ -52,6 +54,7 @@ class OrderMailer
     /** "Your order has shipped" — the one shipped e-mail, whichever path marked it shipped. */
     public function sendShipped(object $order, string $carrier, string $trackingNumber, ?string $service = null): void
     {
+        if (OrderEvents::imported($order)) return;
         $name = trim($order->billing_first_name ?: 'there');
         // a PTI dropship never passes through our shop: don't claim it left Florida
         $dropship = str_contains((string) ($order->tracking_service ?? ''), 'PTI') || rescue(fn () => DB::table('pti_dropships')->where('order_id', $order->id)->where('status', 'placed')->exists(), false, false);
@@ -66,6 +69,7 @@ class OrderMailer
     /** "Your order was delivered" — sent once by OrderEvents::markDelivered(). */
     public function sendDelivered(object $order): void
     {
+        if (OrderEvents::imported($order)) return;
         $name = trim($order->billing_first_name ?: 'there');
         // stored in UTC (the carrier's scan time when known); customers read Eastern, labelled so it's never ambiguous
         $when = $order->delivered_at ? \Carbon\Carbon::parse($order->delivered_at, 'UTC')->timezone('America/New_York')->format('l, F j \a\t g:i A') . ' ET' : 'today';

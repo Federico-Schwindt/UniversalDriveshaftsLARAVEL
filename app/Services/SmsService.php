@@ -24,6 +24,7 @@ class SmsService
         }
         $to = self::e164($to);
         if (!$to) { Log::warning('SMS skipped: no usable phone number'); return false; }
+        if (!\App\Support\MailGuard::allowsPhone($to)) { Log::info('SMS guard (pre-launch): not sent to ' . self::mask($to)); return false; }
         try {
             $sid = config('services.twilio.sid');
             $resp = Http::asForm()->withBasicAuth($sid, config('services.twilio.token'))->timeout(10)

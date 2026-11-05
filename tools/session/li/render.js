@@ -1,0 +1,2 @@
+const {chromium}=require(process.env.PWC);const [,,IN,OUT]=process.argv;
+(async()=>{const b=await chromium.launch({executablePath:process.env.BX});const p=await b.newPage({viewport:{width:1584,height:396},deviceScaleFactor:1});await p.goto('file://'+IN,{waitUntil:'networkidle'});await p.waitForTimeout(1200);await p.screenshot({path:OUT,clip:{x:0,y:0,width:1584,height:396}});await b.close();console.log('ok');})();

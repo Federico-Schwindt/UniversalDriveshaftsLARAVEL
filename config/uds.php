@@ -1,8 +1,14 @@
 <?php
 return [
-    'analytics_enabled' => env('ANALYTICS_ENABLED', false),
+    // Google tags carried over from Site Kit on the old WordPress site (2026-11-04): GA4 property 472848382, Ads conversion ID.
+    // On by default in production only, so staging never pollutes the numbers.
+    'analytics_enabled' => env('ANALYTICS_ENABLED', env('APP_ENV') === 'production'),
+    // Pre-launch guard (App\Support\MailGuard): outside production, e-mail/SMS only to admins, the shop inboxes and these lists
+    'mail_guard' => env('MAIL_GUARD', env('APP_ENV') !== 'production'),
+    'mail_allow' => env('MAIL_ALLOW', ''),
+    'sms_allow' => env('SMS_ALLOW', ''),
     'ga4' => env('GA4_ID', 'G-MG6P2JC6GL'),
-    'google_ads' => env('GOOGLE_ADS_ID', '1738014645'),
+    'google_ads' => env('GOOGLE_ADS_ID', '18204111895'),
     'fb_pixel' => env('FB_PIXEL_ID', '1092382942820747'),
     'recaptcha_enabled' => env('RECAPTCHA_ENABLED', false),
     'recaptcha_site' => env('RECAPTCHA_SITE', ''),

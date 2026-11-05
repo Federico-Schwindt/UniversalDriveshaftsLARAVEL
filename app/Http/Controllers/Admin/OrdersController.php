@@ -22,7 +22,7 @@ class OrdersController extends Controller
     /** What staff may pick by hand — refund states only come from the Refund action, which moves the money. */
     public const MANUAL_PAY = ['unpaid' => 'Unpaid', 'paid' => 'Paid'];
     // net_terms is what checkout and the assistant write (Invoices tab, B2B credit); net30 kept for older rows
-    public const PAY_METHODS = ['stripe' => 'Card (Stripe)', 'manual' => 'Manual / invoice', 'payment_link' => 'Payment link', 'call' => 'Phone', 'pay_at_pickup' => 'Pay at pickup', 'check' => 'Check', 'wire' => 'Wire / ACH', 'net_terms' => 'Net terms (invoice)', 'net30' => 'Net 30 (legacy)', 'cash' => 'Cash'];
+    public const PAY_METHODS = ['stripe' => 'Card (Stripe)', 'manual' => 'Manual / invoice', 'payment_link' => 'Payment link', 'call' => 'Phone', 'pay_at_pickup' => 'Pay at pickup', 'check' => 'Check', 'wire' => 'Wire / ACH', 'net_terms' => 'Net terms (invoice)', 'net30' => 'Net 30 (legacy)', 'cash' => 'Cash', 'authnet' => 'Card (Authorize.Net, old store)'];
 
     public function __construct(private OrderBuilder $builder, private CatalogService $catalog) {}
 
@@ -353,6 +353,8 @@ class OrdersController extends Controller
                 } catch (\Throwable $e) { report($e); return back()->with('admin_err', 'Stripe error: ' . $e->getMessage()); }
             }
             DB::table('orders')->where('id', $id)->increment('refund_total', $amount, ['updated_at' => now()]);
+            // dated on its own: net sales take a refund off on the day it was made (as WooCommerce does)
+            DB::table('order_refunds')->insert(['order_id' => $id, 'amount' => $amount, 'reason' => $d['reason'] ?? null, 'created_by' => $r->user()->id, 'created_at' => now()]);
             $newTotal = round((float) DB::table('orders')->where('id', $id)->value('refund_total'), 2);
             $full = $newTotal >= (float) $order->total - 0.005;
             DB::table('orders')->where('id', $id)->update(['payment_status' => $full ? 'refunded' : 'partially_refunded', 'status' => $full && in_array($order->status, ['pending', 'processing'], true) ? 'cancelled' : $order->status]);

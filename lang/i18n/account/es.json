@@ -683,5 +683,10 @@
     "This month reached :amount": "Este mes llegó a :amount",
     "Last month closed at :amount": "El mes pasado cerró en :amount",
     "Account approved": "Cuenta aprobada",
-    "Due": "Vence"
+    "Due": "Vence",
+    "Invoice on Net :d terms": "Factura a :d días (cuenta empresarial)",
+    "Invoice :n is due :date. Production does not wait for payment.": "La factura :n vence el :date. La producción no espera al pago.",
+    "Invoice :n will be e-mailed with the due date. Production does not wait for payment.": "Te enviaremos la factura :n por e-mail con su fecha de vencimiento. La producción no espera al pago.",
+    "Net :d invoice, due :date": "Factura a :d días, vence el :date",
+    "Net :d invoice": "Factura a :d días"
 }

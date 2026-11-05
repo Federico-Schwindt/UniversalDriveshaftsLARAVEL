@@ -138,6 +138,32 @@ class ChatbotController extends Controller
         return response()->json(['messages' => $this->bot->transcript($conv, (int) $r->query('after', 0)), 'mode' => $conv->mode ?? 'bot', 'agent' => $this->bot->agentName($conv)]);
     }
 
+    /**
+     * The widget's heartbeat (every ~45 s while the tab is visible): where the customer is, for the admin chat page.
+     * Answers whether the shop wrote since the last message this browser drew, so a closed panel can show a badge.
+     */
+    public function ping(Request $r)
+    {
+        $d = $r->validate(['url' => 'nullable|string|max:500', 'title' => 'nullable|string|max:190', 'after' => 'nullable|integer|min:0']);
+        $u = $r->user();
+        if (!$u->is_admin) \App\Support\CustomerActivity::ping((int) $u->id, (string) ($d['url'] ?? ''), (string) ($d['title'] ?? ''), (string) $r->ip(), (string) $r->userAgent());
+        $conv = DB::table('chat_conversations')->where('user_id', $u->id)->where('status', 'open')->orderByDesc('id')->first(['id']);
+        $unread = $conv ? DB::table('chat_messages')->where('conversation_id', $conv->id)->where('id', '>', (int) ($d['after'] ?? 0))->whereNotNull('agent_id')->count() : 0;
+        return response()->json(['unread' => $unread]);
+    }
+
+    /** A JavaScript error in the customer's browser, kept on their activity trail (a few per page at most, enforced by the widget and the route limit). */
+    public function clientLog(Request $r)
+    {
+        $d = $r->validate(['message' => 'required|string|max:500', 'source' => 'nullable|string|max:300', 'line' => 'nullable|integer', 'url' => 'nullable|string|max:500']);
+        $u = $r->user();
+        if (!$u->is_admin) \App\Support\CustomerActivity::record((int) $u->id, 'client_error', (string) ($d['url'] ?? '/'), [
+            'detail' => trim($d['message'] . (!empty($d['source']) ? ' · ' . basename(parse_url($d['source'], PHP_URL_PATH) ?: $d['source']) . (!empty($d['line']) ? ':' . $d['line'] : '') : '')),
+            'ip' => $r->ip(), 'ua' => (string) $r->userAgent(),
+        ]);
+        return response()->noContent();
+    }
+
     /** A photo from a chat, for the customer who sent it or an admin. */
     public function photo(Request $r, int $message, int $n)
     {

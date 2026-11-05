@@ -8,34 +8,45 @@
  */
 return [
 
-    // product_cat slug => [type (singular, for titles), intro (1-2 sentences of buying guidance)]
+    // product_cat slug => [type (singular, for product titles), title (the category as people search it, for its <title>),
+    // desc (optional meta description, {count} = live count), intro (1-2 sentences of buying guidance)]
     'categories' => [
         'u-joints' => [
             'type' => 'U-Joint',
+            'title' => 'Driveshaft U-Joints',
+            'desc' => '{count} driveshaft u-joints in stock: 1310, 1350, 1410 and more, greaseable or sealed, inside (ISR) and outside snap ring (OSR). Ships same day from Florida.',
             'intro' => 'A universal joint is sized by its series: measure the bearing cap diameter and the width from snap ring to snap ring (1310 = 1.062" caps × 3.219", 1350 = 1.188" × 3.625", 1410 = 1.188" × 4.188"). Then pick the retention style your yokes use (outside snap ring, inside snap ring or combination) and whether you want a greaseable joint or a sealed lube-for-life joint.',
         ],
         'flange-yokes' => [
             'type' => 'Flange Yoke',
+            'title' => 'Driveshaft Flange Yokes',
             'intro' => 'Flange yokes bolt the driveshaft to a companion flange on the axle, transfer case or transmission. Match three things: the u-joint series (cap diameter), the bolt pattern (number of holes, bolt circle diameter and hole size) and the pilot (male or female, and its diameter). The same bolt pattern is often offered in several series, so confirm the joint size first.',
         ],
         'weld-yoke' => [
             'type' => 'Weld Yoke',
+            'title' => 'Driveshaft Weld Yokes',
             'intro' => 'A weld yoke (tube yoke) is welded to the driveshaft tube and carries the u-joint. Choose by series and by tube size: the yoke butt diameter must match your tube OD and wall thickness (for example 3.000" × 0.083"). We stock weld yokes for steel and aluminum tube in 1310 through 1810 and SPL series.',
         ],
         'end-yokes' => [
             'type' => 'End Yoke',
+            'title' => 'Driveshaft End Yokes',
             'intro' => 'End yokes mount on the splined output or pinion shaft and accept the u-joint. Select by series, spline count and spline diameter (for example 1350 series, 30 splines × 1.375"), then check the hub diameter and whether you need a strap, u-bolt or snap-ring retention style.',
         ],
         'slip-yoke' => [
             'type' => 'Slip Yoke',
+            'title' => 'Driveshaft Slip Yokes',
+            'desc' => '{count} driveshaft slip yokes in stock by series, spline count and diameter: 1310, 1350, 1410, 1480. Ships same day from Florida, live price and stock.',
             'intro' => 'A slip yoke is the internally splined yoke of a driveshaft\'s slip joint: it slides on a splined stub shaft (or yoke shaft) so the shaft can change length as the suspension moves, and a dust cap or boot keeps grit out of the splines. Match the u-joint series, the spline count and spline diameter of the stub it rides on, the center-of-joint-to-end length and the dust-cap (center-to-washer) dimension. Yokes that slide on a transmission output shaft are listed under Transmission Yokes.',
         ],
         'transmission-yokes' => [
             'type' => 'Transmission Yoke',
+            'title' => 'Transmission Slip Yokes',
+            'desc' => '{count} transmission slip yokes (trans yokes) in stock by series and spline: 1310, 1330, 1350, 1410. Match your output shaft; ships same day from Florida.',
             'intro' => 'A transmission yoke is a slip yoke that slides onto the transmission or transfer-case output shaft; its polished hub runs inside the output seal and the splines let the driveshaft change length. Order by u-joint series (bearing cap diameter), spline count and spline diameter of the output shaft, hub diameter (the seal surface) and the center-of-joint-to-end length. Count the splines and measure the hub on the old yoke before ordering.',
         ],
         'stub-midship-shaft' => [
             'type' => 'Stub Shaft',
+            'title' => 'Driveshaft Stub & Midship Shafts',
             'intro' => 'A splined stub shaft is welded into the driveshaft tube and forms the male half of the slip joint: the slip yoke slides on its splines. Midship versions also carry the journal for the center support bearing on two-piece shafts. Match the tube outside diameter and wall, the butt diameter, the spline count, diameter and length, the end-to-weld length and, for midship shafts, the bearing journal diameter.',
         ],
         'rubber-flex-disc' => [
@@ -68,6 +79,7 @@ return [
         ],
         'companion-flanges' => [
             'type' => 'Companion Flange',
+            'title' => 'Companion Flanges',
             'intro' => 'A companion flange mounts on the pinion or output shaft and bolts to the driveshaft flange yoke. Match the spline count and diameter to the shaft, then the bolt pattern (hole count, bolt circle and hole diameter) and pilot to the flange yoke.',
         ],
         'ball-stud-yokes' => [
@@ -88,6 +100,8 @@ return [
         ],
         'center-support-bearing' => [
             'type' => 'Center Support Bearing',
+            'title' => 'Driveshaft Center Support Bearings',
+            'desc' => '{count} driveshaft center support bearings in stock, by part number and vehicle (Ford, GM, Dodge, Toyota, Mercedes and more). Ships same day from Florida.',
             'intro' => 'A center support (carrier) bearing holds the midpoint of a two-piece driveshaft. Identify it by bearing inside diameter (the shaft journal), the center-to-center distance of the mounting holes, and the height from the bearing center to the mounting base; the application column lists the vehicles or series each one fits.',
         ],
         'premade-driveshafts' => [
@@ -127,8 +141,16 @@ return [
             'type' => 'Nut',
             'intro' => 'Pinion and yoke nuts by thread size and grade. Match the thread diameter and pitch to the shaft; use a new nut when the old one was staked or had a locking insert.',
         ],
+        'snap-rings' => [
+            'type' => 'Snap Ring',
+            'title' => 'U-Joint Snap Rings',
+            'desc' => '{count} u-joint snap rings in stock for inside (ISR) and outside snap ring (OSR) universal joints, by series and size. Ships same day from Florida.',
+            'intro' => '',
+        ],
         'washers-snap-rings' => [
             'type' => 'Snap Ring',
+            'title' => 'U-Joint Snap Rings & Washers',
+            'desc' => 'U-joint snap rings, retaining clips and washers in stock for inside (ISR) and outside snap ring (OSR) u-joints. Ships same day from Florida.',
             'intro' => 'Snap rings and washers retain u-joint caps and set bearing position. Snap rings are sized to the series and to the cap groove style (inside or outside); thickness is used to center the joint.',
         ],
         'cv-ball-kit' => [

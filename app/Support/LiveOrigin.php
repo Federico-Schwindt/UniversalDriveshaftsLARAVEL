@@ -30,6 +30,19 @@ class LiveOrigin
         }) ?: null;
     }
 
+    /**
+     * True once this app IS universaldriveshafts.com (launch day: APP_URL on the real domain, or public DNS
+     * already pointing the domain at this server). From then on there is no old store to read from:
+     * catalog:sync-live and catalog:localize-images stop instead of reading the new site back into itself.
+     */
+    public static function isSelf(): bool
+    {
+        $appHost = strtolower(preg_replace('/^www\./', '', (string) parse_url((string) config('app.url'), PHP_URL_HOST)));
+        if ($appHost === self::HOST) return true;
+        $ip = self::ip();
+        return $ip !== null && $ip === config('services.woocommerce.self_ip', '178.156.163.237');
+    }
+
     /** Options for Http::withOptions() that pin the live host (and www) to its real address. */
     public static function httpOptions(): array
     {

@@ -9,7 +9,7 @@
   <input type="hidden" name="range" value="custom"><input class="input" type="date" name="from" value="{{ $from->toDateString() }}"><input class="input" type="date" name="to" value="{{ $to->toDateString() }}"><button class="btn btn--sm">Apply</button>
 </form>
 <div class="kpis kpis--6 mb">
-  <div class="kpi"><span class="kpi__label" title="Paid orders and Net-terms invoices, less refunds. Cancelled, failed and unpaid orders are left out.">Net sales</span><span class="kpi__value">{{ money($kp['sales']) }}</span>@include('admin.partials.delta',['cur'=>$kp['sales'],'prev'=>$kp['sales_prev'],'days'=>$days])</div>
+  <div class="kpi"><span class="kpi__label" title="Products after coupons, less refunds, without shipping or tax (the WooCommerce Analytics figure). Refunds count on the day they were made; Eastern days. Cancelled, failed and unpaid orders are left out.">Net sales</span><span class="kpi__value">{{ money($kp['sales']) }}</span>@include('admin.partials.delta',['cur'=>$kp['sales'],'prev'=>$kp['sales_prev'],'days'=>$days])</div>
   <div class="kpi"><span class="kpi__label">Orders</span><span class="kpi__value">{{ $kp['orders'] }}</span>@include('admin.partials.delta',['cur'=>$kp['orders'],'prev'=>$kp['orders_prev'],'days'=>$days])</div>
   <div class="kpi"><span class="kpi__label">Avg. order</span><span class="kpi__value">{{ money($kp['aov']) }}</span>@include('admin.partials.delta',['cur'=>$kp['aov'],'prev'=>$kp['aov_prev'],'days'=>$days])</div>
   <div class="kpi"><span class="kpi__label">Units</span><span class="kpi__value">{{ $kp['units'] }}</span></div>

@@ -23,11 +23,20 @@ class OrderEvents
     public static function record(int|object $order, string $type, string $label, ?string $detail = null, bool $once = false): bool
     {
         $id = is_object($order) ? (int) $order->id : $order;
+        // history imported from the old store never sends anything (e-mail, text, CRM sync, coupon count)
+        if (str_starts_with($type, 'notify:') && self::imported($order)) return false;
         $row = ['order_id' => $id, 'type' => $type, 'label' => $label, 'detail' => $detail, 'created_at' => now()];
         if (!$once) { DB::table('order_events')->insert($row); return true; }
         // has() keeps rows written without a key (non-once) counting; the unique (order_id, dedupe_key) makes two racing callers produce one row
         if (self::has($id, $type)) return false;
         return DB::table('order_events')->insertOrIgnore($row + ['dedupe_key' => $type]) === 1;
+    }
+
+    /** An order imported from the WooCommerce store (woo:import): a record only, its customer is never contacted about it. */
+    public static function imported(int|object $order): bool
+    {
+        if (is_object($order) && property_exists($order, 'source')) return $order->source === 'woocommerce';
+        return DB::table('orders')->where('id', is_object($order) ? (int) $order->id : $order)->value('source') === 'woocommerce';
     }
 
     /** Undo a `$once` bookkeeping row (e.g. the message it guarded failed to send) so the next run retries. */

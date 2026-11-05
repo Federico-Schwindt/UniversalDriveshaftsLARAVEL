@@ -3,7 +3,7 @@
 @section('crumb','Store')
 @section('actions')<a href="#" data-post="/admin/settings/cache" class="btn btn--sm">{!! ic('sparkle') !!} Clear caches</a>@endsection
 @section('body')
-<div class="tabs">@foreach(['store'=>'Store','shipping'=>'Shipping & pickup','b2b'=>'B2B accounts','storefront'=>'Storefront','email'=>'E-mail','notifications'=>'Notifications','assistant'=>'AI assistant','users'=>'Admin users','integrations'=>'Integrations'] as $k=>$l)<a href="/admin/settings?tab={{ $k }}" class=" @if($tab===$k) is-on @endif">{{ $l }}</a>@endforeach</div>
+<div class="tabs">@foreach(['store'=>'Store','shipping'=>'Shipping & pickup','b2b'=>'B2B accounts','storefront'=>'Storefront','email'=>'E-mail','notifications'=>'Notifications','reviews'=>'Reviews','assistant'=>'AI assistant','users'=>'Admin users','integrations'=>'Integrations'] as $k=>$l)<a href="/admin/settings?tab={{ $k }}" class=" @if($tab===$k) is-on @endif">{{ $l }}</a>@endforeach</div>
 @if($tab==='email')
 <div class="grid grid--2 mb">
   <div class="card"><div class="card__head"><h2>Transactional — SMTP</h2><span class="badge badge--{{ $mail['mailer']==='smtp'?'ok':'warn' }}">{{ $mail['mailer'] }}</span></div><div class="card__body"><dl class="dl dl--tight"><dt>Server</dt><dd class="mono">{{ $mail['host'] }}:{{ $mail['port'] }}</dd><dt>Account</dt><dd class="mono">{{ $mail['user'] }}</dd><dt>Sends as</dt><dd class="mono">{{ $mail['from'] }}</dd></dl><p class="small muted mt">Order confirmations, shipping, payment links, RMA, account e-mails. Credentials live in the server <code>.env</code>.</p></div></div>

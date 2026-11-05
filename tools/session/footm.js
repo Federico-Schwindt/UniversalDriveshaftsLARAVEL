@@ -1,0 +1,4 @@
+const {chromium,devices}=require(process.env.PWC);const [,,URL,OUT]=process.argv;
+(async()=>{const b=await chromium.launch({executablePath:process.env.BX});const c=await b.newContext({...devices['iPhone 13']});const p=await c.newPage();await p.goto(URL,{waitUntil:'networkidle',timeout:60000});
+await p.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));await p.waitForTimeout(800);await p.screenshot({path:OUT});
+const info=await p.evaluate(()=>{const f=document.querySelector('footer');const r=f.getBoundingClientRect();const last=[...document.body.children].filter(e=>e.getBoundingClientRect().height>0).map(e=>e.tagName+'.'+(e.className||'')+' top='+Math.round(e.getBoundingClientRect().top)+' h='+Math.round(e.getBoundingClientRect().height));return {fb:r.bottom,vh:innerHeight,docH:document.documentElement.scrollHeight,last:last.slice(-4)}});console.log(JSON.stringify(info));await b.close();})();

@@ -763,7 +763,10 @@ class CatalogService
                 $sc = $spec('Splines Count'); $sd = $spec('Splines Dia'); $scd = $spec('Splines Count Dia');
                 $qual = $scd !== '' ? $scd . ' Spline' : trim(($sc !== '' ? $sc . ' Spline' : '') . ($sd !== '' ? ' ' . $in($sd) : '')); break;
             case 'center-support-bearing':
-                $b = $spec('Bearing Id', 'Bearing Dia'); $qual = $b !== '' ? $in($b) . ' ID' : ''; break;
+                // buyers search a center bearing by vehicle ("hyundai genesis center bearing"); the bore when there is no short application
+                $app = ucwords(strtolower(trim(preg_replace('/\s*,\s*$/', '', $spec('Application', 'Vehicle')))));
+                $b = $spec('Bearing Id', 'Bearing Dia');
+                $qual = $app !== '' && mb_strlen($app) <= 24 ? $app : ($b !== '' ? $in($b) . ' ID' : ''); break;
             case 'tubing':
                 $od = $spec('Tube Dia'); $w = $spec('Tube Wall'); $mat = ucfirst(strtolower($spec('Material') ?: 'steel'));
                 $type = trim(($od !== '' ? $in($od) . ' × ' : '') . ($w !== '' ? $in($w) . ' Wall ' : '') . 'DOM ' . $mat . ' Tubing'); break;

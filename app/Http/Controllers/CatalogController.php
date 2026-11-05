@@ -91,6 +91,7 @@ class CatalogController extends Controller
             'q' => $q,
             'siblings' => $grp['subcategories'] ?? [],
             'seoCopy' => config("seo-copy.categories.{$term->slug}", []),
+            'seoOwn' => \Illuminate\Support\Facades\DB::connection('wp')->table('wp_termmeta')->where('term_id', $term->term_id)->whereIn('meta_key', ['uds_seo_title', 'uds_seo_desc'])->pluck('meta_value', 'meta_key')->map(fn ($v) => trim((string) $v))->filter()->all(),
             'catSeries' => (function () use ($cat) {   // hub-worthy series only, ordered by overall popularity (1310, 1350, 1330…)
                 $in = $this->catalog->categorySeries($cat); $out = [];
                 foreach ($this->catalog->seriesList() as $slug => $s) if (isset($in[$slug])) $out[$slug] = $in[$slug];
@@ -126,6 +127,10 @@ class CatalogController extends Controller
         if ($grp && $catSlug && !$this->catalog->groupOf($catSlug)) $cat = null;   // category without a public URL
 
         $seo = $this->catalog->productSeo($p, $catSlug);
+        // SEO title / meta description typed in the admin win over the generated ones
+        $own = \Illuminate\Support\Facades\DB::connection('wp')->table('wp_postmeta')->where('post_id', $p['id'])->whereIn('meta_key', ['_uds_seo_title', '_uds_seo_desc'])->pluck('meta_value', 'meta_key');
+        if (trim((string) ($own['_uds_seo_title'] ?? '')) !== '') $seo['title'] = trim($own['_uds_seo_title']);
+        if (trim((string) ($own['_uds_seo_desc'] ?? '')) !== '') $seo['desc'] = trim($own['_uds_seo_desc']);
         $xref = $this->catalog->interchange($p['id'], $p['sku']);
         $related = $this->catalog->related($p['id'], (string) $p['series'], $catSlug, 8);
         foreach ($related as &$it) { $it['price'] = $this->price($it['price']); $it['regular'] = $this->price($it['regular']); }

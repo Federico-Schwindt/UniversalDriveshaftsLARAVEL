@@ -305,7 +305,9 @@
     if (m.id && seen[m.id]) return;
     if (m.id) { seen[m.id] = 1; lastId = Math.max(lastId, m.id); }
     if (m.role === 'system') { var s1 = document.createElement('div'); s1.className = 'ua-sys'; s1.textContent = m.text; log.appendChild(s1); scrollDown(); return; }
-    add(m.role === 'user' ? 'me' : (m.role === 'agent' ? 'agent' : 'bot'), m.text, m);
+    // a part card or a tracking card the shop sent on its own: no empty bubble above it
+    if (!(m.role === 'agent' && !m.text && !(m.photos || []).length)) add(m.role === 'user' ? 'me' : (m.role === 'agent' ? 'agent' : 'bot'), m.text, m);
+    if (root.classList.contains('is-open')) markSeen();
     if (m.cards && m.cards.length) cards(m.cards);
     if (m.widgets && m.widgets.length) widgets(m.widgets, !!live);
   }
@@ -632,6 +634,7 @@
     panel.setAttribute('aria-hidden', 'false');
     panel.inert = false; launch.setAttribute('aria-expanded', 'true');
     if (loaded) poll(); else load();
+    markSeen();
     setTimeout(function () { grow(); input.focus(); }, 60);
     try { sessionStorage.setItem('ua.open', '1'); } catch (e) {}
   }
@@ -694,6 +697,35 @@
   input.addEventListener('input', function () { grow(); counter(); sendBtn.disabled = busy || (!input.value.trim() && !pending.length); });
   input.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); send(input.value); } });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && root.classList.contains('is-open')) close(); });
+
+  /* presence for the shop's chat page: where the customer is, only while this tab is visible. The answer says
+     whether the shop wrote since the last line this browser drew, so a closed panel shows a badge. */
+  var pingT = null;
+  function seenMax() { var n = lastId; try { n = Math.max(n, parseInt(localStorage.getItem('ua.seen') || '0', 10) || 0); } catch (e) {} return n; }
+  function markSeen() {
+    try { localStorage.setItem('ua.seen', String(seenMax())); } catch (e) {}
+    launch.classList.remove('has-unread'); launch.removeAttribute('title');
+  }
+  function ping() {
+    clearTimeout(pingT);
+    if (document.visibilityState !== 'visible') return;
+    req('POST', '/assistant/ping', { url: location.pathname + location.search, title: document.title.slice(0, 190), after: seenMax() }).then(function (d) {
+      if (d.unread > 0 && !root.classList.contains('is-open')) { launch.classList.add('has-unread'); launch.title = T('New message from Universal Driveshafts'); }
+    }).catch(function () {}).then(function () { pingT = setTimeout(ping, 45000); });
+  }
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') ping(); });
+  ping();
+
+  /* JavaScript errors on this page join the customer's activity trail (the shop sees them beside the chat) */
+  var errs = 0, errSeen = {};
+  function reportError(msg, src, line) {
+    msg = String(msg || '').slice(0, 500); src = String(src || '');
+    if (!msg || errs >= 5 || errSeen[msg] || /^(chrome|moz|safari)(-web)?-extension:/.test(src)) return;
+    errSeen[msg] = 1; errs++;
+    req('POST', '/assistant/client-log', { message: msg, source: src.slice(0, 300), line: line || null, url: location.pathname + location.search }).catch(function () {});
+  }
+  window.addEventListener('error', function (e) { if (e && e.message) reportError(e.message, e.filename, e.lineno); });
+  window.addEventListener('unhandledrejection', function (e) { var r = e && e.reason; reportError('Unhandled promise: ' + String(r && r.message ? r.message : r).slice(0, 300)); });
 
   try { if (sessionStorage.getItem('ua.open') === '1') open(); } catch (e) {}
 })();

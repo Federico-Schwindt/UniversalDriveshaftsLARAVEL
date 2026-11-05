@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title', __('Driveshaft Repair, Balancing & Custom Builds | UDS'))
-@section('desc', __('Driveshaft services in Florida: custom driveshafts built to measure, repair and rebuild, u-joint and center bearing replacement, shortening, balancing.'))
+@section('title', __('Driveshaft Repair & Balancing in Odessa, FL (Tampa Bay) | UDS'))
+@section('desc', __('Driveshaft shop in Odessa, FL, serving Tampa Bay: repair and rebuild, balancing, custom driveshafts, u-joint and center bearing replacement. (813) 524-6491.'))
 @section('canonical','/services')
 
 @php
@@ -71,7 +71,7 @@
   <nav class="ucrumb" aria-label="Breadcrumb"><a href="/">Home</a><x-icon name="caret-right"/><span aria-current="page">Services</span></nav>
   <div class="phero__grid">
     <div>
-      <span class="kicker">Driveshaft shop, Florida</span>
+      <span class="kicker">Driveshaft shop · Odessa, FL · Tampa Bay</span>
       <h1>Driveshaft services: custom builds, repair, balancing and conversions</h1>
       <p class="lead">Universal Driveshafts builds, repairs and balances driveshafts in our own shop in Florida, next to the parts inventory. Machining, welding, assembly and balancing happen in house, which is why a rebuild leaves the same week and a custom shaft is priced before you order.</p>
       <div class="phero__cta">
@@ -125,7 +125,8 @@
   <div class="vs2">
     <div class="vs2__col">
       <span class="kicker">Talk to the shop</span>
-      <h3>Universal Driveshafts, Florida</h3>
+      <h3>Universal Driveshafts, Odessa FL</h3>
+      <p style="margin:0 0 .4rem;color:var(--ink-2);line-height:1.7"><a href="{{ config('uds.pickup.maps') }}" target="_blank" rel="noopener">11611 Prospect Drive STE 4, Odessa, FL 33556</a> · serving Tampa Bay</p>
       <p style="margin:0;color:var(--ink-2);line-height:1.7">Parts and service: <a href="tel:+18135246491">(813) 524-6491</a><br>OEM and fleet: <a href="tel:+18136445707">(813) 644-5707</a><br>Monday to Friday 8:00 am to 5:00 pm, Saturday 9:00 am to 2:00 pm<br>Local pickup Monday to Friday 3:00 to 5:00 pm</p>
       <a href="/contact" class="btn btn-ghost">Contact the shop</a>
     </div>
@@ -145,7 +146,7 @@
 
 <section class="section section--tint"><div class="wrap"><div class="ctaband">
   <h2>Bring it in or ship it to us</h2>
-  <p>Send us the shaft for measuring, balancing or a rebuild, or spec a new one online and see the price before you commit. Florida, (813) 524-6491.</p>
+  <p>Send us the shaft for measuring, balancing or a rebuild, or spec a new one online and see the price before you commit. Odessa, FL (Tampa Bay), (813) 524-6491.</p>
   <div class="cta"><a href="/online-builder" class="btn btn-primary">Open the online builder <x-icon name="arrow-right"/></a><a href="/contact" class="btn btn-ghost">Talk to a tech</a></div>
 </div></div></section>
 @endif

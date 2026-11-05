@@ -102,8 +102,7 @@
         <div class="card__head"><h2>Addresses</h2></div>
         <div class="card__body stack">
           <div><div class="flex" style="justify-content:space-between"><span class="label">Billing</span><button type="button" class="btn btn--xs" data-modal="addr-billing">{!! ic('edit','ic--s') !!} Edit</button></div>
-            <div class="addr">{{ $order->billing_first_name }} {{ $order->billing_last_name }}@if($order->billing_company) · {{ $order->billing_company }}@endif
-{{ $order->billing_address_1 }} {{ $order->billing_address_2 }}
+            <div class="addr">{{ $order->billing_first_name }} {{ $order->billing_last_name }}@if($order->billing_company) · {{ $order->billing_company }}@endif{{ "\n" }}{{ $order->billing_address_1 }} {{ $order->billing_address_2 }}
 {{ $order->billing_city }}{{ $order->billing_state ? ', '.$order->billing_state : '' }} {{ $order->billing_postcode }} {{ $order->billing_country }}</div></div>
           <div><div class="flex" style="justify-content:space-between"><span class="label">Ship to @if(!$order->ship_to_different)<span class="muted">(same as billing)</span>@endif</span><button type="button" class="btn btn--xs" data-modal="addr-shipping">{!! ic('edit','ic--s') !!} Edit</button></div>
             @if($isPickup)<div class="addr muted">Local pickup — Odessa, FL</div>
@@ -141,7 +140,7 @@
         @if(in_array($order->payment_status, ['unpaid', 'paid'], true))
         <div class="field"><label>Payment</label><select class="select" name="payment_status">@foreach(\App\Http\Controllers\Admin\OrdersController::MANUAL_PAY as $k=>$l)<option value="{{ $k }}" @selected($order->payment_status===$k)>{{ $l }}</option>@endforeach</select></div>
         @else
-        <div class="field"><label>Payment</label><div><span class="badge badge--{{ $order->payment_status }}">{{ \App\Http\Controllers\Admin\OrdersController::PAY[$order->payment_status] ?? ucfirst(str_replace('_', ' ', $order->payment_status)) }}</span> <span class="small muted">· {{ money($order->refund_total) }} refunded@if(adm_can('refunds') && $remaining > 0) — use <a href="#" data-modal="refund">Refund…</a> for more@endif</span></div></div>
+        <div class="field"><label>Payment</label><div><span class="badge badge--{{ $order->payment_status }}">{{ \App\Http\Controllers\Admin\OrdersController::PAY[$order->payment_status] ?? ucfirst(str_replace('_', ' ', $order->payment_status)) }}</span> <span class="small muted">· {{ money($order->refund_total) }} refunded @if(adm_can('refunds') && $remaining > 0) — use <a href="#" data-modal="refund">Refund…</a> for more @endif</span></div></div>
         @endif
         <div class="field"><label>Payment method</label><select class="select" name="payment_method">@if(!array_key_exists((string) $order->payment_method, \App\Http\Controllers\Admin\OrdersController::PAY_METHODS))<option value="{{ $order->payment_method }}" selected>{{ $order->payment_method ? ucfirst(str_replace('_', ' ', $order->payment_method)) : '—' }}</option>@endif @foreach(\App\Http\Controllers\Admin\OrdersController::PAY_METHODS as $k=>$l)<option value="{{ $k }}" @selected($order->payment_method===$k)>{{ $l }}</option>@endforeach</select></div>
         <div class="field"><label>Tags</label><div class="tagbox" data-tags><input type="hidden" name="tags" value="{{ $order->tags }}"><input type="text" placeholder="add tag…"></div></div>

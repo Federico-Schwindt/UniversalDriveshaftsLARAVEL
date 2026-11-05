@@ -40,7 +40,7 @@ class FeedController extends Controller
                         $img = !empty($live['image']) ? media_url($live['image'], 1200) : ($p['image'] ?: '');
                         if ($img === '') continue;   // Merchant Center rejects items without an image
                         $items[$p['sku']] = [
-                            'id' => $p['sku'], 'title' => mb_substr($p['name'], 0, 150), 'description' => $desc,
+                            'id' => self::offerId((int) $p['id']), 'title' => mb_substr($p['name'], 0, 150), 'description' => $desc,
                             'link' => $base . '/parts/' . rawurlencode($p['sku']),
                             'image_link' => $img ? ($img[0] === '/' ? $base . $img : $img) : '',
                             'availability' => ($p['stock_status'] ?? '') === 'instock' ? 'in_stock' : (($p['stock_status'] ?? '') === 'onbackorder' ? 'backorder' : 'out_of_stock'),
@@ -65,12 +65,16 @@ class FeedController extends Controller
         $xml = Cache::remember('feed:google:driveshafts', 21600, function () use ($finder) {
             $base = rtrim(config('app.url'), '/');
             $items = [];
+            // a shaft that is also a catalog product is already in the parts feed (under its Merchant Center id): never twice
+            $catalogSkus = DB::connection('wp')->table('wp_postmeta as m')->join('wp_posts as p', 'p.ID', '=', 'm.post_id')
+                ->where('m.meta_key', '_sku')->where('p.post_type', 'product')->where('p.post_status', 'publish')->pluck('m.meta_value')->map(fn ($v) => strtoupper(trim((string) $v)))->flip();
             foreach (DB::table('ds_parts')->where('is_active', 1)->orderBy('part_number')->get() as $p) {
                 $price = DriveshaftFinder::customerPrice($p);
                 if ($price === null) continue;
                 $fits = \App\Services\DriveshaftFinder::fitments()->where('part_number', $p->part_number)->selectRaw('make, model, min(year) y1, max(year) y2')->groupBy('make', 'model')->limit(6)->get();
                 $fitText = $fits->map(fn ($f) => ($f->y1 == $f->y2 ? $f->y1 : "$f->y1-$f->y2") . " $f->make $f->model")->implode(', ');
                 $sku = DriveshaftFinder::sku($p->part_number);
+                if (isset($catalogSkus[strtoupper($sku)])) continue;
                 $title = trim(($p->description ?: 'Complete driveshaft') . ' ' . $sku . ($fitText ? ' — fits ' . mb_substr($fitText, 0, 90) : ''));
                 if (!$p->main_image) continue;   // Merchant Center rejects items without an image
                 $items[] = [
@@ -88,6 +92,16 @@ class FeedController extends Controller
             return self::rss('Universal Driveshafts — complete driveshafts by vehicle', $base, $items);
         });
         return response($xml, 200, ['Content-Type' => 'application/rss+xml; charset=UTF-8', 'X-Robots-Tag' => 'noindex']);
+    }
+
+    /**
+     * The id Merchant Center already knows each catalog product by: Google Listings & Ads (the old WordPress plugin)
+     * sent them as "gla_{product id}" (1,527 products, e.g. online:en:US:gla_9113), and the catalog keeps the same ids.
+     * Same id = same product in Merchant Center: approvals, history and Shopping campaigns carry over at launch.
+     */
+    public static function offerId(int $wpProductId): string
+    {
+        return 'gla_' . $wpProductId;
     }
 
     private static function rss(string $title, string $base, array $items): string

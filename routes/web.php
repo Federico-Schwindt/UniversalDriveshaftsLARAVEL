@@ -11,6 +11,7 @@ Route::post('/driveshaft-designer/save', [\App\Http\Controllers\DesignerControll
 Route::get('/driveshaft-designer/{style}/{sections?}', [\App\Http\Controllers\DesignerController::class, 'page'])->where(['style' => '[12]', 'sections' => '[A-Z0-9+]*']);
 
 Route::get('/robots.txt', [\App\Http\Controllers\SeoController::class, 'robots']);
+Route::get('/llms.txt', [\App\Http\Controllers\SeoController::class, 'llms']);
 Route::get('/sitemap.xml', [\App\Http\Controllers\SeoController::class, 'sitemap']);
 Route::get('/sitemap-{part}.xml', [\App\Http\Controllers\SeoController::class, 'sitemapPart'])->where('part', '[a-z]+');
 Route::get('/', fn () => request()->filled('s') && is_string(request('s')) ? redirect('/search?q=' . urlencode(request('s')), 301) : view('home', [
@@ -165,6 +166,8 @@ Route::get('/product-category/{path}', function (string $path) {
         }
     }
     if ($gs && $gs !== $slug) return redirect("/shop/{$gs}/{$slug}", 301);
+    // a redirect kept from the old site (admin → SEO) knows a better home than the generic catalog
+    if (($hit = \App\Support\Seo::redirectFor('/product-category/' . $path)) && $hit['target']) return redirect($hit['target'], 301);
     // a real WooCommerce category that has no shop page of its own: permanent redirect to the catalog; anything else is a 404
     try { if (app(\App\Services\CatalogService::class)->term($slug)) return redirect('/shop', 301); } catch (\Throwable $e) {}
     abort(404);
@@ -339,6 +342,8 @@ Route::middleware(['auth', 'throttle:chatbot'])->prefix('assistant')->group(func
 // polling and photos sit outside the per-minute chat limit (polling runs every few seconds while the panel is open)
 Route::middleware(['auth', 'throttle:120,1'])->prefix('assistant')->group(function () {
     Route::get('/poll', [\App\Http\Controllers\ChatbotController::class, 'poll']);
+    Route::post('/ping', [\App\Http\Controllers\ChatbotController::class, 'ping']);
+    Route::post('/client-log', [\App\Http\Controllers\ChatbotController::class, 'clientLog'])->middleware('throttle:20,1');
     Route::get('/photo/{message}/{n}', [\App\Http\Controllers\ChatbotController::class, 'photo'])->whereNumber(['message', 'n']);
     Route::get('/audio/{message}', [\App\Http\Controllers\ChatbotController::class, 'audio'])->whereNumber('message');
     Route::get('/history', [\App\Http\Controllers\ChatbotController::class, 'history']);

@@ -17,23 +17,36 @@ class MediaController extends Controller
 
     /** Public URL for a remote catalog image at a given width (unknown or local sources are returned as-is). */
     /** Local folders that may also be served resized (finder photos and make logos are large PNGs). */
-    private const LOCAL = ['/img/driveshafts/', '/img/makes/', '/uploads/'];
+    private const LOCAL = ['/img/driveshafts/', '/img/makes/', '/uploads/', '/img/pti/'];
 
     public static function url(?string $src, int $w = 640): string
     {
         $src = (string) $src;
-        $local = $src !== '' && $src[0] === '/' && array_filter(self::LOCAL, fn ($d) => str_starts_with($src, $d)) && preg_match('/\.(png|jpe?g)$/i', $src);
+        // WordPress uploads that are mirrored locally are served from the copy, never from the old site
+        $src = \App\Support\WpUploads::localPath($src) ?? $src;
+        $local = $src !== '' && $src[0] === '/' && array_filter(self::LOCAL, fn ($d) => str_starts_with($src, $d)) && preg_match('/\.(png|jpe?g|webp|avif)$/i', $src);
         if ($src === '' || (!$local && !preg_match('#^https?://(www\.)?' . preg_quote(self::HOST, '#') . '/wp-content/uploads/#i', $src))) return $src;
         if (!in_array($w, self::WIDTHS, true)) $w = 640;
         $key = rtrim(strtr(base64_encode($src), '+/', '-_'), '=');
-        return "/media/$w/$key.webp";
+        // the .webp is cached a year as immutable: the source file's version is in the URL, so a photo edited
+        // in place (pti:dewatermark, a new upload under the same name) gets a new URL and every browser refetches it
+        return "/media/$w/$key.webp" . ($local ? '?v=' . self::version($src) : '');
+    }
+
+    /** Short version tag of a local public file (its modification time), '' when it does not exist. */
+    public static function version(string $path): string
+    {
+        static $memo = [];
+        $path = rawurldecode((string) parse_url($path, PHP_URL_PATH));
+        return $memo[$path] ??= (($t = @filemtime(public_path(ltrim($path, '/')))) ? base_convert((string) $t, 10, 36) : '');
     }
 
     public function show(int $w, string $key)
     {
         abort_unless(in_array($w, self::WIDTHS, true) && preg_match('/^[A-Za-z0-9_-]{8,700}$/', $key), 404);
         $src = base64_decode(strtr($key, '-_', '+/'), true);
-        $local = $src && $src[0] === '/' && !str_contains($src, '..') && array_filter(self::LOCAL, fn ($d) => str_starts_with($src, $d)) && is_file(public_path($src));
+        if ($src) $src = \App\Support\WpUploads::localPath($src) ?? $src;   // keys minted before the mirror existed
+        $local =$src && $src[0] === '/' && !str_contains($src, '..') && array_filter(self::LOCAL, fn ($d) => str_starts_with($src, $d)) && is_file(public_path($src));
         abort_unless($src && ($local || preg_match('#^https?://(www\.)?' . preg_quote(self::HOST, '#') . '/wp-content/uploads/[^\s"<>]+$#i', $src)), 404);
 
         $dir = public_path("media/$w"); $file = "$dir/$key.webp";

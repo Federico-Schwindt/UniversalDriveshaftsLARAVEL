@@ -1,0 +1,26 @@
+const { chromium } = require(process.env.PWC || 'playwright');
+const fs = require('fs');
+const [S, pid] = process.argv.slice(2);
+(async () => {
+  const b = await chromium.launch({ executablePath: process.env.BX });
+  const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } });
+  const p = await ctx.newPage();
+  await p.goto('https://dev.udshafts.com/login');
+  await p.fill('input[name=email]', 'qa-b2b-temp@example.com');
+  await p.fill('input[name=password]', fs.readFileSync(S + '/tmp-b2b-pass', 'utf8').trim());
+  await Promise.all([p.waitForNavigation(), p.click('form[action$="/login"] button[type=submit]')]);
+  const hide = '.uds-asst,[class*=whats],[class*=assistant],.fab{display:none!important}';
+  await p.goto('https://dev.udshafts.com/account/business', { waitUntil: 'networkidle' }); await p.addStyleTag({ content: hide });
+  await p.screenshot({ path: S + '/biz.png', fullPage: true });
+  const tok = await p.$eval('meta[name=csrf-token]', e => e.content);
+  await p.evaluate(async ([t, id]) => { await fetch('/cart/add', { method: 'POST', headers: { 'X-CSRF-TOKEN': t, 'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'product_id=' + id + '&quantity=2' }); }, [tok, pid]);
+  await p.goto('https://dev.udshafts.com/checkout', { waitUntil: 'load' }); await p.addStyleTag({ content: hide });
+  await p.waitForTimeout(2500);
+  await p.screenshot({ path: S + '/ck.png', fullPage: true });
+  await p.setViewportSize({ width: 390, height: 900 });
+  await p.goto('https://dev.udshafts.com/checkout', { waitUntil: 'load' }); await p.addStyleTag({ content: hide }); await p.waitForTimeout(2000);
+  const pay = await p.$('.co-paywith'); if (pay) await pay.scrollIntoViewIfNeeded();
+  await p.screenshot({ path: S + '/ck-m.png' });
+  console.log(await p.evaluate(() => [document.querySelector('.shipcd span')?.textContent, document.getElementById('disc-row')?.hidden, document.getElementById('disc-code')?.textContent].join(' | ')));
+  await b.close();
+})();

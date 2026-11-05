@@ -102,7 +102,7 @@ class KnowledgeBase
         return trim(implode("\n", array_filter([
             '## Shop facts',
             // the shop's location is private (owner, 2026-10-24): never give the city or street; pickup details are shown at checkout
-            'Company: Universal Driveshafts LLC (UDS), Florida, USA. Website: universaldriveshafts.com. Never tell the customer the shop\'s city or street address, even if asked; say we are in Florida and that the pickup address is shown at checkout when they choose local pickup.',
+            'Company: Universal Driveshafts LLC (UDS), Florida, USA. Website: universaldriveshafts.com. Shop: 11611 Prospect Drive STE 4, Odessa, FL 33556 (Tampa Bay area), counter open Monday to Friday 8 am to 5 pm and Saturday 9 am to 2 pm; local pickup Monday to Friday 3 to 5 pm. Give the address when it helps the customer (visiting the shop, dropping off a shaft, local pickup, directions); you do not need to repeat it otherwise.',
             'Hours: Monday to Friday 8:00 am to 5:00 pm, Saturday 9:00 am to 2:00 pm (Eastern).',
             'Parts phone: ' . ($u['phone_parts'] ?? '') . '. OEM / custom driveshaft phone: ' . ($u['phone_oem'] ?? '') . '. E-mail: ' . ($u['email'] ?? '') . '.',
             !empty($u['pickup']['label']) ? 'Local pickup: free, ' . ($u['pickup']['hours'] ?? 'Monday to Friday, 3 to 5 pm') . '. Choose it at checkout; the address is shown there.' : null,

@@ -73,6 +73,55 @@ class SeoController extends Controller
         return response($body, 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
     }
 
+    /**
+     * /llms.txt — a plain summary of the store for AI search engines (ChatGPT, Perplexity, Claude, Gemini) that read it
+     * before crawling (the llmstxt.org convention). Facts only, with live counts and the pages worth citing. Google does not
+     * need it (AI Overviews use the normal index); the others are helped by it. Served on every host, like the sitemap.
+     */
+    public function llms(\App\Services\CatalogService $catalog)
+    {
+        $base = rtrim(config('app.url'), '/');
+        $txt = \Illuminate\Support\Facades\Cache::remember('seo:llms', 21600, function () use ($catalog, $base) {
+            $groups = [];
+            foreach ($catalog->allCategorySlugs() as $slug => $group) {
+                $t = $catalog->term($slug);
+                if (!$t) continue;
+                $name = html_entity_decode((string) ($t->name ?? $t['name'] ?? $slug));
+                $n = (int) ($t->count ?? $t['count'] ?? 0);
+                $groups[$group][] = "- [{$name}]({$base}/shop/{$group}/{$slug})" . ($n ? ": {$n} parts" : '');
+            }
+            $veh = app(\App\Services\VehiclePages::class);
+            $makes = count($veh->makeMap()); $models = count($veh->allModels());
+            $shafts = \Illuminate\Support\Facades\DB::table('ds_parts')->where('is_active', 1)->count();
+            $free = number_format((float) config('uds.free_shipping_min', 1000));
+            $out = "# Universal Driveshafts\n\n"
+                . "> Driveshaft parts and complete driveshafts: u-joints, yokes, center support bearings, flanges, CV parts and custom-cut tubing, plus complete driveshafts by vehicle and custom driveshafts built and balanced in our Florida shop. Online store shipping across the U.S.\n\n"
+                . "## The business\n"
+                . "- Universal Driveshafts LLC (UDS), 11611 Prospect Drive STE 4, Odessa, FL 33556 (Tampa Bay area), United States\n"
+                . "- Phone (813) 524-6491 · e-mail inquiry@universaldriveshafts.com · counter Monday to Friday 8 am to 5 pm, Saturday 9 am to 2 pm (Eastern)\n"
+                . "- Shop services: driveshaft repair and rebuild, balancing, custom one- and two-piece driveshafts, u-joint and center bearing replacement: {$base}/services\n"
+                . "- Industrial driveshafts (pumps, compressors, conveyors, generators, test stands): {$base}/industrial-driveshafts\n"
+                . (\App\Support\Settings::get('reviews.badge_enabled', true) ? '- Rated ' . number_format((float) \App\Support\Settings::get('reviews.google_rating', 4.7), 1) . ' out of 5 on Google from ' . number_format((int) \App\Support\Settings::get('reviews.google_count', 200)) . "+ reviews: " . \App\Support\Settings::get('reviews.google_profile_url', \App\Support\ReviewRequests::PROFILE_URL) . "\n" : '')
+                . "\n"
+                . "## Complete driveshafts by vehicle\n"
+                . "- {$shafts} complete driveshafts for {$models} models of {$makes} makes, with year-by-year fitment, position (front, rear, intermediate) and center bearing numbers: {$base}/driveshafts\n"
+                . "- Vehicle finder (year, make, model, drive, transmission): {$base}/catalog/driveshafts\n"
+                . "- Custom driveshaft built to your measurements, priced live: {$base}/online-builder\n\n";
+            foreach (config('catalog.groups') as $g => $cfg) if (!empty($groups[$g])) $out .= '## ' . $cfg['label'] . "\n" . implode("\n", $groups[$g]) . "\n\n";
+            $out .= "## Sizing facts\n"
+                . "- U-joint series by bearing cap diameter × width across the caps: 1310 = 1.062\" × 3.219\", 1330 = 1.062\" × 3.625\", 1350 = 1.188\" × 3.625\", 1410 = 1.188\" × 4.188\", 1480 = 1.375\" × 4.188\". Series pages: {$base}/series\n"
+                . "- Every part page lists its measurements, price and live stock; part numbers like 1680-60 are also written 1680/60.\n\n"
+                . "## Buying\n"
+                . "- In-stock parts ordered before 2 pm Eastern on a weekday ship the same day from Florida; custom driveshafts are built to order.\n"
+                . "- Free U.S. shipping on parts orders over \${$free} (tubing and complete driveshafts excluded). Shipping policy: {$base}/shipping-policy\n"
+                . "- Returns: 14 days with an RMA number. Return policy: {$base}/return-policy · start a return: {$base}/rma\n"
+                . "- Business accounts (shops, fleets, resellers) get tier discounts: {$base}/wholesale\n"
+                . "- Contact: {$base}/contact\n";
+            return $out;
+        });
+        return response($txt, 200, ['Content-Type' => 'text/plain; charset=UTF-8', 'X-Robots-Tag' => 'noindex']);
+    }
+
     /** Sitemap index pointing at the per-section files. */
     public function sitemap()
     {
@@ -245,6 +294,18 @@ class SeoController extends Controller
             }
         }
         return $out;
+    }
+
+    /** Absolute URLs of every sitemap entry, or only those modified since $since (for IndexNow). */
+    public function urls(?\Carbon\Carbon $since = null): array
+    {
+        $base = rtrim(config('app.url'), '/');
+        $out = [];
+        foreach (self::PARTS as $part) foreach ($this->rows($part) as $r) {
+            if ($since && (empty($r['lastmod']) || substr((string) $r['lastmod'], 0, 10) < $since->toDateString())) continue;
+            $out[] = str_starts_with($r['loc'], 'http') ? $r['loc'] : $base . $r['loc'];
+        }
+        return array_values(array_unique($out));
     }
 
     private function latest(array $rows): ?string

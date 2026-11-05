@@ -9,13 +9,15 @@
 @endsection
 @section('body')
 <div class="kpis kpis--6 mb">
-  <div class="kpi"><span class="kpi__label" title="Paid orders and Net-terms invoices, less refunds. Cancelled, failed and unpaid orders are left out.">Net sales</span><span class="kpi__value">{{ money($k['sales']) }}</span>@include('admin.partials.delta',['cur'=>$k['sales'],'prev'=>$k['sales_prev'],'days'=>$days])</div>
+  <div class="kpi"><span class="kpi__label" title="Products after coupons, less refunds, without shipping or tax (the WooCommerce Analytics figure). Refunds count on the day they were made; Eastern days. Cancelled, failed and unpaid orders are left out.">Net sales</span><span class="kpi__value">{{ money($k['sales']) }}</span>@include('admin.partials.delta',['cur'=>$k['sales'],'prev'=>$k['sales_prev'],'days'=>$days])</div>
   <div class="kpi"><span class="kpi__label">Orders</span><span class="kpi__value">{{ $k['orders'] }}</span>@include('admin.partials.delta',['cur'=>$k['orders'],'prev'=>$k['orders_prev'],'days'=>$days])</div>
   <div class="kpi"><span class="kpi__label">Avg. order</span><span class="kpi__value">{{ money($k['aov']) }}</span>@include('admin.partials.delta',['cur'=>$k['aov'],'prev'=>$k['aov_prev'],'days'=>$days])</div>
   <a href="/admin/orders?tab=unpaid" class="kpi {{ $k['unpaid_n'] ? 'kpi--warn' : '' }}"><span class="kpi__label">Awaiting payment</span><span class="kpi__value">{{ money($k['unpaid']) }}</span><span class="kpi__delta">{{ $k['unpaid_n'] }} open order{{ $k['unpaid_n']==1?'':'s' }}</span></a>
   <a href="/admin/orders?tab=to_ship" class="kpi {{ $k['to_ship'] ? 'kpi--warn' : '' }}"><span class="kpi__label">To ship</span><span class="kpi__value">{{ $k['to_ship'] }}</span><span class="kpi__delta">{{ $k['pickup'] }} for pickup</span></a>
   <a href="/admin/inventory?status=out" class="kpi {{ $k['out_stock'] ? 'kpi--err' : '' }}"><span class="kpi__label">Out of stock</span><span class="kpi__value">{{ $k['out_stock'] }}</span><span class="kpi__delta">{{ $k['low_stock'] }} at reorder point</span></a>
 </div>
+
+@if(adm_can('reports'))@include('admin.partials.traffic')@endif
 
 <div class="grid grid--main">
   <div class="stack">

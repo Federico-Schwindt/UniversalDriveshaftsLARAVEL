@@ -18,7 +18,7 @@ class B2bAccountsTest extends TestCase
     private function account(array $extra = []): User
     {
         $u = User::query()->create(['name' => 'Alex Morgan', 'email' => 'b2b-' . uniqid() . '@example.com', 'password' => bcrypt('x' . uniqid())]);
-        DB::table('users')->where('id', $u->id)->update($extra + ['wholesale_status' => 'approved', 'phone' => '(813) 555-0142']);
+        DB::table('users')->where('id', $u->id)->update($extra + ['wholesale_status' => 'approved', 'net_terms' => 1, 'phone' => '(813) 555-0142']);   // terms are off by default: the shop turns them on
         B2bAccounts::evaluate($u->id, false);
         return $u->fresh();
     }

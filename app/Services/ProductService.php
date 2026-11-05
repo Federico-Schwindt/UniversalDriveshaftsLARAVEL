@@ -29,7 +29,8 @@ class ProductService
 
     public function search(string $q, int $limit = 8): array
     {
-        $q = trim($q);
+        // part numbers are often typed with a slash ("1680/60", "2880/16"): ours use a dash
+        $q = trim(preg_replace('#(?<=\d)\s*/\s*(?=\d)#', '-', $q));
         if (strlen($q) < 2) return [];
         // a kind of part in the query becomes a category filter; the rest must be in the name
         $lower = ' ' . mb_strtolower($q) . ' ';

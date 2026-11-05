@@ -1,0 +1,24 @@
+/* Review carousel: the UDS Instagram look (logo top centre, royal blue, condensed caps, red accents, checker flag)
+   on top of the social v2 classes in social.css. */
+body{margin:0;background:#000}
+.logo{position:absolute;left:50%;top:54px;transform:translateX(-50%);width:600px;height:auto;display:block}
+/* on blue / photos the logo carries a white outline, as on the feed */
+.logo-o{filter:drop-shadow(3px 0 0 #fff) drop-shadow(-3px 0 0 #fff) drop-shadow(0 3px 0 #fff) drop-shadow(0 -3px 0 #fff) drop-shadow(0 10px 18px rgba(2,10,35,.35))}
+.stars{display:inline-flex;gap:6px;color:#ffb81c;line-height:1}
+.stars svg{width:1em;height:1em;display:block}
+.pill-w{display:inline-flex;align-items:center;gap:16px;height:66px;padding:0 28px 0 20px;border-radius:999px;background:#fff;color:#0b1630;font-weight:700;font-size:24px;box-shadow:0 16px 30px -16px rgba(2,10,35,.65)}
+.pill-w .stars{font-size:30px}
+.ribbon{position:absolute;left:-30px;right:-30px;bottom:0;height:104px;background:#e11d2a;display:flex;align-items:center;justify-content:center;gap:44px;
+  color:#fff;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:25px;letter-spacing:.08em;text-transform:uppercase}
+.ribbon span{display:inline-flex;align-items:center;gap:12px}
+.ribbon svg{width:26px;height:26px}
+.checker{position:absolute;background:repeating-conic-gradient(#1d5fe8 0 25%,#fff 0 50%) 0 0/46px 46px}
+.paper{background:#f4f6fb}
+.paper::before{content:"";position:absolute;inset:0;opacity:.5;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .55  0 0 0 0 .6  0 0 0 0 .7  0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E")}
+.frame{position:absolute;border-radius:26px;overflow:hidden;border:8px solid #fff;box-shadow:0 30px 50px -24px rgba(2,10,35,.6)}
+.frame img{width:100%;height:100%;object-fit:cover;display:block}
+.tag{position:absolute;left:18px;bottom:18px;height:48px;padding:0 18px;border-radius:999px;background:#1246ab;color:#fff;display:inline-flex;align-items:center;
+  font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:17px;letter-spacing:.08em;text-transform:uppercase}
+.swipe{position:absolute;right:64px;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:20px;letter-spacing:.14em;text-transform:uppercase;display:inline-flex;align-items:center;gap:10px}
+.swipe svg{width:26px;height:26px}

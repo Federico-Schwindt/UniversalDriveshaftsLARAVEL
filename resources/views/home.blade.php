@@ -28,6 +28,7 @@
         <a class="btn btn-primary btn-lg" href="/shop/driveshaft-components">{!! __('Shop components') !!} <x-icon name="arrow-right"/></a>
         <a class="btn btn-lg n-btn-ghost" href="/catalog/driveshafts"><x-icon name="crosshair"/> {!! __('Find by vehicle') !!}</a>
       </div>
+      <x-google-rating variant="dark" class="n-hero__rating"/>
     </div>
     <div class="n-hero__part">
       <picture>

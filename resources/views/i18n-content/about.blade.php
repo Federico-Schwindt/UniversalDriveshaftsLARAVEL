@@ -19,8 +19,8 @@
       <video controls playsinline preload="none" poster=""
              style="width:100%;max-height:520px;border-radius:var(--r-lg);border:1px solid var(--line);box-shadow:var(--sh-2);background:#000"
              aria-label="Dentro del taller de Universal Driveshafts">
-        <source src="https://universaldriveshafts.com/wp-content/uploads/2025/01/ssstik.io_@uds247_1736520583506.mp4" type="video/mp4">
-        <p class="vfallback">Tu navegador no puede reproducir este video. <a href="https://universaldriveshafts.com/wp-content/uploads/2025/01/ssstik.io_@uds247_1736520583506.mp4">Descárgalo</a>.</p>
+        <source src="/uploads/wp/2025/01/ssstik.io_@uds247_1736520583506.mp4" type="video/mp4">
+        <p class="vfallback">Tu navegador no puede reproducir este video. <a href="/uploads/wp/2025/01/ssstik.io_@uds247_1736520583506.mp4">Descárgalo</a>.</p>
       </video>
     </div>
   </div>

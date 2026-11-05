@@ -32,6 +32,7 @@
       ['driveshafts', 'admin/driveshafts', 'shaft', 'Complete driveshafts'],
       ['inventory', 'admin/inventory', 'layers', 'Inventory', $counts['low_stock'] ?? 0],
       ['designs', 'admin/designs', 'ruler', 'Designer builds'],
+      ['seo', 'admin/seo', 'search', 'SEO & redirects', $counts['seo_404'] ?? 0],
     ]],
     ['Support', [
       ['leads', 'admin/leads', 'inbox', 'Leads & quotes', $counts['leads_new'] ?? 0],
@@ -39,6 +40,7 @@
       ['chats', 'admin/chats', 'inbox', 'Assistant chats', $counts['chats_waiting'] ?? 0],
     ]],
     ['Insights', [
+      ['reports', 'admin/analytics', 'dollar', 'Monthly sales'],
       ['reports', 'admin/reports', 'chart', 'Reports'],
       ['activity', 'admin/activity', 'history', 'Activity log'],
     ]],

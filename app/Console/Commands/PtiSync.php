@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
  * Bridge to Powertrain Industries (our supplier) for five component categories.
  *
  *   --catalog  refresh pti_parts from PTI and link each part to our product (same SKU, or same SKU + "U")
- *   --create   add the PTI parts we don't carry as drafts, SKU = PTI number + "U", priced PTI x 1.30 (owner, 2026-10-23/24)
+ *   --create   add the PTI parts we don't carry (published since 2026-11-04; photos cleaned by pti:dewatermark), SKU = PTI number + "U", priced PTI x 1.30 (owner, 2026-10-23/24)
  *   --stock    PTI on-hand per part -> catalog_live.pti_in_stock (shown in stock when we OR PTI have it)
  *   --boxes    weight + box per part, read from PTI's own cart shipping quote (cart must be empty)
  *   --apply-boxes  copy PTI's packed weight and box onto our products (owner, 2026-10-24: use PTI's dimensions)
@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\DB;
  */
 class PtiSync extends Command
 {
-    protected $signature = 'pti:sync {--catalog} {--create} {--stock} {--boxes} {--apply-boxes} {--images} {--limit=0 : max parts for --stock/--boxes} {--force : re-measure boxes already checked} {--dry : report only, write nothing}';
+    protected $signature = 'pti:sync {--catalog} {--create} {--stock} {--boxes} {--apply-boxes} {--images} {--photos-for= : comma-separated PTI part numbers: also download photos for these linked parts (ours had none / a poor one)} {--limit=0 : max parts for --stock/--boxes} {--force : re-measure boxes already checked} {--dry : report only, write nothing}';
     protected $description = 'Sync parts, stock and ship boxes from the Powertrain Industries dealer portal';
 
     /** PTI component type => our product category slug and the label used in titles */
@@ -76,7 +76,7 @@ class PtiSync extends Command
     {
         if (!$pti->configured()) { $this->error('PTI_USER / PTI_PASS missing from .env'); return self::FAILURE; }
         $any = false;
-        foreach (['catalog', 'create', 'stock', 'boxes', 'apply-boxes', 'images'] as $o) $any = $any || $this->option($o);
+        foreach (['catalog', 'create', 'stock', 'boxes', 'apply-boxes', 'images', 'photos-for'] as $o) $any = $any || $this->option($o);
         if (!$any) { $this->error('Pick at least one of --catalog --create --stock --boxes --apply-boxes --images'); return self::FAILURE; }
         try {
             if ($this->option('catalog')) $this->catalog($pti);
@@ -84,7 +84,7 @@ class PtiSync extends Command
             if ($this->option('stock')) $this->stock($pti, $writer);
             if ($this->option('boxes')) $this->boxes($pti);
             if ($this->option('apply-boxes')) $this->applyBoxes($writer);
-            if ($this->option('images')) $this->images();
+            if ($this->option('images') || $this->option('photos-for')) $this->images();
         } catch (\Throwable $e) {
             $this->error($e->getMessage());
             return self::FAILURE;
@@ -177,7 +177,7 @@ class PtiSync extends Command
                 : $this->describe($r->part_number, $r->pti_type, json_decode($r->specs, true) ?: []);
             if ($this->option('dry')) { $this->line("would create {$r->part_number}  \${$this->sell($r->pti_price)}  $name"); $n++; continue; }
             $id = $writer->saveProduct(null, [
-                'name' => $name, 'slug' => '', 'status' => 'draft', 'sku' => $r->part_number . 'U',   // our SKUs for PTI parts end in U (owner, 2026-10-24); the title keeps PTI's number
+                'name' => $name, 'slug' => '', 'status' => 'publish', 'sku' => $r->part_number . 'U',   // our SKUs for PTI parts end in U (owner, 2026-10-24); the title keeps PTI's number. Published right away (owner, 2026-11-04): pti:dewatermark runs after the sync
                 'regular_price' => (string) $this->sell($r->pti_price), 'sale_price' => '', 'cost' => (string) $r->pti_price,
                 'description' => $desc, 'short' => '', 'categories' => str_starts_with($r->pti_type, 'small:') ? array_values(array_unique(['small-parts', $cat])) : [$cat], 'attrs' => $attrs, 'images' => [],
                 'manage_stock' => false, 'stock_status' => 'outofstock',   // availability comes from PTI (--stock)
@@ -365,7 +365,9 @@ class PtiSync extends Command
     /** PTI photos for the parts we added from PTI, stored locally so they can be cleaned (de-watermarked) and served by us. */
     private function images(): void
     {
-        $rows = DB::table('pti_parts')->where('match', 'created')->get();
+        $only = array_filter(array_map('trim', explode(',', (string) $this->option('photos-for'))));
+        // parts we created from PTI, or (with --photos-for) parts we already sold whose own photo is missing or poor
+        $rows = $only ? DB::table('pti_parts')->whereIn('part_number', $only)->whereNotNull('wp_product_id')->get() : DB::table('pti_parts')->where('match', 'created')->get();
         $dir = public_path('img/pti'); @mkdir($dir, 0775, true);
         $done = 0; $files = 0;
         foreach ($rows as $r) {
@@ -386,6 +388,12 @@ class PtiSync extends Command
             }
             if (!$urls || $this->option('dry')) { $done += (bool) $urls; continue; }
             DB::table('catalog_live')->where('wp_product_id', $r->wp_product_id)->update(['image' => $urls[0], 'thumb' => $urls[0], 'gallery' => json_encode(array_slice($urls, 1))]);
+            // a product the live store also lists keeps these photos through the hourly catalog:sync-live (prices still sync)
+            if ($r->match !== 'created') {
+                $over = (array) \App\Support\Settings::get('catalog.image_overrides', []);
+                $over[(string) $r->wp_product_id] = ['image' => $urls[0], 'gallery' => array_slice($urls, 1)];
+                \App\Support\Settings::set('catalog.image_overrides', $over);
+            }
             $done++;
         }
         Cache::forget('catalog_live_map'); CatalogWriter::invalidate();

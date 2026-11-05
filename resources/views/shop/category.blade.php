@@ -7,8 +7,10 @@
   $seriesNames = array_column($catSeries, 'name');
   $catName = \App\Support\PartGlossary::t($cat['name']);
   $sfx = fn ($t) => __($t);
-  // title: "{count} {name} in stock: 1310, 1350, 1410 series" trimmed to 60 chars
-  $titleBase = (!$isFiltered && $count ? number_format($count) . ' ' : '') . $catName;
+  // title: "{count} {name} in stock: 1310, 1350, 1410 series" trimmed to 60 chars; categories with a search name
+  // (config/seo-copy.php "title", from Search Console queries) lead with it instead: "Driveshaft Slip Yokes: 1310, 1350 Series"
+  $searchName = !empty($seoCopy['title']) ? __((string) $seoCopy['title']) : null;
+  $titleBase = $searchName ?? ((!$isFiltered && $count ? number_format($count) . ' ' : '') . $catName);
   if ($seriesNames && !$isFiltered) {
     $names = array_slice($seriesNames, 0, 5);
     while ($names && mb_strlen($titleBase . ': ' . implode(', ', $names) . $sfx(' series') . ' | UDS') > 60) array_pop($names);
@@ -24,8 +26,12 @@
   $desc = ($count ? number_format($count) . ' ' : '') . $catName . $sfx(' in stock') . ($seriesNames ? $sfx(' in ') . implode(', ', array_slice($seriesNames, 0, 4)) . $sfx(' series') : '') . $sfx(', ships same day from Florida. ') . $first;
   if (mb_strlen($desc) < 120 && $intro !== '') $desc = trim($desc . ' ' . (preg_split('/(?<=[.!?])\s+/', $intro)[1] ?? '')); // tiny categories: add a second sentence of the copy
   if (mb_strlen($desc) < 120) $desc = trim($desc . ' ' . __('Live pricing and stock, UPS rates at checkout, cross-referenced to OEM and Spicer numbers.'));
+  if (!empty($seoCopy['desc'])) $desc = str_replace('{count}', $count ? number_format($count) : '', __((string) $seoCopy['desc']));
+  $desc = trim(preg_replace('/^\s+|\s{2,}/', ' ', $desc));
   if (mb_strlen($desc) > 160) $desc = rtrim(mb_substr($desc, 0, 157), ' ,.;') . '...';
   if ($page > 1) { $desc = 'Page ' . $page . ' of ' . $data['pages'] . ': ' . $desc; if (mb_strlen($desc) > 160) $desc = rtrim(mb_substr($desc, 0, 157), ' ,.;') . '...'; }
+  // the category's own SEO title / description from the admin (unfiltered first page only)
+  if (!$isFiltered && $page === 1) { $title = ($seoOwn['uds_seo_title'] ?? '') ?: $title; $desc = ($seoOwn['uds_seo_desc'] ?? '') ?: $desc; }
   $canonical = (!$isFiltered && $page > 1) ? $cleanPath . '?page=' . $page : $cleanPath;
   $absBase = rtrim(config('app.url'), '/');
 @endphp
@@ -138,12 +144,6 @@
   </div>
 </section>
 
-<div class="qv-back" id="qv-back">
-  <div class="qv" style="position:relative">
-    <button class="qv-x" id="qv-x" aria-label="{{ __('Close quick view') }}"><x-icon name="x"/></button>
-    <div class="qv-in" id="qv-in"><div class="aempty" style="border:0;background:none">{{ __('Loading') }}</div></div>
-  </div>
-</div>
 <div class="stock-pop" id="stock-pop"></div>
 <div class="img-pop" id="img-pop" aria-hidden="true"><img alt=""></div>
 

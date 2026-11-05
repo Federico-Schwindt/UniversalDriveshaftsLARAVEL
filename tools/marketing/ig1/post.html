@@ -1,0 +1,51 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:Poppins;font-weight:800;src:url(file:///var/www/vhosts/dev.udshafts.com/uds-app/public/fonts/poppins-800.woff2)}
+@font-face{font-family:Poppins;font-weight:600;src:url(file:///var/www/vhosts/dev.udshafts.com/uds-app/public/fonts/poppins-600.woff2)}
+@font-face{font-family:Hanken;font-weight:100 900;src:url(file:///var/www/vhosts/dev.udshafts.com/uds-app/public/fonts/hankengrotesk-var.woff2)}
+@font-face{font-family:Plex;font-weight:500;src:url(file:///var/www/vhosts/dev.udshafts.com/uds-app/public/fonts/ibmplexmono-500.woff2)}
+@font-face{font-family:Plex;font-weight:600;src:url(file:///var/www/vhosts/dev.udshafts.com/uds-app/public/fonts/ibmplexmono-600.woff2)}
+:root{--red:#E3222B;--ink:#0A0A0C;--fg:#F3F3F1;--mute:rgba(243,243,241,.58)}
+*{margin:0;box-sizing:border-box}
+html,body{width:1080px;height:1350px;background:var(--ink);overflow:hidden}
+.c{position:relative;width:1080px;height:1350px;background:url(file:///tmp/claude-10004/-var-www-vhosts-dev-udshafts-com-uds-app/2d80c33c-fa7e-44a8-b91c-6de800ec3bee/scratchpad/ig1/gen/g1.png) center/cover}
+.c:before{content:"";position:absolute;inset:0;background:
+ radial-gradient(70% 45% at 85% 12%,rgba(6,6,8,.72),transparent 70%),
+ radial-gradient(60% 40% at 10% 92%,rgba(6,6,8,.82),transparent 72%)}
+.top{position:absolute;right:56px;top:58px;text-align:right}
+.logo{width:300px;display:inline-block}
+h1{font:800 86px/0.93 Poppins;letter-spacing:-.025em;color:var(--fg);text-transform:uppercase;margin-top:34px;text-shadow:0 4px 30px rgba(0,0,0,.6)}
+h1 em{font-style:normal;color:var(--red)}
+.list{font:500 14px/1 Plex;letter-spacing:.16em;color:var(--mute);text-transform:uppercase;margin-top:22px}
+.list b{color:var(--red);font-weight:600}
+.cta{position:absolute;left:56px;bottom:52px}
+.num{font:800 138px/0.86 Poppins;letter-spacing:-.04em;color:var(--fg);font-variant-numeric:tabular-nums}
+.cap{font:600 15px/1 Plex;letter-spacing:.2em;color:var(--fg);text-transform:uppercase;margin-top:16px}
+.ship{font:500 25px/1.3 Hanken;color:var(--mute);margin-top:18px}
+.ship strong{color:var(--fg);font-weight:700}
+.pill{display:inline-flex;align-items:center;gap:14px;margin-top:26px;background:var(--red);color:#fff;font:600 23px/1 Poppins;padding:19px 28px 18px;border-radius:999px;box-shadow:0 10px 40px rgba(227,34,43,.45)}
+.pill i{font-style:normal;font-size:26px}
+.foot{font:500 15px/1 Plex;letter-spacing:.12em;color:var(--mute);margin-top:24px}
+svg{position:absolute;inset:0}
+.lab{position:absolute;transform:translate(-100%,-50%);text-align:right;font:600 13px/1.25 Plex;letter-spacing:.14em;color:var(--fg);text-transform:uppercase;white-space:nowrap;text-shadow:0 2px 10px #000}
+.lab span{display:block;color:rgba(243,243,241,.7);font-weight:500;letter-spacing:.08em;margin-top:3px}.lab span b{color:var(--red);font-weight:600}
+</style></head><body><div class="c" id="c">
+<svg width="1080" height="1350" id="lines"></svg>
+<div class="top"><img class="logo" id="logo" src="file:///var/www/vhosts/dev.udshafts.com/uds-app/public/img/uds-logo.png">
+<h1>The whole<br>driveline.<br><em>In stock.</em></h1>
+<div class="list">Yokes <b>/</b> U-joints <b>/</b> Center bearings</div></div>
+<div class="cta"><div class="num">6,821</div><div class="cap">Driveline parts ready to ship</div>
+<div class="ship">Order by <strong>2 pm ET</strong> and it ships <strong>the same day.</strong></div>
+<div class="pill">Shop the driveline <i>&rarr;</i></div>
+<div class="foot">universaldriveshafts.com &nbsp;·&nbsp; (813) 524-6491</div></div>
+</div><script>
+const L=[["Slip yoke","3003-16",[146,352],[118,412]],["U-joint","SPL55X",[262,462],[222,540]],["Weld yoke","3R26-27",[462,655],[420,728]],
+["End yoke","3104-26CV",[626,784],[586,858]],["Flange yoke","1202-181",[694,1032],[654,1078]],["Center bearing","5003323",[778,1190],[738,1236]]];
+const s=document.getElementById('lines'),c=document.getElementById('c');let h='';
+for(const [n,k,d,l] of L){const ex=l[0]+12;h+='<polyline points="'+d[0]+','+d[1]+' '+(ex+ (d[1]-l[1]>0?0:0))+','+l[1]+' '+(ex)+','+l[1]+'" fill="none" stroke="rgba(243,243,241,.55)" stroke-width="1.2"/>'
++'<circle cx="'+d[0]+'" cy="'+d[1]+'" r="11" fill="none" stroke="rgba(227,34,43,.55)" stroke-width="1.5"/><circle cx="'+d[0]+'" cy="'+d[1]+'" r="4.5" fill="#E3222B"/>';
+const e=document.createElement('div');e.className='lab';e.style.left=l[0]+'px';e.style.top=l[1]+'px';e.innerHTML=n+'<span><b>#</b>'+k+'</span>';c.appendChild(e);}
+s.innerHTML=h;
+// brand logo on black: blue becomes white, red stays red
+const im=document.getElementById('logo');const o=new Image();o.onload=()=>{const k=document.createElement('canvas');k.width=o.width;k.height=o.height;const x=k.getContext('2d');x.drawImage(o,0,0);
+const d=x.getImageData(0,0,k.width,k.height),a=d.data;for(let i=0;i<a.length;i+=4){if(a[i+2]>a[i]){a[i]=a[i+1]=a[i+2]=243}}x.putImageData(d,0,0);im.src=k.toDataURL();};o.src=im.src;
+</script></body></html>

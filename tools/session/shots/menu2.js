@@ -1,0 +1,4 @@
+const { chromium } = require(process.env.PWC);(async()=>{const b=await chromium.launch({headless:true});const p=await b.newPage({viewport:{width:1400,height:900}});
+await p.goto('https://dev.udshafts.com/contact?x='+Date.now(),{waitUntil:'networkidle'});await p.click('.tel__cc');await p.waitForTimeout(300);
+console.log(JSON.stringify(await p.evaluate(()=>{const mn=document.querySelector('.tel__menu');const cs=getComputedStyle(mn);const wr=mn.parentElement;const ws=getComputedStyle(wr);const pick=(o,k)=>k.reduce((a,x)=>(a[x]=o[x],a),{});return {menu:pick(cs,['position','top','bottom','left','transform','translate','marginTop','display','height']),wrap:pick(ws,['position','display','transform','height','overflow']),wrapRect:wr.getBoundingClientRect().toJSON(),menuRect:mn.getBoundingClientRect().toJSON(),scrollY:window.scrollY};})));
+await b.close();})();

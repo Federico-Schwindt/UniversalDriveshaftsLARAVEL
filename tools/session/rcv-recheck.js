@@ -1,0 +1,20 @@
+const { chromium } = require(process.env.PWC); const S = process.env.S, B = 'https://dev.udshafts.com';
+(async () => {
+  const b = await chromium.launch({ headless: true });
+  const c = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true }); const p = await c.newPage();
+  p.on('pageerror', e => console.log('PAGEERROR', e.message));
+  await p.goto(B + '/parts/5-10211X', { waitUntil: 'networkidle' });
+  await p.locator('form.rcv-notify input[name=email]').fill('test-recheck@uds.local'); await p.locator('form.rcv-notify button[type=submit]').click();
+  await p.waitForSelector('.rcv-notify__msg:not([hidden])'); await p.waitForTimeout(300);
+  console.log('row hidden after success:', await p.locator('.rcv-notify__row').isHidden());
+  const el = p.locator('form.rcv-notify'); await el.scrollIntoViewIfNeeded(); const bb = await el.boundingBox(); const sy = await p.evaluate(() => scrollY);
+  await p.screenshot({ path: S + '/pdp-notify-done-m.png', fullPage: true, clip: { x: 0, y: bb.y + sy - 10, width: 390, height: bb.height + 20 } });
+  await p.goto(B + '/catalog/driveshafts/part/2392-707', { waitUntil: 'networkidle' });
+  await p.locator('[data-quote]').first().click(); await p.waitForSelector('.rcv-modal.on'); await p.waitForTimeout(300);
+  await p.keyboard.press('Escape'); await p.waitForTimeout(400);
+  console.log('modal hidden after Esc:', await p.locator('.rcv-modal').isHidden(), '| scroll lock released:', !(await p.evaluate(() => document.documentElement.classList.contains('rcv-lock'))));
+  await p.locator('[data-quote]').first().click(); await p.waitForSelector('.rcv-modal.on'); await p.waitForTimeout(300);
+  await p.locator('.rcv-modal').click({ position: { x: 10, y: 10 } }); await p.waitForTimeout(400);
+  console.log('modal hidden after overlay tap:', await p.locator('.rcv-modal').isHidden());
+  await b.close();
+})().catch(e => { console.error('FAIL', e.message); process.exit(1); });

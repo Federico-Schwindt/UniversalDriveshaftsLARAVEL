@@ -1,0 +1,16 @@
+const { chromium } = require(process.env.PWC);
+(async () => { const b = await chromium.launch(); const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
+  const p = await ctx.newPage(); p.on('pageerror', e => console.log('JSERR', e.message));
+  await p.goto('https://dev.udshafts.com/shop/driveshaft-components/flange-yokes', { waitUntil: 'networkidle' });
+  const btn = p.locator('.p-plus').nth(1); await btn.scrollIntoViewIfNeeded();
+  const before = await btn.innerHTML(); await btn.click(); await p.waitForTimeout(2500);
+  console.log('drawer open:', await p.locator('#ucart.is-open').count(), '| items:', await p.locator('.ucart__it').count(), '| badge:', await p.locator('.uhead [data-cart-count]').first().textContent());
+  await p.screenshot({ path: process.env.SP + '/cart1.png' });
+  await p.locator('[data-ucart-close]').last().click(); await p.waitForTimeout(1200);
+  console.log('icon restored:', (await btn.innerHTML()) === before, '| svg inside:', await btn.locator('svg').count());
+  await p.locator('.p-plus').nth(2).click(); await p.waitForTimeout(2500);
+  console.log('after 2nd add items:', await p.locator('.ucart__it').count(), 'count label', await p.locator('[data-ucart-count]').textContent());
+  await p.locator('.ucart__qty [data-q="1"]').first().click(); await p.waitForTimeout(1500);
+  console.log('after +1 qty label', await p.locator('[data-ucart-count]').textContent());
+  await p.screenshot({ path: process.env.SP + '/cart2.png' });
+  await b.close(); })().catch(e => { console.error('FAILED', e.message); process.exit(1); });

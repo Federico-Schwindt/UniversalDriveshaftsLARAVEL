@@ -1,0 +1,11 @@
+const { chromium } = require(process.env.PWC);(async()=>{const b=await chromium.launch({headless:true});const p=await b.newPage({viewport:{width:1400,height:900}});
+await p.goto('https://dev.udshafts.com/parts/5-1310XU',{waitUntil:'networkidle'});const csrf=await p.evaluate(()=>(document.querySelector('meta[name="csrf-token"]')||{}).content||'');
+await p.evaluate(async(c)=>{await fetch('/quick-order/add',{method:'POST',headers:{'X-CSRF-TOKEN':c,'X-Requested-With':'XMLHttpRequest','Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({lines:JSON.stringify([{sku:'5-1310XU',qty:1}])})});},csrf);
+await p.goto('https://dev.udshafts.com/checkout?x='+Date.now(),{waitUntil:'networkidle'});await p.waitForTimeout(500);
+const opts=()=>p.evaluate(()=>[...document.querySelectorAll('#ship-select option')].map(o=>o.textContent.trim()));
+console.log('default:',JSON.stringify(await opts()));
+await p.evaluate(()=>{const s=document.querySelector('#billing_country');s.value='AR';s.dispatchEvent(new Event('change',{bubbles:true}));const z=document.querySelector('[name=billing_postcode]');z.value='';z.dispatchEvent(new Event('input',{bubbles:true}));z.dispatchEvent(new Event('change',{bubbles:true}));});
+await p.waitForTimeout(800); console.log('AR, no postal:',JSON.stringify(await opts()));
+await p.evaluate(()=>{const z=document.querySelector('[name=billing_postcode]');z.value='C1001';z.dispatchEvent(new Event('input',{bubbles:true}));z.dispatchEvent(new Event('change',{bubbles:true}));});
+await p.waitForTimeout(6000); console.log('AR, C1001:',JSON.stringify(await opts()));
+await b.close();})();

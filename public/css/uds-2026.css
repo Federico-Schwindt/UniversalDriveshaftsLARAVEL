@@ -874,9 +874,9 @@ body.has-ua{padding-bottom:84px}
 /* the .p-add / .p-view / .p-plus rules live further down in one place; this
    older copy carried !important and was turning the primary add-to-cart button
    back into an outline. */
-.p-pic{width:44px;height:44px;object-fit:contain;background:var(--paper-2);border-radius:var(--r-xs);
+.p-pic{width:88px;height:88px;min-width:88px;max-width:none;object-fit:contain;background:var(--paper-2);border-radius:var(--r-xs);
   padding:2px;cursor:zoom-in;mix-blend-mode:multiply}
-.p-pic-ph{width:44px;height:44px;display:grid;place-items:center;background:var(--paper-2);
+.p-pic-ph{width:88px;height:88px;min-width:88px;display:grid;place-items:center;background:var(--paper-2);
   border-radius:var(--r-xs);color:var(--ink-faint)}
 .p-pn{display:inline-flex;align-items:center;gap:.3rem;font-family:var(--font-m);font-weight:600;color:var(--blue)}
 .p-pn .i{font-size:.85em;opacity:.5}
@@ -958,16 +958,8 @@ body.has-ua{padding-bottom:84px}
 }
 
 /* ============================================================================
-   QUICK VIEW MODAL + POPOVERS
+   POPOVERS
    ========================================================================== */
-.qv-back{position:fixed;inset:0;z-index:300;background:rgba(8,16,32,.55);backdrop-filter:blur(6px);
-  display:none;place-items:center;padding:1.25rem}
-.qv-back.on{display:grid}
-.qv{background:#fff;border-radius:var(--r-lg);max-width:840px;width:100%;max-height:88vh;overflow-y:auto;
-  box-shadow:var(--sh-3)}
-.qv-x{position:absolute;top:.9rem;right:.9rem;z-index:2;width:38px;height:38px;border-radius:var(--r-pill);
-  border:1px solid var(--line);background:#fff;color:var(--ink-2);cursor:pointer;display:grid;place-items:center}
-.qv-x:hover{border-color:var(--blue);color:var(--blue)}
 .stock-pop,.alt-pop{border-radius:var(--r);border:1px solid var(--line);box-shadow:var(--sh-3);background:#fff;
   font-size:.85rem;color:var(--ink-2)}
 .img-pop{border-radius:var(--r-lg);box-shadow:var(--sh-3)}
@@ -1885,7 +1877,7 @@ body.has-ua{padding-bottom:84px}
    (migrated out of shop/partials/style.blade.php so the cascade is predictable)
    ========================================================================== */
 
-/* add / quick-view buttons: primary action is solid blue with a white glyph */
+/* row buttons: primary action is solid blue with a white glyph */
 .p-add{display:inline-flex;gap:.6rem}
 .p-add button{width:44px;height:44px;border-radius:var(--r-sm);cursor:pointer;
   display:inline-flex;align-items:center;justify-content:center;
@@ -1893,8 +1885,6 @@ body.has-ua{padding-bottom:84px}
     color var(--dur-2) var(--ease),transform var(--dur-1) var(--ease)}
 .p-add button:active{transform:scale(.94)}
 .p-add button .i{font-size:1.15rem}
-.p-view{background:#fff;border:1.5px solid var(--line-strong);color:var(--ink-2)}
-.p-view:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-050)}
 .p-plus{background:var(--blue);border:1.5px solid var(--blue);color:#fff}
 .p-plus:hover{background:var(--blue-700);border-color:var(--blue-700);color:#fff}
 .p-wish{background:#fff;border:1.5px solid var(--line-strong);color:var(--ink-2)}
@@ -1952,42 +1942,6 @@ body.has-ua{padding-bottom:84px}
   .alt-pop .ap-note,.alt-pop .ap-h span:nth-child(3){display:none}
 }
 
-/* quick-view modal internals */
-.qv-in{padding:1.6rem}
-.qv-img{background:var(--paper-2);border-radius:var(--r);aspect-ratio:3/2;display:grid;place-items:center;
-  padding:1rem;margin-bottom:1.1rem}
-.qv-img img{max-width:100%;max-height:280px;object-fit:contain}
-.qv-top{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap}
-.qv-top .qv-name{font-size:.82rem;color:var(--ink-faint)}
-.qv-top .qv-sku{font-family:var(--font-m);font-size:1.6rem;font-weight:600;line-height:1.1;letter-spacing:-.02em}
-.qv-top .qv-brand{font-size:.85rem;color:var(--ink-2);margin-top:.2rem}
-.qv-price{text-align:right;font-family:var(--font-m)}
-.qv-price .now{font-size:1.7rem;font-weight:600;font-variant-numeric:tabular-nums}
-.qv-price .was{text-decoration:line-through;color:var(--ink-faint);font-size:.9rem}
-.qv-price .save{color:var(--teal-ink);font-weight:600;font-size:.8rem}
-.qv-specs{display:flex;background:var(--paper-2);border-radius:var(--r);margin:1.1rem 0;overflow:hidden}
-.qv-specs .qs{flex:1;padding:.9rem 1.1rem;display:flex;flex-direction:column;gap:.15rem}
-.qv-specs .qs + .qs{border-left:1px solid var(--line)}
-.qv-specs .qs span{font-family:var(--font-m);color:var(--ink-faint);font-size:.68rem;
-  text-transform:uppercase;letter-spacing:.05em}
-.qv-specs .qs b{font-family:var(--font-h);font-size:.98rem}
-.qv-act{display:flex;gap:.75rem;justify-content:flex-end;border-top:1px solid var(--line);padding-top:1.1rem;align-items:center}
-.qv-qty{width:78px;padding:.7rem;border:1.5px solid var(--line-strong);border-radius:var(--r-sm);
-  text-align:center;font-family:var(--font-m);font-size:1rem}
-@media (max-width:560px){
-  .qv-back{padding:.75rem;align-items:flex-start}
-  .qv{max-height:95vh}
-  .qv-in{padding:1.1rem 1rem 1.25rem}
-  .qv-x{top:.6rem;right:.7rem}
-  .qv-top{flex-direction:column;gap:.4rem}
-  .qv-price{text-align:left}
-  .qv-specs{flex-direction:column}
-  .qv-specs .qs + .qs{border-left:0;border-top:1px solid var(--line)}
-  .qv-act{flex-wrap:wrap}
-  .qv-act .qv-qty{width:100%}
-  .qv-act .btn{flex:1 1 45%;justify-content:center}
-}
-
 /* ---------------------------------------------------------------------------
    MOBILE: the parts table becomes one card per part
    --------------------------------------------------------------------------- */
@@ -2024,7 +1978,7 @@ body.has-ua{padding-bottom:84px}
   .ptbl tbody td[data-label="Add"]::before,
   .ptbl tbody td[data-label="Pic"]::before{display:none}
   .ptbl tbody td[data-label="Pic"] .p-pic,
-  .ptbl tbody td[data-label="Pic"] .p-pic-ph{width:64px;height:64px;min-width:64px}
+  .ptbl tbody td[data-label="Pic"] .p-pic-ph{width:104px;height:104px;min-width:104px}
 
   /* part number leads the card */
   .ptbl tbody td[data-label="Part #"]{border-top:1px solid var(--line-2)!important;padding-top:.7rem}
@@ -3510,3 +3464,29 @@ button.p-alt span{display:none}
 .co-form .co-savecard{display:flex;flex-direction:row;align-items:flex-start;gap:.55rem;margin:.8rem 0 0;cursor:pointer;text-transform:none;letter-spacing:0;font-weight:600;font-size:.9rem;color:var(--ink)}
 .co-savecard input{width:18px;height:18px;min-height:0;flex:none;margin:.1rem 0 0;padding:0;accent-color:var(--blue)}
 .co-savecard small{display:block;font-weight:400;font-size:.8rem;color:var(--ink-faint);margin-top:.1rem}
+
+
+/* ============================================================================
+   GOOGLE RATING BADGE (<x-google-rating>): figures from Admin → Settings → Reviews
+   ========================================================================== */
+.g-rate{--g-star:#e8a400;display:inline-flex;align-items:center;gap:.45rem;flex-wrap:wrap;text-decoration:none!important;
+  color:var(--ink-2);font-size:.88rem;line-height:1.2}
+.g-rate__stars{position:relative;display:inline-block;letter-spacing:.06em;font-size:1rem;line-height:1;color:var(--line-strong)}
+.g-rate__stars::before{content:"★★★★★";position:absolute;inset:0;width:var(--g-fill,94%);overflow:hidden;color:var(--g-star);white-space:nowrap}
+.g-rate__stars span{visibility:visible}
+.g-rate__n{font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.g-rate__t{text-decoration:underline;text-decoration-color:var(--line-strong);text-underline-offset:3px}
+.g-rate:hover .g-rate__t{text-decoration-color:currentColor}
+.g-rate:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:6px}
+/* on the dark home hero */
+.g-rate--dark{color:rgba(255,255,255,.82)}
+.g-rate--dark .g-rate__n{color:#fff}
+.g-rate--dark .g-rate__stars{color:rgba(255,255,255,.28)}
+.g-rate--dark .g-rate__t{text-decoration-color:rgba(255,255,255,.35)}
+/* product pages: a quiet card above the guarantees */
+.g-rate--card{display:flex;padding:.7rem .9rem;border:1px solid var(--line);border-radius:var(--r);background:var(--paper-2);margin:.9rem 0 0}
+/* checkout trust row */
+.g-rate--compact{font-size:.75rem;gap:.3rem;color:inherit}
+.g-rate--compact .g-rate__stars{font-size:.8rem}
+.n-hero__rating{margin-top:1.1rem}
+@media (prefers-reduced-motion:no-preference){.g-rate__t{transition:text-decoration-color .15s ease}}

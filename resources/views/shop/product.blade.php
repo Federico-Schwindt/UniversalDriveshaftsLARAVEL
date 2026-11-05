@@ -194,7 +194,9 @@
         </div>
       @endif
 
-      <p class="pdp__sku">{{ __('Part No.') }} {{ $p['sku'] }}</p>
+      {{-- "1680-60" is searched as "1680/60" too (Search Console, 2026-11-04): say both, so the page matches either --}}
+      @php $skuAlias = preg_match('/^(\d{3,5})-(\d{1,4}[A-Z]?)$/', (string) $p['sku'], $sa) ? $sa[1] . '/' . $sa[2] : null; @endphp
+      <p class="pdp__sku">{{ __('Part No.') }} {{ $p['sku'] }}@if($skuAlias) <span class="muted">({{ __('also written') }} {{ $skuAlias }})</span>@endif</p>
       <h1 class="pdp__name">{{ $displayName ?: $p['sku'] }}</h1>
 
       @php
@@ -267,6 +269,7 @@
         <a href="/contact"><x-icon name="headset"/> {{ __('Ask about fitment') }}</a>
       </div>
 
+      <x-google-rating variant="card"/>
       <ul class="pdp__assure">
         <li><x-icon name="truck"/><span><b>{{ __('Free shipping on parts orders over $') }}{{ number_format(config('uds.free_shipping_min')) }}.</b> {{ __('Tubing and complete driveshafts always ship at live UPS rates, calculated at checkout.') }}</span></li>
         <li><x-icon name="returns"/><span><b>{{ __('14-day returns.') }}</b> {{ __('Wrong or damaged part? We send a prepaid label.') }}</span></li>
@@ -469,7 +472,7 @@ if(!seen)setTimeout(open,350);
 })();
 </script>
 @endif
-<div class="qv-back" id="qv-back"><div class="qv" style="position:relative"><button class="qv-x" id="qv-x" aria-label="{{ __('Close quick view') }}"><x-icon name="x"/></button><div class="qv-in" id="qv-in"><div class="aempty" style="border:0;background:none">{{ __('Loading') }}</div></div></div></div>
+</div>
 <div class="stock-pop" id="stock-pop"></div>
 <div class="img-pop" id="img-pop" aria-hidden="true"><img alt=""></div>
 @endsection

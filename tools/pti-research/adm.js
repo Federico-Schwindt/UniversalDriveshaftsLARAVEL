@@ -1,0 +1,12 @@
+const { chromium } = require(process.env.PWC); const fs = require('fs');
+(async () => { const ck = JSON.parse(fs.readFileSync(process.env.HOME + '/pti-work/admcookie.json'));
+  const b = await chromium.launch(); const ctx = await b.newContext({ viewport: { width: 1400, height: 900 } });
+  await ctx.addCookies([{ name: ck.name, value: ck.value, domain: 'dev.udshafts.com', path: '/', httpOnly: true, secure: true }]);
+  const p = await ctx.newPage(); const errs = [];
+  p.on('pageerror', e => errs.push('PAGEERR ' + e.message)); p.on('console', m => { if (m.type() === 'error') errs.push('CONSOLE ' + m.text()); });
+  await p.goto('https://dev.udshafts.com/admin/orders/32', { waitUntil: 'networkidle' });
+  console.log('url', p.url(), 'button:', await p.locator('[data-modal="pti-dropship"]').count(), 'template:', await p.locator('template[data-modal-src="pti-dropship"]').count());
+  await p.locator('[data-modal="pti-dropship"]').first().click(); await p.waitForTimeout(1200);
+  console.log('modal open:', await p.locator('.modal [data-pti-form]').count()); await p.waitForTimeout(300);
+  await p.screenshot({ path: process.env.HOME + '/pti-work/adm.png' });
+  console.log(errs.join('\n')); await b.close(); })().catch(e => { console.error('FAILED', e.message); process.exit(1); });

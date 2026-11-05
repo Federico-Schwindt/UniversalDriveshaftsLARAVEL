@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title', __('Contact Universal Driveshafts, Florida | (813) 524-6491'))
-@section('desc', __('Contact Universal Driveshafts LLC, Florida, USA. Call (813) 524-6491, email inquiry@universaldriveshafts.com or send a message.'))
+@section('title', __('Contact Universal Driveshafts | Odessa, FL · (813) 524-6491'))
+@section('desc', __('Universal Driveshafts LLC, 11611 Prospect Drive STE 4, Odessa, FL 33556 (Tampa Bay). Call (813) 524-6491, e-mail inquiry@universaldriveshafts.com or send a message.'))
 @section('content')
 <section class="phero"><div class="wrap">
   <div class="crumb"><a href="/">{{ __('Home') }}</a><span class="sep">/</span><span>{{ __('Contact us') }}</span></div>
@@ -61,7 +61,8 @@
     <div class="sbcard">
       <h2>Universal Driveshafts LLC</h2>
       <p style="font-family:var(--font-h);font-weight:600;color:var(--blue)">{{ __('OEM driveshafts and parts') }}</p>
-      <p>{{ __('Florida, USA') }}</p>
+      {{-- the full address is public for local search (owner, 2026-11-04: Odessa is the shop) --}}
+      <p><a href="{{ config('uds.pickup.maps') }}" target="_blank" rel="noopener">11611 Prospect Drive STE 4<br>Odessa, FL 33556</a><br><span class="muted">{{ __('Tampa Bay area, Florida') }}</span></p>
       <h2 style="margin-top:1.4rem">{{ __('Opening hours') }}</h2>
       <p>{{ __('Monday to Friday, 8:00am to 5:00pm') }}<br>{{ __('Saturday, 9:00am to 2:00pm') }}</p>
     </div>

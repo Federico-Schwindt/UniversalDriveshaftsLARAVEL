@@ -133,8 +133,7 @@
       }).catch(function(){btn.classList.remove('is-busy');});
   }
 
-  /* ---------- add + quick view (click) ---------- */
-  var back=document.getElementById('qv-back'), inn=document.getElementById('qv-in');
+  /* ---------- add (click) ---------- */
   document.addEventListener('click',function(e){
     var altBtn=e.target.closest('.p-alt[data-alt-for]');
     if(altBtn){ var pb=document.querySelector('.p-plus[data-add="'+altBtn.getAttribute('data-alt-for')+'"]'); if(pb){ clearTimeout(altHideT); showAltFor(pb); } return; }
@@ -148,68 +147,7 @@
     if(altPop.classList.contains('on') && !e.target.closest('#alt-pop')) altPop.classList.remove('on');
     var wish=e.target.closest('.p-wish');
     if(wish){ toggleWish(wish); return; }
-    var view=e.target.closest('.p-view');
-    if(view){ openQuick(view.getAttribute('data-view')); return; }
   });
-  var qvOpener=null;
-  if(back){
-    var dlg=back.querySelector('.qv')||back;
-    dlg.setAttribute('role','dialog'); dlg.setAttribute('aria-modal','true'); dlg.setAttribute('aria-labelledby','qv-title');
-    document.getElementById('qv-x').onclick=closeQuick;
-    back.addEventListener('click',function(e){ if(e.target===back)closeQuick(); });
-    document.addEventListener('keydown',function(e){
-      if(!back.classList.contains('on'))return;
-      if(e.key==='Escape'){closeQuick();return;}
-      if(e.key==='Tab'){ // focus stays inside the modal
-        var f=Array.prototype.filter.call(dlg.querySelectorAll('a[href],button:not([disabled]),input,select,textarea,[tabindex]:not([tabindex="-1"])'),function(el){return el.offsetParent!==null;});
-        if(!f.length)return;
-        if(e.shiftKey&&document.activeElement===f[0]){e.preventDefault();f[f.length-1].focus();}
-        else if(!e.shiftKey&&document.activeElement===f[f.length-1]){e.preventDefault();f[0].focus();}
-        else if(!dlg.contains(document.activeElement)){e.preventDefault();f[0].focus();}
-      }
-    });
-  }
-  function closeQuick(){ if(!back||!back.classList.contains('on'))return; back.classList.remove('on'); if(qvOpener&&qvOpener.focus)qvOpener.focus(); qvOpener=null; }
-  function openQuick(id){
-    if(!back)return;
-    qvOpener=document.activeElement;
-    inn.innerHTML='<div id="qv-title" style="padding:40px;text-align:center;color:#8a94a6">'+T('Loading…')+'</div>';
-    back.classList.add('on');
-    var x=document.getElementById('qv-x'); if(x)x.focus();
-    fetch('/shop/quick-view/'+id).then(function(r){return r.ok||r.status===404?r.json():{found:false};}).then(function(d){
-      if(!d.found){inn.innerHTML='<div id="qv-title" style="padding:40px;text-align:center">'+T('Not found.')+'</div>';return;}
-      inn.innerHTML=renderQuick(d.product);
-      var ab=inn.querySelector('[data-qadd]');
-      if(ab)ab.onclick=function(){
-        var qty=inn.querySelector('.qv-qty').value||1;
-        addToCart(ab.getAttribute('data-qadd'),qty,null).then(function(res){ if(res&&res.success){ab.textContent=T('Added');setTimeout(closeQuick,700);} });
-      };
-    });
-  }
-  function renderQuick(p){
-    var onSale=p.on_sale && p.regular>p.price;
-    var stockLine=stockHtml(p.stock,p.stock_status,p.stock_source), buy=Number(p.price)>0;
-    var img=p.image?('<div class="qv-img"><img src="'+esc(p.image)+'" alt="'+esc(p.sku)+'"></div>'):'';
-    return img+
-      '<div class="qv-top"><div><div class="qv-name" id="qv-title">'+esc(p.name)+'</div>'+
-        '<div class="qv-sku">'+esc(p.sku||'')+'</div>'+
-        '<div class="qv-brand">'+(p.brand?('<span class="nw">'+esc(p.brand)+'</span>'):'')+(p.series?(T('Series ')+esc(p.series)):'')+'</div></div>'+
-        '<div class="qv-price">'+(onSale?('<div class="was">'+money(p.regular)+'</div>'):'')+
-          '<div class="now">'+money(p.price)+'</div>'+(onSale?('<div class="save">'+T('SAVE ')+money(p.regular-p.price)+'</div>'):'')+'</div>'+
-      '</div>'+
-      '<div class="qv-specs">'+
-        (p.weight!==''?('<div class="qs"><span>'+T('Weight')+'</span><b>'+esc(p.weight)+'</b></div>'):'')+
-        (p.style?('<div class="qs"><span>'+T('Style')+'</span><b>'+esc(p.style)+'</b></div>'):'')+
-        '<div class="qs"><span>'+T('Availability')+'</span><b style="font-size:.85rem">'+stockLine+'</b></div>'+
-      '</div>'+
-      (p.notes?('<p style="color:#4a5568;font-size:.9rem;margin:0 0 16px"><b>'+T('Notes:')+'</b> '+esc(p.notes)+'</p>'):'')+
-      '<div class="qv-act">'+
-        (buy?'<input type="number" class="qv-qty" value="1" min="1" aria-label="'+esc(T('Quantity'))+'">':'')+
-        '<a href="/parts/'+encodeURIComponent(p.sku)+'" class="btn btn-ghost" style="border-color:var(--line);color:var(--ink)">'+T('Details')+'</a>'+
-        (buy?'<button class="btn btn-primary" data-qadd="'+p.id+'">'+T('+ Add to Cart')+'</button>'
-            :'<button type="button" class="btn btn-primary" data-quote="'+esc(p.sku)+'" data-pn="'+esc(p.sku)+'">'+T('Get a quote')+'</button>')+
-      '</div>';
-  }
   /* wide tables: fade the right edge while there is more to scroll to */
   function fades(){document.querySelectorAll('.ptbl-wrap').forEach(function(w){
     var on=w.scrollWidth>w.clientWidth+2&&w.scrollLeft+w.clientWidth<w.scrollWidth-2; w.classList.toggle('is-scroll',on);

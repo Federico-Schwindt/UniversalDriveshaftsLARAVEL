@@ -1,0 +1,4 @@
+const {chromium}=require(process.env.PWC);const fs=require('fs');const D=process.argv[2],out=process.argv[3],files=process.argv.slice(4);
+(async()=>{const b=await chromium.launch({executablePath:process.env.BX});const p=await b.newPage({viewport:{width:1600,height:900}});
+await p.setContent('<body style="margin:0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:#555;font:14px sans-serif">'+files.map(f=>{const e=f.split('.').pop();const mt=e==='png'?'png':e==='webp'?'webp':'jpeg';return '<div style="background:repeating-conic-gradient(#ccc 0 25%,#fff 0 50%) 0/24px 24px"><img src="data:image/'+mt+';base64,'+fs.readFileSync(D+'/'+f).toString('base64')+'" style="width:100%;height:420px;object-fit:contain;display:block"><div style="background:#000;color:#fff">'+f+'</div></div>'}).join('')+'</body>');
+await p.waitForTimeout(1500);await p.screenshot({path:out,fullPage:true});await b.close();})();

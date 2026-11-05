@@ -9,19 +9,14 @@ use Illuminate\Support\Facades\DB;
 
 class ReportsController extends Controller
 {
-    /**
-     * What counts as a sale: not cancelled/failed, and either money came in (paid, incl. later refunded —
-     * refunds are netted out of the value) or it is a Net-terms invoice, which the customer is committed to.
-     * Unpaid card / pay-at-pickup / payment-link orders are not sales until they are paid.
-     */
+    /** Orders that count as sales: see App\Support\SalesStats (the WooCommerce Analytics definition). */
     public static function sold($q, string $p = '')
     {
-        return $q->whereNotIn($p . 'status', ['cancelled', 'failed'])
-            ->where(fn ($w) => $w->whereIn($p . 'payment_status', ['paid', 'partially_refunded', 'refunded'])->orWhere($p . 'payment_method', 'net_terms'));
+        return \App\Support\SalesStats::counted($q, $p);
     }
 
-    /** Net revenue of an order row: total less what was refunded. */
-    public const NET = '(total - COALESCE(refund_total, 0))';
+    /** Net sales of one order row for breakdowns: total less shipping, tax and refunds. Period totals use SalesStats (refunds on their own day). */
+    public const NET = \App\Support\SalesStats::ORDER_NET;
 
     public function index(Request $r)
     {
@@ -31,35 +26,37 @@ class ReportsController extends Controller
             $v = \Illuminate\Support\Facades\Validator::make($r->query(), ['from' => 'required|date|after:2000-01-01', 'to' => 'required|date|after_or_equal:from|before:2100-01-01']);
             if ($v->fails()) { $preset = '30d'; session()->now('admin_err', 'That custom date range is not valid — showing the last 30 days.'); }
         }
+        $today = Carbon::today(\App\Support\SalesStats::TZ);
         [$from, $to] = match ($preset) {
-            '7d' => [Carbon::today()->subDays(6), Carbon::today()], '90d' => [Carbon::today()->subDays(89), Carbon::today()],
-            'mtd' => [Carbon::today()->startOfMonth(), Carbon::today()], 'lastm' => [Carbon::today()->subMonthNoOverflow()->startOfMonth(), Carbon::today()->subMonthNoOverflow()->endOfMonth()],
-            'ytd' => [Carbon::today()->startOfYear(), Carbon::today()], '12m' => [Carbon::today()->subMonths(12)->startOfMonth(), Carbon::today()],
-            'custom' => [Carbon::parse($r->query('from', Carbon::today()->subDays(29))), Carbon::parse($r->query('to', Carbon::today()))],
-            default => [Carbon::today()->subDays(29), Carbon::today()],
+            '7d' => [$today->copy()->subDays(6), $today->copy()], '90d' => [$today->copy()->subDays(89), $today->copy()],
+            'mtd' => [$today->copy()->startOfMonth(), $today->copy()], 'lastm' => [$today->copy()->subMonthNoOverflow()->startOfMonth(), $today->copy()->subMonthNoOverflow()->endOfMonth()],
+            'ytd' => [$today->copy()->startOfYear(), $today->copy()], '12m' => [$today->copy()->subMonths(12)->startOfMonth(), $today->copy()],
+            'custom' => [Carbon::parse($r->query('from', $today->copy()->subDays(29))), Carbon::parse($r->query('to', $today->copy()))],
+            default => [$today->copy()->subDays(29), $today->copy()],
         };
-        $toEnd = (clone $to)->endOfDay();
-        $days = $from->diffInDays($to) + 1;
-        $base = fn () => self::sold(DB::table('orders')->whereBetween('created_at', [$from, $toEnd]));
-        $prevFrom = (clone $from)->subDays($days); $prevTo = (clone $from)->subSecond();
-        $prev = fn () => self::sold(DB::table('orders')->whereBetween('created_at', [$prevFrom, $prevTo]));
+        // the range is in Eastern days (the store's clock), like WooCommerce's reports
+        $days = (int) round(abs($from->copy()->startOfDay()->diffInDays($to->copy()->startOfDay()))) + 1;
+        [$fromUtc, $toEnd] = \App\Support\SalesStats::bounds($from, $to);
+        $base = fn () => self::sold(DB::table('orders')->whereBetween('created_at', [$fromUtc, $toEnd]));
+        $prevFrom = (clone $from)->subDays($days); $prevTo = (clone $from)->subDay();
         $net = self::NET;
-
-        $sum = $base()->selectRaw("COUNT(*) n, COALESCE(SUM($net),0) t, COALESCE(SUM(subtotal),0) s, COALESCE(SUM(shipping_total),0) sh, COALESCE(SUM(discount_total),0) d, COALESCE(SUM(tax_total),0) tx, COALESCE(SUM(refund_total),0) rf")->first();
-        $psum = $prev()->selectRaw("COUNT(*) n, COALESCE(SUM($net),0) t")->first();
-        $items = fn () => self::sold(DB::table('order_items as i')->join('orders as o', 'o.id', '=', 'i.order_id')->whereBetween('o.created_at', [$from, $toEnd]), 'o.');
+        $daily = \App\Support\SalesStats::daily($from, $to);
+        $t = \App\Support\SalesStats::totals($from, $to);
+        $pt = \App\Support\SalesStats::totals($prevFrom, $prevTo);
+        $sum = (object) ['n' => $t['orders'], 't' => $t['net'], 'sh' => $t['shipping'], 'd' => $t['discounts'], 'tx' => $t['tax'], 'rf' => $t['refunds']];
+        $psum = (object) ['n' => $pt['orders'], 't' => $pt['net']];
+        $items = fn () => self::sold(DB::table('order_items as i')->join('orders as o', 'o.id', '=', 'i.order_id')->whereBetween('o.created_at', [$fromUtc, $toEnd]), 'o.');
         $units = (int) $items()->sum('i.qty');
         $customers = $base()->distinct()->count('email');
         $newCust = $base()->whereNotExists(fn ($e) => $e->selectRaw('1')->from('orders as p')->whereColumn('p.email', 'orders.email')->whereColumn('p.id', '<', 'orders.id'))->distinct()->count('email');
         $k = ['sales' => (float) $sum->t, 'sales_prev' => (float) $psum->t, 'orders' => (int) $sum->n, 'orders_prev' => (int) $psum->n, 'aov' => $sum->n ? $sum->t / $sum->n : 0, 'aov_prev' => $psum->n ? $psum->t / $psum->n : 0,
             'units' => $units, 'shipping' => (float) $sum->sh, 'discounts' => (float) $sum->d, 'tax' => (float) $sum->tx, 'refunds' => (float) $sum->rf, 'customers' => $customers, 'new_customers' => $newCust, 'paid' => (float) $base()->where('payment_status', 'paid')->sum('total'),
-            'unpaid_open' => (float) DB::table('orders')->whereBetween('created_at', [$from, $toEnd])->whereNotIn('status', ['cancelled', 'failed'])->where('payment_status', 'unpaid')->where('payment_method', '!=', 'net_terms')->sum('total')];
+            'unpaid_open' => (float) DB::table('orders')->whereBetween('created_at', [$fromUtc, $toEnd])->whereNotIn('status', ['cancelled', 'failed'])->where('payment_status', 'unpaid')->where('payment_method', '!=', 'net_terms')->sum('total')];
 
-        // series
-        $byDay = $base()->selectRaw("DATE(created_at) d, SUM($net) t, COUNT(*) c")->groupBy('d')->get()->keyBy('d');
+        // series (Eastern days; a refund on the day it was made)
         $labels = []; $sales = []; $orders = [];
-        if ($days <= 92) { for ($d = clone $from; $d <= $to; $d->addDay()) { $k2 = $d->toDateString(); $labels[] = $d->format($days > 31 ? 'M j' : 'D j'); $sales[] = round((float) ($byDay[$k2]->t ?? 0), 2); $orders[] = (int) ($byDay[$k2]->c ?? 0); } }
-        else { $m = (clone $from)->startOfMonth(); while ($m <= $to) { $s = 0; $c = 0; foreach ($byDay as $d => $v) if (str_starts_with($d, $m->format('Y-m'))) { $s += $v->t; $c += $v->c; } $labels[] = $m->format('M Y'); $sales[] = round($s, 2); $orders[] = $c; $m->addMonth(); } }
+        if ($days <= 92) { for ($d = clone $from; $d <= $to; $d->addDay()) { $k2 = $d->toDateString(); $labels[] = $d->format($days > 31 ? 'M j' : 'D j'); $sales[] = round((float) ($daily[$k2]['net'] ?? 0), 2); $orders[] = (int) ($daily[$k2]['orders'] ?? 0); } }
+        else { $m = (clone $from)->startOfMonth(); while ($m <= $to) { $s = 0; $c = 0; foreach ($daily as $d => $v) if (str_starts_with($d, $m->format('Y-m'))) { $s += $v['net']; $c += $v['orders']; } $labels[] = $m->format('M Y'); $sales[] = round($s, 2); $orders[] = $c; $m->addMonth(); } }
 
         $topProducts = $items()
             ->selectRaw('i.sku, i.name, i.wp_product_id, SUM(i.qty) q, SUM(i.line_total) t, COUNT(DISTINCT o.id) n')->groupBy('i.sku', 'i.name', 'i.wp_product_id')->orderByDesc('t')->limit(15)->get();
@@ -71,8 +68,8 @@ class ReportsController extends Controller
         $byShip = $base()->selectRaw('shipping_label l, COUNT(*) n, SUM(shipping_total) t')->groupBy('l')->orderByDesc('n')->limit(8)->get();
         $bySource = $base()->selectRaw("source s, COUNT(*) n, SUM($net) t")->groupBy('s')->orderByDesc('t')->get();
         $coupons = $base()->whereNotNull('coupon_code')->selectRaw('coupon_code c, COUNT(*) n, SUM(discount_total) d, SUM(' . $net . ') t')->groupBy('c')->orderByDesc('n')->limit(8)->get();
-        $carts = ['abandoned' => DB::table('abandoned_carts')->whereBetween('created_at', [$from, $toEnd])->count(), 'recovered' => DB::table('abandoned_carts')->whereBetween('recovered_at', [$from, $toEnd])->count(), 'recovered_value' => (float) DB::table('abandoned_carts')->whereBetween('recovered_at', [$from, $toEnd])->sum('subtotal')];
-        $leads = DB::table('leads')->whereBetween('created_at', [$from, $toEnd])->selectRaw('source, COUNT(*) n')->groupBy('source')->orderByDesc('n')->get();
+        $carts = ['abandoned' => DB::table('abandoned_carts')->whereBetween('created_at', [$fromUtc, $toEnd])->count(), 'recovered' => DB::table('abandoned_carts')->whereBetween('recovered_at', [$fromUtc, $toEnd])->count(), 'recovered_value' => (float) DB::table('abandoned_carts')->whereBetween('recovered_at', [$fromUtc, $toEnd])->sum('subtotal')];
+        $leads = DB::table('leads')->whereBetween('created_at', [$fromUtc, $toEnd])->selectRaw('source, COUNT(*) n')->groupBy('source')->orderByDesc('n')->get();
         $thumbs = app(\App\Services\CatalogService::class)->thumbsFor($topProducts->pluck('wp_product_id')->filter()->all());
         foreach ($topProducts as $p) $p->image = $thumbs[(int) $p->wp_product_id] ?? '';
 

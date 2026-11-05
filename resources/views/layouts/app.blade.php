@@ -7,10 +7,14 @@
 @php
   $udsTitle = trim($__env->yieldContent('title', 'Universal Driveshafts'));
   $udsDesc  = trim($__env->yieldContent('desc', __('Driveshaft components and complete driveshafts, u-joints, yokes, center support bearings, flanges and tubing. Built in the USA, shipped fast.')));
+  // per-URL override from admin → SEO (English pages only: translations keep their own copy)
+  $udsOwn = app()->getLocale() === 'en' && !request()->getQueryString() ? \App\Support\Seo::page(request()->getPathInfo()) : null;
+  if (!empty($udsOwn['title'])) $udsTitle = e($udsOwn['title']);
+  if (!empty($udsOwn['description'])) $udsDesc = e($udsOwn['description']);
   // Only the production host may be indexed. Every other environment stays out, whatever a page asks for.
   $udsProd   = app()->environment('production');
   $udsRobots = $udsProd
-      ? (View::hasSection('robots') ? trim(View::getSection('robots')) : 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1')
+      ? (!empty($udsOwn['robots']) ? $udsOwn['robots'] : (View::hasSection('robots') ? trim(View::getSection('robots')) : 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1'))
       : 'noindex,nofollow';
   // canonical is always built on APP_URL (never the request host) so www./IP/index.php variants point at the one URL
   $udsBase      = rtrim(config('app.url'), '/');

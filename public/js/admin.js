@@ -290,7 +290,8 @@
     series.forEach(function (s, si) {
       if (cfg.type === 'bar') {
         var bw = (iw / n) * (series.length > 1 ? .36 : .62);
-        s.data.forEach(function (v, i) { var h = (v / top) * ih, x = padL + (i + .5) * (iw / n) - (series.length > 1 ? bw * (series.length / 2 - si) : bw / 2); out += '<rect class="bar' + (si ? ' bar--alt' : '') + '" x="' + x + '" y="' + (padT + ih - h) + '" width="' + bw + '" height="' + h + '" rx="3"><title>' + esc(labels[i] || '') + ': ' + (cfg.money ? '$' + Number(v).toLocaleString(undefined, { minimumFractionDigits: 2 }) : v) + '</title></rect>'; });
+        // a day with more refunds than sales nets below zero: drawn as an empty bar, never a negative one
+        s.data.forEach(function (v, i) { var h = Math.max(0, (v / top) * ih), x = padL + (i + .5) * (iw / n) - (series.length > 1 ? bw * (series.length / 2 - si) : bw / 2); out += '<rect class="bar' + (si ? ' bar--alt' : '') + '" x="' + x + '" y="' + (padT + ih - h) + '" width="' + bw + '" height="' + h + '" rx="3"><title>' + esc(labels[i] || '') + ': ' + (cfg.money ? '$' + Number(v).toLocaleString(undefined, { minimumFractionDigits: 2 }) : v) + '</title></rect>'; });
       } else {
         var pts = s.data.map(function (v, i) { return [padL + (n === 1 ? iw / 2 : (i / (n - 1)) * iw), padT + ih - (v / top) * ih]; });
         var d = pts.map(function (p, i) { return (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' ');

@@ -17,6 +17,7 @@ class SettingsController extends Controller
         'b2b.bronze_pct' => [0, 50], 'b2b.silver_pct' => [0, 50], 'b2b.gold_pct' => [0, 50],
         'b2b.silver_min' => [0, 1000000], 'b2b.gold_min' => [0, 1000000],
         'b2b.terms_days' => [1, 120], 'b2b.credit_limit' => [0, 1000000], 'b2b.remind_days' => [0, 60],
+        'reviews.delay_days' => [1, 30], 'reviews.google_rating' => [1, 5], 'reviews.google_count' => [0, 1000000],
     ];
 
     /** Editable keys → [label, type, default from config, hint]. */
@@ -74,6 +75,15 @@ class SettingsController extends Controller
                 'assistant.openrouter_models' => ['OpenRouter models', 'text', 'openrouter/free, google/gemma-4-31b-it:free, nvidia/nemotron-3-super-120b-a12b:free', 'Only used with OpenRouter. Tried in this order: when one is busy or rate-limited OpenRouter moves to the next. "openrouter/free" picks a free model that supports tools. A free account allows 50 requests a day; adding $10 of credit raises it to 1,000.'],
                 'assistant.gemini_model' => ['Gemini model', 'select', 'gemini-3.5-flash', 'Only used when Gemini answers. If the chosen model is busy, the chat falls back to Gemini 3.5 Flash, then Flash-Lite.', ['gemini-3.5-flash' => 'Gemini 3.5 Flash (recommended)', 'gemini-3.8-flash' => 'Gemini 3.8 Flash (newest, often busy)', 'gemini-flash-lite-latest' => 'Gemini Flash-Lite (fastest)', 'gemini-pro-latest' => 'Gemini Pro (needs a paid Google plan)']],
             ],
+            'reviews' => [
+                'reviews.enabled' => ['Ask customers for a Google review', 'bool', false, 'One e-mail per delivered order, a few days after it arrives; at most one per customer every 6 months. Never for orders imported from the old site, cancelled or refunded orders, open returns or staff. Everyone eligible gets the same link (Google does not allow asking only happy customers).'],
+                'reviews.google_url' => ['Google review link', 'text', \App\Support\ReviewRequests::DEFAULT_URL, 'Google Business Profile → "Ask for reviews" → copy the link. The default is the listing the old website pointed at: check it opens YOUR business (address 11611 Prospect Drive, Odessa).'],
+                'reviews.delay_days' => ['Days after delivery', 'number', 5, 'Orders without a delivery scan are asked 7 days later than that, counted from shipping.'],
+                'reviews.badge_enabled' => ['Show the Google rating badge', 'bool', true, 'Home page, part and driveshaft pages, checkout. Keep the two figures below current by hand.'],
+                'reviews.google_rating' => ['Google rating (stars)', 'number', 4.7, 'As shown on your Google Business Profile, e.g. 4.7.'],
+                'reviews.google_count' => ['Number of Google reviews', 'number', 200, 'Shown as "200+ Google reviews". Round down, never up.'],
+                'reviews.google_profile_url' => ['Link to your Google reviews', 'text', \App\Support\ReviewRequests::PROFILE_URL, 'Where the badge opens. Default: the reviews of the listing the old website pointed at.'],
+            ],
             'notifications' => [
                 'notify.new_order' => ['E-mail the shop on every new order', 'bool', true, ''],
                 'notify.sms_shop' => ['Text the shop on new orders', 'bool', false, 'Needs Twilio enabled.'],
@@ -108,7 +118,7 @@ class SettingsController extends Controller
         return view('admin.settings.index', compact('tab', 'fields', 'values', 'integrations', 'users', 'schedule', 'mail', 'brevo', 'templates'));
     }
 
-    public const TEMPLATES = ['order-confirmation' => 'Order confirmation (customer)', 'order-shop' => 'New order (shop copy)', 'order-shipped' => 'Shipped', 'order-delivered' => 'Delivered', 'pay-link' => 'Payment link', 'pickup-ready' => 'Ready for pickup', 'account-welcome' => 'Account welcome', 'wholesale-approved' => 'Wholesale approved', 'password-reset' => 'Password reset', 'rma' => 'RMA received', 'cart-reminder' => 'Abandoned cart reminder', 'back-in-stock' => 'Back in stock', 'newsletter-welcome' => 'Newsletter welcome (Brevo)'];
+    public const TEMPLATES = ['review-request' => 'Google review request', 'order-confirmation' => 'Order confirmation (customer)', 'order-shop' => 'New order (shop copy)', 'order-shipped' => 'Shipped', 'order-delivered' => 'Delivered', 'pay-link' => 'Payment link', 'pickup-ready' => 'Ready for pickup', 'account-welcome' => 'Account welcome', 'wholesale-approved' => 'Wholesale approved', 'password-reset' => 'Password reset', 'rma' => 'RMA received', 'cart-reminder' => 'Abandoned cart reminder', 'back-in-stock' => 'Back in stock', 'newsletter-welcome' => 'Newsletter welcome (Brevo)'];
 
     /** Sample render of a template: [subject, view, data] built from the newest order / a sample. */
     private function sample(string $tpl): array
@@ -118,6 +128,8 @@ class SettingsController extends Controller
         $name = $order->billing_first_name; $status = \App\Support\OrderEvents::statusUrl($order); $pay = $order->id ? \App\Support\PayLink::url($order) : config('app.url') . '/pay/' . $order->order_number . '/sample';
         $base = rtrim(config('app.url'), '/');
         return match ($tpl) {
+            'review-request' => (function () use ($order, $items) { [$s, $c] = \App\Support\ReviewRequests::message($order, array_map(fn ($i) => (object) $i, json_decode(json_encode($items), true)));
+                return [$s, 'emails.generic', ['hero' => ['kicker' => $c['kicker'], 'title' => $c['title'], 'text' => $c['intro']], 'preheader' => $c['preheader']] + array_intersect_key($c, array_flip(['paragraphs', 'button', 'after', 'signoff']))]; })(),
             'order-confirmation' => ["Order {$order->order_number} confirmed — Universal Driveshafts", 'emails.order.confirmation', ['order' => $order, 'items' => $items, 'statusUrl' => $status, 'payUrl' => $pay, 'hero' => ['kicker' => 'Order ' . $order->order_number, 'title' => "Thanks, {$name} — we have your order.", 'text' => 'Stock parts leave our Florida shop the same business day when ordered before 2 pm ET; custom shafts are built to order.']]],
             'order-shop' => ["New order {$order->order_number} — $" . number_format($order->total, 2), 'emails.order.shop', ['order' => $order, 'items' => $items, 'hero' => ['kicker' => 'New order', 'title' => $order->order_number . ' · $' . number_format($order->total, 2), 'text' => trim($order->billing_first_name . ' ' . $order->billing_last_name) . ' · ' . $order->shipping_label]]],
             'order-shipped' => ["Your order {$order->order_number} has shipped — UPS 1Z999AA10123456784", 'emails.order.shipped', ['order' => $order, 'carrier' => 'UPS', 'tracking' => '1Z999AA10123456784', 'service' => 'Ground', 'trackUrl' => 'https://www.ups.com/track?tracknum=1Z999AA10123456784', 'statusUrl' => $status, 'items' => $items, 'hero' => ['kicker' => 'On its way', 'title' => "Good news, {$name} — your order shipped.", 'text' => "Order {$order->order_number} left our shop in Florida with UPS."]]],
@@ -191,6 +203,7 @@ class SettingsController extends Controller
         }
         Settings::setMany($pairs);
         \Illuminate\Support\Facades\Cache::forget('brevo_status');
+        \Illuminate\Support\Facades\Cache::forget('seo:llms');   // it quotes the Google rating and store details
         AdminLog::record('settings.update', 'Updated ' . $tab . ' settings', 'settings', $tab, $pairs);
         return back()->with('admin_ok', ucfirst($tab) . ' settings saved.');
     }

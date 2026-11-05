@@ -1,0 +1,7 @@
+const { chromium } = require(process.env.PWC);(async()=>{const b=await chromium.launch({headless:true});const p=await b.newPage({viewport:{width:1440,height:900}});
+await p.goto('https://dev.udshafts.com/shop/driveshaft-components/u-joints',{waitUntil:'networkidle'});
+console.log('u-joints usib:',JSON.stringify(await p.evaluate(()=>{const a=document.querySelector('a.usib');const par=a.parentElement;const r=e=>{const x=e.getBoundingClientRect();return `${e.tagName.toLowerCase()}.${(e.className||'').toString().split(' ')[0]} ${Math.round(x.left)}..${Math.round(x.right)} w${Math.round(x.width)}`};return {usib:r(a),parent:r(par),grand:r(par.parentElement),count:document.querySelectorAll('a.usib').length,parentDisplay:getComputedStyle(par).display,parentOverflow:getComputedStyle(par).overflowX}})));
+await p.goto('https://dev.udshafts.com/',{waitUntil:'networkidle'});
+console.log('home n-wraps:',JSON.stringify(await p.evaluate(()=>[...document.querySelectorAll('.n-wrap')].map(e=>{const x=e.getBoundingClientRect();return `${e.className.split(' ').slice(0,2).join('.')} ${Math.round(x.left)}..${Math.round(x.right)}`}))));
+console.log('home img/div offenders:',JSON.stringify(await p.evaluate(()=>{const out=[];for(const el of document.querySelectorAll('main img, main .n-hero__tag')){const x=el.getBoundingClientRect();if(x.right>1336||x.left<104)out.push(`${el.tagName}.${(el.className||'').toString().split(' ')[0]} ${Math.round(x.left)}..${Math.round(x.right)}`)}return out.slice(0,6)})));
+await b.close();})();

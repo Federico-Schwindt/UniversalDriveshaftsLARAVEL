@@ -183,6 +183,7 @@ class PayLink
     /** E-mail (and optionally text) the customer the link. Returns what was sent. */
     public static function send(object $order, bool $sms = false, ?string $note = null): array
     {
+        if (OrderEvents::imported($order)) return [];   // old-store history: the link can still be copied from the admin page
         $url = self::url($order);
         $bal = number_format(self::balance($order), 2);
         $name = trim($order->billing_first_name ?: 'there');

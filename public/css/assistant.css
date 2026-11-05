@@ -10,6 +10,10 @@
   transition:transform var(--dur-2) var(--ease),box-shadow var(--dur-2) var(--ease),opacity var(--dur-2)}
 .ua-launch:hover{transform:translateY(-2px);box-shadow:0 16px 36px -12px rgba(11,26,51,.6),0 2px 6px rgba(11,26,51,.2)}
 .ua-launch:focus-visible{outline:3px solid var(--teal-300);outline-offset:3px}
+/* the shop wrote while the panel was closed */
+.ua-launch.has-unread::after{content:"";position:absolute;top:-4px;right:-4px;width:14px;height:14px;border-radius:50%;background:#e5484d;border:2px solid #fff;box-shadow:0 0 0 0 rgba(229,72,77,.5);animation:ua-unread 1.6s ease-out 3}
+@keyframes ua-unread{to{box-shadow:0 0 0 10px rgba(229,72,77,0)}}
+@media (prefers-reduced-motion:reduce){.ua-launch.has-unread::after{animation:none}}
 .ua-launch__mark{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;
   background:linear-gradient(135deg,var(--teal),var(--blue-600));box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
 .ua-launch__mark svg{width:17px;height:17px}

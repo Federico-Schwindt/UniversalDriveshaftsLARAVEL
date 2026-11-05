@@ -22,6 +22,8 @@ class AuthController extends Controller
     public function login(Request $r)
     {
         $cred = $r->validate(['email' => 'required|email', 'password' => 'required']);
+        // customers imported from the old WordPress store sign in with their old password
+        \App\Support\WpPassword::upgrade($cred['email'], (string) $cred['password']);
         // "Keep me signed in" is ticked by default; unticked on a shared computer, the session ends with the browser
         if (Auth::attempt($cred, $r->boolean('remember'))) {
             self::seedLocale(Auth::id());
@@ -244,7 +246,7 @@ class AuthController extends Controller
     {
         $r->validate(['token' => 'required', 'email' => 'required|email', 'password' => 'required|min:8|confirmed']);
         $status = \Illuminate\Support\Facades\Password::reset($r->only('email', 'password', 'password_confirmation', 'token'), function ($user, $password) {
-            $user->forceFill(['password' => \Illuminate\Support\Facades\Hash::make($password), 'remember_token' => \Illuminate\Support\Str::random(60), 'email_verified_at' => $user->email_verified_at ?? now()])->save();
+            $user->forceFill(['password' => \Illuminate\Support\Facades\Hash::make($password), 'remember_token' => \Illuminate\Support\Str::random(60), 'email_verified_at' => $user->email_verified_at ?? now(), 'wp_password' => null])->save();
             \Auth::login($user);
         });
         if ($status === \Illuminate\Support\Facades\Password::PASSWORD_RESET) {

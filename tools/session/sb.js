@@ -1,0 +1,10 @@
+const { chromium } = require(process.env.PWC);
+(async()=>{ const b=await chromium.launch(); const p=await (await b.newContext({viewport:{width:1440,height:900}})).newPage();
+ await p.goto('https://dev.udshafts.com/login'); await p.fill('#l-email','admin-qa@udshafts.test'); await p.fill('#l-pw',process.env.UDS_QA_PASSWORD);
+ await Promise.all([p.waitForNavigation(), p.click('form.authform button[type=submit], form.authform .btn')]);
+ await p.goto('https://dev.udshafts.com/admin/settings?tab=shipping',{waitUntil:'networkidle'});
+ const h0=await p.evaluate(()=>document.querySelector('#savebar').getBoundingClientRect().height);
+ await p.fill('[name=pickup__hours]','Mon-Fri 3-5pm test');
+ await p.waitForTimeout(400);
+ const r=await p.evaluate(()=>{const s=document.querySelector('#savebar'); return {on:s.classList.contains('is-on'), h:s.getBoundingClientRect().height}});
+ console.log('hidden height',h0,'| after edit',JSON.stringify(r)); await b.close(); })();

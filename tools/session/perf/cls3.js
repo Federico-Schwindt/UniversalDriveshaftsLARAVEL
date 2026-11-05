@@ -1,0 +1,4 @@
+const { chromium } = require(process.env.PWC);(async()=>{const b=await chromium.launch({headless:true});const p=await b.newPage({viewport:{width:390,height:844}});
+await p.addInitScript(()=>{window.__s=[];try{new PerformanceObserver(l=>{for(const e of l.getEntries()){if(e.hadRecentInput)continue;window.__s.push({v:+e.value.toFixed(4),t:Math.round(e.startTime),src:(e.sources||[]).map(s=>{const n=s.node;const r=s.previousRect,c=s.currentRect;return {node:n?(n.tagName+(n.className&&typeof n.className==='string'?'.'+n.className.split(' ')[0]:'')+(n.textContent||'').trim().slice(0,25)):'?',from:[r.x,r.y,r.width,r.height],to:[c.x,c.y,c.width,c.height]};})});}}).observe({type:'layout-shift',buffered:true});}catch(e){}});
+await p.goto('https://dev.udshafts.com/shop/driveshaft-components/u-joints',{waitUntil:'networkidle'});await p.waitForTimeout(800);
+console.log(JSON.stringify(await p.evaluate(()=>window.__s),null,0));await b.close();})();

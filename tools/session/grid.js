@@ -1,0 +1,3 @@
+const {chromium}=require(process.env.PWC);const fs=require('fs');const [,,OUT,...F]=process.argv;
+(async()=>{const b=await chromium.launch({executablePath:process.env.BX});const p=await b.newPage({viewport:{width:1400,height:Math.ceil(F.length/2)*440}});
+await p.setContent('<body style="margin:0;display:grid;grid-template-columns:700px 700px;background:#000;color:#fff;font:14px sans-serif">'+F.map(f=>'<div style="position:relative;height:440px;overflow:hidden"><img src="data:image/png;base64,'+fs.readFileSync(f).toString('base64')+'"><span style="position:absolute;left:0;bottom:0;background:#000">'+f.split('/').pop()+'</span></div>').join(''));await p.waitForTimeout(400);await p.screenshot({path:OUT});await b.close();})();

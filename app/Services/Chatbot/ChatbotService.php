@@ -234,11 +234,24 @@ class ChatbotService
     }
 
     /** A message from someone at the shop, written into the conversation in the provider's own format so the AI sees it if the chat is handed back. */
-    public function agentSay(object $conv, User $agent, string $text): int
+    /**
+     * A line from a shop person, with optional attachments: photos (stored paths), part cards (partRow rows) and
+     * widgets (ChatWidgets::tracking). The customer's widget draws them like the assistant's; the model, which
+     * cannot see an assistant-side photo or card, gets them described in words in case the chat goes back to it.
+     */
+    public function agentSay(object $conv, User $agent, string $text, array $attach = []): int
     {
+        $note = array_filter([
+            !empty($attach['photos']) ? count($attach['photos']) . ' photo(s)' : null,
+            !empty($attach['cards']) ? 'part card(s) ' . implode(', ', array_column($attach['cards'], 'sku')) : null,
+            !empty($attach['widgets']) ? implode(', ', array_map(fn ($w) => ($w['type'] ?? '') === 'tracking' ? "tracking for order {$w['number']}" : (string) ($w['type'] ?? 'card'), $attach['widgets'])) : null,
+        ]);
+        $wire = trim($text . ($note ? "\n[The shop also sent: " . implode('; ', $note) . ']' : ''));
         $p = $conv->provider ?? 'claude';
-        $content = $p === 'gemini' ? [['text' => $text]] : (in_array($p, ['openrouter', 'groq'], true) ? [['role' => 'assistant', 'content' => $text]] : [['type' => 'text', 'text' => $text]]);
-        return $this->append($conv, 'assistant', $content, $text, ['agent_id' => $agent->id]);
+        $content = $p === 'gemini' ? [['text' => $wire]] : (in_array($p, ['openrouter', 'groq'], true) ? [['role' => 'assistant', 'content' => $wire]] : [['type' => 'text', 'text' => $wire]]);
+        $extra = ['agent_id' => $agent->id];
+        foreach (['photos', 'cards', 'widgets'] as $k) if (!empty($attach[$k])) $extra[$k] = json_encode(array_values($attach[$k]), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        return $this->append($conv, 'assistant', $content, $text, $extra);
     }
 
     public function agentName(object $conv): ?string
@@ -1181,10 +1194,11 @@ class ChatbotService
     }
 
     /** One part as both the model and the chat card see it — prices are this customer's prices. */
-    private function partRow(array $p): array
+    /** A part as a chat card, priced for $u (the signed-in customer by default; the chat's customer when the shop sends it). */
+    public function partRow(array $p, ?object $u = null): array
     {
         $price = (float) ($p['price'] ?? 0);
-        $u = auth()->user();
+        $u ??= auth()->user();
         if ($u && $u->wholesale_status === 'approved' && $u->wholesale_discount > 0) $price = round($price * (1 - $u->wholesale_discount / 100), 2);
         $live = CatalogService::live((int) $p['id']);
         return [

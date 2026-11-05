@@ -1,0 +1,5 @@
+const {chromium}=require(process.env.PWC);const fs=require('fs');const D=process.argv[2],pref=process.argv[3],out=process.argv[4];
+(async()=>{const b=await chromium.launch({executablePath:process.env.BX});const p=await b.newPage({viewport:{width:1800,height:900}});
+const files=fs.readdirSync(D).filter(f=>pref.split(',').some(x=>f.startsWith(x+'-'))&&!f.endsWith('.urls')).sort();
+const html='<body style="margin:0;display:grid;grid-template-columns:repeat(6,1fr);gap:6px;background:#8a93a6;font:13px sans-serif">'+files.map(f=>{const ext=f.split('.').pop().toLowerCase();const mt=ext==='png'?'png':ext==='webp'?'webp':'jpeg';return '<div style="background:repeating-conic-gradient(#ddd 0 25%,#fff 0 50%) 0/20px 20px"><img src="data:image/'+mt+';base64,'+fs.readFileSync(D+'/'+f).toString('base64')+'" style="width:100%;height:220px;object-fit:contain;display:block"><div style="background:#000;color:#fff;padding:2px 4px">'+f+'</div></div>'}).join('')+'</body>';
+await p.setContent(html);await p.waitForTimeout(2500);await p.screenshot({path:out,fullPage:true});await b.close();})();

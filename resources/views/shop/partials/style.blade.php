@@ -8,7 +8,7 @@
   .ptbl tbody td[data-col="add"]{grid-column:1;justify-content:flex-start}
   .ptbl tbody td[data-col="pic"]{grid-column:2;justify-content:flex-end}
   .ptbl tbody td[data-col="add"]::before,.ptbl tbody td[data-col="pic"]::before{display:none}
-  .ptbl tbody td[data-col="pic"] .p-pic,.ptbl tbody td[data-col="pic"] .p-pic-ph{width:64px;height:64px;min-width:64px}
+  .ptbl tbody td[data-col="pic"] .p-pic,.ptbl tbody td[data-col="pic"] .p-pic-ph{width:104px;height:104px;min-width:104px}
   .ptbl tbody td[data-col="part"]{border-top:1px solid var(--line-2)!important;padding-top:.7rem;grid-template-columns:auto minmax(0,1fr)}
   .ptbl tbody td[data-col="part"] .p-pn{white-space:normal;word-break:break-all;font-size:1rem;display:inline-flex;justify-content:flex-end;grid-column:2;justify-self:end}
   .ptbl tbody td[data-col="part"] .p-alt{grid-column:2;justify-self:end;margin:6px 0 0}

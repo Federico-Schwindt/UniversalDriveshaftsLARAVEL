@@ -93,6 +93,15 @@ return [
     // Powertrain Industries dealer portal (stock, new parts, ship boxes) — pti:sync
     'pti' => ['user' => env('PTI_USER'), 'pass' => env('PTI_PASS')],
 
+    // Google Search Console (Admin → SEO → Performance): service-account JSON key, kept outside the web root
+    'gsc' => [
+        'key' => env('GSC_KEY_PATH', storage_path('app/google/search-console.json')),
+        'site' => env('GSC_SITE', 'sc-domain:universaldriveshafts.com'),
+    ],
+
+    // Google Analytics 4 (admin dashboard traffic card): property of G-MG6P2JC6GL, read with the same service account
+    'ga4' => ['property' => env('GA4_PROPERTY', '472848382')],
+
     'woocommerce' => [
         'url' => env('WC_URL', 'https://universaldriveshafts.com'),
         'key' => env('WC_KEY'),

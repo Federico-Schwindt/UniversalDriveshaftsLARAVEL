@@ -1,0 +1,23 @@
+const {chromium}=require(process.env.PWC);
+const fs=require('fs');const DIR=__dirname,SHOT=DIR+'/after/';
+const BASE='https://dev.udshafts.com';const PW=fs.readFileSync(DIR+'/../qa-pw','utf8').trim();
+const L=(...a)=>console.log(a.map(x=>typeof x=='string'?x:JSON.stringify(x)).join(' '));
+(async()=>{
+  const b=await chromium.launch({executablePath:process.env.BX});
+  const ctx=await b.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2});
+  const page=await ctx.newPage();
+  const go=async p=>{await page.goto(BASE+p,{waitUntil:'load',timeout:45000});await page.waitForTimeout(1500)};
+  const rects=async n=>L(n,await page.evaluate(()=>['.floaty','.ua-launch','.dsb-mbar','.pdp__sticky'].map(s=>{const e=document.querySelector(s);if(!e)return s+':-';const c=getComputedStyle(e);const r=e.getBoundingClientRect();return s+':'+(c.display=='none'||c.visibility=='hidden'?'hidden':Math.round(r.top)+'-'+Math.round(r.bottom))}).join(' ')));
+  await go('/contact'); await page.evaluate(()=>scrollTo(0,500)); await page.waitForTimeout(500); await page.screenshot({path:SHOT+'m_contact_scrolled.png'});
+  await page.focus('.floaty__toggle'); await page.keyboard.press('Enter'); await page.waitForTimeout(400);
+  L('kbd open', await page.getAttribute('.floaty__toggle','aria-expanded'), await page.evaluate(()=>document.activeElement.className));
+  await page.screenshot({path:SHOT+'m_contact_menu_kbd.png'});
+  await page.keyboard.press('Escape'); L('esc', await page.getAttribute('.floaty__toggle','aria-expanded'));
+  await go('/online-builder'); await page.evaluate(()=>scrollTo(0,900)); await page.waitForTimeout(500); await rects('builder anon');
+  await go('/parts/5-1310XU'); await page.evaluate(()=>scrollTo(0,1500)); await page.waitForTimeout(800); await rects('pdp anon');
+  await go('/login'); await page.fill('#l-email','qa-shot-temp@example.com');await page.fill('#l-pw',PW);
+  await Promise.all([page.waitForNavigation({timeout:30000}).catch(()=>{}),page.click('form.authform button[type=submit]')]);
+  await go('/online-builder'); await page.evaluate(()=>scrollTo(0,900)); await page.waitForTimeout(500); await rects('builder in'); await page.screenshot({path:SHOT+'m_builder_in.png'});
+  await go('/parts/5-1310XU'); await page.evaluate(()=>scrollTo(0,1500)); await page.waitForTimeout(800); await rects('pdp in'); await page.screenshot({path:SHOT+'m_pdp_in.png'});
+  await b.close();
+})();

@@ -25,6 +25,15 @@
   '@@context' => 'https://schema.org', '@@type' => 'Product',
   'name' => trim(($p['description'] ?? 'Complete driveshaft') . ' ' . $pn),
   'sku' => $pn, 'mpn' => $p['part_number'], 'brand' => ['@@type' => 'Brand', 'name' => 'UDS'],
+  // what search engines and AI answers read about the shaft: photos, its own URL, who sells it, and its configuration
+  '@@id' => url()->current() . '#product', 'url' => url()->current(),
+  'image' => array_values(array_map(fn ($u) => str_starts_with($u, '/') ? rtrim(config('app.url'), '/') . $u : $u, array_slice($p['images'] ?? [], 0, 5))) ?: null,
+  'additionalProperty' => array_values(array_filter([
+      $pcWord ? ['@@type' => 'PropertyValue', 'name' => 'Construction', 'value' => ucfirst($pcWord)] : null,
+      $loc ? ['@@type' => 'PropertyValue', 'name' => 'Position', 'value' => implode(', ', array_map('ucfirst', $loc))] : null,
+      $drive ? ['@@type' => 'PropertyValue', 'name' => 'Drive', 'value' => implode(', ', $drive)] : null,
+      ['@@type' => 'PropertyValue', 'name' => 'Condition', 'value' => 'New, assembled and balanced'],
+  ])) ?: null,
   'category' => \App\Services\VehiclePages::CATEGORY,
   'description' => $appLine ? "Complete driveshaft $pn, fits $appLine." : "Complete driveshaft $pn.",
   'isAccessoryOrSparePartFor' => collect($p['applications'])->map(fn ($a) => array_filter([
@@ -33,7 +42,7 @@
       'vehicleModelDate' => preg_match('/^\d{4}$/', (string) $a['years']) ? (string) $a['years'] : null,
       'vehicleConfiguration' => $a['drive'] ?: null,
   ]))->values()->all() ?: null,
-  'offers' => !empty($p['can_buy']) && !empty($p['price']) ? ['@@type' => 'Offer', 'price' => number_format((float) $p['price'], 2, '.', ''), 'priceCurrency' => 'USD', 'availability' => 'https://schema.org/InStock', 'url' => url()->current(), 'itemCondition' => 'https://schema.org/NewCondition'] : null,
+  'offers' => !empty($p['can_buy']) && !empty($p['price']) ? ['@@type' => 'Offer', 'price' => number_format((float) $p['price'], 2, '.', ''), 'priceCurrency' => 'USD', 'availability' => 'https://schema.org/InStock', 'url' => url()->current(), 'seller' => ['@@id' => rtrim(config('app.url'), '/') . '/#organization'], 'itemCondition' => 'https://schema.org/NewCondition'] : null,
 ]), JSON_UNESCAPED_SLASHES) !!}</script>
 @include('partials.breadcrumb-schema', ['crumbs' => [['Home', url('/')], ['Complete driveshafts', url('/catalog/driveshafts')], [$pn, url()->current()]]])
 @endpush
@@ -147,6 +156,7 @@
       @if($p['can_buy'])
       <div class="fpp-buy"><input type="number" id="fpp-qty" value="1" min="1" max="20" aria-label="{{ __('Quantity') }}"><button class="btn btn-primary btn-lg" type="button" id="fpp-add" style="flex:1">{{ __('Add to cart') }}</button></div>
       @endif
+      <x-google-rating variant="card"/>
       <p class="fpp-more">{{ __('Lead time is confirmed by our team when you order. Questions about fit: (813) 524-6491.') }}</p>
     </div>
   </div>

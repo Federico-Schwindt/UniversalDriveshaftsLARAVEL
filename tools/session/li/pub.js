@@ -1,0 +1,3 @@
+const {chromium}=require(process.env.PWC);
+(async()=>{const b=await chromium.launch({executablePath:process.env.BX});const c=await b.newContext({userAgent:'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36'});const p=await c.newPage();const r=await p.goto('https://www.linkedin.com/in/federico-leonel-schwindt-2a40b823a/',{waitUntil:'domcontentloaded',timeout:60000});await p.waitForTimeout(4000);
+console.log(r.status(), p.url());console.log(await p.evaluate(()=>document.title+'\n'+document.body.innerText.replace(/\s+/g,' ').slice(0,1500)));await b.close();})();

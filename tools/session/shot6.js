@@ -1,0 +1,3 @@
+const { chromium } = require(process.env.PWC);(async()=>{const b=await chromium.launch({headless:true});const p=await b.newPage({viewport:{width:1440,height:900}});
+for(const [n,u,h] of [['premade','/premade-driveshafts',1500],['register','/register',1000],['login','/login',1000]]){await p.goto('https://dev.udshafts.com'+u,{waitUntil:'networkidle'});await p.evaluate(()=>window.scrollTo(0,document.body.scrollHeight));await p.waitForTimeout(600);await p.evaluate(()=>window.scrollTo(0,0));await p.waitForTimeout(200);await p.screenshot({path:`${process.env.SP}/pg-${n}.png`,clip:{x:0,y:0,width:1440,height:h},fullPage:true});}
+console.log('shots ok');await b.close();})();

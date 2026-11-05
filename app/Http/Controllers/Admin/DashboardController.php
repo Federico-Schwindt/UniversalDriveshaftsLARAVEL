@@ -26,6 +26,8 @@ class DashboardController extends Controller
                 $c['chats_waiting'] = DB::table('chat_conversations as c')->where('c.status', 'open')->where(fn ($w) => $w->whereNotNull('c.needs_human_at')
                     ->orWhere(fn ($h) => $h->where('c.mode', 'human')->whereRaw("(SELECT m.role FROM chat_messages m WHERE m.conversation_id = c.id AND m.display IS NOT NULL AND m.role <> 'system' ORDER BY m.id DESC LIMIT 1) = 'user'")))->count();
                 $c['carts_open'] = DB::table('abandoned_carts')->whereNull('recovered_at')->whereNull('unsubscribed_at')->where('last_seen_at', '>=', now()->subDays(7))->count();
+                // old URLs still asked for (3+ times this week) that have neither a page nor a redirect
+                $c['seo_404'] = DB::table('seo_404s')->where('hits', '>=', 3)->where('last_seen_at', '>=', now()->subDays(7))->count();
                 $c['low_stock'] = DB::table('inventory')->where('tracked', 1)->whereNotNull('reorder_at')->whereColumn('stock', '<=', 'reorder_at')->count();
             } catch (\Throwable $e) {}
             return $c;
@@ -36,17 +38,22 @@ class DashboardController extends Controller
     {
         $range = $r->query('range', '30');
         $days = in_array($range, ['7', '30', '90', '365']) ? (int) $range : 30;
-        $from = Carbon::today()->subDays($days - 1);
+        // Eastern days, like Reports and the old store
+        $today = Carbon::today(\App\Support\SalesStats::TZ);
+        $from = $today->copy()->subDays($days - 1);
         $prevFrom = (clone $from)->subDays($days);
+        $daily = \App\Support\SalesStats::daily($from, $today);
+        $t = \App\Support\SalesStats::totals($from, $today);
+        $pt = \App\Support\SalesStats::totals($prevFrom, (clone $from)->subDay());
+        [$fromUtc] = \App\Support\SalesStats::bounds($from, $today);
         $paid = fn ($q) => $q->where('payment_status', 'paid');
 
         // same definition of a sale as Reports: paid (net of refunds) or a Net-terms invoice; never cancelled/failed
         $net = ReportsController::NET;
-        $cur = ReportsController::sold(DB::table('orders')->where('created_at', '>=', $from));
-        $prev = ReportsController::sold(DB::table('orders')->whereBetween('created_at', [$prevFrom, $from]));
+        $cur = ReportsController::sold(DB::table('orders')->where('created_at', '>=', $fromUtc));
         $k = [
-            'sales' => (float) (clone $cur)->sum(DB::raw($net)), 'sales_prev' => (float) (clone $prev)->sum(DB::raw($net)),
-            'orders' => (clone $cur)->count(), 'orders_prev' => (clone $prev)->count(),
+            'sales' => $t['net'], 'sales_prev' => $pt['net'],
+            'orders' => $t['orders'], 'orders_prev' => $pt['orders'],
             'paid' => (float) $paid(clone $cur)->sum('total'),
             'unpaid' => (float) DB::table('orders')->where('payment_status', 'unpaid')->whereIn('status', ['pending', 'processing'])->sum('total'),
             'unpaid_n' => DB::table('orders')->where('payment_status', 'unpaid')->whereIn('status', ['pending', 'processing'])->count(),
@@ -66,15 +73,13 @@ class DashboardController extends Controller
 
         // sales series (daily for ≤90 days, weekly beyond)
         $labels = []; $sales = []; $orders = [];
-        $rows = ReportsController::sold(DB::table('orders')->where('created_at', '>=', $from))
-            ->selectRaw("DATE(created_at) d, SUM($net) t, COUNT(*) c")->groupBy('d')->pluck('t', 'd');
-        $cnts = ReportsController::sold(DB::table('orders')->where('created_at', '>=', $from))
-            ->selectRaw('DATE(created_at) d, COUNT(*) c')->groupBy('d')->pluck('c', 'd');
+        $rows = array_map(fn ($d) => $d['net'], $daily);
+        $cnts = array_map(fn ($d) => $d['orders'], $daily);
         if ($days <= 90) {
             for ($i = 0; $i < $days; $i++) { $d = (clone $from)->addDays($i); $key = $d->toDateString(); $labels[] = $d->format($days > 31 ? 'M j' : 'D j'); $sales[] = round((float) ($rows[$key] ?? 0), 2); $orders[] = (int) ($cnts[$key] ?? 0); }
         } else {
             $wk = (clone $from)->startOfWeek();
-            while ($wk < Carbon::today()) {
+            while ($wk < $today) {
                 $end = (clone $wk)->addDays(6); $s = 0; $c = 0;
                 for ($d = clone $wk; $d <= $end; $d->addDay()) { $s += (float) ($rows[$d->toDateString()] ?? 0); $c += (int) ($cnts[$d->toDateString()] ?? 0); }
                 $labels[] = $wk->format('M j'); $sales[] = round($s, 2); $orders[] = $c; $wk->addDays(7);
@@ -82,7 +87,7 @@ class DashboardController extends Controller
         }
 
         $recentOrders = DB::table('orders')->orderByDesc('id')->limit(8)->get();
-        $topProducts = ReportsController::sold(DB::table('order_items as i')->join('orders as o', 'o.id', '=', 'i.order_id')->where('o.created_at', '>=', $from), 'o.')
+        $topProducts = ReportsController::sold(DB::table('order_items as i')->join('orders as o', 'o.id', '=', 'i.order_id')->where('o.created_at', '>=', $fromUtc), 'o.')
             ->selectRaw('i.sku, i.name, i.wp_product_id, SUM(i.qty) q, SUM(i.line_total) t')->groupBy('i.sku', 'i.name', 'i.wp_product_id')
             ->orderByDesc('t')->limit(6)->get();
         $thumbs = app(CatalogService::class)->thumbsFor($topProducts->pluck('wp_product_id')->filter()->all());

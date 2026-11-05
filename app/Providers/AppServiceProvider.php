@@ -20,6 +20,8 @@ class AppServiceProvider extends ServiceProvider
     {
         // admin-edited settings override the static config values
         \App\Support\Settings::applyToConfig();
+        // before launch staging holds real imported customers: mail only reaches the shop's own addresses
+        \Illuminate\Support\Facades\Event::listen(fn (\Illuminate\Mail\Events\MessageSending $e) => \App\Support\MailGuard::filter($e));
         \Illuminate\Support\Facades\View::composer('admin.layout', fn ($v) => $v->with('counts', \App\Http\Controllers\Admin\DashboardController::navCounts()));
         // brute-force and abuse limits (per e-mail+IP for login, per IP for the rest)
         // Spanish strings live in one es.json per area (lang/i18n/<area>/es.json) so the

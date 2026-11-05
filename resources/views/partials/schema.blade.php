@@ -8,8 +8,8 @@
   $social = array_values(array_filter([config('uds.instagram'), config('uds.facebook'), config('uds.tiktok')]));
   $e164   = fn (string $p) => '+1' . substr(preg_replace('/[^0-9]/', '', $p), -10);
 
-  // the location is private (owner, 2026-10-24): state and country only, no street, city, postal code or map
-  $addr = ['@type' => 'PostalAddress', 'addressRegion' => 'FL', 'addressCountry' => 'US'];
+  // the shop's address is public for local search (owner, 2026-11-04: "la correcta es la de Odessa"; was state only before)
+  $addr = ['@type' => 'PostalAddress', 'streetAddress' => '11611 Prospect Drive STE 4', 'addressLocality' => 'Odessa', 'addressRegion' => 'FL', 'postalCode' => '33556', 'addressCountry' => 'US'];
   $hours = [
     ['@type' => 'OpeningHoursSpecification', 'dayOfWeek' => ['Monday','Tuesday','Wednesday','Thursday','Friday'], 'opens' => '08:00', 'closes' => '17:00'],
     ['@type' => 'OpeningHoursSpecification', 'dayOfWeek' => ['Saturday'], 'opens' => '09:00', 'closes' => '14:00'],
@@ -43,6 +43,8 @@
     'address'     => $addr,
     'areaServed'  => ['@type' => 'Country', 'name' => 'US'],
     'foundingDate'=> '2018',
+    // what the business is an authority on: helps search and AI answers tie the brand to these topics
+    'knowsAbout'  => ['Driveshafts', 'Universal joints (u-joints)', 'Driveshaft yokes', 'Center support bearings', 'CV joints', 'Driveshaft balancing', 'Custom driveshafts', 'Driveshaft repair', 'Industrial driveshafts'],
     'description' => 'Driveshaft parts and complete driveshafts: u-joints, yokes, center support bearings, flanges and tubing, plus custom driveshafts machined, welded and balanced in Florida.',
     'sameAs'      => $social,
     'contactPoint' => [
@@ -65,8 +67,26 @@
     ],
   ];
 
-  $graph = [$org, $website];
+  // the shop itself, for Google Maps / local results ("driveshaft repair near me"): same name, address and phone as the
+  // Google Business Profile, opening hours of the counter
+  $shop = [
+    '@type' => ['AutoPartsStore', 'AutoRepair'],
+    '@id' => $base . '/#shop',
+    'name' => 'Universal Driveshafts',
+    'url' => $base . '/',
+    'image' => $logo,
+    'logo' => ['@id' => $base . '/#logo'],
+    'telephone' => $e164($mainPhone),
+    'email' => config('uds.email'),
+    'address' => $addr,
+    'hasMap' => config('uds.pickup.maps'),
+    'openingHoursSpecification' => $hours,
+    'priceRange' => '$$',
+    'areaServed' => [['@type' => 'City', 'name' => 'Tampa'], ['@type' => 'AdministrativeArea', 'name' => 'Tampa Bay'], ['@type' => 'Country', 'name' => 'US']],
+    'parentOrganization' => ['@id' => $base . '/#organization'],
+    'sameAs' => $social,
+  ];
 
-  // no LocalBusiness / store nodes: they would publish the shop's address
+  $graph = [$org, $website, $shop];
 @endphp
 <script type="application/ld+json">{!! json_encode(['@@context' => 'https://schema.org', '@graph' => $graph], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>

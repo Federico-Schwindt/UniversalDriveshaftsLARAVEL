@@ -1,0 +1,5 @@
+const {chromium,devices}=require(process.env.PWC);const [,,URL,OUT]=process.argv;
+(async()=>{const b=await chromium.launch({executablePath:process.env.BX});const c=await b.newContext({...devices['iPhone 13']});const p=await c.newPage();await p.goto(URL,{waitUntil:'networkidle',timeout:60000});
+await p.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));await p.waitForTimeout(500);await p.screenshot({path:OUT+'-m.png',clip:{x:0,y:400,width:390,height:264}});
+const es=await p.$('.langsw--foot a:not(.is-on)');const bb=await es.boundingBox();await p.mouse.move(bb.x+bb.width/2,bb.y+bb.height/2);await p.waitForTimeout(400);await p.screenshot({path:OUT+'-hover.png',clip:{x:0,y:bb.y-20,width:390,height:bb.height+40}});
+console.log(JSON.stringify(await p.evaluate(()=>{const a=document.querySelector('.langsw--foot a:not(.is-on)');const cs=getComputedStyle(a);return {color:cs.color,bg:cs.backgroundColor,htmlBg:getComputedStyle(document.documentElement).backgroundColor}})));await b.close();})();

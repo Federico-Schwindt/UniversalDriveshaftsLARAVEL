@@ -1,0 +1,15 @@
+const { chromium } = require(process.env.PWC);
+(async () => { const b = await chromium.launch(); const p = await (await b.newContext({ viewport: { width: 1280, height: 900 } })).newPage();
+  await p.goto('https://dev.udshafts.com/shop/driveshaft-components/u-joints', { waitUntil: 'networkidle' });
+  await p.locator('.p-plus:not([data-has-alt])').first().click(); await p.waitForTimeout(1500);
+  await p.goto('https://dev.udshafts.com/checkout', { waitUntil: 'networkidle' });
+  console.log('address in source before pickup:', /Prospect|Odessa|33556/.test(await p.content()));
+  for (const [n, v] of [['billing_first_name','Test'],['billing_last_name','Buyer'],['billing_address_1','4545 Dacoma St'],['billing_city','Houston'],['billing_postcode','77092'],['email','qa@example.com']]) await p.fill(`[name="${n}"]`, v).catch(() => {});
+  await p.selectOption('#billing_state', 'TX').catch(() => {});
+  await p.locator('[name="billing_postcode"]').dispatchEvent('change').catch(() => {});
+  await p.waitForFunction(() => !!document.querySelector('#ship-select option[value="local_pickup"]'), null, { timeout: 40000 }).catch(() => {});
+  const opts = await p.$$eval('#ship-select option', o => o.map(x => x.textContent.trim()));
+  console.log('shipping options:', opts.slice(0, 6).join(' | '));
+  await p.selectOption('#ship-select', 'local_pickup'); await p.locator('#ship-select').dispatchEvent('change'); await p.waitForTimeout(2500);
+  console.log('pickup box shows:', (await p.locator('#pickup-box').innerText()).replace(/\s+/g, ' ').slice(0, 260));
+  await b.close(); })().catch(e => { console.error('FAILED', e.message); process.exit(1); });

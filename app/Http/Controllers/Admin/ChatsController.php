@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 /**
  * UDS Assistant conversations in the admin: read any chat (photos and part cards included), take it over
  * so the AI stops answering and a person replies live, then hand it back to the AI or close it.
+ * Beside the chat (owner, 2026-11-04): where the customer is right now, their activity trail (pages, actions,
+ * server and browser errors), cart, orders with tracking; the reply can carry photos, catalog parts and tracking.
  */
 class ChatsController extends Controller
 {
@@ -37,8 +39,46 @@ class ChatsController extends Controller
         $c = $this->conv($id);
         DB::table('chat_conversations')->where('id', $id)->update(['admin_seen_id' => (int) DB::table('chat_messages')->where('conversation_id', $id)->max('id')]);
         $customer = DB::table('users')->find($c->user_id);
-        $orders = $customer ? DB::table('orders')->where('email', $customer->email)->orderByDesc('id')->limit(5)->get(['id', 'order_number', 'total', 'status', 'created_at']) : collect();
-        return view('admin.chats.show', ['c' => $c, 'customer' => $customer, 'orders' => $orders, 'messages' => $this->bot->transcript($c), 'agent' => $this->bot->agentName($c)]);
+        $orders = $customer ? DB::table('orders')->where(fn ($q) => $q->where('user_id', $customer->id)->orWhere('email', $customer->email))->orderByDesc('id')->limit(8)
+            ->get(['id', 'order_number', 'total', 'status', 'payment_status', 'created_at', 'tracking_number', 'tracking_carrier', 'shipped_at', 'delivered_at', 'source']) : collect();
+        $stats = $customer ? \App\Support\SalesStats::counted(DB::table('orders')->where(fn ($q) => $q->where('user_id', $customer->id)->orWhere('email', $customer->email)))
+            ->selectRaw('COUNT(*) n, COALESCE(SUM(total - shipping_total - tax_total - COALESCE(refund_total,0)),0) t, MIN(created_at) first')->first() : null;
+        return view('admin.chats.show', ['c' => $c, 'customer' => $customer, 'orders' => $orders, 'stats' => $stats, 'context' => $this->contextFor($c),
+            'messages' => $this->bot->transcript($c), 'agent' => $this->bot->agentName($c)]);
+    }
+
+    /** Live side panel: presence, activity trail, cart. Polled by the chat page. */
+    public function context(int $id)
+    {
+        return response()->json($this->contextFor($this->conv($id)));
+    }
+
+    private function contextFor(object $c): array
+    {
+        $uid = (int) $c->user_id;
+        $rows = DB::table('customer_activity')->where('user_id', $uid)->orderByDesc('id')->limit(60)->get(['kind', 'method', 'path', 'title', 'status', 'ms', 'detail', 'created_at']);
+        $cart = DB::table('abandoned_carts')->where('user_id', $uid)->whereNull('recovered_at')->orderByDesc('last_seen_at')->first(['items', 'subtotal', 'last_seen_at']);
+        $items = $cart ? array_map(fn ($i) => ['sku' => (string) ($i['sku'] ?? ''), 'name' => (string) ($i['name'] ?? ''), 'qty' => (int) ($i['qty'] ?? 1), 'price' => (float) ($i['price'] ?? 0)],
+            (array) (json_decode((string) $cart->items, true) ?: [])) : [];
+        $tz = 'America/New_York';
+        return [
+            'presence' => \App\Support\CustomerActivity::presence($uid),
+            'activity' => $rows->map(fn ($r) => ['kind' => $r->kind, 'method' => $r->method, 'path' => $r->path, 'title' => $r->title ? preg_replace('/\s*[·|–-]\s*Universal Driveshafts.*$/u', '', $r->title) : null,
+                'status' => $r->status, 'ms' => $r->ms, 'detail' => $r->detail, 'at' => \Carbon\Carbon::parse($r->created_at, 'UTC')->timezone($tz)->format('M j, g:i:s A')])->all(),
+            'errors' => DB::table('customer_activity')->where('user_id', $uid)->whereIn('kind', ['error', 'client_error'])->where('created_at', '>=', now()->subDay())->count(),
+            'cart' => $cart ? ['items' => $items, 'subtotal' => (float) $cart->subtotal, 'at' => \Carbon\Carbon::parse($cart->last_seen_at, 'UTC')->diffForHumans()] : null,
+        ];
+    }
+
+    /** Catalog parts for the reply's "Send a part" picker, priced as this customer sees them. */
+    public function products(Request $r, int $id)
+    {
+        $c = $this->conv($id);
+        $q = trim((string) $r->query('q', ''));
+        if (mb_strlen($q) < 2) return response()->json(['parts' => []]);
+        $u = DB::table('users')->find($c->user_id);
+        $parts = array_map(fn ($p) => $this->bot->partRow($p, $u), app(\App\Services\ProductService::class)->search($q, 8));
+        return response()->json(['parts' => array_values(array_filter($parts, fn ($p) => $p['sku'] !== ''))]);
     }
 
     public function messages(Request $r, int $id)
@@ -55,17 +95,39 @@ class ChatsController extends Controller
     public function reply(Request $r, int $id)
     {
         $c = $this->conv($id);
-        $d = $r->validate(['text' => 'required|string|max:2000']);
+        $d = $r->validate([
+            'text' => 'nullable|string|max:2000',
+            'photos' => 'nullable|array|max:' . \App\Support\ChatPhotos::MAX_PER_MESSAGE, 'photos.*' => 'string|max:' . (8 * 1024 * 1024),
+            'skus' => 'nullable|array|max:6', 'skus.*' => 'string|max:80',
+            'tracking_order' => 'nullable|integer',
+        ]);
         if ($c->status !== 'open') return response()->json(['error' => 'This chat is closed.'], 422);
+        // what goes with the words: photos (stored with the conversation), part cards, a tracking card of one of their orders
+        $attach = ['photos' => [], 'cards' => [], 'widgets' => []];
+        try {
+            foreach ((array) ($d['photos'] ?? []) as $ph) $attach['photos'][] = \App\Support\ChatPhotos::storeDataUrl($ph, (int) $c->id);
+        } catch (\Throwable $e) { return response()->json(['error' => "That photo couldn't be read. Use a JPG or PNG."], 422); }
+        $u = DB::table('users')->find($c->user_id);
+        foreach (array_unique((array) ($d['skus'] ?? [])) as $sku) {
+            $p = app(\App\Services\ProductService::class)->bySku((string) $sku);
+            if ($p) $attach['cards'][] = $this->bot->partRow($p, $u);
+        }
+        if (!empty($d['tracking_order'])) {
+            $o = DB::table('orders')->where('id', (int) $d['tracking_order'])->where(fn ($q) => $q->where('user_id', $c->user_id)->orWhere('email', $u->email ?? ''))->first();
+            if (!$o) return response()->json(['error' => 'That order is not on this customer\'s account.'], 422);
+            $attach['widgets'][] = \App\Services\Chatbot\ChatWidgets::tracking($o);
+        }
+        $text = trim(strip_tags((string) ($d['text'] ?? '')));
+        if ($text === '' && !$attach['photos'] && !$attach['cards'] && !$attach['widgets']) return response()->json(['error' => 'Write something or attach a photo, a part or tracking.'], 422);
         // replying is taking over: the AI must not answer on top of a person. The flag goes first so a turn in
         // flight stops at its next step; the row is written under the customer's send lock, never between a
         // tool call and its result
         $took = $c->mode !== 'human';
         if ($took) $this->flag($c, $r->user()->id);
         try {
-            $mid = $this->locked($c, function () use ($c, $r, $d, $took, $id) {
+            $mid = $this->locked($c, function () use ($c, $r, $text, $attach, $took, $id) {
                 if ($took) $this->note($c, 'human', $r->user()->id);
-                $mid = $this->bot->agentSay($this->conv($id), $r->user(), trim(strip_tags($d['text'])));
+                $mid = $this->bot->agentSay($this->conv($id), $r->user(), $text, $attach);
                 DB::table('chat_conversations')->where('id', $id)->update(['needs_human_at' => null, 'admin_seen_id' => $mid]);
                 return $mid;
             });

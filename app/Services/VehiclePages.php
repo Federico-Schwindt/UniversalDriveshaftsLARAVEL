@@ -290,7 +290,16 @@ class VehiclePages
         $data['intro'] = $this->intro($data);
         $data['faq'] = $this->faq($data);
         $span = $y1 === $y2 ? (string) $y1 : "{$y1}–{$y2}";
-        $data['title'] = self::title(__(':make :model Driveshaft', ['make' => $make, 'model' => $model]), $span);
+        // searches name the position ("f150 rear driveshaft", "front drive shaft"): say which ones the page covers
+        $pos = array_values(array_intersect(['front', 'rear'], array_map('strtolower', $positions)));
+        $core = match (true) {
+            count($pos) === 2 => __(':make :model Front & Rear Driveshafts', ['make' => $make, 'model' => $model]),
+            $pos === ['rear'] => __(':make :model Rear Driveshaft', ['make' => $make, 'model' => $model]),
+            $pos === ['front'] => __(':make :model Front Driveshaft', ['make' => $make, 'model' => $model]),
+            default => __(':make :model Driveshaft', ['make' => $make, 'model' => $model]),
+        };
+        $data['title'] = self::title($core, $span);
+        if (mb_strlen($data['title']) > 60 || !str_contains($data['title'], $span)) $data['title'] = self::title(__(':make :model Driveshaft', ['make' => $make, 'model' => $model]), $span);
         $data['desc'] = self::desc([
             trans_choice('{1} Complete driveshafts for the :span :mm: :n part number.|[2,*] Complete driveshafts for the :span :mm: :n part numbers.', count($pns), ['span' => $span, 'mm' => "$make $model", 'n' => count($pns)]),
             $priceMin !== null ? __('Priced from :price.', ['price' => self::money($priceMin)]) : __('Call for pricing.'),

@@ -63,3 +63,24 @@
 </div>
 </div></section>
 @endsection
+@if(!$unpaidCard)
+@push('scripts')
+@php
+  // item_id = the id Merchant Center knows the product by (Google Ads ties the sale to it); Meta keeps the SKU
+  $convItems = $items->map(fn ($i) => ['item_id' => $i->wp_product_id && $i->type === 'product' ? \App\Http\Controllers\FeedController::offerId((int) $i->wp_product_id) : (string) ($i->sku ?: $i->wp_product_id),
+      'item_name' => (string) $i->name, 'price' => round((float) $i->price, 2), 'quantity' => (int) $i->qty, 'sku' => (string) ($i->sku ?: $i->wp_product_id)])->values()->all();
+  $convOrder = ['transaction_id' => (string) $order->order_number, 'value' => round((float) $order->total, 2), 'currency' => 'USD',
+                'shipping' => round((float) $order->shipping_total, 2), 'coupon' => (string) ($order->coupon_code ?? ''), 'items' => $convItems];
+@endphp
+{{-- conversion for GA4 / Google Ads / Meta, sent once per order even if the page is reloaded --}}
+<script>
+(function () {
+  var key = 'uds_conv_{{ $order->order_number }}';
+  try { if (localStorage.getItem(key)) return; localStorage.setItem(key, '1'); } catch (e) {}
+  var data = @json($convOrder), items = data.items;
+  if (window.gtag) gtag('event', 'purchase', data);
+  if (window.fbq) fbq('track', 'Purchase', {value: data.value, currency: 'USD', content_type: 'product', contents: items.map(function (i) { return {id: i.sku, quantity: i.quantity}; })});
+})();
+</script>
+@endpush
+@endif

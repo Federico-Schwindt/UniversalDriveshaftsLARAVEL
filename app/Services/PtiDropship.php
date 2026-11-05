@@ -211,6 +211,8 @@ class PtiDropship
     private function prepareLocked(object $order, array $pick, array $shipTo, bool $residential, int $userId, array $override = []): array
     {
         $lines = collect($this->lines($order))->keyBy('item_id');
+        // the form names lines by id: ids it no longer finds mean the order was edited since the page was loaded
+        if ($pick && !array_intersect_key($pick, $lines->all())) return ['ok' => false, 'error' => 'This order changed since the page was opened. Reload the page and try again.'];
         $send = []; $blocked = []; $noStock = []; $subs = [];
         foreach ($pick as $itemId => $qty) {
             $l = $lines[(int) $itemId] ?? null; $qty = (int) $qty;
@@ -246,10 +248,11 @@ class PtiDropship
         if (DB::table('pti_dropships')->where('order_id', $order->id)->where('status', 'placed')->exists() && !request()->boolean('again')) {
             return ['ok' => false, 'error' => 'This order already has a PTI dropship placed. Tick "send another" to place a second one.'];
         }
-        // someone at the shop may be building a real PTI order by hand: never mix ours into it
-        try { $existing = $this->pti->cartItems(); }
-        catch (\Throwable $e) { report($e); return ['ok' => false, 'error' => 'PTI did not answer while reading the cart — nothing was added. Try again in a minute.']; }
-        if ($existing) return ['ok' => false, 'error' => 'The PTI cart already has ' . count($existing) . ' item(s) (' . implode(', ', array_column($existing, 'part_number')) . '). Empty it on c2.powertrainindustries.com first so nothing gets mixed into this order.'];
+        // PTI's one cart must hold this dropship and nothing else: whatever is in it (a dropship left half way, a box
+        // measurement, something added by hand) is taken out first, and noted on the order (owner, 2026-11-04: fully automatic)
+        try { $cleared = $this->emptyCart(); }
+        catch (\Throwable $e) { report($e); return ['ok' => false, 'error' => 'PTI did not answer while emptying the cart — nothing was added. Try again in a minute.']; }
+        if ($cleared) OrderEvents::record($order, 'pti_cart', 'PTI cart emptied before the dropship', 'Removed: ' . implode(', ', $cleared));
 
         $added = [];
         try {
@@ -286,9 +289,31 @@ class PtiDropship
             'pti_address_id' => $addrId, 'pti_total' => (float) str_replace(['$', ','], '', (string) ($cart['total_price'] ?? 0)) ?: null,
             'user_id' => $userId, 'created_at' => now(), 'updated_at' => now(),
         ]);
+        if ($cleared) $subs[] = 'The PTI cart was emptied first (it had ' . implode(', ', $cleared) . ').';
         return ['ok' => true, 'dropship_id' => $id, 'rates' => $rates, 'cards' => $this->cards(), 'address' => $addr, 'substitutions' => $subs,
             'cart' => ['items' => array_map(fn ($i) => ['part_number' => $i['part_number'], 'qty' => (int) $i['quantity'], 'price' => $i['price'], 'description' => $i['description'] ?? ''], $cart['items'] ?? []),
                 'total' => $cart['total_price'] ?? null, 'weight' => $cart['total_weight'] ?? null]];
+    }
+
+    /**
+     * Take every item out of PTI's cart (and its dropship address). Returns what was removed. A prepared dropship of
+     * another order loses its cart this way: it is marked cancelled so nobody places it on an empty cart.
+     */
+    private function emptyCart(?int $keepId = null): array
+    {
+        $removed = [];
+        for ($pass = 0; $pass < 2; $pass++) {   // a second read proves the cart is really empty
+            $items = $this->pti->cartItems();
+            if (!$items) break;
+            foreach ($items as $i) {
+                $this->pti->call('DELETE', 'my/cart/item/', ['part_number' => $i['part_number'], 'is_checkout' => 'false']);
+                $removed[] = $i['part_number'] . ' × ' . (int) ($i['quantity'] ?? 1);
+            }
+        }
+        if ($this->pti->cartItems()) throw new \RuntimeException('PTI kept items in the cart after removing them.');
+        try { $this->pti->call('POST', 'my/cart/cart', ['dropship_address_id' => 0]); } catch (\Throwable $e) {}
+        DB::table('pti_dropships')->where('status', 'prepared')->when($keepId, fn ($q) => $q->where('id', '!=', $keepId))->update(['status' => 'cancelled', 'error' => 'Its PTI cart was replaced by a newer dropship; prepare it again.', 'updated_at' => now()]);
+        return array_values(array_unique($removed));
     }
 
     /** A PTI "Alt Part" for $part that has $qty on hand AND the same measurements as our product. */
@@ -378,11 +403,24 @@ class PtiDropship
         // PTI's cart must still hold exactly what we prepared — nothing more, nothing less
         try { $cart = $this->pti->call('GET', 'my/cart/cart', ['is_checkout' => 'true']); }
         catch (\Throwable $e) { report($e); return ['ok' => false, 'error' => 'PTI did not answer while checking the cart — nothing was ordered. Try again in a minute.']; }
-        $have = collect($cart['items'] ?? [])->mapWithKeys(fn ($i) => [strtoupper($i['part_number']) => (int) $i['quantity']])->all();
         $want = collect($lines)->mapWithKeys(fn ($l) => [strtoupper($l['part_number']) => (int) $l['qty']])->all();
-        ksort($have); ksort($want);
-        if ($have !== $want) return ['ok' => false, 'error' => 'The PTI cart changed since it was prepared (it now has: ' . (json_encode($have) ?: 'nothing') . '). Cancel and prepare again.'];
-        if ((int) ($cart['dropship_address_id'] ?? 0) !== (int) $d->pti_address_id) return ['ok' => false, 'error' => 'The PTI cart is no longer pointed at the customer\'s address. Cancel and prepare again.'];
+        ksort($want);
+        $matches = function (array $cart) use ($want, $d) {
+            $have = collect($cart['items'] ?? [])->mapWithKeys(fn ($i) => [strtoupper($i['part_number']) => (int) $i['quantity']])->all();
+            ksort($have);
+            return $have === $want && (int) ($cart['dropship_address_id'] ?? 0) === (int) $d->pti_address_id;
+        };
+        if (!$matches($cart)) {
+            // the cart moved since it was prepared (another dropship, the nightly box measuring, a person): put it back
+            try {
+                $this->emptyCart($d->id);
+                foreach ($lines as $l) $this->pti->call('PUT', 'my/cart/item/', ['part_number' => $l['part_number'], 'quantity' => $l['qty']]);
+                $this->pti->call('POST', 'my/cart/cart', ['dropship_address_id' => (int) $d->pti_address_id]);
+                $cart = $this->pti->call('GET', 'my/cart/cart', ['is_checkout' => 'true']);
+            } catch (\Throwable $e) { report($e); return ['ok' => false, 'error' => 'The PTI cart had changed and could not be rebuilt: ' . $e->getMessage() . ' — nothing was ordered.']; }
+            if (!$matches($cart)) return ['ok' => false, 'error' => 'The PTI cart had changed and PTI did not accept the rebuilt one — nothing was ordered. Prepare the dropship again.'];
+            OrderEvents::record($order, 'pti_cart', 'PTI cart rebuilt before placing', 'It had changed since the dropship was prepared');
+        }
 
         $last4 = '';
         try {
@@ -428,20 +466,31 @@ class PtiDropship
         return ['ok' => true];
     }
 
-    /** PTI's tracking number onto our order (and the customer's "shipped" e-mail/text) once PTI ships. */
+    /**
+     * PTI's tracking onto our order (and the customer's "shipped" e-mail/text) once PTI ships, and again whenever PTI
+     * changes it (a new label): the order follows PTI as long as it still shows PTI's previous number.
+     */
     public function syncTracking(object $d, bool $notify = true): ?string
     {
         if (!$d->pti_order_id) return null;
         $o = $this->pti->call('GET', 'my/orders/order/' . rawurlencode($d->pti_order_id));
         $o = $o['order'] ?? $o;
         DB::table('pti_dropships')->where('id', $d->id)->update(['tracking_checked_at' => now()]);
-        $tn = trim((string) ($o['tracking_number'] ?? ''));
-        if ($tn === '' || $tn === $d->tracking_number) return null;
-        DB::table('pti_dropships')->where('id', $d->id)->update(['tracking_number' => $tn, 'updated_at' => now()]);
+        // PTI may list more than one parcel: "1Z…, 1Z…"
+        $all = array_values(array_filter(array_map('trim', preg_split('/[\s,;]+/', (string) ($o['tracking_number'] ?? $o['tracking_numbers'] ?? '')) ?: [])));
+        $tn = $all[0] ?? '';
+        if ($tn === '' || implode(', ', $all) === (string) $d->tracking_number) return null;
+        DB::table('pti_dropships')->where('id', $d->id)->update(['tracking_number' => mb_substr(implode(', ', $all), 0, 80), 'updated_at' => now()]);
         $order = DB::table('orders')->find($d->order_id);
+        if (!$order) return $tn;
         $carrier = self::carrierFor($tn, (string) ($o['carrier'] ?? $o['shipping_carrier'] ?? $o['ship_via'] ?? ''));
-        if ($order && !$order->tracking_number) \App\Support\OrderTracking::markShipped($order, $tn, $carrier, 'Shipped by PTI (dropship)', $notify);
-        else OrderEvents::record($order, 'pti_tracking', 'PTI shipped the dropship', "$carrier $tn");
+        $previous = array_map('trim', explode(',', (string) $d->tracking_number));
+        if (!$order->tracking_number || in_array($order->tracking_number, $previous, true)) {
+            \App\Support\OrderTracking::markShipped($order, $tn, $carrier, 'Shipped by PTI (dropship)', $notify);
+        } else {
+            OrderEvents::record($order, 'pti_tracking', 'PTI shipped the dropship', "$carrier $tn");
+        }
+        if (count($all) > 1) OrderEvents::record($order, 'pti_tracking', 'PTI shipped it in ' . count($all) . ' parcels', implode(', ', $all));
         return $tn;
     }
 

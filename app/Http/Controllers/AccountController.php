@@ -39,6 +39,8 @@ class AccountController extends Controller
         if (in_array($st, ['cancelled', 'canceled', 'failed'])) return ['cancelled', 'Cancelled', 1];
         if ($st === 'refunded' || ((float) ($o->refund_total ?? 0) > 0 && (float) $o->refund_total >= (float) $o->total)) return ['refunded', 'Refunded', 2];
         if (!empty($o->delivered_at)) return ['delivered', 'Delivered', 4];
+        // history from the old store: "completed" there means fulfilled, with no delivery scan to show
+        if ($st === 'completed' && ($o->source ?? '') === 'woocommerce') return ['delivered', 'Completed', 4];
         if (!empty($o->shipped_at)) return ['shipped', 'Shipped', 3];
         if ($o->payment_status === 'paid') return ['processing', 'Processing', 2];
         return ['pending', 'Awaiting payment', 1];
@@ -348,7 +350,7 @@ class AccountController extends Controller
             return back()->withErrors(['current_password' => __('Current password is incorrect.')], 'password');
         }
         if ($err = $this->reauthFails($r, $u)) return back()->withErrors(['reauth_code' => $err], 'password');
-        $u->forceFill(['password' => Hash::make($data['password']), 'remember_token' => \Illuminate\Support\Str::random(60)])->save();
+        $u->forceFill(['password' => Hash::make($data['password']), 'remember_token' => \Illuminate\Support\Str::random(60), 'wp_password' => null])->save();
         // every other session and remember-me cookie is signed out (AuthenticateSession); this one gets the new hash and cookie
         Auth::logoutOtherDevices($data['password']);
         return back()->with('acct_ok', __('Password updated. Any other devices signed in to your account were signed out.'));

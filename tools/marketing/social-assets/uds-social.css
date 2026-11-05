@@ -1,0 +1,66 @@
+/* UDS social — November 2026. Brand blue on white, condensed display caps with highlight bars (ref. board). */
+:root{--blue:#1246ab;--blue2:#2f63d8;--navy:#0a1630;--ice:#eaf0fb;--line:rgba(255,255,255,.22);--red:#d92b35;--ink:#0d1b34;--grey:#5b6880}
+*{box-sizing:border-box}
+.art{position:relative;overflow:hidden;font-family:'Poppins',system-ui,sans-serif;color:var(--ink)}
+.bg-blue{background:var(--blue);color:#fff}
+.bg-navy{background:var(--navy);color:#fff}
+.bg-white{background:#fff}
+.bg-ice{background:var(--ice)}
+.disp{font-family:'Barlow Condensed','Oswald',sans-serif;font-weight:800;text-transform:uppercase;line-height:1.02;letter-spacing:0;margin:0}
+.disp-i{font-style:italic}
+.hl,.hl-w,.hl-n{display:inline-block;line-height:.9;padding:.04em .1em .02em;margin:.02em 0;vertical-align:baseline}
+.hl{background:var(--blue);color:#fff}
+.hl-w{background:#fff;color:var(--blue)}
+.hl-n{background:var(--navy);color:#fff}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-weight:500;letter-spacing:.06em;text-transform:uppercase}
+.lead{font-size:30px;line-height:1.35;margin:0}
+.ghost{position:absolute;font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;line-height:.8;color:transparent;-webkit-text-stroke:2px rgba(255,255,255,.16);white-space:nowrap;pointer-events:none}
+.ghost-d{-webkit-text-stroke:2px rgba(18,70,171,.10)}
+.arc{position:absolute;border:2px solid var(--line);border-radius:50%;pointer-events:none}
+.arc-d{border-color:rgba(18,70,171,.16)}
+.badge{position:absolute;width:76px;height:76px;border-radius:20px;background:#fff;display:grid;place-items:center;box-shadow:0 14px 30px -12px rgba(5,20,60,.45);color:var(--blue)}
+.badge svg{width:38px;height:38px}
+.badge-b{background:var(--blue);color:#fff}
+.panel{position:absolute;background:#fff;border-radius:36px;overflow:hidden}
+.prod{mix-blend-mode:multiply;object-fit:contain;display:block}
+.photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.shade-b{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,22,48,0) 30%,rgba(10,22,48,.92) 100%)}
+.shade-t{position:absolute;inset:0;background:linear-gradient(0deg,rgba(10,22,48,0) 35%,rgba(10,22,48,.85) 100%)}
+.box-blue{background:var(--blue);color:#fff;border-radius:28px;padding:40px 44px}
+.box-white{background:#fff;color:var(--ink);border-radius:28px;padding:40px 44px}
+.cta{align-self:flex-start;width:max-content;display:inline-flex;align-items:center;gap:14px;height:72px;padding:0 34px;border-radius:999px;background:#fff;color:var(--blue);font-weight:700;font-size:26px}
+.cta-b{background:var(--blue);color:#fff}
+.cta svg{width:26px;height:26px}
+.foot{position:absolute;left:56px;right:56px;bottom:52px;height:86px;border-radius:999px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 34px 0 30px;color:var(--ink);box-shadow:0 18px 40px -20px rgba(5,20,60,.5)}
+.foot img{height:40px;width:auto;display:block}
+.foot .f-r{display:flex;gap:30px;font-size:21px;font-weight:600}
+.foot .f-r span{display:flex;align-items:center;gap:9px}
+.foot svg{width:24px;height:24px;color:var(--blue)}
+.foot-b{background:var(--blue);color:#fff}
+.foot-b svg{color:#fff}
+.tag{align-self:flex-start;width:max-content;display:inline-flex;align-items:center;gap:10px;height:52px;padding:0 24px;border-radius:999px;font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:20px;letter-spacing:.08em;text-transform:uppercase;background:rgba(255,255,255,.14);color:#fff;border:1.5px solid rgba(255,255,255,.35)}
+.tag-d{background:var(--ice);color:var(--blue);border-color:rgba(18,70,171,.25)}
+.dot{width:12px;height:12px;border-radius:50%;background:#ff4b55;box-shadow:0 0 0 6px rgba(255,75,85,.25)}
+.laptop{position:absolute;filter:drop-shadow(0 40px 50px rgba(3,12,40,.45))}
+.laptop .scr{border:18px solid #10151f;border-bottom-width:26px;border-radius:26px 26px 6px 6px;overflow:hidden;background:#000}
+.laptop .scr img{display:block;width:100%;height:100%;object-fit:cover;object-position:top}
+.laptop .base{height:26px;margin:0 -60px;background:linear-gradient(#cfd5df,#9aa3b2);border-radius:0 0 22px 22px}
+.phone{position:absolute;border:16px solid #0d1119;border-radius:62px;overflow:hidden;background:#000;filter:drop-shadow(0 40px 50px rgba(3,12,40,.5))}
+.phone img{display:block;width:100%;height:100%;object-fit:cover;object-position:top}
+.phone::after{content:"";position:absolute;top:14px;left:50%;width:120px;height:34px;margin-left:-60px;border-radius:20px;background:#0d1119}
+.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:22px}
+.list li{display:flex;gap:20px;align-items:flex-start;font-size:28px;line-height:1.3}
+.list .n{flex:none;width:52px;height:52px;border-radius:14px;background:#fff;color:var(--blue);display:grid;place-items:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:32px}
+.list-d .n{background:var(--blue);color:#fff}
+.chat{display:flex;flex-direction:column;gap:18px}
+.bub{max-width:78%;padding:22px 26px;border-radius:28px;font-size:26px;line-height:1.35}
+.bub-me{align-self:flex-end;background:var(--blue);color:#fff;border-bottom-right-radius:8px}
+.bub-bot{align-self:flex-start;background:#fff;color:var(--ink);border-bottom-left-radius:8px;box-shadow:0 10px 30px -18px rgba(5,20,60,.5)}
+.vn{display:flex;align-items:center;gap:16px}
+.vn i{display:block;width:5px;border-radius:3px;background:var(--blue)}
+.sticker{position:absolute;background:#fff;border-radius:30px;box-shadow:0 20px 50px -20px rgba(3,12,40,.55);color:var(--ink)}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px}
+.cal span{height:64px;border-radius:14px;display:grid;place-items:center;font-weight:600;font-size:24px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.75)}
+.cal .on{background:#fff;color:var(--blue);font-weight:800;box-shadow:0 0 0 6px rgba(255,255,255,.25)}
+.code{display:inline-flex;align-items:center;gap:18px;padding:22px 34px;border:4px dashed #fff;border-radius:26px;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:64px;letter-spacing:.12em}
+.code-d{border-color:var(--blue);color:var(--blue)}

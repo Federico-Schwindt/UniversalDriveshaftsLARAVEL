@@ -1,0 +1,10 @@
+const { chromium } = require(process.env.PWC);(async()=>{const b=await chromium.launch({headless:true});const p=await b.newPage({viewport:{width:1400,height:900}});
+await p.goto('https://dev.udshafts.com/parts/5-1310XU',{waitUntil:'networkidle'});const csrf=await p.evaluate(()=>(document.querySelector('meta[name="csrf-token"]')||{}).content||'');
+await p.evaluate(async(c)=>{await fetch('/quick-order/add',{method:'POST',headers:{'X-CSRF-TOKEN':c,'X-Requested-With':'XMLHttpRequest','Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({lines:JSON.stringify([{sku:'5-1310XU',qty:1}])})});},csrf);
+await p.goto('https://dev.udshafts.com/checkout?x='+Date.now(),{waitUntil:'networkidle'});await p.waitForTimeout(500);
+const opts=()=>p.evaluate(()=>[...document.querySelectorAll('#ship-select option')].map(o=>o.textContent.trim()));
+await p.selectOption('#billing_country','AR'); const z=p.locator('[name=billing_postcode]'); await z.fill(''); await z.fill('C1001'); await z.press('Tab'); await p.waitForTimeout(7000);
+console.log('AR C1001 via real typing:',JSON.stringify(await opts()));
+await p.selectOption('#billing_country','US'); await z.fill(''); await z.fill('10001'); await z.press('Tab'); await p.waitForTimeout(6000);
+console.log('back to US 10001:',JSON.stringify(await opts()));
+await b.close();})();

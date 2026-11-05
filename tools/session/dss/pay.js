@@ -1,0 +1,3 @@
+const {chromium}=require(process.env.PWC);
+(async()=>{const b=await chromium.launch({executablePath:process.env.BX});const p=await b.newPage();await p.goto('https://recruiting.paylocity.com/recruiting/jobs/All/7238e52e-d83e-4e90-934d-428b564d3e7f/The-Driveshaft-Shop',{waitUntil:'networkidle',timeout:60000});await p.waitForTimeout(3000);
+console.log(JSON.stringify(await p.evaluate(()=>({title:document.title,jobs:[...document.querySelectorAll('a')].map(a=>a.innerText.trim()+' | '+a.href).filter(t=>/job|Details|position/i.test(t)).slice(0,20),text:document.body.innerText.replace(/\s+/g,' ').slice(0,1500)}))));await b.close();})();

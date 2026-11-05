@@ -1,0 +1,14 @@
+const {chromium}=require(process.env.PWC);const S=process.argv[2];
+(async()=>{const b=await chromium.launch({executablePath:process.env.BX});const c=await b.newContext({viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true});const p=await c.newPage();
+const errs=[];p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error')errs.push(m.text())});
+await p.goto('https://dev.udshafts.com/parts/5-1310XU',{waitUntil:'load'});
+const add=await p.evaluate(()=>fetch('/cart/add',{method:'POST',headers:{'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content,'Content-Type':'application/x-www-form-urlencoded','X-Requested-With':'XMLHttpRequest'},body:'product_id=11383&quantity=1'}).then(r=>r.status));
+console.log('cart add',add);
+await p.goto('https://dev.udshafts.com/checkout',{waitUntil:'load'});await p.waitForTimeout(3500);
+console.log('floaty visible',await p.isVisible('.floaty'),'scrollW',await p.evaluate(()=>document.documentElement.scrollWidth));
+console.log('labelled inputs',await p.evaluate(()=>[...document.querySelectorAll('#co-form input:not([type=hidden]),#co-form select')].filter(i=>i.offsetParent&&!(i.labels&&i.labels.length)&&!i.getAttribute('aria-label')).map(i=>i.name).join(',')||'all'));
+console.log('autocomplete email',await p.getAttribute('[name=email]','autocomplete'),'| city prefilled:',await p.inputValue('[name=billing_city]').catch(()=>'?'));
+await p.screenshot({path:S+'/final-checkout.png',fullPage:false});
+await p.evaluate(()=>window.scrollTo(0,700));await p.waitForTimeout(400);await p.screenshot({path:S+'/final-checkout-2.png'});
+console.log('errors',errs.slice(0,5));
+await b.close();})().catch(e=>{console.error(e);process.exit(1)});

@@ -1,0 +1,7 @@
+const { chromium } = require(process.env.PWC);(async()=>{const b=await chromium.launch({headless:true});const p=await b.newPage({viewport:{width:1400,height:900}});
+await p.goto('https://dev.udshafts.com/parts/5-1310XU',{waitUntil:'networkidle'});const csrf=await p.evaluate(()=>(document.querySelector('meta[name="csrf-token"]')||{}).content||'');
+await p.evaluate(async(c)=>{await fetch('/quick-order/add',{method:'POST',headers:{'X-CSRF-TOKEN':c,'X-Requested-With':'XMLHttpRequest','Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({lines:JSON.stringify([{sku:'5-1310XU',qty:1}])})});},csrf);
+await p.goto('https://dev.udshafts.com/checkout',{waitUntil:'networkidle'});await p.waitForTimeout(500);
+console.log(JSON.stringify(await p.evaluate(()=>{const i=document.querySelector('input[type=tel]');const sc=document.querySelector('#shipping_country');const scripts=[...document.scripts].map(s=>s.src).filter(s=>/phone/.test(s));return {sameForm:i.form===sc.form,telForm:i.form&&i.form.id,scForm:sc.form&&sc.form.id,scDisplay:getComputedStyle(sc).display,shipHidden:!!sc.closest('[hidden]'),scripts};})));
+await p.evaluate(()=>{const s=document.querySelector('#shipping_country');s.value='MX';s.dispatchEvent(new Event('change',{bubbles:true}));});await p.waitForTimeout(200);console.log('cc after MX',await p.evaluate(()=>document.querySelector('.tel select').value));
+await b.close();})();

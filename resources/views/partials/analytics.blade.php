@@ -1,11 +1,15 @@
 @php $ga = config('uds.ga4'); $aw = config('uds.google_ads'); $fb = config('uds.fb_pixel'); @endphp
-@if(config('uds.analytics_enabled'))
+{{-- staff browsing the store are not visitors: no tags for admins (Site Kit excluded logged-in staff too) --}}
+@if(config('uds.analytics_enabled') && !auth()->user()?->is_admin)
   @if($ga)
   {{-- Google Analytics 4 + Google Ads (gtag) --}}
   <script async src="https://www.googletagmanager.com/gtag/js?id={{ $ga }}"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
+    // consent mode as on the old site: EEA/UK/Swiss visitors start denied (no cookies, modelled data only)
+    gtag('consent', 'default', {ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied',
+      region: ['AT','BE','BG','CH','CY','CZ','DE','DK','EE','ES','FI','FR','GB','GR','HR','HU','IE','IS','IT','LI','LT','LU','LV','MT','NL','NO','PL','PT','RO','SE','SI','SK']});
     gtag('js', new Date());
     gtag('config', '{{ $ga }}');
     @if($aw) gtag('config', 'AW-{{ $aw }}'); @endif

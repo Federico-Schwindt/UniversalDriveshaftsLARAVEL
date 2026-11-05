@@ -34,7 +34,8 @@ class TrackOrders extends Command
 
         $q = DB::table('orders')->whereNull('delivered_at')->where('status', '!=', 'cancelled')
             ->where('shipping_method', '!=', \App\Services\CartService::PICKUP_ID)
-            ->whereNotNull('tracking_number');
+            ->whereNotNull('tracking_number')
+            ->where('source', '!=', 'woocommerce');   // history imported from the old store: never polled, never notified
         if ($num = $this->option('order')) {
             $q->where('order_number', $num);
         } else {

@@ -132,10 +132,17 @@ class B2bAccounts
             : ($new === $byMtd && self::rank($byMtd) > self::rank($byLast) ? 'This month reached $' . number_format($mtd, 2) : 'Last month closed at $' . number_format($last, 2)));
         DB::table('b2b_tier_log')->insert(['user_id' => $userId, 'from_tier' => $old, 'to_tier' => $new, 'spend' => self::rank($byMtd) >= self::rank($byLast) ? $mtd : $last, 'reason' => $why, 'created_at' => now()]);
         // the first tier (on approval) is announced by the approval e-mail itself
-        if ($notify && $old !== null) {
+        if ($notify && $old !== null && !self::dormantImport($u)) {
             try { self::mailChange($u, $old, $new, $mtd, $last, $midMonth); } catch (\Throwable $e) { report($e); }
         }
         return $new;
+    }
+
+    /** An account imported from the old store that has not used this site yet: it hears nothing from us until it does. */
+    public static function dormantImport(object $u): bool
+    {
+        return !empty($u->wp_user_id) && empty($u->last_login_at)
+            && !DB::table('orders')->where('user_id', $u->id)->where('source', '!=', 'woocommerce')->exists();
     }
 
     private static function mailChange(object $u, string $old, string $new, float $mtd, float $last, bool $midMonth = false): void
@@ -208,7 +215,7 @@ class B2bAccounts
         $today = now(self::TZ)->startOfDay();
         $before = (int) Settings::get('b2b.remind_days', 3);
         $orders = DB::table('orders')->where('payment_method', 'net_terms')->where('payment_status', 'unpaid')
-            ->whereNotIn('status', ['cancelled', 'failed', 'refunded'])->whereNotNull('terms_due_at')->get();
+            ->whereNotIn('status', ['cancelled', 'failed', 'refunded'])->whereNotNull('terms_due_at')->where('source', '!=', 'woocommerce')->get();
         foreach ($orders as $o) {
             $due = Carbon::parse($o->terms_due_at, self::TZ)->startOfDay();
             $days = (int) $today->diffInDays($due, false);   // > 0: still to come

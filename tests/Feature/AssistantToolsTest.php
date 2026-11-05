@@ -63,7 +63,7 @@ class AssistantToolsTest extends TestCase
     public function test_terms_order_is_placed_only_after_the_customer_confirms(): void
     {
         Mail::fake();
-        $u = $this->user(['wholesale_status' => 'approved']);
+        $u = $this->user(['wholesale_status' => 'approved', 'net_terms' => 1]);
         $sub = $this->cart($u);
         $this->say('Order what is in my cart, pickup, on terms');
 
@@ -143,7 +143,7 @@ class AssistantToolsTest extends TestCase
         $this->assertTrue(DB::table('leads')->where('email', $u->email)->where('source', 'wholesale-application')->exists());
         $this->assertFalse($this->tool($u->fresh(), 'apply_for_business_account', ['business_name' => 'X', 'business_type' => '', 'tax_id' => '', 'volume' => '', 'notes' => ''])['filed']);
 
-        $b = $this->user(['wholesale_status' => 'approved']);
+        $b = $this->user(['wholesale_status' => 'approved', 'net_terms' => 1]);
         $acc = $this->tool($b, 'my_account')['business_account'];
         $this->assertSame('Bronze 5%', $acc['tier']);
         $this->assertTrue($acc['net_terms']['available']);

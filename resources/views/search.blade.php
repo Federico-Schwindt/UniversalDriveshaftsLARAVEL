@@ -96,7 +96,7 @@
   @endif
 </div></section>
 
-<div class="qv-back" id="qv-back"><div class="qv" style="position:relative"><button class="qv-x" id="qv-x" aria-label="{!! __('Close quick view') !!}"><x-icon name="x"/></button><div class="qv-in" id="qv-in"><div class="aempty" style="border:0;background:none">{!! __('Loading') !!}</div></div></div></div>
+</div>
 <div class="stock-pop" id="stock-pop"></div>
 <div class="img-pop" id="img-pop"><img alt=""></div>
 <meta name="csrf-token" content="{{ csrf_token() }}">

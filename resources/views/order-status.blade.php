@@ -7,7 +7,7 @@
     : ($order->delivered_at ? 'delivered'
     : ($order->tracking_number ? 'shipped'
     : ($isPickup && $order->status === 'completed' ? 'ready'
-    : ($order->payment_status === 'paid' || $order->payment_method === 'pay_at_pickup' ? 'production' : 'awaiting'))));
+    : ($order->payment_status === 'paid' || in_array($order->payment_method, ['pay_at_pickup', 'net_terms'], true) ? 'production' : 'awaiting'))));
   $headline = ['cancelled' => 'This order was cancelled', 'delivered' => 'Your order was delivered', 'shipped' => 'Your order is on its way',
     'ready' => 'Your parts are ready for pickup', 'production' => $isPickup ? 'Your order is being prepared' : 'Your order is in production',
     'awaiting' => 'We have your order'][$state];
@@ -244,7 +244,7 @@
         <dt>{{ __('E-mail') }}</dt><dd>{{ $order->email }}</dd>
         <dt>{{ __('Phone') }}</dt><dd>{{ $order->phone }}</dd>
         @if($order->po_number)<dt>{{ __('PO #') }}</dt><dd>{{ $order->po_number }}</dd>@endif
-        <dt>{{ __('Payment') }}</dt><dd>@if($order->payment_status==='paid') {{ __('Paid') }} @elseif($order->payment_method==='pay_at_pickup') {{ __('Due at pickup') }} @elseif($order->payment_status==='refunded') {{ __('Refunded') }} @else {{ __('Pending') }} @if(\App\Support\PayLink::payable($order)) — <a href="{{ \App\Support\PayLink::url($order) }}"><b>{{ __('Pay $:amount online now', ['amount' => number_format(\App\Support\PayLink::balance($order),2)]) }}</b></a>@endif @endif</dd>
+        <dt>{{ __('Payment') }}</dt><dd>@if($order->payment_status==='paid') {{ __('Paid') }} @elseif($order->payment_method==='pay_at_pickup') {{ __('Due at pickup') }} @elseif($order->payment_method==='net_terms') {{ $order->terms_due_at ? __('Net :d invoice, due :date', ['d' => \App\Services\B2bAccounts::termsDays(), 'date' => \Carbon\Carbon::parse($order->terms_due_at)->translatedFormat('F j, Y')]) : __('Net :d invoice', ['d' => \App\Services\B2bAccounts::termsDays()]) }} @if(\App\Support\PayLink::payable($order)) — <a href="{{ \App\Support\PayLink::url($order) }}"><b>{{ __('Pay $:amount online now', ['amount' => number_format(\App\Support\PayLink::balance($order),2)]) }}</b></a>@endif @elseif($order->payment_status==='refunded') {{ __('Refunded') }} @else {{ __('Pending') }} @if(\App\Support\PayLink::payable($order)) — <a href="{{ \App\Support\PayLink::url($order) }}"><b>{{ __('Pay $:amount online now', ['amount' => number_format(\App\Support\PayLink::balance($order),2)]) }}</b></a>@endif @endif</dd>
       </dl>
       <div class="ost-sms" style="margin-top:.9rem"><x-icon name="phone"/><span>@if($order->sms_opt_in){!! __('Text updates are <b>on</b>: you will get a text when this order ships and when it is delivered.') !!}@else {{ __('Text updates are off for this order; shipping and delivery updates go to your e-mail.') }}@endif</span></div>
     </div>

@@ -21,6 +21,10 @@ class SyncCatalogLive extends Command
 
     public function handle(): int
     {
+        if (\App\Support\LiveOrigin::isSelf()) {
+            $this->warn('universaldriveshafts.com is this site now: there is no old WordPress store to read from. Skipped.');
+            return self::SUCCESS;
+        }
         $base = 'https://universaldriveshafts.com/wp-json/wc/store/v1/products';
         $max = (int) $this->option('pages'); $page = 1; $total = 0;
         do {
@@ -50,6 +54,10 @@ class SyncCatalogLive extends Command
             // a photo that shows the wrong part stays off (config catalog.wrong_images)
             $wrong = config('catalog.wrong_images', []);
             foreach ($rows as &$r) if (isset($wrong[$r['wp_product_id']])) { $r['image'] = $r['thumb'] = null; $r['gallery'] = '[]'; }
+            unset($r);
+            // our own photos for a product (pti:sync --photos-for): the live store's picture never replaces them
+            $over = (array) \App\Support\Settings::get('catalog.image_overrides', []);
+            foreach ($rows as &$r) if (isset($over[(string) $r['wp_product_id']])) { $o = $over[(string) $r['wp_product_id']]; $r['image'] = $r['thumb'] = $o['image']; $r['gallery'] = json_encode($o['gallery'] ?? []); }
             unset($r);
             // products edited in the admin are locked: the live store must not overwrite them
             $locked = DB::table('catalog_live')->whereNotNull('locked_at')->pluck('wp_product_id')->flip();

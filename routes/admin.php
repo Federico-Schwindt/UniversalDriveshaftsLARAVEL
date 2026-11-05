@@ -55,6 +55,8 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
         Route::get('/chats', [\App\Http\Controllers\Admin\ChatsController::class, 'index']);
         Route::get('/chats/{id}', [\App\Http\Controllers\Admin\ChatsController::class, 'show'])->whereNumber('id');
         Route::get('/chats/{id}/messages', [\App\Http\Controllers\Admin\ChatsController::class, 'messages'])->whereNumber('id');
+        Route::get('/chats/{id}/context', [\App\Http\Controllers\Admin\ChatsController::class, 'context'])->whereNumber('id');
+        Route::get('/chats/{id}/products', [\App\Http\Controllers\Admin\ChatsController::class, 'products'])->whereNumber('id');
         Route::post('/chats/{id}/reply', [\App\Http\Controllers\Admin\ChatsController::class, 'reply'])->whereNumber('id');
         Route::post('/chats/{id}/takeover', [\App\Http\Controllers\Admin\ChatsController::class, 'takeover'])->whereNumber('id');
         Route::post('/chats/{id}/release', [\App\Http\Controllers\Admin\ChatsController::class, 'release'])->whereNumber('id');
@@ -145,7 +147,20 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
     });
     Route::middleware('admin.section:recovery')->get('/recovery', [\App\Http\Controllers\RecoveryController::class, 'admin']);
     Route::middleware('admin.section:reports')->get('/reports', [ReportsController::class, 'index']);
+    Route::middleware('admin.section:reports')->get('/analytics', [\App\Http\Controllers\Admin\AnalyticsController::class, 'index']);
+    Route::middleware('admin.section:reports')->get('/traffic/data', [\App\Http\Controllers\Admin\TrafficController::class, 'data']);
+    Route::middleware(['admin.section:reports', 'throttle:30,1'])->get('/traffic/live', [\App\Http\Controllers\Admin\TrafficController::class, 'live']);
     Route::middleware('admin.section:activity')->get('/activity', [SettingsController::class, 'activity']);
+
+    // SEO owned by the store: redirects, 404 log, per-URL title/description (replaces Rank Math on WordPress)
+    Route::middleware('admin.section:seo')->group(function () {
+        Route::get('/seo', [\App\Http\Controllers\Admin\SeoController::class, 'index']);
+        Route::post('/seo/redirects', [\App\Http\Controllers\Admin\SeoController::class, 'storeRedirect']);
+        Route::post('/seo/redirects/{id}/delete', [\App\Http\Controllers\Admin\SeoController::class, 'deleteRedirect'])->whereNumber('id');
+        Route::post('/seo/404/dismiss', [\App\Http\Controllers\Admin\SeoController::class, 'dismiss404']);
+        Route::post('/seo/pages', [\App\Http\Controllers\Admin\SeoController::class, 'storePage']);
+        Route::post('/seo/pages/{id}/delete', [\App\Http\Controllers\Admin\SeoController::class, 'deletePage'])->whereNumber('id');
+    });
 
     Route::middleware('admin.section:settings')->group(function () {
         Route::get('/settings', [SettingsController::class, 'index']);

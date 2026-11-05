@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', $pieces === 'two' ? __('Two-piece driveshaft online builder | Universal Driveshafts') : __('Custom driveshaft builder, live price | Universal Driveshafts'))
+@section('title', $pieces === 'two' ? __('Custom Two-Piece Driveshaft Online, Live Price | UDS') : __('Custom Driveshaft Online: Any Length, Live Price | UDS'))
 @section('desc', $pieces === 'two' ? __('Build a two-piece driveshaft online: center support bearing, series, yokes and your measurements priced live, built and balanced in Florida.') : __('Build a custom one-piece driveshaft online. Pick duty, series and yokes, enter six measurements and see the price before you order. Built in Florida.'))
 @section('content')
 <link rel="stylesheet" href="/css/dsb.css?v={{ filemtime(public_path('css/dsb.css')) }}">
