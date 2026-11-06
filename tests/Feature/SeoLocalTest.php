@@ -87,7 +87,7 @@ class SeoLocalTest extends TestCase
         $admin = User::query()->where('is_admin', 1)->where(fn ($q) => $q->whereNull('admin_role')->orWhere('admin_role', 'owner'))->firstOrFail();
         $this->get('/zz-seo-test-old-page')->assertNotFound();
         $logId = (int) DB::table('seo_404s')->where('path', 'zz-seo-test-old-page')->value('id');
-        $this->actingAs($admin)->get('/admin/seo?tab=notfound')->assertOk()->assertSee('/zz-seo-test-old-page');
+        $this->actingAs($admin)->get('/admin/seo?tab=notfound&q=zz-seo-test-old-page')->assertOk()->assertSee('/zz-seo-test-old-page');
         $this->actingAs($admin)->post('/admin/seo/redirects', ['source' => '/zz-seo-test-old-page/', 'target' => 'https://universaldriveshafts.com/shop/', 'code' => '301', 'from_404' => $logId])->assertRedirect();
         $this->assertSame('/shop/', DB::table('seo_redirects')->where('source', 'zz-seo-test-old-page')->value('target'));
         $this->assertFalse(DB::table('seo_404s')->where('id', $logId)->exists());

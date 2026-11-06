@@ -6,7 +6,7 @@
   $cdNext = $cdShip->isToday() ? $cdShip->copy()->addWeekday() : $cdShip;
   // "ship tomorrow" / "ship on Monday, Nov 3"; es "salen mañana" / "salen el lunes 3 de noviembre" (the article lives in 'on :date', not in the sentence)
   $cdLoc = app()->getLocale();
-  $cdFmt = ['es' => 'l j \\d\\e F', 'fr' => 'l j F'][$cdLoc] ?? 'l, M j';
+  $cdFmt = ['es' => 'l j \\d\\e F', 'fr' => 'l j F', 'zh' => 'n月j日 l', 'ja' => 'n月j日 l'][$cdLoc] ?? 'l, M j';
   $cdDay = fn ($d) => $d->isTomorrow() ? __('tomorrow') : __('on :date', ['date' => $d->copy()->locale($cdLoc)->translatedFormat($cdFmt)]);
 @endphp
 <p class="shipcd {{ $class ?? '' }}" data-shipcd data-cut="{{ $cdCut ? $cdCut->getTimestamp() * 1000 : '' }}"
