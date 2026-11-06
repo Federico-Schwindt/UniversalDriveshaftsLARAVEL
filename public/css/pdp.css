@@ -1,0 +1,44 @@
+/* Product page (shop/product), 2026 storefront look on top of uds-2026.css: the header's type and red call to action,
+   a scannable title with key dimensions, the matching u-joint offer and the series drawing in the fitment box. */
+html body [data-pdp] { --pdp-h: 'Barlow SC', 'Arial Narrow', system-ui, sans-serif; --pdp-ink: #0b111c; --pdp-mute: #5a6577; --pdp-line: #e1e6ee; --pdp-red: #e0261d; --pdp-red-2: #c21d15; --pdp-blue: #1652d9; }
+html body [data-pdp] h2 { font-family: var(--pdp-h); font-weight: 700; letter-spacing: -.005em; }
+html body [data-pdp] .pdp__sku { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-weight: 600; letter-spacing: 0; color: var(--pdp-blue); }
+html body [data-pdp] .pdp__name { margin: 4px 0 6px; font-family: var(--pdp-h); font-weight: 700; font-size: clamp(1.8rem, 1.25rem + 1.5vw, 2.45rem); line-height: 1.04; letter-spacing: -.012em; color: var(--pdp-ink); }
+html body [data-pdp] .pdp__fullname { margin: 0 0 12px; font-size: .9rem; line-height: 1.45; color: var(--pdp-mute); }
+html body [data-pdp] .pdp__keyspecs { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 16px; padding: 0; list-style: none; }
+html body [data-pdp] .pdp__keyspecs li { display: inline-flex; align-items: baseline; gap: 6px; padding: 6px 10px; border-radius: 8px; background: #f4f6f9; box-shadow: inset 0 0 0 1px var(--pdp-line); font-size: .76rem; color: var(--pdp-mute); }
+html body [data-pdp] .pdp__keyspecs b { font: 600 .84rem 'IBM Plex Mono', ui-monospace, monospace; color: var(--pdp-ink); }
+html body [data-pdp] .pdp__price { font-family: var(--pdp-h); font-weight: 700; font-size: 2.6rem; letter-spacing: -.01em; color: var(--pdp-ink); }
+html body [data-pdp] #pdp-add, html body [data-pdp] #pdp-sticky-add { background: var(--pdp-red); border-color: var(--pdp-red); color: #fff; box-shadow: 0 12px 26px -14px rgba(224, 38, 29, .75); }
+html body [data-pdp] #pdp-add:hover, html body [data-pdp] #pdp-sticky-add:hover { background: var(--pdp-red-2); border-color: var(--pdp-red-2); }
+html body [data-pdp] .pdp__secondary a .i { color: var(--pdp-mute); }
+html body [data-pdp] .pdp__secondary a[href^="https://wa.me"] .i { color: #25d366; }
+
+/* matching u-joint */
+.pdp__joint { margin: 16px 0; padding: 14px; border-radius: 14px; background: #eef3fd; box-shadow: inset 0 0 0 1px #dbe6fb; }
+.pdp__joint-h { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-weight: 700; color: var(--pdp-ink); }
+.pdp__joint-h .i { width: 18px; height: 18px; color: var(--pdp-blue); }
+.pdp__joint ul { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.pdp__joint li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 10px; padding: 8px 8px 8px 10px; border-radius: 10px; background: #fff; }
+.pdp__joint-it { display: flex; align-items: center; gap: 10px; min-width: 0; color: inherit; text-decoration: none; }
+.pdp__joint-it img { flex: none; width: 48px; height: 48px; object-fit: contain; border-radius: 8px; background: #f4f6f9; }
+.pdp__joint-it span { display: grid; min-width: 0; line-height: 1.25; }
+.pdp__joint-it b { font: 600 .86rem 'IBM Plex Mono', ui-monospace, monospace; color: var(--pdp-ink); }
+.pdp__joint-it small { overflow: hidden; font-size: .76rem; color: var(--pdp-mute); white-space: nowrap; text-overflow: ellipsis; }
+.pdp__joint-it:hover b { color: var(--pdp-blue); }
+.pdp__joint-p { font-weight: 700; color: var(--pdp-ink); }
+.pdp__joint-add { display: inline-flex; align-items: center; gap: 4px; height: 36px; padding: 0 12px; border: 0; border-radius: 999px; background: var(--pdp-ink); color: #fff; font: inherit; font-weight: 700; font-size: .86rem; cursor: pointer; }
+.pdp__joint-add .i { width: 15px; height: 15px; }
+.pdp__joint-add:hover { background: #24324a; }
+
+/* series drawing in the fitment box */
+html body [data-pdp] .pdp__notes { display: grid; gap: 10px; }
+.pdp__ujdwg { justify-self: start; width: 100%; max-width: 230px; height: auto; aspect-ratio: 1.12; padding: 8px; border-radius: 12px; background: #fff; box-shadow: inset 0 0 0 1px var(--pdp-line); --ujbg: #fff; }
+
+@media (max-width: 760px) {
+  html body [data-pdp] .pdp__stage { aspect-ratio: 4 / 3; max-height: 300px; }
+  html body [data-pdp] .pdp__stage img { width: 100%; height: 100%; object-fit: contain; }
+  html body [data-pdp] .pdp__price { font-size: 2.2rem; }
+  .pdp__joint li { grid-template-columns: minmax(0, 1fr) auto; }
+  .pdp__joint-p { display: none; }
+}

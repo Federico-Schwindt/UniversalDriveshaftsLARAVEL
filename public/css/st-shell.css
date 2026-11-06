@@ -303,3 +303,7 @@ html.ucart-lock .st-fab { display: none; }
 .st-top .langsw > summary:hover, .st-top .langsw[open] > summary, .st-foot .langsw > summary:hover, .st-foot .langsw[open] > summary { background: rgba(255, 255, 255, .16); border-color: rgba(255, 255, 255, .32); color: #fff; }
 .st-menu .langsw > summary { height: 40px; padding: 0 12px; border-radius: var(--r-sm); border: 1px solid var(--line); background: #fff; color: var(--txt); }
 .st-menu .langsw > summary:hover, .st-menu .langsw[open] > summary { background: var(--bg-2); color: var(--txt); }
+
+/* u-joint drawing (partials/store/ujoint-drawing): traced line art, values on the dimension lines */
+.ujdwg { display: block; fill: #1b2433; overflow: visible; }
+.ujdwg text { font: 600 92px/1 'IBM Plex Mono', ui-monospace, monospace; fill: #1652d9; text-anchor: middle; dominant-baseline: central; paint-order: stroke; stroke: var(--ujbg, #f2f4f7); stroke-width: 72px; stroke-linejoin: round; }

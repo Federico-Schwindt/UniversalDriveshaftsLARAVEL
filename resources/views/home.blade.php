@@ -41,11 +41,6 @@
     [$cap, $width, $ring] = $ujSpec[$s] ?? $ujSpec[$s . '/S44'];
     $series[] = [$s, number_format($cap, 3), number_format($width, 3), $use, $ring === 'inside' ? 'isr' : 'osr'];
   }
-  // Where the values sit on each traced drawing (viewBox units): cap diameter on top, width on the right.
-  $ujDwg = [
-    'osr' => ['vb' => [1360, 1296], 'cap' => [552, 144], 'width' => [1248, 776]],
-    'isr' => ['vb' => [1520, 1392], 'cap' => [608, 136], 'width' => [1408, 804]],
-  ];
   $tiers = \App\Services\B2bAccounts::tiers();
   $pct = fn ($t) => rtrim(rtrim(number_format($tiers[$t]['pct'], 1), '0'), '.');
 @endphp
@@ -262,14 +257,9 @@
     </form>
     <div class="h-series" data-uid-grid>
       @foreach ($series as [$s, $cap, $width, $use, $ring])
-        @php [$vw, $vh] = $ujDwg[$ring]['vb']; [$cx, $cy] = $ujDwg[$ring]['cap']; [$wx, $wy] = $ujDwg[$ring]['width']; @endphp
         <a class="h-ser" href="/series/{{ $s }}" data-rv>
           <span class="h-ser__top"><span class="h-ser__n">{{ $s }}</span><span class="h-ser__ring">{{ $ring === 'isr' ? __('Inside snap ring') : __('Outside snap ring') }}</span></span>
-          <svg class="h-ser__dwg" viewBox="0 0 {{ $vw }} {{ $vh }}" role="img" aria-label="{{ __(':cap in. cap diameter, :width in. across the caps', ['cap' => $cap, 'width' => $width]) }}">
-            <use href="{{ asset('img/store/ujoints.svg') }}#{{ $ring }}" width="{{ $vw }}" height="{{ $vh }}"/>
-            <text x="{{ $cx }}" y="{{ $cy }}">{{ $cap }}</text>
-            <text x="{{ $wx }}" y="{{ $wy }}" transform="rotate(-90 {{ $wx }} {{ $wy }})">{{ $width }}</text>
-          </svg>
+          @include('partials.store.ujoint-drawing', ['series' => $s, 'class' => 'h-ser__dwg'])
           <span class="h-ser__use">{{ __($use) }}</span>
           <span class="h-ser__go">{{ __('Shop :s', ['s' => $s]) }} <x-icon name="arrow-right"/></span>
         </a>

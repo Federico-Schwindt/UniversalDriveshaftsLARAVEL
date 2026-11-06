@@ -19,6 +19,7 @@
 @if(!empty($p['image']))@section('ogimage', str_starts_with($p['image'], 'http') ? $p['image'] : $base . $p['image'])@endif
 
 @push('head')
+<link rel="stylesheet" href="{{ asset('css/pdp.css') }}?v={{ @filemtime(public_path('css/pdp.css')) }}">
 @unless($callPrice)
 <meta property="product:price:amount" content="{{ number_format($p['price'], 2, '.', '') }}">
 <meta property="product:price:currency" content="USD">
@@ -197,7 +198,17 @@
       {{-- "1680-60" is searched as "1680/60" too (Search Console, 2026-11-04): say both, so the page matches either --}}
       @php $skuAlias = preg_match('/^(\d{3,5})-(\d{1,4}[A-Z]?)$/', (string) $p['sku'], $sa) ? $sa[1] . '/' . $sa[2] : null; @endphp
       <p class="pdp__sku">{{ __('Part No.') }} {{ $p['sku'] }}@if($skuAlias) <span class="muted">({{ __('also written') }} {{ $skuAlias }})</span>@endif</p>
-      <h1 class="pdp__name">{{ $displayName ?: $p['sku'] }}</h1>
+      @php
+        // a short, scannable title ("1350 Series Weld Yoke"); the full catalog name, with its dimensions, stays right under it
+        $pdpTitle = ($byFootName || !$seo['short']) ? ($displayName ?: $p['sku']) : $seo['short'];
+        $pdpKeySpecs = collect($p['specs'] ?? [])->except(['Brand', 'Series', 'Style', 'Material', 'Notes'])->filter(fn ($v) => $v !== '')->take(3);
+        $pdpSeries = $p['series'] ? trim(explode(',', (string) $p['series'])[0]) : '';
+      @endphp
+      <h1 class="pdp__name">{{ $pdpTitle }}</h1>
+      @if($displayName && $pdpTitle !== $displayName)<p class="pdp__fullname">{{ $displayName }}</p>@endif
+      @if($pdpKeySpecs->isNotEmpty())
+        <ul class="pdp__keyspecs" aria-label="{{ __('Key dimensions') }}">@foreach($pdpKeySpecs as $k => $v)<li><span>{{ __($k) }}</span> <b>{{ html_entity_decode($v) }}</b></li>@endforeach</ul>
+      @endif
 
       @php
         // sold by the foot = tubing listed with a 1" length (the price is per foot); fixed-length tubes are not
@@ -266,8 +277,24 @@
 
       <div class="pdp__secondary">
         <a href="/cart"><x-icon name="cart"/> {{ __('View cart') }}</a>
-        <a href="/contact"><x-icon name="headset"/> {{ __('Ask about fitment') }}</a>
+        <a href="https://wa.me/18136445707?text={{ rawurlencode(__('Hi, a question about part :sku: ', ['sku' => $p['sku']])) }}" target="_blank" rel="noopener"><x-icon name="whatsapp"/> {{ __('Ask a tech about this part') }}</a>
       </div>
+
+      {{-- a yoke or flange needs its u-joint: the matching joints, one tap to add --}}
+      @if(!empty($joints))
+        <div class="pdp__joint">
+          <p class="pdp__joint-h"><x-icon name="plus"/> {{ __('Add the matching :s u-joint', ['s' => $pdpSeries]) }}</p>
+          <ul>
+            @foreach($joints as $j)
+              <li>
+                <a class="pdp__joint-it" href="/parts/{{ rawurlencode($j['sku']) }}">@if($j['image'])<img src="{{ $j['image'] }}" alt="" width="48" height="48" loading="lazy">@endif<span><b>{{ $j['sku'] }}</b><small>{{ trim(($j['brand'] ? $j['brand'] . ' · ' : '') . ($j['style'] ?: __('Universal joint'))) }}</small></span></a>
+                <span class="pdp__joint-p">${{ number_format($j['price'], 2) }}</span>
+                <button type="button" class="pdp__joint-add" data-add-sku="{{ $j['sku'] }}" aria-label="{{ __('Add :sku to cart', ['sku' => $j['sku']]) }}"><x-icon name="plus"/> {{ __('Add') }}</button>
+              </li>
+            @endforeach
+          </ul>
+        </div>
+      @endif
 
       <x-google-rating variant="card"/>
       <ul class="pdp__assure">
@@ -286,7 +313,7 @@
       </span>
       <span class="pdp__sticky-id">
         <b>{{ $p['sku'] }}</b>
-        <span>{{ \Illuminate\Support\Str::limit($displayName, 46) }}</span>
+        <span>{{ \Illuminate\Support\Str::limit($pdpTitle, 46) }}</span>
       </span>
       <span class="pdp__sticky-price">{{ $callPrice ? __('Call for price') : '$' . number_format($p['price'],2) }}</span>
       @if($callPrice)
@@ -321,6 +348,7 @@
     <section aria-labelledby="pdp-fit-h">
       <h2 id="pdp-fit-h">{{ __('Fitment') }}</h2>
       <div class="pdp__notes">
+        @if($p['series'])@include('partials.store.ujoint-drawing', ['series' => $p['series'], 'class' => 'pdp__ujdwg'])@endif
         @if($p['notes'])
           <p>{{ $p['notes'] }}</p>
         @endif

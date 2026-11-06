@@ -146,8 +146,22 @@ class CatalogController extends Controller
         $sameFit = $this->catalog->alternativeRows($p['id'], $altSchema['attrKeys']);
         foreach ($sameFit as &$sf) { $sf['price'] = $this->price((float) $sf['price']); $sf['regular'] = $this->price((float) $sf['regular']); }
         unset($sf);
+        // a yoke or flange is bought with the u-joint that goes in it: offer the cheapest in-stock joints of the same series
+        $joints = [];
+        $yokeCats = ['weld-yoke', 'slip-yoke', 'end-yokes', 'transmission-yokes', 'flange-yokes', 'pto-end-yokes', 'companion-flanges', 'tri-quad-prongs', 'h-yokes', 'yoke-shafts', 'stub-midship-shaft'];
+        if ($p['series'] && in_array($catSlug, $yokeCats, true)) {
+            $series = trim(explode(',', (string) $p['series'])[0]);
+            $rows = $this->catalog->products('u-joints', ['pa_series' => \Illuminate\Support\Str::slug($series)], 1, 12, 'price_asc')['items'] ?? [];
+            foreach ($rows as $r) {
+                if (count($joints) >= 3) break;
+                if ($r['stock_status'] !== 'instock' || $r['price'] <= 0 || $r['sku'] === '') continue;
+                $r['price'] = $this->price($r['price']); $r['regular'] = $this->price($r['regular']);
+                $joints[] = $r;
+            }
+        }
         return view('shop.product', [
             'p' => $p, 'group' => $grp, 'cat' => $cat, 'seo' => $seo, 'xref' => $xref, 'related' => $related, 'alts' => $alts, 'sameFit' => $sameFit, 'altSchema' => $altSchema,
+            'joints' => $joints,
             'faq' => $this->catalog->productFaq($p, $seo, $xref, $catSlug),
             'descriptionHtml' => $this->catalog->descriptionHtml($p['id']),
             'seriesHub' => $p['series'] ? collect($this->catalog->seriesList())->first(fn ($s) => strcasecmp($s['name'], $p['series']) === 0) : null,

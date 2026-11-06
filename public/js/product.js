@@ -124,14 +124,16 @@
     });
   }
 
-  /* ---- sticky buy bar: shown once the main buy box scrolls out of view ---- */
+  /* ---- sticky buy bar: shown whenever the main buy box is off screen. On phones that includes the first screen,
+     where the photo pushes the price and button below the fold; on desktop only once it has scrolled past. ---- */
   var sticky = document.getElementById('pdp-sticky');
   if (sticky && add) {
     var buyBox = add.closest('.pdp__cart');
+    var phone = window.matchMedia ? window.matchMedia('(max-width: 760px)') : { matches: false };
     if (buyBox && 'IntersectionObserver' in window) {
       new IntersectionObserver(function (entries) {
         var e = entries[0];
-        var show = !e.isIntersecting && e.boundingClientRect.top < 0;
+        var show = !e.isIntersecting && (e.boundingClientRect.top < 0 || phone.matches);
         sticky.classList.toggle('is-on', show);
         sticky.setAttribute('aria-hidden', show ? 'false' : 'true');
       }, { threshold: 0 }).observe(buyBox);
