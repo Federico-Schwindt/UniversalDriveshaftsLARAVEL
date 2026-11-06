@@ -22,6 +22,7 @@
   ];
 @endphp
 @if($ann = setting('storefront.announcement'))<div class="st-ann">{{ $ann }}</div>@endif
+@if(request()->is('cart', 'checkout') && ($cn = setting('storefront.holiday_notice')))<div class="st-ann st-ann--warn">{{ $cn }}</div>@endif
 <div class="st-top" @if(!setting('promo.enabled', true)) hidden @endif>
   <div class="st-wrap st-top__in">
     <p class="st-top__ship" data-shipcd data-cut="{{ $cdCut ? $cdCut->getTimestamp() * 1000 : '' }}"
@@ -115,7 +116,9 @@
     <ul class="st-menu__list">
       <li><a href="/track-order"><span>{{ __('Track order') }}</span></a></li>
       <li><a href="/wholesale"><span>{{ __('Wholesale accounts') }}</span></a></li>
-      <li><a href="{{ auth()->check() ? '/account' : '/login' }}"><span>{{ auth()->check() ? __('My account') : __('Sign in') }}</span></a></li>
+      <li><a href="{{ auth()->check() ? ($isAdmin ? '/admin' : '/account') : '/login' }}"><span>{{ auth()->check() ? __('My account') : __('Sign in') }}</span></a></li>
+      <li><a href="/wishlist"><span>{{ __('Wishlist') }}</span>@if($wishCount)<small>{{ $wishCount }}</small>@endif</a></li>
+      @auth<li><form method="POST" action="/logout">@csrf<button type="submit" class="st-menu__out"><span>{{ __('Sign out') }}</span></button></form></li>@endauth
     </ul>
     <a class="st-menu__tel" href="{{ $tel }}"><x-icon name="headset"/><span><small>{{ __('Talk to a driveline tech') }}</small><b>{{ $phone }}</b></span></a>
     @include('partials.store.lang', ['class' => 'langsw--drawer'])

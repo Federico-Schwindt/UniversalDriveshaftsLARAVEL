@@ -46,6 +46,7 @@
 <link rel="preload" as="font" type="font/woff2" href="{{ asset('fonts/store/barlow-sc-700.woff2') }}" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="{{ asset('fonts/hankengrotesk-var.woff2') }}" crossorigin>
 @stack('preload')
+<link rel="stylesheet" href="{{ asset('css/st-shell.css') }}?v={{ $v('css/st-shell.css') }}">
 <link rel="stylesheet" href="{{ asset('css/store.css') }}?v={{ $v('css/store.css') }}">
 <script>document.documentElement.classList.add('js')</script>
 @stack('head')
@@ -78,5 +79,6 @@
 <script src="{{ asset('js/cart-drawer.js') }}?v={{ $v('js/cart-drawer.js') }}" defer></script>
 <script src="{{ asset('js/store.js') }}?v={{ $v('js/store.js') }}" defer></script>
 @stack('scripts')
+@include('partials.ai-translation-notice')
 </body>
 </html>
