@@ -336,7 +336,7 @@ class AccountController extends Controller
             'name' => 'required|string|max:120',
             'company' => 'nullable|string|max:160',
             'phone' => 'nullable|string|max:40',
-            'locale' => 'nullable|in:en,es,fr',
+            'locale' => 'nullable|in:' . implode(',', \App\Http\Middleware\SetLocale::SUPPORTED),
         ]);
         DB::table('users')->where('id', $u->id)->update(['name' => $data['name'], 'company' => $data['company'] ?? null, 'phone' => $data['phone'] ?? null, 'locale' => $data['locale'] ?? $u->locale, 'updated_at' => now()]);
         return back()->with('acct_ok', __('Details saved.'));

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{ app()->getLocale() }}">
+<html lang="{{ \App\Http\Middleware\SetLocale::tag(app()->getLocale()) }}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -258,7 +258,7 @@
     <a href="/services" class="udrawer__link"><x-icon name="gauge"/> {!! __('Services') !!}</a>
     <a href="/about-us" class="udrawer__link"><x-icon name="factory"/> {!! __('About us') !!}</a>
     <a href="/track-order" class="udrawer__link"><x-icon name="package"/> {!! __('Track order &amp; returns') !!}</a>
-    <div class="udrawer__lang">@include('partials.lang-switch', ['class' => 'langsw--drawer'])</div>
+    @include('partials.lang-switch', ['class' => 'langsw--drawer'])
     <a href="/wholesale" class="udrawer__link"><x-icon name="certificate"/> {!! __('Wholesale') !!}</a>
     <div class="udrawer__acct">
       <a href="{{ auth()->check() ? ($isAdmin ? '/admin' : '/account') : '/login' }}">

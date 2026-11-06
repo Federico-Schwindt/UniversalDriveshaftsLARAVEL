@@ -52,7 +52,7 @@
     <span class="kicker">{{ $g['kicker'] }}</span>
     <h1>{{ $g['h1'] }}</h1>
     <p class="lead">{{ $g['lead'] }}</p>
-    <p class="guide-meta u-mono">{{ __('By Universal Driveshafts') }} <span aria-hidden="true">&middot;</span> {{ __('Updated') }} <time datetime="{{ \App\Http\Controllers\GuideController::PUBLISHED }}">{{ app()->getLocale() === 'es' ? \Carbon\Carbon::parse(\App\Http\Controllers\GuideController::PUBLISHED)->translatedFormat('j M Y') : \Carbon\Carbon::parse(\App\Http\Controllers\GuideController::PUBLISHED)->format('M j, Y') }}</time> <span aria-hidden="true">&middot;</span> {{ __(':n min read', ['n' => $minutes]) }}</p>
+    <p class="guide-meta u-mono">{{ __('By Universal Driveshafts') }} <span aria-hidden="true">&middot;</span> {{ __('Updated') }} <time datetime="{{ \App\Http\Controllers\GuideController::PUBLISHED }}">{{ \Carbon\Carbon::parse(\App\Http\Controllers\GuideController::PUBLISHED)->translatedFormat(['es' => 'j M Y', 'fr' => 'j M Y', 'zh' => 'Y年n月j日', 'ja' => 'Y年n月j日'][app()->getLocale()] ?? 'M j, Y') }}</time> <span aria-hidden="true">&middot;</span> {{ __(':n min read', ['n' => $minutes]) }}</p>
   </div>
 </div></section>
 

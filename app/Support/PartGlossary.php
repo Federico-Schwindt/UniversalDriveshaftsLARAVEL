@@ -231,10 +231,15 @@ class PartGlossary
 
     private static array $compiled = [];
 
-    /** Words the rules below write, per language (Spanish is the hand-made original; French reuses the same rules). */
+    /**
+     * Words the rules below write, per language; %s is the series code, brand or count (Spanish is the hand-made
+     * original). Chinese and Japanese put the word after the code ("1310系列", "GM用") and use no spaces between words.
+     */
     private const WORDS = [
-        'es' => ['series' => 'serie', 'application' => 'aplicación', 'piece' => 'pieza', 'pieces' => 'piezas'],
-        'fr' => ['series' => 'série', 'application' => 'application', 'piece' => 'pièce', 'pieces' => 'pièces'],
+        'es' => ['series' => 'serie', 'series_of' => 'serie %s', 'application_of' => 'aplicación %s', '1pc' => '1 pieza', 'npc' => '%s piezas', 'ID' => 'DI'],
+        'fr' => ['series' => 'série', 'series_of' => 'série %s', 'application_of' => 'application %s', '1pc' => '1 pièce', 'npc' => '%s pièces', 'ID' => 'DI'],
+        'zh' => ['series' => '系列', 'series_of' => '%s系列', 'application_of' => '适用于 %s', '1pc' => '一体式', 'npc' => '%s节式', 'ID' => 'ID'],
+        'ja' => ['series' => 'シリーズ', 'series_of' => '%sシリーズ', 'application_of' => '%s用', '1pc' => '1ピース', 'npc' => '%sピース', 'ID' => 'ID'],
     ];
 
     public static function active(): bool
@@ -275,21 +280,23 @@ class PartGlossary
     {
         // "1310 Series" → "serie 1310"; "Series 1310" stays "serie 1310"
         // only a real series code (has a digit: 1310, 3R, SPL90, 68740/2040) — never "Slip Yoke Series"
-        $text = preg_replace('/\b((?=[\w.\/-]*\d)[0-9A-Z][\w.\/-]*)\s+Series\b/iu', self::w('series') . ' $1', $text);
+        $text = preg_replace('/\b((?=[\w.\/-]*\d)[0-9A-Z][\w.\/-]*)\s+Series\b/iu', sprintf(self::w('series_of'), '$1'), $text);
         $text = preg_replace('/\bSeries\b/iu', self::w('series'), $text);
         // "Gm Application" / "Volvo Application" → "aplicación GM"
-        $text = preg_replace_callback('/\b([A-Z][\w-]*(?:\s?\/\s?[A-Z][\w-]*|\s[A-Z][\w-]*)?)\s+Application\b/u', fn ($m) => self::w('application') . ' ' . (strlen($m[1]) <= 3 ? strtoupper($m[1]) : $m[1]), $text);
+        $text = preg_replace_callback('/\b([A-Z][\w-]*(?:\s?\/\s?[A-Z][\w-]*|\s[A-Z][\w-]*)?)\s+Application\b/u', fn ($m) => sprintf(self::w('application_of'), strlen($m[1]) <= 3 ? strtoupper($m[1]) : $m[1]), $text);
         // value-then-label ("1.229\" Splines Dia") reads label-then-value in Spanish
         foreach (self::TRAILING_LABELS as $l) {
             // only when the label is not itself followed by its own value ("1.391 Hub Dia: 1.886")
             $text = preg_replace('/(\d[\d.\/]*\s*(?:"|”|in|mm|MM)?)\s+' . preg_quote($l, '/') . '\b(?!\s*[:\d])/u', $l . ' $1', $text);
         }
         // "1pc" / "2pc"
-        $text = preg_replace_callback('/\b(\d)\s?pc\b/iu', fn ($m) => $m[1] . ($m[1] === '1' ? ' ' . self::w('piece') : ' ' . self::w('pieces')), $text);
+        $text = preg_replace_callback('/\b(\d)\s?pc\b/iu', fn ($m) => $m[1] === '1' ? self::w('1pc') : sprintf(self::w('npc'), $m[1]), $text);
 
         foreach (self::compiled() as [$re, $es]) $text = preg_replace($re, $es, $text);
         // ID as a label right after a number
-        $text = preg_replace('/\bID\b/u', 'DI', $text);
+        $text = preg_replace('/\bID\b/u', self::w('ID'), $text);
+        // Chinese / Japanese: words translated one by one keep the English spaces between them
+        if (in_array(app()->getLocale(), ['zh', 'ja'], true)) $text = preg_replace('/(?<=[\p{Han}\p{Hiragana}\p{Katakana}ー])\s+(?=[\p{Han}\p{Hiragana}\p{Katakana}])/u', '', $text);
         return $text;
     }
 

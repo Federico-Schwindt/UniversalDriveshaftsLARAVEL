@@ -7,13 +7,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 
 /**
- * Storefront language: English, Spanish or French. Chosen with ?lang=, remembered in a cookie,
+ * Storefront language: English, Spanish, French, Chinese (Simplified) or Japanese. Chosen with ?lang=, remembered in a cookie,
  * guessed from the browser on a first visit. The admin stays in English.
  */
 class SetLocale
 {
-    public const SUPPORTED = ['en', 'es', 'fr'];
+    public const SUPPORTED = ['en', 'es', 'fr', 'zh', 'ja'];
+    /** Each language in its own words (the switcher, the e-mail language setting). */
+    public const NAMES = ['en' => 'English', 'es' => 'Español', 'fr' => 'Français', 'zh' => '简体中文', 'ja' => '日本語'];
     public const COOKIE = 'uds_lang';
+
+    /** BCP 47 tag for <html lang> and hreflang: zh is Simplified Chinese, so browsers pick Simplified glyphs and fonts. */
+    public static function tag(string $locale): string
+    {
+        return ['zh' => 'zh-Hans'][$locale] ?? $locale;
+    }
 
     public function handle(Request $request, Closure $next)
     {

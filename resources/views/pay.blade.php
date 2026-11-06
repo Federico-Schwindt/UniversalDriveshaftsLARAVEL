@@ -9,7 +9,7 @@
       <span class="kicker">{{ __('Order :n', ['n' => $order->order_number]) }}</span>
       @if($order->payment_status==='paid')
         <h1>{!! __('Thank you — this order is paid.') !!}</h1>
-        <p class="lead">{{ __('We received :amount on :date. Follow progress on the status page.', ['amount' => '$'.number_format($order->total,2), 'date' => \Carbon\Carbon::parse($order->paid_at ?: $order->updated_at)->locale(app()->getLocale())->translatedFormat(app()->getLocale() === 'es' ? 'j \\d\\e F \\d\\e Y' : 'M j, Y')]) }}</p>
+        <p class="lead">{{ __('We received :amount on :date. Follow progress on the status page.', ['amount' => '$'.number_format($order->total,2), 'date' => \Carbon\Carbon::parse($order->paid_at ?: $order->updated_at)->locale(app()->getLocale())->translatedFormat(['es' => 'j \\d\\e F \\d\\e Y', 'zh' => 'Y年n月j日', 'ja' => 'Y年n月j日'][app()->getLocale()] ?? 'M j, Y')]) }}</p>
         <a href="{{ $statusUrl }}" class="btn btn-primary btn-lg">{!! __('Order status') !!} <x-icon name="arrow-right"/></a>
       @elseif(!$payable)
         <h1>{!! __('Nothing to pay on this order.') !!}</h1>

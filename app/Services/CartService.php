@@ -289,7 +289,7 @@ class CartService
             if ($built) { $o['eta'] = trans_choice(':count business day in transit once built|:count business days in transit once built', $days); return $o; }
             $d = $ship->copy();
             for ($i = 0; $i < $days; $i++) { do { $d->addDay(); } while ($d->isWeekend()); }
-            $o['eta'] = __('arrives by :date', ['date' => $d->copy()->locale(app()->getLocale())->translatedFormat(['es' => 'D j \\d\\e M', 'fr' => 'D j M'][app()->getLocale()] ?? 'D, M j')]);
+            $o['eta'] = __('arrives by :date', ['date' => $d->copy()->locale(app()->getLocale())->translatedFormat(['es' => 'D j \\d\\e M', 'fr' => 'D j M', 'zh' => 'n月j日 D', 'ja' => 'n月j日(D)'][app()->getLocale()] ?? 'D, M j')]);
             $o['eta_date'] = $d->toDateString();
             return $o;
         }, $opts);

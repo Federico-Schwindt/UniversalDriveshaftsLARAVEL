@@ -7,21 +7,36 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Machine-translates the storefront into another language with Gemini, from the English source
- * (the JSON keys / English views), using the hand-checked Spanish as a second reference.
+ * Machine-translates the storefront into another language with Gemini (free tier) or Claude, from the
+ * English source (the JSON keys / English views), using the hand-checked Spanish as a second reference.
  *
  *   php artisan i18n:translate fr              every string missing from lang/i18n/<area>/fr.json
  *   php artisan i18n:translate fr --views      also the long-form pages (i18n-content/*, legal pages, guides)
+ *   php artisan i18n:translate ja --provider=claude   Claude Sonnet on the store's Anthropic key (paid; Gemini's
+ *                                              free tier allows only ~20 requests a day per model)
  *
  * Safe to re-run: only missing keys / missing files are translated. :placeholders, HTML tags, part
  * numbers, series (1310, 1350…), units and brand names must come back unchanged, or the line is retried.
  */
 class I18nTranslate extends Command
 {
-    protected $signature = 'i18n:translate {lang} {--views} {--area=} {--batch=60} {--force}';
+    protected $signature = 'i18n:translate {lang} {--views} {--area=} {--batch=60} {--force} {--provider=gemini : gemini or claude}';
     protected $description = 'Machine-translate storefront strings (and optionally pages) into another language';
 
-    private const NAMES = ['fr' => 'French (France, formal "vous")', 'es' => 'Spanish (Latin America)', 'pt' => 'Portuguese (Brazil)', 'de' => 'German'];
+    private const NAMES = ['fr' => 'French (France, formal "vous")', 'es' => 'Spanish (Latin America)', 'pt' => 'Portuguese (Brazil)', 'de' => 'German',
+        'zh' => 'Simplified Chinese (zh-Hans, mainland China)', 'ja' => 'Japanese (polite です・ます style)'];
+
+    /** The trade words each language must use for the driveline parts. */
+    private const TERMS = [
+        'fr' => 'driveshaft = arbre de transmission, u-joint = croisillon, yoke = fourche, slip yoke = fourche coulissante, weld yoke = fourche à souder, flange yoke = fourche à bride, center support bearing = palier central, tubing = tube',
+        'zh' => 'driveshaft = 传动轴, u-joint = 万向节, yoke = 万向节叉, slip yoke = 滑动叉, weld yoke = 焊接叉, flange yoke = 法兰叉, end yoke = 端叉, center support bearing = 中间支撑轴承, tubing = 传动轴管',
+        'ja' => 'driveshaft = プロペラシャフト, u-joint = ユニバーサルジョイント, yoke = ヨーク, slip yoke = スリップヨーク, weld yoke = ウェルドヨーク, flange yoke = フランジヨーク, end yoke = エンドヨーク, center support bearing = センターサポートベアリング, tubing = チューブ',
+    ];
+
+    private function terms(string $lang): string
+    {
+        return (isset(self::TERMS[$lang]) ? 'Use these trade terms: ' . self::TERMS[$lang] . '. ' : '') . 'Keep the brand name Universal Driveshafts (UDS) in English. ';
+    }
 
     public function handle(): int
     {
@@ -52,7 +67,8 @@ class I18nTranslate extends Command
                 "Translate each item's \"en\" text into " . self::NAMES[$lang] . " for an e-commerce site that sells driveshaft parts (u-joints, yokes, center support bearings, tubing) in the USA. "
                 . "The \"es\" text is an approved Spanish translation; use it to understand the meaning, but translate from English. "
                 . "Keep EXACTLY unchanged: every :placeholder (like :name, :qty), HTML tags and attributes, entities (&amp;), Markdown, URLs, e-mail addresses, phone numbers, part numbers, series numbers (1310, 1350, 1410…), measurements and units (in, lb, mm), and brand names (Spicer, Dana, Neapco, UPS, FedEx, EasyPost, PTI, Universal Driveshafts, UDS). "
-                . "Use the standard French trade terms: driveshaft = arbre de transmission, u-joint = croisillon, yoke = fourche, slip yoke = fourche coulissante, weld yoke = fourche à souder, flange yoke = fourche à bride, center support bearing = palier central, tubing = tube. "
+                . $this->terms($lang)
+                . "Translate faithfully: the same meaning and facts as the English, nothing added, dropped or localised (prices stay in US dollars, sizes in inches). "
                 . "Keep the same tone and length; short UI labels stay short. "
                 . 'Return JSON: {"t":[{"id":<same id>,"text":"<translation>"}]} with one entry per item.',
                 json_encode($items, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
@@ -99,12 +115,14 @@ class I18nTranslate extends Command
             $out = $this->ask_(
                 'Translate this Blade/HTML fragment into ' . self::NAMES[$lang] . ' for a US driveshaft parts shop. Translate only human-readable text (including alt, title, aria-label and placeholder attributes). '
                 . 'Keep every HTML tag, attribute name, class, href, Blade directive (@if, {{ }}, {!! !!}, @include…), PHP code, URL, e-mail, phone number, part number, series number, measurement and brand name exactly as is. '
-                . 'Trade terms: driveshaft = arbre de transmission, u-joint = croisillon, yoke = fourche, center support bearing = palier central. '
+                . $this->terms($lang)
                 . 'Return JSON: {"t":"<the whole translated fragment>"}.',
                 (string) file_get_contents($src), 32000
             );
             $t = (string) ($out['t'] ?? '');
             if (strlen($t) < strlen((string) file_get_contents($src)) * 0.6 || substr_count($t, '<') < substr_count((string) file_get_contents($src), '<') * 0.9) { $this->warn("$src: translation looks incomplete, skipped"); continue; }
+            // a model can hand the source back untranslated (Gemini did for zh/services)
+            if ($t === file_get_contents($src) || (in_array($lang, ['zh', 'ja'], true) && !preg_match('/[\p{Han}\p{Hiragana}\p{Katakana}]/u', $t))) { $this->warn("$src: answer is not in " . self::NAMES[$lang] . ', skipped'); continue; }
             @mkdir(dirname($dest), 0775, true);
             file_put_contents($dest, $t);
             $this->line('view ' . substr($dest, strlen(resource_path('views/'))));
@@ -116,7 +134,7 @@ class I18nTranslate extends Command
             // one guide at a time: the whole file is too long for one answer
             $all = [];
             foreach ((include $src) as $slug => $entry) {
-                $out = $this->ask_('Translate every string value of this PHP array (Spanish) into ' . self::NAMES[$lang] . '. Keep keys, HTML and numbers unchanged. Return JSON: {"t": <same structure>}.', json_encode($entry, JSON_UNESCAPED_UNICODE), 16000);
+                $out = $this->ask_('Translate every string value of this PHP array (Spanish) into ' . self::NAMES[$lang] . '. Keep keys, HTML and numbers unchanged. ' . $this->terms($lang) . 'Return JSON: {"t": <same structure>}.', json_encode($entry, JSON_UNESCAPED_UNICODE), 16000, self::schemaOf(['t' => $entry]));
                 if (!is_array($out['t'] ?? null)) { $this->warn("$name/$slug failed"); continue 2; }
                 $all[$slug] = $out['t'];
                 usleep(4_000_000);
@@ -133,7 +151,7 @@ class I18nTranslate extends Command
         if (is_file($dest) && !$this->option('force')) return;
         $terms = \App\Support\PartGlossary::sourceTerms(); $out = [];
         foreach (array_chunk($terms, 120, true) as $chunk) {
-            $r = $this->ask_('These are driveline part words used in product titles, with an approved Spanish translation. Give the ' . self::NAMES[$lang] . ' trade term for each English phrase (lower-case words stay lower-case, Capitalised stay Capitalised; keep it short like the Spanish). Return JSON: {"t":{"<english>":"<translation>", …}} with every key.',
+            $r = $this->ask_('These are driveline part words used in product titles, with an approved Spanish translation. Give the ' . self::NAMES[$lang] . ' trade term for each English phrase (' . $this->terms($lang) . 'lower-case words stay lower-case, Capitalised stay Capitalised; keep it short like the Spanish). Return JSON: {"t":{"<english>":"<translation>", …}} with every key.',
                 json_encode($chunk, JSON_UNESCAPED_UNICODE));
             foreach ((array) ($r['t'] ?? []) as $en => $tr) if (isset($chunk[$en]) && is_string($tr) && $tr !== '') $out[$en] = $tr;
         }
@@ -149,8 +167,9 @@ class I18nTranslate extends Command
         return $tok($a) === $tok($b) && trim($b) !== '';
     }
 
-    private function ask_(string $instruction, string $payload, int $maxOut = 16000): array
+    private function ask_(string $instruction, string $payload, int $maxOut = 16000, ?array $schema = null): array
     {
+        if ($this->option('provider') === 'claude') return $this->claude($instruction, $payload, $maxOut, $schema);
         $body = ['systemInstruction' => ['parts' => [['text' => $instruction]]], 'contents' => [['role' => 'user', 'parts' => [['text' => $payload]]]],
             'generationConfig' => ['temperature' => 0.2, 'maxOutputTokens' => $maxOut, 'responseMimeType' => 'application/json']];
         foreach ([0, 1, 2, 3, 4] as $try) {
@@ -168,5 +187,46 @@ class I18nTranslate extends Command
         }
         $this->warn('  no answer from Gemini');
         return [];
+    }
+
+    /** Same request on Claude Sonnet, streamed (long pages), no extended thinking: translation needs none. */
+    private function claude(string $instruction, string $payload, int $maxOut, ?array $schema = null): array
+    {
+        $client = new \Anthropic\Client(apiKey: (string) config('services.anthropic.key'), requestOptions: ['maxRetries' => 2]);
+        foreach ([0, 1, 2] as $try) {
+            try {
+                $stream = $client->messages->createStream(
+                    model: 'claude-sonnet-5-5',
+                    // CJK pages run longer in tokens than the Gemini budget assumes
+                    maxTokens: $maxOut * 2,
+                    thinking: ['type' => 'between_tools'],
+                    // with a schema the answer is always valid JSON (inch marks inside strings broke free-form answers)
+                    outputConfig: ['effort' => 'low'] + ($schema ? ['format' => ['type' => 'json_schema', 'schema' => $schema]] : []),
+                    system: $instruction . ' Answer with the JSON object only.',
+                    messages: [['role' => 'user', 'content' => $payload]],
+                    workspaceID: config('services.anthropic.workspace') ?: null,
+                );
+                $text = '';
+                foreach ($stream as $e) {
+                    if ($e instanceof \Anthropic\Messages\RawContentBlockDeltaEvent && $e->delta instanceof \Anthropic\Messages\TextDelta) $text .= $e->delta->text;
+                }
+                $j = json_decode(preg_replace('/^\s*```(?:json)?\s*|\s*```\s*$/', '', $text), true);
+                if (is_array($j)) return $j;
+                Log::info('i18n:translate claude: answer was not JSON (' . strlen($text) . ' bytes)');
+            } catch (\Throwable $e) {
+                Log::info('i18n:translate claude: ' . $e->getMessage());
+            }
+            sleep(5 * ($try + 1));
+        }
+        $this->warn('  no answer from Claude');
+        return [];
+    }
+
+    /** JSON schema matching a PHP value's shape (lists take their first item's shape), for structured answers. */
+    private static function schemaOf(mixed $v): array
+    {
+        if (is_array($v) && array_is_list($v)) return ['type' => 'array', 'items' => self::schemaOf($v[0] ?? '')];
+        if (is_array($v)) return ['type' => 'object', 'properties' => array_map(fn ($x) => self::schemaOf($x), $v), 'required' => array_map('strval', array_keys($v)), 'additionalProperties' => false];
+        return ['type' => match (true) { is_int($v) => 'integer', is_float($v) => 'number', is_bool($v) => 'boolean', default => 'string' }];
     }
 }

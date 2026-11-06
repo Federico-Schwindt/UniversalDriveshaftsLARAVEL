@@ -161,8 +161,39 @@
     });
   }
 
+  /* ---------- language menus (partials/lang-switch): a <details> opens on its own; this closes the
+     dropdowns on an outside click, Escape or tabbing away, keeps one open at a time, and lets the arrow
+     keys move between the languages. The mobile-menu one is an accordion row and stays put. ---------- */
+  function initLangMenus() {
+    var menus = [].slice.call(document.querySelectorAll('[data-langsw]'));
+    if (!menus.length) return;
+    function dropdown(d) { return !d.classList.contains('langsw--drawer'); }
+    menus.forEach(function (d) {
+      var sum = d.querySelector('summary');
+      d.addEventListener('toggle', function () {
+        if (d.open) menus.forEach(function (o) { if (o !== d && dropdown(o)) o.open = false; });
+      });
+      d.addEventListener('keydown', function (e) {
+        var links = [].slice.call(d.querySelectorAll('.langsw__menu a'));
+        var i = links.indexOf(document.activeElement);
+        if (e.key === 'Escape' && d.open) { d.open = false; sum.focus(); e.preventDefault(); }
+        else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+          d.open = true;
+          links[e.key === 'ArrowDown' ? (i + 1) % links.length : (i <= 0 ? links.length - 1 : i - 1)].focus();
+          e.preventDefault();
+        }
+      });
+      if (dropdown(d)) d.addEventListener('focusout', function () {
+        setTimeout(function () { if (d.open && !d.contains(document.activeElement)) d.open = false; }, 0);
+      });
+    });
+    document.addEventListener('click', function (e) {
+      menus.forEach(function (d) { if (d.open && dropdown(d) && !d.contains(e.target)) d.open = false; });
+    });
+  }
+
   function boot() {
-    initReveal(); initHeader(); initDrawer(); initMenus(); initActiveNav(); initStoreMenu();
+    initReveal(); initHeader(); initDrawer(); initMenus(); initActiveNav(); initStoreMenu(); initLangMenus();
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot);

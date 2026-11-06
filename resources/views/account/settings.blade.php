@@ -70,7 +70,7 @@
       <div><label for="p-name">{{ __('Full name') }}</label><input id="p-name" type="text" name="name" value="{{ old('name', $user->name) }}" autocomplete="name" required></div>
       <div><label for="p-co">{{ __('Company') }} <small>{{ __('(optional)') }}</small></label><input id="p-co" type="text" name="company" value="{{ old('company', $user->company) }}" autocomplete="organization"></div>
       <div><label for="p-ph">{{ __('Phone / Mobile') }}</label><input id="p-ph" type="tel" name="phone" value="{{ old('phone', $user->phone) }}" autocomplete="tel"></div>
-      <div><label for="p-lang">{{ __('Language for e-mails and texts') }}</label><select id="p-lang" name="locale"><option value="en" @selected(($user->locale ?: 'en') === 'en')>English</option><option value="es" @selected($user->locale === 'es')>Español</option><option value="fr" @selected($user->locale === 'fr')>Français</option></select></div>
+      <div><label for="p-lang">{{ __('Language for e-mails and texts') }}</label><select id="p-lang" name="locale">@foreach(\App\Http\Middleware\SetLocale::NAMES as $code => $name)<option value="{{ $code }}" @selected(($user->locale ?: 'en') === $code) lang="{{ \App\Http\Middleware\SetLocale::tag($code) }}">{{ $name }}</option>@endforeach</select></div>
       <div class="aform-foot"><button type="submit" class="btn btn-primary">{{ __('Save details') }}</button></div>
     </form>
   </div>
