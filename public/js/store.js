@@ -219,6 +219,57 @@
     p && p.addEventListener('click', function () { by(-1); }); n && n.addEventListener('click', function () { by(1); });
   }
 
+  /* ---------- u-joint identifier (same rules as PartIdentifier::inches / matchUJoint) ---------- */
+  var uid = $('[data-uid]');
+  if (uid) {
+    var SER = JSON.parse(uid.getAttribute('data-series') || '[]');
+    var capIn = $('[data-uid-cap]', uid), wIn = $('[data-uid-w]', uid), out = $('[data-uid-out]', uid);
+    var cards = $$('[data-uid-grid] .h-ser'), hint = out.innerHTML, ut;
+    var inches = function (v) {
+      v = String(v || '').trim(); if (!v) return null;
+      var m = v.match(/^(\d+)\s+(\d+)\s*\/\s*(\d+)/); if (m) return +m[1] + m[2] / Math.max(1, m[3]);
+      m = v.match(/^(\d+)\s*\/\s*(\d+)/); if (m) return m[1] / Math.max(1, m[2]);
+      m = v.match(/(\d+(?:[.,]\d+)?)/); if (!m) return null;
+      var n = parseFloat(m[1].replace(',', '.'));
+      return (/mm|millim/i.test(v) || n > 10) ? n / 25.4 : n;   // nobody has a 27-inch cap
+    };
+    var orList = function (a) { return a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' ' + T('or') + ' ' + a[a.length - 1]; };
+    var link = function (s) { return '<a href="' + esc(abs('/series/' + encodeURIComponent(s.s))) + '">' + T('Shop :s', { s: s.s }) + ' &rarr;</a>'; };
+    var spec = function (s) { return s.cap.toFixed(3) + ' × ' + s.w.toFixed(3) + ', ' + (s.ring === 'inside' ? T('inside snap ring') : T('outside snap ring')); };
+    var run = function () {
+      var c = inches(capIn.value), w = inches(wIn.value), state = '', html = hint, hits = [];
+      if (c || w) {
+        var sc = SER.map(function (s) {
+          var dc = c ? Math.abs(c - s.cap) : null, dw = w ? Math.abs(w - s.w) : null;
+          return { s: s, ok: dc === null || dc <= 0.010, wok: dw === null || dw <= 0.10, d: (dc || 0) + (dw === null ? 0.5 : dw) };
+        }).filter(function (x) { return x.ok; }).sort(function (a, b) { return a.d - b.d; });
+        if (!c) { sc = sc.filter(function (x) { return x.wok; }); }
+        var best = sc[0];
+        if (best && c && w && best.wok) {
+          state = 'ok'; hits = [best.s.s];
+          html = '<b>' + T('That is a :s.', { s: best.s.s }) + '</b> <span>' + spec(best.s) + '</span> ' + link(best.s);
+        } else if (best && (!w || !c)) {
+          state = 'some'; hits = sc.map(function (x) { return x.s.s; });
+          html = (c ? T('That cap fits :list. Add the width to tell them apart.', { list: orList(hits) }) : T('That width is close to :list. Add the cap diameter.', { list: orList(hits) }));
+        } else if (best) {
+          state = 'warn'; hits = [best.s.s];
+          html = T('The cap fits :s, but no series with that cap is that wide. Measure lock ring to lock ring, or across the outer edges of the snap ring grooves.', { s: best.s.s });
+        } else {
+          state = 'warn';
+          html = T('No standard series uses that cap. Common caps are 1.062, 1.078, 1.125, 1.188 and 1.375 in.') + ' <a href="' + uid.getAttribute('data-wa') + '" target="_blank" rel="noopener">' + T('Send a photo to a tech') + ' &rarr;</a>';
+        }
+      }
+      uid.setAttribute('data-state', state);
+      out.innerHTML = html;
+      cards.forEach(function (a) {
+        var s = (a.getAttribute('href') || '').split('/').pop();
+        a.classList.toggle('is-hit', hits.indexOf(s) > -1);
+        a.classList.toggle('is-dim', hits.length > 0 && hits.indexOf(s) < 0);
+      });
+    };
+    [capIn, wIn].forEach(function (i) { i.addEventListener('input', function () { clearTimeout(ut); ut = setTimeout(run, 140); }); });
+  }
+
   /* ---------- reveal ---------- */
   var rv = $$('[data-rv]');
   if (rv.length) {

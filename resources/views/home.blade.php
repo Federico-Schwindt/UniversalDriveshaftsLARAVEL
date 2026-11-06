@@ -44,7 +44,7 @@
   // Where the values sit on each traced drawing (viewBox units): cap diameter on top, width on the right.
   $ujDwg = [
     'osr' => ['vb' => [1360, 1296], 'cap' => [552, 144], 'width' => [1248, 776]],
-    'isr' => ['vb' => [1328, 1392], 'cap' => [608, 136], 'width' => [1280, 840]],
+    'isr' => ['vb' => [1520, 1392], 'cap' => [608, 136], 'width' => [1408, 804]],
   ];
   $tiers = \App\Services\B2bAccounts::tiers();
   $pct = fn ($t) => rtrim(rtrim(number_format($tiers[$t]['pct'], 1), '0'), '.');
@@ -250,7 +250,17 @@
       </div>
       <a class="st-link st-link--light" href="/series">{{ __('All series') }} <x-icon name="arrow-right"/></a>
     </div>
-    <div class="h-series">
+    @php
+      $uidSeries = collect($ujSpec)->map(fn ($v, $k) => ['s' => explode('/', $k)[0], 'cap' => $v[0], 'w' => $v[1], 'ring' => $v[2]])->values();
+    @endphp
+    <form class="h-uid" data-uid data-series='@json($uidSeries)' data-wa="https://wa.me/18136445707" action="/series" onsubmit="return false">
+      <p class="h-uid__t"><x-icon name="ruler"/> <span><b>{{ __('Not sure?') }}</b> {{ __('Measure it.') }}</span></p>
+      <label class="h-uid__f"><span>{{ __('Cap diameter') }}</span><input type="text" inputmode="decimal" autocomplete="off" placeholder="1.062" data-uid-cap></label>
+      <span class="h-uid__x" aria-hidden="true">×</span>
+      <label class="h-uid__f"><span>{{ __('Width across caps') }}</span><input type="text" inputmode="decimal" autocomplete="off" placeholder="3.219" data-uid-w></label>
+      <p class="h-uid__out" data-uid-out aria-live="polite">{{ __('Caliper on one cap, then across the caps. Inches or millimeters.') }}</p>
+    </form>
+    <div class="h-series" data-uid-grid>
       @foreach ($series as [$s, $cap, $width, $use, $ring])
         @php [$vw, $vh] = $ujDwg[$ring]['vb']; [$cx, $cy] = $ujDwg[$ring]['cap']; [$wx, $wy] = $ujDwg[$ring]['width']; @endphp
         <a class="h-ser" href="/series/{{ $s }}" data-rv>
