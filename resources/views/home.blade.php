@@ -25,15 +25,26 @@
     ['small-parts', 'Small parts', 'Straps, bolts, zerks, snap rings, weights', 'smallparts-800'],
   ];
   $makes = ['ford' => 'Ford', 'chevrolet' => 'Chevrolet', 'dodge' => 'Dodge', 'jeep' => 'Jeep', 'toyota' => 'Toyota', 'gmc' => 'GMC'];
-  $series = [
-    ['1310', '1.062', '3.219', 'Half-ton trucks, Jeep, light duty'],
-    ['1330', '1.062', '3.622', 'Half and 3/4-ton Ford and Dodge'],
-    ['1350', '1.188', '3.622', '3/4-ton, Toyota, off-road builds'],
-    ['1410', '1.188', '4.188', 'One-ton, high-torque street'],
-    ['1480', '1.375', '4.188', 'One-ton, medium duty, drag'],
-    ['1550', '1.375', '4.875', 'Medium duty, Class 5 to 6'],
-    ['7290', '1.125', '2.625', 'Chrysler large, Ram, Dakota'],
-    ['3R', '1.125', '2.556', 'GM Saginaw: C10, Camaro, S10'],
+  // Cap, width and snap ring style come from the same table the part identifier and the guide use.
+  $ujSpec = \App\Support\PartIdentifier::SERIES;
+  $series = [];
+  foreach ([
+    '1310' => 'Half-ton trucks, Jeep, light duty',
+    '1330' => 'Half and 3/4-ton Ford and Dodge',
+    '1350' => '3/4-ton, Toyota, off-road builds',
+    '1410' => 'One-ton, high-torque street',
+    '1480' => 'One-ton, medium duty, drag',
+    '1550' => 'Medium duty, Class 5 to 6',
+    '7290' => 'Chrysler large, Ram, Dakota',
+    '3R'   => 'GM Saginaw: C10, Camaro, S10',
+  ] as $s => $use) {
+    [$cap, $width, $ring] = $ujSpec[$s] ?? $ujSpec[$s . '/S44'];
+    $series[] = [$s, number_format($cap, 3), number_format($width, 3), $use, $ring === 'inside' ? 'isr' : 'osr'];
+  }
+  // Where the values sit on each traced drawing (viewBox units): cap diameter on top, width on the right.
+  $ujDwg = [
+    'osr' => ['vb' => [1360, 1296], 'cap' => [552, 144], 'width' => [1248, 776]],
+    'isr' => ['vb' => [1328, 1392], 'cap' => [608, 136], 'width' => [1280, 840]],
   ];
   $tiers = \App\Services\B2bAccounts::tiers();
   $pct = fn ($t) => rtrim(rtrim(number_format($tiers[$t]['pct'], 1), '0'), '.');
@@ -235,16 +246,20 @@
       <div>
         <p class="st-eyebrow st-eyebrow--light">{{ __('Universal joints') }}</p>
         <h2 class="h-h2">{{ __('Know your series? Shop it.') }}</h2>
-        <p class="h-sub">{{ __('Cap diameter by width across the caps, in inches. Every series has its yokes, joints and flanges on one page.') }}</p>
+        <p class="h-sub">{{ __('Measure the cap and the width across the caps (in inches), match the drawing, and every yoke, joint and flange for that series is on one page.') }}</p>
       </div>
       <a class="st-link st-link--light" href="/series">{{ __('All series') }} <x-icon name="arrow-right"/></a>
     </div>
     <div class="h-series">
-      @foreach ($series as [$s, $cap, $width, $use])
+      @foreach ($series as [$s, $cap, $width, $use, $ring])
+        @php [$vw, $vh] = $ujDwg[$ring]['vb']; [$cx, $cy] = $ujDwg[$ring]['cap']; [$wx, $wy] = $ujDwg[$ring]['width']; @endphp
         <a class="h-ser" href="/series/{{ $s }}" data-rv>
-          <span class="h-ser__n">{{ $s }}</span>
-          <span class="h-ser__dim"><svg viewBox="0 0 120 64" aria-hidden="true"><rect x="2" y="22" width="22" height="20" rx="4"/><rect x="96" y="22" width="22" height="20" rx="4"/><rect x="24" y="27" width="72" height="10"/><rect x="50" y="2" width="20" height="60" rx="4"/></svg>
-            <span><b>{{ $cap }}"</b> {{ __('cap') }}</span><span><b>{{ $width }}"</b> {{ __('wide') }}</span></span>
+          <span class="h-ser__top"><span class="h-ser__n">{{ $s }}</span><span class="h-ser__ring">{{ $ring === 'isr' ? __('Inside snap ring') : __('Outside snap ring') }}</span></span>
+          <svg class="h-ser__dwg" viewBox="0 0 {{ $vw }} {{ $vh }}" role="img" aria-label="{{ __(':cap in. cap diameter, :width in. across the caps', ['cap' => $cap, 'width' => $width]) }}">
+            <use href="{{ asset('img/store/ujoints.svg') }}#{{ $ring }}" width="{{ $vw }}" height="{{ $vh }}"/>
+            <text x="{{ $cx }}" y="{{ $cy }}">{{ $cap }}</text>
+            <text x="{{ $wx }}" y="{{ $wy }}" transform="rotate(-90 {{ $wx }} {{ $wy }})">{{ $width }}</text>
+          </svg>
           <span class="h-ser__use">{{ __($use) }}</span>
           <span class="h-ser__go">{{ __('Shop :s', ['s' => $s]) }} <x-icon name="arrow-right"/></span>
         </a>

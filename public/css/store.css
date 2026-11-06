@@ -344,12 +344,12 @@ html.st-lock { overflow: hidden; }
 .h-series { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .h-ser { display: grid; gap: 10px; padding: 18px; border-radius: var(--r-lg); background: var(--steel-2); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08); transition: background-color .25s, box-shadow .25s, transform .25s var(--ease); }
 .h-ser:hover { background: var(--steel-3); box-shadow: inset 0 0 0 1px rgba(143, 177, 255, .5); transform: translateY(-2px); }
+.h-ser__top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 .h-ser__n { font: 700 2rem/1 var(--font-h); letter-spacing: -.01em; }
-.h-ser__dim { display: flex; align-items: center; gap: 12px; font-size: .84rem; color: #aeb9ca; }
-.h-ser__dim svg { width: 54px; height: 29px; fill: none; stroke: #8fb1ff; stroke-width: 3; flex: none; }
-.h-ser__dim span { display: grid; line-height: 1.2; }
-.h-ser__dim b { color: #fff; font-family: var(--font-m); font-size: .9rem; }
-.h-ser__dim > span + span { padding-left: 12px; border-left: 1px solid rgba(255, 255, 255, .12); }
+.h-ser__ring { font-size: .74rem; font-weight: 600; color: #aeb9ca; text-align: right; line-height: 1.2; }
+.h-ser__dwg { display: block; width: 100%; height: auto; aspect-ratio: 1.12; padding: 8px 6px 4px; border-radius: 10px; background: #f2f4f7; fill: #1b2433; overflow: visible; }
+.h-ser__dwg text { font: 600 92px/1 var(--font-m); fill: var(--blue); text-anchor: middle; dominant-baseline: central; paint-order: stroke; stroke: #f2f4f7; stroke-width: 72px; stroke-linejoin: round; }
+.h-ser:hover .h-ser__dwg text { fill: var(--red); }
 .h-ser__use { color: #c2cbd9; font-size: .88rem; line-height: 1.35; min-height: 2.7em; }
 .h-ser__go { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: #ff7a71; font-size: .92rem; }
 
@@ -551,8 +551,10 @@ html.ucart-lock { overflow: hidden; }
   .h-way { min-height: 340px; }
   .h-series { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
   .h-ser { padding: 14px; }
-  .h-ser__dim svg { display: none; }
-  .h-ser__dim > span + span { padding-left: 8px; }
+  .h-ser__n { font-size: 1.6rem; }
+  .h-ser__top { flex-direction: column; align-items: flex-start; gap: 3px; }
+  .h-ser__ring { text-align: left; font-size: .7rem; }
+  .h-ser__dwg text { font-size: 150px; stroke-width: 96px; }
   .h-ser__use { display: none; }
   .h-band__bg::after { background: linear-gradient(0deg, rgba(8, 12, 20, .96) 45%, rgba(8, 12, 20, .6)); }
   .h-tiers { gap: 6px; }
