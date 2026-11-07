@@ -12,10 +12,10 @@ use Illuminate\Support\Facades\Schedule;
 // withoutOverlapping(minutes): the lock expires near the job's interval so a crashed run can't block it for the default 24 h
 Schedule::command('inventory:low-stock-email')->dailyAt('07:00');
 Schedule::command('inventory:weekly-report')->weeklyOn(1, '07:30'); // Monday morning
-// Live catalog overlay (images, prices, stock, names from universaldriveshafts.com): the WP copy is a snapshot
-Schedule::command('catalog:sync-live')->hourly()->withoutOverlapping(90);
+// Live catalog overlay (images, prices, stock, names from universaldriveshafts.com) until catalog:detach makes the catalog local for good
+Schedule::command('catalog:sync-live')->hourly()->withoutOverlapping(90)->skip(fn () => \App\Support\LiveOrigin::retired());
 // pictures the sync brought in are copied to public/uploads/wp so pages never load them from the old WordPress site
-Schedule::command('catalog:localize-images')->hourlyAt(40)->withoutOverlapping(50);
+Schedule::command('catalog:localize-images')->hourlyAt(40)->withoutOverlapping(50)->skip(fn () => \App\Support\LiveOrigin::retired());
 // 404 log (admin → SEO): forget one-off misses after 90 days
 Schedule::command('reviews:request')->dailyAt('10:00')->timezone('America/New_York')->withoutOverlapping(30);   // Google review requests (off until enabled in Settings → Reviews)
 Schedule::command('seo:indexnow')->dailyAt('05:15')->withoutOverlapping(30);   // changed pages to Bing / ChatGPT search (production only)

@@ -12,7 +12,9 @@ return [
         63835 => '3102-80 flange yoke showed a stub shaft',
     ],
 
-    'uploads' => 'https://universaldriveshafts.com/wp-content/uploads/',
+    // product/category attachment files (wp_postmeta _wp_attached_file): the local mirror of the old WordPress
+    // uploads (catalog:localize-images, App\Support\WpUploads), served by this site
+    'uploads' => '/uploads/wp/',
 
     'groups' => [
         'complete-driveshafts' => [

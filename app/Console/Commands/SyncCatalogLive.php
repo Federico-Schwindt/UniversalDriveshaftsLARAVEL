@@ -21,6 +21,10 @@ class SyncCatalogLive extends Command
 
     public function handle(): int
     {
+        if (\App\Support\LiveOrigin::retired()) {
+            $this->warn('The catalog is local since ' . \App\Support\Settings::get('catalog.detached_at') . ' (catalog:detach): nothing is read from WooCommerce. Skipped.');
+            return self::SUCCESS;
+        }
         if (\App\Support\LiveOrigin::isSelf()) {
             $this->warn('universaldriveshafts.com is this site now: there is no old WordPress store to read from. Skipped.');
             return self::SUCCESS;

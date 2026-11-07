@@ -114,7 +114,7 @@ class SettingsController extends Controller
         $brevo = $tab === 'email' ? app(\App\Services\BrevoService::class)->status() : null;
         $templates = self::TEMPLATES;
         $schedule = [];
-        try { $schedule = [['catalog:sync-live', 'hourly', 'Images, prices and stock from the live store (skips admin-edited products)'], ['recovery:send', 'every 15 min', 'Abandoned-cart reminders'], ['alerts:check', 'hourly', 'Back-in-stock notifications'], ['orders:track', 'every 30 min', 'Carrier status from EasyPost'], ['report:weekly', 'Mondays', 'Weekly sales e-mail']]; } catch (\Throwable $e) {}
+        try { $schedule = [\App\Support\LiveOrigin::retired() ? ['catalog:sync-live', 'off', 'Catalog is local since ' . \App\Support\Settings::get('catalog.detached_at') . ': products, prices and stock are edited only here'] : ['catalog:sync-live', 'hourly', 'Images, prices and stock from the live store (skips admin-edited products)'], ['recovery:send', 'every 15 min', 'Abandoned-cart reminders'], ['alerts:check', 'hourly', 'Back-in-stock notifications'], ['orders:track', 'every 30 min', 'Carrier status from EasyPost'], ['report:weekly', 'Mondays', 'Weekly sales e-mail']]; } catch (\Throwable $e) {}
         return view('admin.settings.index', compact('tab', 'fields', 'values', 'integrations', 'users', 'schedule', 'mail', 'brevo', 'templates'));
     }
 
