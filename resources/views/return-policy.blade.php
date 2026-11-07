@@ -54,6 +54,7 @@
     <tr><th style="width:38%">Artículo</th><th>¿Se puede devolver?</th></tr>
     <tr><td>Piezas de stock (crucetas, yugos, rodamientos, tornillería, tubos cortados en largos estándar)</td><td>Sí, dentro de los <b>14 días</b> de la entrega, nuevas, sin instalar, en su embalaje original y con un número de RMA. <b>Cargo de reposición del 20%</b>; el envío original no es reembolsable.</td></tr>
     <tr><td>Cardanes y ensambles fabricados a medida, cortados a medida, balanceados o fabricados por pedido</td><td><b>No.</b> Se fabrican según sus especificaciones; no se pueden cancelar una vez iniciada la fabricación y no son retornables (consulte la Sección 4).</td></tr>
+    <tr><td>Cardanes sin soldar</td><td><b>Por lo general, no.</b> La mayoría de nuestros cardanes sin soldar no son elegibles para devolución ni reembolso, ya que se fabrican a medida según las especificaciones de cada cliente, desde cero. En los casos en que se apruebe una devolución, se descontarán del reembolso un cargo de reposición del 25% más el costo del envío de devolución.</td></tr>
     <tr><td>Artículos de pedido especial / envío directo que normalmente no tenemos en stock</td><td>Solo si el proveedor acepta la devolución; se aplica el cargo de reposición del proveedor (normalmente del 25 al 35%) más el flete.</td></tr>
     <tr><td>Artículos eléctricos, kits con bolsas selladas abiertas, lubricantes, artículos en liquidación y de “venta final”</td><td><b>No.</b></td></tr>
     <tr><td>Artículos instalados, usados, modificados, soldados, pintados, dañados o incompletos</td><td><b>No.</b></td></tr>
@@ -73,6 +74,7 @@
 
   <h2>4. Fabricaciones a medida y artículos fabricados por pedido</h2>
   <p>Los cardanes a medida, los tubos cortados a medida, los ensambles balanceados, los ejes de conversión y cualquier artículo fabricado o pedido según las especificaciones que usted proporcionó <b>no se pueden cancelar una vez iniciada la fabricación o el pedido, y no son retornables</b>. Usted es el único responsable de la exactitud de cada medida y especificación que proporciona; utilice nuestras <a href="/shop">guías de medición</a> y llámenos ante cualquier duda <i>antes</i> de hacer el pedido. Una fabricación que no encaja debido a una medida, serie, yugo o selección de estrías que usted proporcionó no constituye un defecto. Si fabricamos algo que se aparta de las especificaciones que usted proporcionó, lo corregiremos o lo volveremos a fabricar sin cargo; esa es su reparación exclusiva.</p>
+  <p><b>Cardanes sin soldar.</b> La mayoría de nuestros cardanes sin soldar no son elegibles para devolución ni reembolso, ya que se fabrican a medida según las especificaciones de cada cliente, desde cero. En los casos en que se apruebe una devolución, se descontarán del reembolso un cargo de reposición del 25% más el costo del envío de devolución.</p>
 
   <h2>4b. Cargos de envío en devoluciones</h2>
   <p>Los cargos de envío originales no se reembolsan en las devoluciones, salvo que la devolución se deba a un error nuestro. La forma en que se embalan y cotizan los pedidos, los envíos por flete y las reglas de envío gratis se explican en nuestra <a href="/shipping-policy">Política de envíos</a>.</p>
@@ -161,6 +163,7 @@
     <tr><th style="width:38%">Item</th><th>Returnable?</th></tr>
     <tr><td>Stock parts (U-joints, yokes, bearings, hardware, tubing cut to standard lengths)</td><td>Yes, within <b>14 days</b> of delivery, new, uninstalled, in original packaging, with an RMA number. <b>20% restocking fee</b>; original shipping non-refundable.</td></tr>
     <tr><td>Custom-built, cut-to-length, balanced or made-to-order driveshafts and assemblies</td><td><b>No.</b> Built to your specifications; non-cancellable once fabrication begins and non-returnable (see Section 4).</td></tr>
+    <tr><td>Unwelded shafts</td><td><b>Generally no.</b> Most of our unwelded shafts are not eligible for return or refund, as they are custom-built to each customer’s specifications and manufactured from scratch. In cases where a return is approved, a 25% restocking fee plus the cost of return shipping will be deducted from the refund.</td></tr>
     <tr><td>Special-order / drop-ship items not normally stocked</td><td>Only if the supplier accepts the return; supplier restocking fee (typically 25–35%) plus freight applies.</td></tr>
     <tr><td>Electrical items, kits with opened sealed bags, lubricants, clearance and “final sale” items</td><td><b>No.</b></td></tr>
     <tr><td>Installed, used, modified, welded, painted, damaged, or incomplete items</td><td><b>No.</b></td></tr>
@@ -180,6 +183,7 @@
 
   <h2>4. Custom builds and made-to-order items</h2>
   <p>Custom driveshafts, cut-to-length tubing, balanced assemblies, conversion shafts and any item built or ordered to the specifications you provided are <b>non-cancellable once fabrication or ordering begins and are non-returnable</b>. You are solely responsible for the accuracy of every measurement and specification you supply; please use our <a href="/shop">measuring guides</a> and call us with any doubt <i>before</i> ordering. A build that does not fit because of a measurement, series, yoke or spline selection you provided is not a defect. If we made a build that departs from the specifications you supplied, we will correct or rebuild it at no charge, that is your exclusive remedy.</p>
+  <p><b>Unwelded shafts.</b> Most of our unwelded shafts are not eligible for return or refund, as they are custom-built to each customer’s specifications and manufactured from scratch. In cases where a return is approved, a 25% restocking fee plus the cost of return shipping will be deducted from the refund.</p>
 
   <h2>4b. Shipping charges on returns</h2>
   <p>Original shipping charges are not refunded on returns unless the return is due to our error. How orders are packed and priced, freight shipments and the free-shipping rules are explained in our <a href="/shipping-policy">Shipping Policy</a>.</p>

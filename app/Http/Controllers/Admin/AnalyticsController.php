@@ -45,7 +45,9 @@ class AnalyticsController extends Controller
         $mtd = $byMonth[$now->format('Y-m')] ?? self::blank();
         $lastKey = $now->copy()->subMonthNoOverflow()->format('Y-m');
         $lastSameDays = array_sum(array_slice($byMonth[$lastKey]['days'] ?? [], 0, $day));
-        $elapsed = ($day - 1 + ($now->secondsSinceMidnight() / 86400)) / $now->daysInMonth;
+        // whole days, today counted in full: the projection only moves when a sale lands or the day changes
+        // (a seconds-based fraction made it drop a cent on every reload, owner 2026-11-07)
+        $elapsed = $day / $now->daysInMonth;
         $ytd = $lyYtd = 0.0;
         foreach ($byMonth as $key => $v) {
             if (str_starts_with($key, $now->year . '-')) $ytd += $v['net'];
