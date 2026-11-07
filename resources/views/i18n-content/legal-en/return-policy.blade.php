@@ -47,6 +47,7 @@
     <tr><th style="width:38%">Item</th><th>Returnable?</th></tr>
     <tr><td>Stock parts (U-joints, yokes, bearings, hardware, tubing cut to standard lengths)</td><td>Yes, within <b>14 days</b> of delivery, new, uninstalled, in original packaging, with an RMA number. <b>20% restocking fee</b>; original shipping non-refundable.</td></tr>
     <tr><td>Custom-built, cut-to-length, balanced or made-to-order driveshafts and assemblies</td><td><b>No.</b> Built to your specifications; non-cancellable once fabrication begins and non-returnable (see Section 4).</td></tr>
+    <tr><td>Unwelded shafts</td><td><b>Generally no.</b> Most of our unwelded shafts are not eligible for return or refund, as they are custom-built to each customer’s specifications and manufactured from scratch. In cases where a return is approved, a 25% restocking fee plus the cost of return shipping will be deducted from the refund.</td></tr>
     <tr><td>Special-order / drop-ship items not normally stocked</td><td>Only if the supplier accepts the return; supplier restocking fee (typically 25–35%) plus freight applies.</td></tr>
     <tr><td>Electrical items, kits with opened sealed bags, lubricants, clearance and “final sale” items</td><td><b>No.</b></td></tr>
     <tr><td>Installed, used, modified, welded, painted, damaged, or incomplete items</td><td><b>No.</b></td></tr>
@@ -66,6 +67,7 @@
 
   <h2>4. Custom builds and made-to-order items</h2>
   <p>Custom driveshafts, cut-to-length tubing, balanced assemblies, conversion shafts and any item built or ordered to the specifications you provided are <b>non-cancellable once fabrication or ordering begins and are non-returnable</b>. You are solely responsible for the accuracy of every measurement and specification you supply; please use our <a href="/shop">measuring guides</a> and call us with any doubt <i>before</i> ordering. A build that does not fit because of a measurement, series, yoke or spline selection you provided is not a defect. If we made a build that departs from the specifications you supplied, we will correct or rebuild it at no charge, that is your exclusive remedy.</p>
+  <p><b>Unwelded shafts.</b> Most of our unwelded shafts are not eligible for return or refund, as they are custom-built to each customer’s specifications and manufactured from scratch. In cases where a return is approved, a 25% restocking fee plus the cost of return shipping will be deducted from the refund.</p>
 
   <h2>4b. Shipping charges on returns</h2>
   <p>Original shipping charges are not refunded on returns unless the return is due to our error. How orders are packed and priced, freight shipments and the free-shipping rules are explained in our <a href="/shipping-policy">Shipping Policy</a>.</p>
