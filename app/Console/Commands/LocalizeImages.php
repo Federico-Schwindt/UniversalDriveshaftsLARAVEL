@@ -23,6 +23,10 @@ class LocalizeImages extends Command
 
     public function handle(): int
     {
+        if (\App\Support\LiveOrigin::retired()) {
+            $this->warn('The catalog is local since ' . \App\Support\Settings::get('catalog.detached_at') . ' (catalog:detach): every picture is already here. Skipped.');
+            return self::SUCCESS;
+        }
         if (\App\Support\LiveOrigin::isSelf()) {
             $this->warn('universaldriveshafts.com is this site now: there is no old WordPress store to read from. Skipped.');
             return self::SUCCESS;
@@ -73,8 +77,8 @@ class LocalizeImages extends Command
         return self::SUCCESS;
     }
 
-    /** Every old-uploads URL the store can render. */
-    private function collect(): array
+    /** Every old-uploads URL the store can render (catalog:detach checks they are all mirrored). */
+    public function collect(): array
     {
         $urls = [];
         $add = function ($u) use (&$urls) { if (is_string($u) && WpUploads::rel($u) !== null) $urls[trim($u)] = true; };
@@ -87,7 +91,7 @@ class LocalizeImages extends Command
 
         // local catalog copy: attachments of products (featured + gallery) and of categories
         $wp = DB::connection('wp');
-        $base = rtrim((string) config('catalog.uploads'), '/') . '/';
+        $base = 'https://' . LiveOrigin::HOST . '/wp-content/uploads/';   // where the attachment files came from (catalog.uploads is the local copy now)
         $ids = [];
         foreach ($wp->table('wp_postmeta')->whereIn('meta_key', ['_thumbnail_id', '_product_image_gallery'])->pluck('meta_value') as $v) {
             foreach (explode(',', (string) $v) as $id) if (ctype_digit(trim($id))) $ids[(int) $id] = true;

@@ -17,7 +17,7 @@ class DsbCatalog
     public const FLANGE_FILTERS = ['pilot-dia', 'cj-to-flat', 'bolt-holes', 'bolt-circle-dia'];
     public const TRANS_FILTERS  = ['splines-count-dia', 'center-u-joint-to-end', 'hub-dia'];
 
-    private const UPLOADS = 'https://universaldriveshafts.com/wp-content/uploads/';
+    private const UPLOADS = '/uploads/wp/';   // local mirror of the old WordPress uploads (App\Support\WpUploads)
 
     /** Yoke catalog search — mirrors AJAX dsb_yoke_catalog. */
     public function yokes(string $type, string $series, array $filters, int $page, int $perPage): array

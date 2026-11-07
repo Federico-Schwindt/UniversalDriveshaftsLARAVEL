@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 /** General product lookup against the copied WooCommerce catalog (connection 'wp'). */
 class ProductService
 {
-    private const UPLOADS = 'https://universaldriveshafts.com/wp-content/uploads/';
+    private const UPLOADS = '/uploads/wp/';   // local mirror of the old WordPress uploads (App\Support\WpUploads)
 
     /** Autocomplete search by name or SKU. */
     /**

@@ -47,7 +47,8 @@ class MediaController extends Controller
         $src = base64_decode(strtr($key, '-_', '+/'), true);
         if ($src) $src = \App\Support\WpUploads::localPath($src) ?? $src;   // keys minted before the mirror existed
         $local =$src && $src[0] === '/' && !str_contains($src, '..') && array_filter(self::LOCAL, fn ($d) => str_starts_with($src, $d)) && is_file(public_path($src));
-        abort_unless($src && ($local || preg_match('#^https?://(www\.)?' . preg_quote(self::HOST, '#') . '/wp-content/uploads/[^\s"<>]+$#i', $src)), 404);
+        // once the catalog is local (catalog:detach) a picture missing from the mirror is a 404, never a fetch from the old site
+        abort_unless($src && ($local || (!\App\Support\LiveOrigin::retired() && preg_match('#^https?://(www\.)?' . preg_quote(self::HOST, '#') . '/wp-content/uploads/[^\s"<>]+$#i', $src))), 404);
 
         $dir = public_path("media/$w"); $file = "$dir/$key.webp";
         if (!is_file($file)) {

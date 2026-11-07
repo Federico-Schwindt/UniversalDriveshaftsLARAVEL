@@ -43,6 +43,15 @@ class LiveOrigin
         return $ip !== null && $ip === config('services.woocommerce.self_ip', '178.156.163.237');
     }
 
+    /**
+     * True once the catalog was taken off the old store for good (catalog:detach): products, prices, photos and stock
+     * live only here, edited in the admin, and nothing reads the catalog from WooCommerce any more.
+     */
+    public static function retired(): bool
+    {
+        return (bool) Settings::get('catalog.detached_at');
+    }
+
     /** Options for Http::withOptions() that pin the live host (and www) to its real address. */
     public static function httpOptions(): array
     {
