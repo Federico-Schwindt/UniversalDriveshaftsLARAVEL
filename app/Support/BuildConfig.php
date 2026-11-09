@@ -48,8 +48,9 @@ class BuildConfig
             $add('Series', $c['series_label'] ?? strtoupper((string) ($c['series_key'] ?? '')));
             $add('Tube material', ucfirst((string) ($c['material'] ?? '')));
             $add('Component grade', ($c['price_tier'] ?? '') === 'new' ? 'Brand new' : 'Certified reconditioned');
-            $add('Front application', $c['front_app'] ?? '');
-            $add('Rear application', $c['rear_app'] ?? '');
+            // the label the builder resolved server-side ("Slip Yoke with Flange Yoke"), not its key ("slip_flange")
+            $add('Front application', ($c['front_app_label'] ?? '') ?: ($c['front_app'] ?? ''));
+            $add('Rear application', ($c['rear_app_label'] ?? '') ?: ($c['rear_app'] ?? ''));
             $add('Measurement A1', self::inches($c['a1'] ?? 0));
             $add('Measurement B1', self::inches($c['b1'] ?? 0));
             $add('Measurement C1', self::inches($c['c1'] ?? 0));

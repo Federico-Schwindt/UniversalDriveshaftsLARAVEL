@@ -126,6 +126,21 @@ class OrderEvents
         return true;
     }
 
+    /**
+     * "Ready for pickup" e-mail + text (text only with the checkout consent), once per order: from the admin when a
+     * pickup order is marked completed, or when the shop station finishes its builder shaft (CheckinBridge::follow).
+     */
+    public static function notifyPickupReady(object $o): void
+    {
+        $url = self::statusUrl($o);
+        if (self::record($o, 'notify:email:ready', 'Pickup-ready e-mail sent', $o->email, true)) {
+            try { Mailer::simple($o->email, "Order {$o->order_number} is ready for pickup", ['kicker' => 'Ready for pickup', 'title' => "Come and get it, {$o->billing_first_name}!", 'intro' => "Order {$o->order_number} is packed and waiting at the counter.", 'kv' => ['Where' => config('uds.pickup.address'), 'Hours' => config('uds.pickup.hours'), 'Bring' => 'Your order number' . ($o->payment_method === 'pay_at_pickup' ? ' and payment of $' . number_format($o->total, 2) : '')], 'button' => ['Order status', $url], 'after' => ['Need another time? Call (813) 524-6491 first so we can have it ready.']], ['replyTo' => [config('uds.email')]]); } catch (\Throwable $e) { report($e); }
+        }
+        if ($o->sms_opt_in && $o->phone && self::record($o, 'notify:sms:ready', 'Pickup-ready text sent', $o->phone, true)) {
+            try { app(SmsService::class)->send($o->phone, "Universal Driveshafts: order {$o->order_number} is ready for pickup in Odessa. Hours: " . config('uds.pickup.hours') . ". {$url}"); } catch (\Throwable $e) {}
+        }
+    }
+
     /** True for local-pickup orders (no carrier steps on the timeline). */
     public static function isPickup(object $order): bool
     {

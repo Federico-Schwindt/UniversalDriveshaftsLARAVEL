@@ -143,7 +143,7 @@ class PayLink
 
     /**
      * What goes out once an order is committed: the coupon counted, the "order received" text (only with the
-     * customer's checkout consent) and the CRM sync. Invoice / pickup / manual orders run it when placed, card
+     * customer's checkout consent), the CRM sync and the work order for a builder shaft. Invoice / pickup / manual orders run it when placed, card
      * orders when paid. Each step is keyed on the order timeline so it can never run twice.
      */
     public static function placedNotices(object $order): void
@@ -163,6 +163,8 @@ class PayLink
         }
         // the parts are sold: take them off the on-hand count (once)
         StockLedger::deduct($order);
+        // a builder shaft becomes a work order on the shop's station (after the response, once)
+        try { \App\Services\CheckinBridge::queue($order); } catch (\Throwable $e) { report($e); }
     }
 
     /** Money a succeeded PaymentIntent / Charge actually took, in cents. */

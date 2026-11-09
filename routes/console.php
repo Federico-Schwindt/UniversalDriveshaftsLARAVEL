@@ -34,6 +34,7 @@ Schedule::command('pti:driveshaft-prices')->cron('15 */4 * * *')->withoutOverlap
 Schedule::command('pti:dewatermark')->cron('20 1-21/4 * * *')->withoutOverlapping(200);
 Schedule::command('pti:driveshaft-discover')->cron('45 */4 * * *')->withoutOverlapping(120);   // new shafts PTI added (full catalog scan, ~25 min)
 Schedule::command('pti:dropship-tracking')->everyFifteenMinutes()->withoutOverlapping(30);   // tracking of orders dropshipped from PTI (new labels too)
+Schedule::command('checkin:push')->everyTenMinutes()->withoutOverlapping(20)->skip(fn () => !\App\Services\CheckinBridge::enabled());   // builder shafts → shop station (retries), and its build progress → the customer
 require __DIR__ . '/console-recovery.php';   // schedules owned by the recovery agent
 require __DIR__ . '/console-tracking.php';   // schedules owned by the tracking agent
 require __DIR__ . '/console-chat.php';       // UDS Assistant chat (media pruning)
