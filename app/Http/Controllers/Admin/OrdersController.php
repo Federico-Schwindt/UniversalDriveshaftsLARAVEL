@@ -190,22 +190,11 @@ class OrdersController extends Controller
             if ($newStatus === 'cancelled') { OrderEvents::record($before, 'cancelled', 'Order cancelled', null, true); \App\Support\StockLedger::restore($before, 'Cancelled'); }
             AdminLog::record('order.status', "Order {$before->order_number}: " . ($before->status) . ' → ' . $newStatus, 'order', $id);
             // pickup orders: tell the customer it is ready
-            if ($newStatus === 'completed' && $before->shipping_method === CartService::PICKUP_ID && $r->boolean('notify')) $this->notifyPickupReady($before);
+            if ($newStatus === 'completed' && $before->shipping_method === CartService::PICKUP_ID && $r->boolean('notify')) OrderEvents::notifyPickupReady($before);
         }
         if ($newPay !== $before->payment_status) AdminLog::record('order.payment', "Order {$before->order_number}: payment {$before->payment_status} → {$newPay}", 'order', $id);
         Cache::forget('adm_nav_counts'); Cache::forget('adm_order_tabs');
         return back()->with('admin_ok', 'Order updated.');
-    }
-
-    private function notifyPickupReady(object $o): void
-    {
-        $url = OrderEvents::statusUrl($o);
-        if (OrderEvents::record($o, 'notify:email:ready', 'Pickup-ready e-mail sent', $o->email, true)) {
-            try { \App\Support\Mailer::simple($o->email, "Order {$o->order_number} is ready for pickup", ['kicker' => 'Ready for pickup', 'title' => "Come and get it, {$o->billing_first_name}!", 'intro' => "Order {$o->order_number} is packed and waiting at the counter.", 'kv' => ['Where' => config('uds.pickup.address'), 'Hours' => config('uds.pickup.hours'), 'Bring' => 'Your order number' . ($o->payment_method === 'pay_at_pickup' ? ' and payment of $' . number_format($o->total, 2) : '')], 'button' => ['Order status', $url], 'after' => ['Need another time? Call (813) 524-6491 first so we can have it ready.']], ['replyTo' => [config('uds.email')]]); } catch (\Throwable $e) { report($e); }
-        }
-        if ($o->sms_opt_in && $o->phone && OrderEvents::record($o, 'notify:sms:ready', 'Pickup-ready text sent', $o->phone, true)) {
-            try { app(\App\Services\SmsService::class)->send($o->phone, "Universal Driveshafts: order {$o->order_number} is ready for pickup in Odessa. Hours: " . config('uds.pickup.hours') . ". {$url}"); } catch (\Throwable $e) {}
-        }
     }
 
     public function tracking(Request $r, int $id)
