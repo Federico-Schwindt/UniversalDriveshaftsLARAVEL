@@ -159,8 +159,24 @@
       </details>
     @endif
 
-    <div id="shop-table">@include('shop.partials.table')</div>
   </div>
+  <div class="shop-bleed"><div id="shop-table" class="ptfit">@include('shop.partials.table')</div></div>
+  {{-- fit the table to the screen before it paints: denser steps first, cards when nothing fits ("CATEGORY TABLE" in uds-2026.css) --}}
+  <script>
+  (function(){
+    var box=document.getElementById('shop-table'),steps=['is-d1','is-d2','is-d3','is-d4','is-d5','is-cards'],phone=window.matchMedia('(max-width:760px)'),raf=0;
+    function fit(){
+      var w,i=0; raf=0;
+      box.classList.remove.apply(box.classList,steps);
+      if(phone.matches||!(w=box.querySelector('.ptbl-wrap')))return;
+      while(i<steps.length&&w.scrollWidth>w.clientWidth){if(i)box.classList.remove(steps[i-1]);box.classList.add(steps[i++]);}
+    }
+    function later(){if(!raf)raf=requestAnimationFrame(fit);}
+    fit(); window.addEventListener('resize',later); window.addEventListener('load',later);
+    if(document.fonts&&document.fonts.ready)document.fonts.ready.then(later);
+    if(window.MutationObserver)new MutationObserver(fit).observe(box,{childList:true});
+  })();
+  </script>
 </section>
 
 @if($measure)

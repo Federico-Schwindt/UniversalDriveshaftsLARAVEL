@@ -52,7 +52,7 @@
         @endif
       </span></td>
       <td data-label="{{ __('Pic') }}" data-col="pic">@if($p['image'])<img class="p-pic" width="88" height="88" src="{{ $p['image'] }}" data-zoom="{{ $p['image'] }}" alt="{{ $p['sku'] }} {{ \Illuminate\Support\Str::limit($svc->cleanName($p), 60, '') }}" loading="lazy">@else<span class="p-pic-ph">{!! $ds !!}</span>@endif</td>
-      <td data-label="{{ __('Part #') }}" data-col="part"><a class="p-pn" href="/parts/{{ rawurlencode($p['sku']) }}">{{ $p['sku'] ?: '-' }}<x-icon name="arrow-up-right"/></a>@if(!empty($p['has_alt']))<button type="button" class="p-alt" data-alt-for="{{ $p['id'] }}" title="{{ __('Alternate parts available') }}" aria-label="{{ __('See alternate parts') }}"><x-icon name="warning"/><span>{{ __('Alt parts') }}</span></button>@endif</td>
+      <td data-label="{{ __('Part #') }}" data-col="part"><a class="p-pn{{ mb_strlen($p['sku']) > 20 ? ' p-pn--long' : '' }}" href="/parts/{{ rawurlencode($p['sku']) }}">{{ $p['sku'] ?: '-' }}<x-icon name="arrow-up-right"/></a>@if(!empty($p['has_alt']))<button type="button" class="p-alt" data-alt-for="{{ $p['id'] }}" title="{{ __('Alternate parts available') }}" aria-label="{{ __('See alternate parts') }}"><x-icon name="warning"/><span>{{ __('Alt parts') }}</span></button>@endif</td>
       <td data-label="{{ __('Price') }}" data-col="price"><div class="p-price">
         @if($p['price'] <= 0)<span class="call">{{ __('Call for price') }}</span>@else
         @if($p['on_sale'])<span class="was">${{ number_format($p['regular'],2) }}</span>@endif

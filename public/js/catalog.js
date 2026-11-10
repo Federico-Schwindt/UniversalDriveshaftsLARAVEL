@@ -148,8 +148,9 @@
     var wish=e.target.closest('.p-wish');
     if(wish){ toggleWish(wish); return; }
   });
-  /* wide tables: fade the right edge while there is more to scroll to */
+  /* wide tables: fade the right edge while there is more to scroll to (the category table fits itself instead: .ptfit) */
   function fades(){document.querySelectorAll('.ptbl-wrap').forEach(function(w){
+    if(w.closest('.ptfit'))return;
     var on=w.scrollWidth>w.clientWidth+2&&w.scrollLeft+w.clientWidth<w.scrollWidth-2; w.classList.toggle('is-scroll',on);
     if(!w._fade){w._fade=1;w.addEventListener('scroll',fades,{passive:true});}
   });}
