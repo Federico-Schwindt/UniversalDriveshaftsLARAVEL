@@ -41,9 +41,7 @@
   <tbody>
   @foreach($data['items'] as $p)
     <tr>
-      @php $rowWished = in_array($p['id'], $udsWished ?? []); @endphp
       <td data-label="{{ __('Add') }}" data-col="add"><span class="p-add">
-        <button class="p-wish{{ $rowWished ? ' is-on' : '' }}" data-wish="{{ $p['id'] }}" aria-pressed="{{ $rowWished ? 'true' : 'false' }}" aria-label="{{ $rowWished ? __('Remove from wishlist') : __('Add to wishlist') }}" title="{{ $rowWished ? __('Remove from wishlist') : __('Add to wishlist') }}"><x-icon name="heart"/></button>
         @if($p['price'] > 0)
         <button class="p-plus" data-add="{{ $p['id'] }}"@if(!empty($p['has_alt'])) data-has-alt @endif data-stock="{{ ($p['stock'] ?? 0) > 0 ? $p['stock'] : '' }}" data-status="{{ $p['stock_status'] }}" data-source="{{ $p['stock_source'] ?? '' }}" aria-label="{{ __('Add :sku to cart', ['sku' => $p['sku']]) }}" title="{{ __('Add to cart') }}"><x-icon name="cart"/><span class="p-plus__t">{{ __('Add') }}</span></button>
         @else

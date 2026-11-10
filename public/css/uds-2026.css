@@ -1887,10 +1887,6 @@ body.has-ua{padding-bottom:84px}
 .p-add button .i{font-size:1.15rem}
 .p-plus{background:var(--blue);border:1.5px solid var(--blue);color:#fff}
 .p-plus:hover{background:var(--blue-700);border-color:var(--blue-700);color:#fff}
-.p-wish{background:#fff;border:1.5px solid var(--line-strong);color:var(--ink-2)}
-.p-wish:hover{border-color:#e0507a;color:#e0507a}
-.p-wish.is-on{border-color:#e0507a;background:#e0507a;color:#fff}
-.p-wish.is-busy{opacity:.6;pointer-events:none}
 
 /* stock + image popovers */
 .stock-pop{position:fixed;z-index:120;background:#fff;border:1px solid var(--line);
@@ -1991,15 +1987,21 @@ body.has-ua{padding-bottom:84px}
 }
 
 /* ---------------------------------------------------------------------------
-   CATEGORY TABLE: the whole table on screen, never a sideways scroll.
-   .ptfit (#shop-table) sits outside the page rail and grows with its table up
-   to the viewport; column titles wrap. The script in shop/category.blade.php
+   TABLE FIT: the whole parts table on screen, never a sideways scroll
+   (category, search results, alternatives on the product page).
+   A .ptfit box in a .shop-bleed leaves the page rail and grows with its table
+   up to the viewport; column titles wrap. shop/partials/table-fit.blade.php
    then steps .is-d1 … .is-d5 (each one denser) until nothing overflows, and
    falls back to .is-cards when even the densest table is too wide.
    --------------------------------------------------------------------------- */
 .shop-bleed{padding-inline:var(--gutter)}
 @media (min-width:761px){
-  .ptfit{width:max-content;min-width:min(100%,calc(var(--wrap) - 2*var(--gutter)));max-width:min(100%,1600px);margin-inline:auto}
+  /* inside the rail the bleed reaches out to the screen edges instead (100vw counts the scrollbar: the gutter absorbs it) */
+  .wrap .shop-bleed{margin-inline:calc(50% - 50vw + var(--gutter));padding-inline:0}
+  .ptfit,.ptfit-set{width:max-content;min-width:min(100%,calc(var(--wrap) - 2*var(--gutter)));max-width:min(100%,1600px);margin-inline:auto}
+  /* tables stacked on one page (search results) share one width: the set takes its widest table's, never its text's */
+  .ptfit-set .ptfit{width:auto;min-width:0;max-width:none}
+  .ptfit-set .xref-cap{width:0;min-width:100%}
   .ptfit .ptbl{--px:.9rem;--pic:88px}
   .ptfit .ptbl thead th{white-space:normal;line-height:1.3;vertical-align:bottom;padding-inline:var(--px)}
   .ptfit .ptbl thead th:nth-child(-n+4){white-space:nowrap}
@@ -2013,7 +2015,6 @@ body.has-ua{padding-bottom:84px}
 
   .ptfit:is(.is-d1,.is-d2,.is-d3,.is-d4,.is-d5) .ptbl{--px:.6rem;--pic:72px}
   .ptfit:is(.is-d2,.is-d3,.is-d4,.is-d5) .ptbl{--px:.45rem;--pic:60px}
-  .ptfit:is(.is-d2,.is-d3,.is-d4,.is-d5) .p-add{gap:.4rem}
   .ptfit:is(.is-d2,.is-d3,.is-d4,.is-d5) .p-add button{width:40px;height:40px}
   .ptfit:is(.is-d2,.is-d3,.is-d4,.is-d5) .p-add .p-plus{padding:0}
   .ptfit:is(.is-d2,.is-d3,.is-d4,.is-d5) .p-add .p-plus .p-plus__t{display:none}

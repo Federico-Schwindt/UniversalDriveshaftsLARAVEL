@@ -71,7 +71,8 @@
 
     <div class="shop-count">{{ __($data['total']==1 ? ':n complete driveshaft' : ':n complete driveshafts', ['n' => number_format($data['total'])]) }}{{ $vLabel ? __(' for :vehicle', ['vehicle' => $vLabel]) : '' }}{{ $q ? __(' matching ":q"', ['q' => $q]) : '' }}</div>
     @if(count($data['items']))
-    <div class="ptbl-wrap"><table class="ptbl">
+    {{-- the whole table on screen, like every category ("TABLE FIT" in uds-2026.css) --}}
+    <div class="shop-bleed"><div class="ptfit"><div class="ptbl-wrap"><table class="ptbl">
       <thead><tr><th>{{ __('Add') }}</th><th>{{ __('Pic') }}</th><th>{{ __('Part #') }}</th><th>{{ __('Price') }}</th><th class="l">{{ __('Description') }}</th><th>{{ __('Type') }}</th><th class="l">{{ __('Fits') }}</th><th>{{ __('Weight') }}</th></tr></thead>
       <tbody>
       @foreach($data['items'] as $d)
@@ -87,7 +88,7 @@
         </tr>
       @endforeach
       </tbody>
-    </table></div>
+    </table></div></div>@include('shop.partials.table-fit')</div>
     @if($data['pages'] > 1)
       <div class="shop-pg">
         @if($data['page']>1)<a href="{{ $qs($data['page']-1) }}" aria-label="{{ __('Previous page') }}"><x-icon name="arrow-left"/></a>@else<span class="dis" aria-hidden="true"><x-icon name="arrow-left"/></span>@endif
