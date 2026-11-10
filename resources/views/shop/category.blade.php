@@ -146,7 +146,7 @@
       <details class="md-panel" data-md-scope>
         <summary><x-icon name="ruler"/>{{ __('How to measure') }}</summary>
         <div class="md-panel__body">
-          <div>{!! $measure['svg'] !!}</div>
+          <div>{!! \App\Support\Measure\Sketch::uniq($measure['svg']) !!}</div>
           <div>
             <ul class="md-legend">
               @foreach($measure['codes'] as $key => $letter)
@@ -164,7 +164,7 @@
 </section>
 
 @if($measure)
-<div class="md-pop" id="md-pop" aria-hidden="true"><p class="md-pop__t"><span class="md-chip"></span><span></span></p>{!! $measure['svg'] !!}</div>
+<div class="md-pop" id="md-pop" aria-hidden="true"><p class="md-pop__t"><span class="md-chip"></span><span></span></p>{!! \App\Support\Measure\Sketch::uniq($measure['svg']) !!}</div>
 @endif
 
 <div class="stock-pop" id="stock-pop"></div>

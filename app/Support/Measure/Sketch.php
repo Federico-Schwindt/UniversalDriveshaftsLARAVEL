@@ -9,11 +9,18 @@ namespace App\Support\Measure;
  *
  * A callout is only drawn when its attribute has a letter in $codes — one drawing serves categories whose
  * tables carry different columns.
+ *
+ * Surfaces can be painted with the shared shading in <defs> ($fill: cyh / cyv = turned surface with its axis
+ * horizontal / vertical, cast, face = end face, hatch = cut material) and clipped to a rectangle (half sections).
+ * Ids carry the token "mdU_"; print the markup through uniq() so the same drawing can appear twice on a page.
  */
 class Sketch
 {
+    private const TOKEN = 'mdU_';
+
     private array $base = [];
     private array $dims = [];
+    private array $clips = [];
 
     /** @param array<string,string> $codes attribute key => callout letter */
     public function __construct(private array $codes, private float $w = 480, private float $h = 270) {}
@@ -23,8 +30,29 @@ class Sketch
         return rtrim(rtrim(number_format($v, 1, '.', ''), '0'), '.');
     }
 
-    /** closed or open outline from absolute path commands: [['M',x,y],['L',x,y],['Q',x1,y1,x,y],['C',…],['Z']] */
-    public function shape(array $cmds, string $cls = 'md-part', ?\Closure $tf = null): static
+    /** a fresh copy of the markup with its own ids */
+    public static function uniq(string $svg): string
+    {
+        return str_replace(self::TOKEN, 'md' . bin2hex(random_bytes(3)) . '_', $svg);
+    }
+
+    private static function paint(?string $fill, ?string $clip = null): string
+    {
+        return ($fill ? ' style="fill:url(#' . self::TOKEN . $fill . ')"' : '') . ($clip ? ' clip-path="url(#' . self::TOKEN . $clip . ')"' : '');
+    }
+
+    /** clip rectangle for half sections; returns the name to pass as $clip */
+    public function clip(float $x1, float $y1, float $x2, float $y2): string
+    {
+        $id = 'c' . count($this->clips);
+        $this->clips[] = '<clipPath id="' . self::TOKEN . $id . '"><rect x="' . self::n(min($x1, $x2)) . '" y="' . self::n(min($y1, $y2))
+            . '" width="' . self::n(abs($x2 - $x1)) . '" height="' . self::n(abs($y2 - $y1)) . '"/></clipPath>';
+
+        return $id;
+    }
+
+    /** path data from absolute commands: [['M',x,y],['L',x,y],['Q',x1,y1,x,y],['C',…],['Z']] */
+    public static function d(array $cmds, ?\Closure $tf = null): string
     {
         $d = '';
         foreach ($cmds as $c) {
@@ -34,22 +62,29 @@ class Sketch
                 $d .= self::n($x) . ' ' . self::n($y) . ' ';
             }
         }
-        $this->base[] = '<path class="' . $cls . '" d="' . trim($d) . '"/>';
+
+        return trim($d);
+    }
+
+    /** closed or open outline */
+    public function shape(array $cmds, string $cls = 'md-part', ?\Closure $tf = null, ?string $fill = null, ?string $clip = null): static
+    {
+        $this->base[] = '<path class="' . $cls . '"' . self::paint($fill, $clip) . ' d="' . self::d($cmds, $tf) . '"/>';
 
         return $this;
     }
 
-    public function rect(float $x, float $y, float $w, float $h, string $cls = 'md-part', float $rx = 0): static
+    public function rect(float $x, float $y, float $w, float $h, string $cls = 'md-part', float $rx = 0, ?string $fill = null): static
     {
-        $this->base[] = '<rect class="' . $cls . '" x="' . self::n($x) . '" y="' . self::n($y) . '" width="' . self::n($w)
+        $this->base[] = '<rect class="' . $cls . '"' . self::paint($fill) . ' x="' . self::n($x) . '" y="' . self::n($y) . '" width="' . self::n($w)
             . '" height="' . self::n($h) . '"' . ($rx ? ' rx="' . self::n($rx) . '"' : '') . '/>';
 
         return $this;
     }
 
-    public function circle(float $cx, float $cy, float $r, string $cls = 'md-part'): static
+    public function circle(float $cx, float $cy, float $r, string $cls = 'md-part', ?string $fill = null): static
     {
-        $this->base[] = self::circ($cx, $cy, $r, $cls);
+        $this->base[] = '<circle class="' . $cls . '"' . self::paint($fill) . ' cx="' . self::n($cx) . '" cy="' . self::n($cy) . '" r="' . self::n($r) . '"/>';
 
         return $this;
     }
@@ -123,10 +158,10 @@ class Sketch
     /** arrowhead with its tip at x,y pointing along $ang (drawn as a polygon: SVG markers can't follow the stroke colour in Safari) */
     private static function arrow(float $x, float $y, float $ang): string
     {
-        $bx = $x - 8 * cos($ang);
-        $by = $y - 8 * sin($ang);
-        $nx = -sin($ang) * 3;
-        $ny = cos($ang) * 3;
+        $bx = $x - 9 * cos($ang);
+        $by = $y - 9 * sin($ang);
+        $nx = -sin($ang) * 2.5;
+        $ny = cos($ang) * 2.5;
 
         return '<polygon class="md-arw" points="' . self::n($x) . ',' . self::n($y) . ' ' . self::n($bx + $nx) . ',' . self::n($by + $ny)
             . ' ' . self::n($bx - $nx) . ',' . self::n($by - $ny) . '"/>';
@@ -224,8 +259,19 @@ class Sketch
 
     public function svg(string $label = ''): string
     {
+        $t = self::TOKEN;
+        $metal = '<stop offset="0" stop-color="#aab4c4"/><stop offset=".2" stop-color="#f9fafc"/><stop offset=".42" stop-color="#e7ebf1"/>'
+            . '<stop offset=".8" stop-color="#bcc5d2"/><stop offset="1" stop-color="#97a2b4"/>';
+        $defs = '<defs><linearGradient id="' . $t . 'cyh" x1="0" y1="0" x2="0" y2="1">' . $metal . '</linearGradient>'
+            . '<linearGradient id="' . $t . 'cyv" x1="0" y1="0" x2="1" y2="0">' . $metal . '</linearGradient>'
+            . '<linearGradient id="' . $t . 'cast" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="#f4f6f9"/><stop offset="1" stop-color="#d3d9e3"/></linearGradient>'
+            . '<radialGradient id="' . $t . 'face" cx=".4" cy=".36" r=".72"><stop offset="0" stop-color="#fbfcfd"/><stop offset=".75" stop-color="#e3e7ee"/><stop offset="1" stop-color="#c8cfda"/></radialGradient>'
+            . '<radialGradient id="' . $t . 'ball" cx=".36" cy=".32" r=".7"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#d9dfe8"/><stop offset="1" stop-color="#8f9bad"/></radialGradient>'
+            . '<linearGradient id="' . $t . 'rubber" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5b6372"/><stop offset="1" stop-color="#2c323d"/></linearGradient>'
+            . '<pattern id="' . $t . 'hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="#e9edf3"/>'
+            . '<line x1="0" y1="0" x2="0" y2="5" stroke="#76839a" stroke-width=".7"/></pattern>' . implode('', $this->clips) . '</defs>';
         $out = '<svg class="md-svg" viewBox="0 0 ' . self::n($this->w) . ' ' . self::n($this->h) . '" role="img" aria-label="' . e($label)
-            . '" xmlns="http://www.w3.org/2000/svg">' . implode('', $this->base);
+            . '" xmlns="http://www.w3.org/2000/svg">' . $defs . implode('', $this->base);
         foreach ($this->dims as [$k, $m]) {
             $out .= '<g class="md-dim" data-dim="' . e($k) . '">' . $m . '</g>';
         }

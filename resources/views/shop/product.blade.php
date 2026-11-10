@@ -305,7 +305,7 @@
     <section aria-labelledby="pdp-specs-h" @if($measure) data-md-scope @endif>
       <h2 id="pdp-specs-h">{{ __('Specifications') }} <small>{{ $p['sku'] }}{{ $seo['short'] ? ' · ' . $seo['short'] : '' }}</small></h2>
       @if($measure)
-        <figure class="pdp-md"><figcaption>{{ __('How to measure') }}</figcaption>{!! $measure['svg'] !!}</figure>
+        <figure class="pdp-md"><figcaption>{{ __('How to measure') }}</figcaption>{!! \App\Support\Measure\Sketch::uniq($measure['svg']) !!}</figure>
       @endif
       @php $mdRow = function ($key) use ($measure) { $l = $measure['shown'][$key] ?? null; return $l ? [' data-md="' . e($key) . '"', '<span class="md-chip" aria-hidden="true">' . e($l) . '</span>'] : ['', '']; }; @endphp
       <dl class="uspecs">
