@@ -150,12 +150,14 @@ class CatalogController extends Controller
         // how-to-measure drawing: letters as in the category table, callouts only for the specs this part has
         $measure = null;
         if (\App\Support\Measure\Diagram::has($catSlug)) {
-            $have = [];
+            $have = $vals = [];
             foreach (($p['specs'] ?? []) as $label => $v) {
-                if (\App\Support\Measure\Diagram::measured($v)) $have[] = 'pa_' . str_replace(' ', '-', strtolower($label));
+                $key = 'pa_' . str_replace(' ', '-', strtolower($label));
+                $vals[$key] = (string) $v;
+                if (\App\Support\Measure\Diagram::measured($v)) $have[] = $key;
             }
             $cols = array_column($this->catalog->categorySchema($catSlug)['columns'], 'key');
-            $measure = \App\Support\Measure\Diagram::for($catSlug, array_merge($cols, $have), $have, __('How to measure :sku', ['sku' => $p['sku']]));
+            $measure = \App\Support\Measure\Diagram::for($catSlug, array_merge($cols, $have), $have, __('How to measure :sku', ['sku' => $p['sku']]), $vals);
             if ($measure && !$measure['shown']) $measure = null;
         }
         return view('shop.product', [

@@ -19,13 +19,14 @@ trait ShaftParts
         $s = new Sketch($codes);
         $cy = 128;
         $sh = 238;   // weld shoulder
-        self::turned($s, [[30, 25], [33, 28], [132, 28], [138, 20], [204, 20], [228, 48], [228, 52], [$sh, 52], [$sh, 45], [$sh + 30, 45], [$sh + 32, 43]], $cy,
-            ['cut' => [196, $sh + 32], 'bores' => [[[218, 33], [$sh + 32, 33]]]]);
-        self::teeth($s, 30, 132, $cy, 28, 'right');
+        // splines, relief, the ground seat a bearing or seal rides on, shoulder, weld butt
+        self::turned($s, [[30, 23], [33, 26], [120, 26], [123, 22], [129, 22], [132, 27], [184, 27], [184, 33], [196, 33], [226, 48], [226, 52], [$sh, 52],
+            [$sh, 45], [$sh + 30, 45], [$sh + 32, 43]], $cy, ['cut' => [196, $sh + 32], 'bores' => [[[216, 33], [$sh + 32, 33]]]]);
+        self::teeth($s, 30, 122, $cy, 26, 'right');
         self::phantomTube($s, $sh, $sh + 90, $cy, 52, 45, $sh + 32);
         $s->cl(20, $cy, $sh + 98, $cy);
-        $s->dimH('pa_splines-length', 30, 132, 44, $cy - 28, $cy - 28);
-        $s->dimH(['pa_end-to-weld', 'pa_face-to-weld'], 30, $sh, 222, $cy + 28, $cy + 54);
+        $s->dimH('pa_splines-length', 30, 122, 44, $cy - 26, $cy - 26);
+        $s->dimH(['pa_end-to-weld', 'pa_face-to-weld'], 30, $sh, 222, $cy + 26, $cy + 54);
         $s->dimV('pa_butt-dia', $cy - 45, $cy + 45, $sh + 16, null, null, ['t' => .74]);
         $s->dimV(['pa_tube-dia', 'pa_tube-dia-wall', 'pa_fits-to-tube'], $cy - 52, $cy + 52, $sh + 108, $sh + 90, $sh + 90);
         $s->dim('pa_tube-wall', $sh + 70, $cy - 45, $sh + 70, $cy - 52);
@@ -134,16 +135,21 @@ trait ShaftParts
         $s = new Sketch($codes);
         $cy = 136;
         $cb = 340;
-        self::shaftTube($s, 122, 296, $cy, 34);
-        self::turned($s, [[296, 34], [312, 20], [372, 20], [372, 17], [436, 17], [439, 14]], $cy);
-        self::teeth($s, 372, 439, $cy, 17, 'left');
-        $s->rect($cb - 38, $cy - 66, 76, 7, 'md-part', 1.5, 'cyh');
-        $s->shape([['M', $cb - 29, $cy - 59], ['L', $cb - 29, $cy + 18], ['Q', $cb - 29, $cy + 46, $cb, $cy + 46], ['Q', $cb + 29, $cy + 46, $cb + 29, $cy + 18], ['L', $cb + 29, $cy - 59], ['Z']], 'md-part', null, 'cast');
-        $s->rect($cb - 23, $cy - 52, 46, 92, 'md-part', 8, 'rubber');
-        $s->rect($cb - 12, $cy - 27, 24, 54, 'md-part', 2, 'cyh');
+        self::shaftTube($s, 122, 290, $cy, 34);
+        // the centre bearing cut through its middle: mounting plate, bracket, rubber cushion; the stub runs through it
+        $s->rect($cb - 29, $cy - 71, 58, 7, 'md-part', 1.5, 'cyh');
+        $s->rect($cb - 23, $cy - 64, 46, 122, 'md-part', 5, 'cast');
+        $s->rect($cb - 19, $cy - 58, 38, 112, 'md-part', 7, 'rubber');
+        self::turned($s, [[290, 34], [304, 21], [378, 21], [378, 17], [436, 17], [439, 14]], $cy);
+        self::teeth($s, 378, 439, $cy, 17, 'left');
+        foreach ([-1, 1] as $k) {   // ball bearing on the stub, a slinger either side of it
+            $s->rect($cb - 11, $cy + 35.5 * $k - 4.5, 22, 9, 'md-part', 1.5, 'cyh')->rect($cb - 11, $cy + 25 * $k - 4, 22, 8, 'md-part', 1.5, 'cyh');
+            $s->circle($cb, $cy + 30 * $k, 5.5, 'md-ball', 'ball');
+            $s->rect($cb + 27 * $k - 1.5, $cy - 31, 3, 62, 'md-part', 1, 'cyh');
+        }
         self::shaftEnd($s, 'left', 64, $cy, 59, 68, ['series' => [22, 40]]);
-        $s->cl(14, $cy, 450, $cy)->cl($cb, $cy - 80, $cb, $cy + 62);
-        $s->dimH(['pa_cl-to-cb', 'pa_center-to-center'], 64, $cb, 236, $cy + 84, $cy + 48);
+        $s->cl(14, $cy, 450, $cy)->cl($cb, $cy - 84, $cb, $cy + 70);
+        $s->dimH(['pa_cl-to-cb', 'pa_center-to-center'], 64, $cb, 236, $cy + 84, $cy + 60);
 
         return $s;
     }
@@ -163,6 +169,11 @@ trait ShaftParts
         self::yoke($s, 'right', $c1, $cy, $c1 - $f1 + 1, 96, ['series' => [40, 34]]);
         self::yoke($s, 'left', $c2, $cy, $f2 - $c2 + 1, 96);
         $s->rect($f1 - 14, $cy - 72, 14, 144, 'md-part', 2, 'cyh')->rect($f2, $cy - 72, 14, 144, 'md-part', 2, 'cyh');
+        foreach ([$f1 - 14, $f2] as $x) {   // bolt holes through the flanges
+            foreach ([-56, 56] as $y) {
+                $s->hid($x, $cy + $y - 6, $x + 14, $cy + $y - 6)->hid($x, $cy + $y + 6, $x + 14, $cy + $y + 6)->cl($x - 6, $cy + $y, $x + 20, $cy + $y);
+            }
+        }
         $s->cl($f1 - 26, $cy, $f2 + 26, $cy);
         $s->dimH(['pa_cl-to-cl', 'pa_cj-to-cj'], $c1, $c2, 30, $cy - 84, $cy - 84);
         $s->dimH(['pa_flange-to-flange', 'pa_overall-length'], $f1 - 14, $f2 + 14, 238, $cy + 72, $cy + 72);
@@ -204,42 +215,155 @@ trait ShaftParts
         return $s;
     }
 
-    /** cross with its four bearing caps, seals and grease fitting */
-    public static function uJoint(array $codes): Sketch
+    /**
+     * U-joint cross with its bearings, seen along the shaft, at $k pixels per unit (a snap-ring cap ends 100 units from
+     * the centre). $ax = [vertical, horizontal] axis, each [bearing, cap radius]; bearings: osr / isr snap ring, plain
+     * cap, bp bearing plate, wb wing bearing.
+     * Returns per axis, in pixels: 'r' cap radius, 'end' outermost point, 'm' half the width as it is measured, 'w' half
+     * width of the face it is measured from, 'tag' a point on what retains the bearing (u along the arm, v across) or null.
+     */
+    private static function cross(Sketch $s, float $cx, float $cy, float $k, array $ax, bool $zerk): array
+    {
+        $w = 27;   // forged arm, half width
+        $body = [];
+        foreach ([[1, 0], [0, 1], [-1, 0], [0, -1]] as $i => [$dx, $dy]) {
+            foreach ([[40, -$w], [50, -$w], [50, $w], [40, $w]] as $j => [$u, $v]) {
+                $body[] = [$i + $j ? 'L' : 'M', $dx * $u - $dy * $v, $dy * $u + $dx * $v];
+            }
+            $body[] = ['Q', ($dx - $dy) * $w, ($dy + $dx) * $w, $dx * $w - $dy * 40, $dy * $w + $dx * 40];   // crotch fillet
+        }
+        $s->shape(array_merge($body, [['Z']]), 'md-part', fn ($x, $y) => [$cx + $k * $x, $cy + $k * $y], 'cast');
+        $out = [];
+        foreach ([[0, -1], [0, 1], [-1, 0], [1, 0]] as [$dx, $dy]) {
+            [$type, $r] = $ax[$dx ? 1 : 0];
+            $at = fn ($u, $v) => [$cx + $k * ($dx * $u - $dy * $v), $cy + $k * ($dy * $u + $dx * $v)];   // u along the arm, v across
+            $box = fn ($u1, $u2, $v, $c = 0) => [['M', $u1, $c - $v], ['L', $u2, $c - $v], ['L', $u2, $c + $v], ['L', $u1, $c + $v], ['Z']];
+            $fill = $dx ? 'cyh' : 'cyv';
+            $end = $type === 'isr' ? 106 : 100;
+            $s->shape([['M', 41, -$w], ['Q', 35, 0, 41, $w]], 'md-edge', $at);   // arm blending into the body
+            $s->shape($box(50, 56, 24), 'md-part', $at, $fill);                 // machined seal seat
+            $s->shape([['M', 56, -$r + 6], ['L', 62, -$r + 3], ['L', 62, $r - 3], ['L', 56, $r - 6], ['Z']], 'md-part', $at, 'rubber');
+            if ($type === 'wb') {   // block bolted to the yoke face: the holes run along the shaft
+                $g = $r + 26;
+                $s->shape($box(62, 72, $r + 2), 'md-part', $at, $fill);
+                $s->shape([['M', 70, -$g], ['L', 94, -$g], ['Q', 100, -$g, 100, -$g + 6], ['L', 100, $g - 6], ['Q', 100, $g, 94, $g], ['L', 70, $g], ['Z']], 'md-part', $at, 'cast');
+                foreach ([-1, 1] as $sg) {
+                    $s->hid(70, $sg * $r, 100, $sg * $r, $at);
+                    [$hx, $hy] = $at(85, $sg * ($r + 13));
+                    $s->circle($hx, $hy, 6.5 * $k, 'md-hole');
+                }
+            } else {
+                $s->shape([['M', 62, -$r], ['L', $end - 5, -$r], ['Q', $end, -$r, $end, -$r + 5], ['L', $end, $r - 5], ['Q', $end, $r, $end - 5, $r],
+                    ['L', 62, $r], ['Z']], 'md-part', $at, $fill);
+                $s->line(65.5, -$r, 65.5, $r, 'md-edge', $at)->line($end - 4.5, -$r + 1.5, $end - 4.5, $r - 1.5, 'md-edge', $at);
+            }
+            if ($type === 'isr') {         // clip in the groove of the cap, against the inside of the yoke ear
+                $s->shape($box(69.5, 73.5, $r + 6), 'md-part', $at, 'rubber');
+            } elseif ($type === 'osr') {   // ring in the yoke ear, against the end of the cap
+                $s->shape($box($end + .5, $end + 4, $r + 4), 'md-part', $at, 'rubber');
+            } elseif ($type === 'bp') {    // plate welded on the cap, bolted to the outside of the yoke ear
+                $s->shape($box(105.5, 111.5, 5.5, -$r - 14), 'md-part', $at, $fill)->shape($box(105.5, 111.5, 5.5, $r + 14), 'md-part', $at, $fill);
+                $s->shape($box(100, 106.5, $r + 24), 'md-part', $at, 'cast');
+            }
+            $out[$dx ? 1 : 0] = ['r' => $r * $k, 'end' => ($type === 'bp' ? 112 : $end) * $k, 'm' => ($type === 'isr' ? 73.5 : 100) * $k,
+                'w' => ($r + (['isr' => 6, 'bp' => 24, 'wb' => 26][$type] ?? 0)) * $k,
+                'tag' => ['isr' => [71.5 * $k, ($r + 6) * $k], 'osr' => [102.2 * $k, ($r + 4) * $k], 'bp' => [103.2 * $k, ($r + 24) * $k], 'wb' => [85 * $k, ($r + 19.5) * $k]][$type] ?? null];
+        }
+        $s->circle($cx, $cy, 16 * $k, 'md-edge');
+        if ($zerk) {   // grease fitting in the cross, tilted towards a crotch so the gun reaches it between the yoke ears
+            $z = fn ($a, $b) => [$cx + $k * ($b - $a) * M_SQRT1_2, $cy + $k * ($a + $b) * M_SQRT1_2];
+            $s->shape([['M', 1, -8.5], ['L', 11, -8.5], ['L', 11, 8.5], ['L', 1, 8.5], ['Z']], 'md-part', $z, 'cyh');   // hex
+            $s->line(1, -4.2, 11, -4.2, 'md-edge', $z)->line(1, 4.2, 11, 4.2, 'md-edge', $z);
+            $s->shape([['M', 11, -3.6], ['L', 15, -3.6], ['L', 16.5, -5.8], ['L', 20.5, -5.8], ['L', 23.5, -3.2], ['L', 23.5, 3.2], ['L', 20.5, 5.8], ['L', 16.5, 5.8],
+                ['L', 15, 3.6], ['L', 11, 3.6], ['Z']], 'md-part', $z, 'cyh');   // neck and head
+            [$bx, $by] = $z(23.6, 0);
+            $s->circle($bx, $by, 2.7 * $k, 'md-ball', 'ball');
+        } else {
+            $s->circle($cx, $cy, 6 * $k, 'md-edge');
+        }
+        $s->cl($cx - $out[1]['end'] - 12, $cy, $cx + $out[1]['end'] + 12, $cy)->cl($cx, $cy - $out[0]['end'] - 12, $cx, $cy + $out[0]['end'] + 12);
+
+        return $out;
+    }
+
+    /**
+     * Cross and bearings. The width is taken over the cap ends on an outside-snap-ring joint and between the clips on
+     * an inside-snap-ring one, so the category sheet shows both; a part's own page draws its style ($vals = its specs).
+     */
+    public static function uJoint(array $codes, array $vals = []): Sketch
     {
         $s = new Sketch($codes);
-        $cx = 212;
-        $cy = 136;
-        $a = 14;    // trunnion half width
-        $e = 50;    // cross shoulder
-        $r = 22;    // cap radius
-        $o = 102;   // centre to cap end
-        $s->shape([['M', -$a, -$e], ['L', $a, -$e], ['L', $a, -28], ['Q', $a, -$a, 28, -$a], ['L', $e, -$a], ['L', $e, $a], ['L', 28, $a], ['Q', $a, $a, $a, 28],
-            ['L', $a, $e], ['L', -$a, $e], ['L', -$a, 28], ['Q', -$a, $a, -28, $a], ['L', -$e, $a], ['L', -$e, -$a], ['L', -28, -$a], ['Q', -$a, -$a, -$a, -28], ['Z']],
-            'md-part', fn ($x, $y) => [$cx + $x, $cy + $y], 'cast');
-        foreach ([[0, -1], [0, 1], [-1, 0], [1, 0]] as [$dx, $dy]) {
-            $at = fn ($u, $v) => [$cx + $dx * $u - $dy * $v, $cy + $dy * $u + $dx * $v];   // u along the arm, v across
-            $fill = $dx ? 'cyh' : 'cyv';
-            $s->shape([['M', $e - 4, -$r + 4], ['L', $e + 3, -$r + 4], ['L', $e + 3, $r - 4], ['L', $e - 4, $r - 4], ['Z']], 'md-part', $at, 'rubber');
-            $s->shape([['M', $e + 2, -$r], ['L', $o - 5, -$r], ['Q', $o, -$r, $o, -$r + 5], ['L', $o, $r - 5], ['Q', $o, $r, $o - 5, $r], ['L', $e + 2, $r], ['Z']], 'md-part', $at, $fill);
-            foreach ([$o - 11, $o - 8] as $u) {   // snap-ring groove
-                [$x1, $y1] = $at($u, -$r);
-                [$x2, $y2] = $at($u, $r);
-                $s->line($x1, $y1, $x2, $y2, 'md-edge');
+        $num = fn (string $k) => (float) preg_replace('/[^0-9.]/', '', (string) ($vals[$k] ?? ''));
+        $style = strtoupper(preg_replace('/\s+/', '', (string) ($vals['pa_style'] ?? '')));
+        $is = fn (string ...$any) => (bool) array_filter($any, fn ($x) => str_contains($style, $x));
+        $wing = $is('WB', 'LWT', 'LWD');
+        $axes = match (true) {
+            $is('OSR') && $is('ISR') => 'mixed',
+            $wing => [$is('OSR') ? 'osr' : 'wb', 'wb'],
+            $is('BP') => [$is('HR') ? 'plain' : 'bp', 'bp'],
+            $is('OSR') => ['osr', 'osr'],
+            $is('ISR') => ['isr', 'isr'],
+            $is('STAKED', 'HR', 'SPRTAB') => ['plain', 'plain'],
+            default => null,   // combination or unknown
+        };
+        $r2 = 33.0;
+        if (isset($codes['pa_cap-dia-2']) || isset($codes['pa_width-2'])) {   // conversion joint: a second size on the other axis
+            [$c1, $c2] = [$num('pa_cap-dia-1'), $num('pa_cap-dia-2')];
+            $q = [$c1 ? $num('pa_width-1') / $c1 : 0, $c2 ? $num('pa_width-2') / $c2 : 0];   // an inside-lock axis is narrow for its cap
+            if ($c1 && $c2) {
+                $r2 = 33 * min(1.2, max(.85, $c2 / $c1));
             }
-            [$x1, $y1] = $at($e + 7, -$r);
-            [$x2, $y2] = $at($e + 7, $r);
-            $s->line($x1, $y1, $x2, $y2, 'md-edge');
+            if ($axes === 'mixed') {
+                $axes = $q[1] && $q[1] < $q[0] ? ['osr', 'isr'] : ['isr', 'osr'];
+            } elseif (!$axes) {
+                $axes = array_map(fn ($x) => $x && $x < 2.45 ? 'isr' : 'osr', $q);
+            }
         }
-        $s->circle($cx, $cy, 13, 'md-part', 'face');
-        self::hex($s, $cx, $cy, 7);
-        $s->circle($cx, $cy, 3.5, 'md-ball', 'ball');
-        $s->cl($cx - $o - 14, $cy, $cx + $o + 14, $cy)->cl($cx, $cy - $o - 14, $cx, $cy + $o + 14);
-        $s->dimH(['pa_cap-dia-1', 'pa_cap-dia', 'pa_bearing-dia'], $cx - $r, $cx + $r, 16, $cy - $o, $cy - $o);
-        $s->dimV(['pa_width-1', 'pa_width', 'pa_overall-length'], $cy - $o, $cy + $o, $cx + 144, $cx + $r, $cx + $r);
-        $s->tag('pa_lube', $cx - 5, $cy + 5, $cx - 96, $cy + 96);
-        $s->tag(['pa_series', 'pa_style-series'], $cx - $o + 20, $cy - $r, $cx - 112, $cy - 92);
-        $s->tag('pa_cap-dia-2', $cx + $o - 20, $cy - $r, $cx + 100, $cy - 92);
+        $axes = is_array($axes) ? $axes : null;
+        $cap = ['pa_cap-dia-1', 'pa_cap-dia', 'pa_bearing-dia'];
+        $wid = ['pa_width-1', 'pa_width', 'pa_overall-length'];
+        $names = ['osr' => 'Outside snap ring (OSR)', 'isr' => 'Inside snap ring (ISR)'];
+        $view = function (float $cx, float $cy, float $k, array $t, bool $zerk, bool $full) use ($s, $cap, $wid, $r2): array {
+            $g = self::cross($s, $cx, $cy, $k, [[$t[0], 33], [$t[1], $r2]], $zerk);
+            [$v, $h] = $g;
+            $top = $cy - ($t[0] === 'isr' ? 106 : 100) * $k;
+            $s->dim($cap, $cx - $v['r'], $top + 15 * $k, $cx + $v['r'], $top + 15 * $k);
+            $s->hi($cap, [[$cx - $v['r'], $top, $cx - $v['r'], $cy - 62 * $k], [$cx + $v['r'], $top, $cx + $v['r'], $cy - 62 * $k]]);
+            $s->dimV($wid, $cy - $v['m'], $cy + $v['m'], $cx + $h['end'] + 28 * $k, $cx + $v['w'], $cx + $v['w']);
+            $s->hi($wid, [[$cx - $v['w'], $cy - $v['m'], $cx + $v['w'], $cy - $v['m']], [$cx - $v['w'], $cy + $v['m'], $cx + $v['w'], $cy + $v['m']]]);
+            $far = in_array('wb', $t, true) ? 78 : 74;   // badges clear of the wing blocks
+            if ($t[1] === 'isr') {
+                $s->tag('pa_style', $cx - $h['tag'][0], $cy + $h['tag'][1], $cx - 105 * $k, $cy + 68 * $k);
+            } elseif ($h['tag'] && $t[0] === 'isr') {   // clear of the width's extension line
+                $s->tag('pa_style', $cx - $h['tag'][0] - 1.8 * $k, $cy + $h['tag'][1], $cx - 128 * $k, $cy + 66 * $k);
+            } elseif ($h['tag']) {
+                $s->tag('pa_style', $cx + $h['tag'][0], $cy - $h['tag'][1], $cx + $far * $k, $cy - $far * $k);
+            }
+            if ($full) {
+                $s->tag(['pa_series', 'pa_style-series'], $cx - 30 * $k, $cy - 30 * $k, $cx - ($far - 2) * $k, $cy - ($far - 2) * $k);
+                $z = $zerk ? 18.5 : 11;
+                $s->tag('pa_lube', $cx - $z * $k, $cy + $z * $k, $cx - ($far > 74 ? 80 : 54) * $k, $cy + 80 * $k);
+            }
+
+            return $g;
+        };
+        if (!$axes) {
+            $view(112, 128, .78, ['osr', 'osr'], true, true);
+            $view(346, 128, .78, ['isr', 'isr'], false, false);
+            $s->note(112, 252, $names['osr'])->note(346, 252, $names['isr']);
+
+            return $s;
+        }
+        $zerk = !in_array(strtoupper(trim((string) ($vals['pa_lube'] ?? ''))), ['N', 'NO'], true);
+        $k = in_array('bp', $axes, true) ? .9 : (in_array($axes, [['osr', 'osr'], ['plain', 'plain']], true) ? 1.0 : .95);
+        [$cx, $cy] = [226, 132];
+        [$v, $h] = $view($cx, $cy, $k, $axes, $zerk, true);
+        $x = $cx + ($axes[1] === 'isr' ? 91 : 85) * $k;
+        $s->dim('pa_cap-dia-2', $x, $cy - $h['r'], $x, $cy + $h['r']);
+        $s->dimH('pa_width-2', $cx - $h['m'], $cx + $h['m'], $cy + $v['end'] + 4 * $k + 20, $cy + $h['w'], $cy + $h['w']);
+        if ($axes[0] === $axes[1] && isset($names[$axes[0]]) && !isset($codes['pa_width-2'])) {
+            $s->note($cx, 262, $names[$axes[0]]);
+        }
 
         return $s;
     }

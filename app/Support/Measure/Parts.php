@@ -22,95 +22,147 @@ class Parts
         };
     }
 
+    /** closed outline from its +x half (centre line to centre line): the half, then its mirror image run backwards */
+    private static function sym(array $half): array
+    {
+        $out = $half;
+        for ($i = count($half) - 1; $i > 0; $i--) {
+            $c = $half[$i];
+            $p = $half[$i - 1];
+            [$x, $y] = [$p[count($p) - 2], $p[count($p) - 1]];
+            $out[] = match ($c[0]) {
+                'L' => ['L', -$x, $y],
+                'Q' => ['Q', -$c[1], $c[2], -$x, $y],
+                'C' => ['C', -$c[3], $c[4], -$c[1], $c[2], -$x, $y],
+            };
+        }
+        $out[] = ['Z'];
+
+        return $out;
+    }
+
     /**
-     * Yoke seen across its ears: two ears around the cross centre (machined faces, bearing bores, snap-ring
-     * grooves) on a cast body that flows into a neck $L from the centre line and $N wide. Options: 'S' span over
-     * the ears, 'cut' => true draws the -x half in section (hatched, bores open), 'bore' => [radius, from y]
-     * hollows the neck in that section, 'fillet' rounds the neck into the part it meets, 'series' => [x,y] puts
-     * the series letter there. Returns the geometry
-     * (top, throat, half span, ear thickness, bore radius) for the parts drawn around it.
+     * Forged yoke seen across its ears: two lugs around the cross centre (machined pads on the outer faces, bearing
+     * bores with the snap-ring groove at the outer end), an arched throat and a bell that runs into a neck $L from
+     * the centre line and $N wide. Options: 'S' span over the ears, 'cut' => true draws the -x half in section
+     * (hatched, bores open), 'bore' => [radius, from y] hollows the neck in that section, 'fillet' rounds the neck
+     * into the part it meets, 'bridge' => true joins the ear tips over the cross (CV yokes: the bridge carries the
+     * centring stud or socket), 'series' => [x,y] puts the series letter there. Returns the geometry (ear tops,
+     * throat floor, half span, ear thickness, bore radius, half throat, bridge top) for the parts drawn around it.
      */
     private static function yoke(Sketch $s, string $dir, float $cx, float $cy, float $L, float $N, array $o = []): array
     {
         $S = ($o['S'] ?? 136) / 2;   // half span over the ears
         $T = 26;                     // ear thickness
         $c = 20;                     // bearing bore radius
-        $top = -$c - 15;             // ear tops
+        $top = -$c - 15;             // ear tips
         $D = 46;                     // throat floor
-        $f = 15;                     // throat fillet
         $in = $S - $T;
         $n = $N / 2;
         $r = $o['fillet'] ?? 0;      // fillet into whatever the neck meets
         $tf = self::tf($dir, $cx, $cy);
-        $k = $L - $c - 9 - $r;
-        $outline = [
-            ['M', -$S, $top + 8], ['Q', -$S, $top, -$S + 8, $top], ['L', -$in - 5, $top], ['Q', -$in, $top, -$in, $top + 5],
-            ['L', -$in, $D - $f], ['Q', -$in, $D, -$in + $f, $D], ['L', $in - $f, $D], ['Q', $in, $D, $in, $D - $f],
-            ['L', $in, $top + 5], ['Q', $in, $top, $in + 5, $top], ['L', $S - 8, $top], ['Q', $S, $top, $S, $top + 8],
-            ['L', $S, $c + 6], ['L', $S - 3, $c + 9], ['C', $S - 3, $c + 9 + .55 * $k, $n + .15 * ($S - 3 - $n), $L - $r - .22 * $k, $n, $L - $r],
-            ['Q', $n, $L, $n + $r, $L], ['L', -$n - $r, $L], ['Q', -$n, $L, -$n, $L - $r],
-            ['C', -$n - .15 * ($S - 3 - $n), $L - $r - .22 * $k, -$S + 3, $c + 9 + .55 * $k, -$S + 3, $c + 9], ['L', -$S, $c + 6], ['Z'],
-        ];
+        $y0 = $c - 2;                // the throat starts rounding just under the bores
+        $b = $D - $y0;
+        $q = .5523;                  // quarter ellipse as a cubic
+        $k = $L - $r - $c - 8;
+        $bridge = !empty($o['bridge']);
+        $wt = -$c - 9;               // top of the window under a bridge
+        $bt = $wt - 15;              // top of the bridge
+        $throat = [['M', 0, $D], ['C', $q * $in, $D, $in, $y0 + $q * $b, $in, $y0]];
+        $half = $bridge
+            ? [['M', 0, $bt], ['L', 18, $bt], ['C', $S - 20, $bt, $S - 2, -$c - 18, $S - 2, -$c - 8]]
+            : array_merge($throat, [['L', $in, $top + 4], ['Q', $in, $top, $in + 4, $top], ['L', $S - 9, $top], ['L', $S - 2, $top + 7], ['L', $S - 2, -$c - 8]]);
+        array_push($half, ['L', $S, -$c - 6], ['L', $S, $c + 6], ['L', $S - 2, $c + 8],
+            ['C', $S - 2, $c + 8 + .55 * $k, $n + .15 * ($S - 2 - $n), $L - $r - .22 * $k, $n, $L - $r]);
+        // closed window the cross sits in, when the ears are bridged
+        $window = self::sym(array_merge($throat, [['L', $in, $wt + 10], ['Q', $in, $wt, $in - 10, $wt], ['L', 0, $wt]]));
+        if ($r) {
+            $half[] = ['Q', $n, $L, $n + $r, $L];
+        }
+        $half[] = ['L', 0, $L];
+        $outline = self::sym($half);
         $s->shape($outline, 'md-part', $tf, 'cast');
-        // machined ear faces end where the casting starts
-        foreach ([-1, 1] as $side) {
-            $a = $tf($side * ($S - 3), $c + 9);
-            $b = $tf($side * $S, $c + 6);
-            $s->line($a[0], $a[1], $b[0], $b[1], 'md-edge');
+        $cut = !empty($o['cut']);
+        // forging contours on the side(s) seen from outside: the rounded edge of the throat and the line where
+        // the flat of the ears runs out on the round of the body
+        $e = 4;
+        $yU = $D + .55 * ($L - $r - $D);
+        foreach ($cut ? [1] : [-1, 1] as $m) {
+            if (!$bridge) {
+                $s->shape([['M', $m * ($in + $e), $top], ['L', $m * ($in + $e), $y0],
+                    ['C', $m * ($in + $e), $y0 + $q * ($b + $e), $m * $q * ($in + $e), $D + $e, 0, $D + $e]], 'md-edge', $tf);
+            }
+            if ($L - $r - $D >= 22) {
+                $s->shape([['M', $m * ($S - 8), $c + 12], ['C', $m * ($S - 8), $c + 12 + .6 * ($yU - $c - 12), $m * .55 * $S, $yU, 0, $yU]], 'md-edge', $tf);
+            }
         }
         $bores = [];
-        $cut = !empty($o['cut']);
         if ($cut) {
             [$x1, $y1] = $tf(-$S - 6, $top - 6);
             [$x2, $y2] = $tf(0, $L + 1);
             $clip = $s->clip($x1, $y1, $x2, $y2);
             $s->shape($outline, 'md-cut', $tf, 'hatch', $clip);
-            $void = [['M', -$S - 1, -$c], ['L', -$in + 1, -$c], ['L', -$in + 1, $c], ['L', -$S - 1, $c], ['Z']];
+            // bearing bore through the cut ear, with the snap-ring groove
+            $void = [['M', -$S - 1, -$c], ['L', -$S + 4, -$c], ['L', -$S + 4, -$c - 3], ['L', -$S + 7, -$c - 3], ['L', -$S + 7, -$c], ['L', -$in + 1, -$c],
+                ['L', -$in + 1, $c], ['L', -$S + 7, $c], ['L', -$S + 7, $c + 3], ['L', -$S + 4, $c + 3], ['L', -$S + 4, $c], ['L', -$S - 1, $c], ['Z']];
             $s->shape($void, 'md-void', $tf);
+            foreach ([-1, 1] as $m) {
+                $s->shape([['M', -$S, $m * $c], ['L', -$S + 4, $m * $c], ['L', -$S + 4, $m * ($c + 3)], ['L', -$S + 7, $m * ($c + 3)], ['L', -$S + 7, $m * $c], ['L', -$in, $m * $c]], 'md-line', $tf);
+            }
             if ($b = $o['bore'] ?? null) {
                 $s->shape([['M', -$b[0], $b[1]], ['L', 0, $b[1]], ['L', 0, $L + 1], ['L', -$b[0], $L + 1], ['Z']], 'md-void', $tf);
                 $s->shape([['M', -$b[0], $L], ['L', -$b[0], $b[1]], ['L', 0, $b[1]]], 'md-line', $tf);
             }
             $s->shape($outline, 'md-outline', $tf);
         }
+        if ($bridge) {
+            $s->shape($window, 'md-hole', $tf);
+        }
         foreach ([-1, 1] as $side) {
             $visible = $cut && $side < 0;
             foreach ([-$c, $c] as $y) {
                 $a = $tf($side * $S, $y);
-                $b = $tf($side * $in, $y);
-                $visible ? $s->line($a[0], $a[1], $b[0], $b[1], 'md-line') : $s->hid($a[0], $a[1], $b[0], $b[1]);
-                $bores[] = [$a[0], $a[1], $b[0], $b[1]];
+                $z = $tf($side * $in, $y);
+                if (!$visible) {
+                    $s->hid($a[0], $a[1], $z[0], $z[1]);
+                }
+                $bores[] = [$a[0], $a[1], $z[0], $z[1]];
             }
-            // snap-ring groove near the outer face
-            $g1 = $tf($side * ($S - 5), -$c - 2.5);
-            $g2 = $tf($side * ($S - 5), $c + 2.5);
-            $visible ? $s->line($g1[0], $g1[1], $g2[0], $g2[1], 'md-edge') : $s->hid($g1[0], $g1[1], $g2[0], $g2[1]);
+            if (!$visible) {   // snap-ring groove near the outer face
+                foreach ([4, 7] as $g) {
+                    $s->hid($side * ($S - $g), -$c - 3, $side * ($S - $g), $c + 3, $tf);
+                }
+            }
         }
         $s->cl(-$S - 14, 0, $S + 14, 0, $tf);
         if ($at = $o['series'] ?? null) {
             $l = $tf(-$S + $T / 2, -$c);
-            $r = $tf($S - $T / 2, -$c);
-            $p = hypot($at[0] - $l[0], $at[1] - $l[1]) < hypot($at[0] - $r[0], $at[1] - $r[1]) ? $l : $r;
+            $z = $tf($S - $T / 2, -$c);
+            $p = hypot($at[0] - $l[0], $at[1] - $l[1]) < hypot($at[0] - $z[0], $at[1] - $z[1]) ? $l : $z;
             $s->tag(['pa_series', 'pa_style-series'], $p[0], $p[1], $at[0], $at[1])->hi(['pa_series', 'pa_style-series'], $bores);
         }
 
-        return ['top' => $top, 'D' => $D, 'S' => $S, 'T' => $T, 'c' => $c];
+        return ['top' => $top, 'D' => $D, 'S' => $S, 'T' => $T, 'c' => $c, 'in' => $in, 'bt' => $bt];
     }
 
     /**
-     * Yoke turned a quarter turn from yoke(): the ear faces the viewer, so it reads as a block with the bearing cap
-     * in the middle, tapering to a neck $L from the cross centre and $N wide. Same $dir convention as yoke().
+     * Yoke turned a quarter turn from yoke(): the ear faces the viewer, a round-topped lug with the bearing cap and
+     * its snap ring in the bore, running down into a neck $L from the cross centre and $N wide. Same $dir
+     * convention as yoke().
      */
     private static function earOn(Sketch $s, string $dir, float $cx, float $cy, float $L, float $N, float $W = 54): void
     {
         $tf = self::tf($dir, $cx, $cy);
         $w = $W / 2;
         $n = $N / 2;
-        $s->shape([
-            ['M', $n, $L], ['C', $n, ($L + 22) / 2, $w, ($L + 22) / 2, $w, 22], ['L', $w, -24], ['Q', $w, -34, $w - 10, -34],
-            ['L', -$w + 10, -34], ['Q', -$w, -34, -$w, -24], ['L', -$w, 22], ['C', -$w, ($L + 22) / 2, -$n, ($L + 22) / 2, -$n, $L],
-        ], 'md-part', $tf, 'cast');
-        $s->circle($cx, $cy, 19, 'md-part', 'face')->circle($cx, $cy, 16, 'md-edge')->circle($cx, $cy, 6, 'md-edge');
+        $top = -35;
+        $q = .5523;
+        $k = $L - 20;
+        $s->shape(self::sym([
+            ['M', 0, $top], ['C', $q * $w, $top, $w, $top + $w - $q * $w, $w, $top + $w], ['L', $w, 20],
+            ['C', $w, 20 + .5 * $k, $n, $L - .5 * $k, $n, $L], ['L', 0, $L],
+        ]), 'md-part', $tf, 'cast');
+        $s->circle($cx, $cy, 24, 'md-edge')->circle($cx, $cy, 20, 'md-part', 'face')->circle($cx, $cy, 17, 'md-edge')->circle($cx, $cy, 13.5, 'md-edge');
     }
 
     /**
@@ -233,28 +285,27 @@ class Parts
         }
     }
 
-    /** hub with $n capsule-shaped arms reaching $d out with $lr end radius (prong and spider faces) */
-    private static function lobes(Sketch $s, float $cx, float $cy, int $n, float $hub, float $d, float $lr, float $start, string $fill = 'face'): void
+    /**
+     * Prong face: $n bosses of radius $lr on a circle of radius $d (first at $start°), joined by concave webs that
+     * pass $web from the centre half way between two bosses.
+     */
+    private static function spider(Sketch $s, float $cx, float $cy, int $n, float $web, float $d, float $lr, float $start, string $fill = 'face'): void
     {
+        $step = 360 / $n;
+        $w = 95;   // each boss is round this far either side of its arm
+        $at = fn ($i, $da) => [
+            $cx + $d * cos(deg2rad($start + $i * $step)) + $lr * cos(deg2rad($start + $i * $step + $da)),
+            $cy - $d * sin(deg2rad($start + $i * $step)) - $lr * sin(deg2rad($start + $i * $step + $da)),
+        ];
         $cmds = [];
-        for ($i = 0; $i < 240; $i++) {
-            $t = $i * 1.5;
-            $r = $hub;
-            for ($j = 0; $j < $n; $j++) {
-                $phi = deg2rad($t - $start - $j * 360 / $n);
-                $sin = abs(sin($phi));
-                $cos = cos($phi);
-                if ($cos <= 0) {
-                    continue;
-                }
-                $side = $sin > 1e-6 ? $lr / $sin : INF;
-                if ($side * $cos <= $d) {
-                    $r = max($r, $side);
-                } elseif ($d * $sin <= $lr) {
-                    $r = max($r, $d * $cos + sqrt($lr * $lr - $d * $d * $sin * $sin));
-                }
-            }
-            $cmds[] = [$i ? 'L' : 'M', $cx + $r * cos(deg2rad($t)), $cy - $r * sin(deg2rad($t))];
+        for ($i = 0; $i < $n; $i++) {
+            $a = $start + $i * $step;
+            $cmds = array_merge($cmds, Sketch::arc($cx + $d * cos(deg2rad($a)), $cy - $d * sin(deg2rad($a)), $lr, $a - $w, $a + $w, (bool) $cmds));
+            [$x1, $y1] = $at($i, $w);
+            [$x2, $y2] = $at($i + 1, -$w);
+            $m = deg2rad($a + $step / 2);
+            $rc = 2 * $web - hypot(($x1 + $x2) / 2 - $cx, ($y1 + $y2) / 2 - $cy);
+            $cmds[] = ['Q', $cx + $rc * cos($m), $cy - $rc * sin($m), $x2, $y2];
         }
         $cmds[] = ['Z'];
         $s->shape($cmds, 'md-part', null, $fill);

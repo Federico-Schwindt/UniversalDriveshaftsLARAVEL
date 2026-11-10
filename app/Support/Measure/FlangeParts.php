@@ -142,18 +142,37 @@ trait FlangeParts
         return $s;
     }
 
-    /** boot can / bearing retainer in half section, open end left */
+    /**
+     * boot can / bearing retainer: a stamped cup in half section (collar that grips the stub, flange round the open
+     * end) + the view into it
+     */
     public static function bootCan(array $codes): Sketch
     {
         $s = new Sketch($codes);
-        $cy = 136;
-        $x0 = 120;
-        $x1 = 260;
-        self::turned($s, [[$x0, 88], [$x0 + 5, 88], [$x0 + 5, 82], [$x1, 82]], $cy, ['cut' => true, 'bores' => [[[$x0, 77], [$x1 - 5, 77], [$x1 - 5, 40], [$x1, 40]]]]);
-        $s->cl($x0 - 20, $cy, $x1 + 30, $cy);
-        $s->dimV(['pa_boot-diam', 'pa_outer-dia'], $cy - 82, $cy + 82, $x1 + 34, $x1 + 2, $x1 + 2);
-        $s->dimV(['pa_stub-diam', 'pa_inside-dia'], $cy - 40, $cy + 40, $x1 + 70, $x1 + 2, $x1 + 2);
-        $s->dimH(['pa_height', 'pa_length'], $x0, $x1, 248, $cy + 90, $cy + 84);
+        $cy = 124;
+        $x0 = 96;    // closed end
+        $x1 = 200;   // flange face
+        $R = 64;     // body
+        $r = 36;     // the hole that grips the stub
+        $t = 3.5;    // sheet
+        self::turned($s, [[$x0, $R - 6], [$x0 + 6, $R], [$x1 - $t - 4, $R], [$x1 - $t, $R + 4], [$x1 - $t, $R + 15], [$x1, $R + 15]], $cy, [
+            'cut' => true,
+            'bores' => [[[$x0, $r], [$x0 + $t, $r], [$x0 + $t, $R - $t - 3], [$x0 + $t + 3, $R - $t], [$x1 - 4, $R - $t], [$x1, $R + 1]]],
+        ]);
+        $c = $x0 + $t + 15;   // end of the collar
+        $s->rect($x0 + $t, $cy - $r - $t, 15, $t, 'md-part', 0, 'cyh')->rect($x0 + $t, $cy - $r - $t, 15, $t, 'md-cut', 0, 'hatch');
+        $s->line($x0 + $t, $cy - $r, $c, $cy - $r)->line($c, $cy - $r - $t, $c, $cy - $r)->line($x0 + $t, $cy - $r - $t, $c, $cy - $r - $t);
+        $s->line($c, $cy - $r, $c, $cy, 'md-edge');
+        $s->hid($x0 + $t, $cy + $r, $c, $cy + $r)->hid($x0 + $t, $cy + $r + $t, $c, $cy + $r + $t)->hid($c, $cy, $c, $cy + $r + $t);
+        $s->cl($x0 - 16, $cy, $x1 + 18, $cy);
+        $s->dimV(['pa_boot-diam', 'pa_outer-dia'], $cy - $R, $cy + $R, $x0 - 38, $x0 + 6, $x0 + 6);
+        $s->dimH(['pa_height', 'pa_length'], $x0, $x1, $cy + $R + 46, $cy + $R - 6, $cy + $R + 15);
+
+        $ex = 366;
+        $s->circle($ex, $cy, $R + 15, 'md-part', 'face')->circle($ex, $cy, $R + 1, 'md-edge')->circle($ex, $cy, $R - $t, 'md-edge');
+        $s->circle($ex, $cy, $r + $t, 'md-edge')->circle($ex, $cy, $r, 'md-hole');
+        $s->cl($ex - $R - 27, $cy, $ex + $R + 27, $cy)->cl($ex, $cy - $R - 27, $ex, $cy + $R + 27);
+        $s->dimH(['pa_stub-diam', 'pa_inside-dia'], $ex - $r, $ex + $r, $cy, null, null, ['t' => .5]);
 
         return $s;
     }

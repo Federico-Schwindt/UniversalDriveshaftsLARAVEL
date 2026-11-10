@@ -768,5 +768,10 @@
     "Could not add to cart. Please try again.": "Impossible d'ajouter au panier. Veuillez réessayer.",
     "Could not load the parts. Please try again.": "Impossible de charger les pièces. Veuillez réessayer.",
     "Complete driveshafts for :makes makes in the finder, and the online builder prices a custom one from six measurements.": "Arbres de transmission complets pour :makes marques dans le sélecteur, et le configurateur en ligne calcule le prix d'un modèle sur mesure à partir de six mesures.",
-    "Shop by category": "Acheter par catégorie"
+    "Shop by category": "Acheter par catégorie",
+    "Inside (In)": "Intérieur (In)",
+    "Inside snap ring (ISR)": "Circlip intérieur (ISR)",
+    "Outside (Out)": "Extérieur (Out)",
+    "Outside snap ring (OSR)": "Circlip extérieur (OSR)",
+    "section": "coupe"
 }

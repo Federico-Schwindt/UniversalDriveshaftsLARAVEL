@@ -768,5 +768,10 @@
     "· page": "· 页",
     "— a different number, brand or lube spec, but the same fitment. Check the notes before you substitute.": "— 编号、品牌或润滑规格不同,但适配相同。替换前请查看备注。",
     "Part number: A to Z": "零件号：A 到 Z",
-    "Part number: Z to A": "零件号：Z 到 A"
+    "Part number: Z to A": "零件号：Z 到 A",
+    "Inside (In)": "内卡式 (In)",
+    "Inside snap ring (ISR)": "内卡簧 (ISR)",
+    "Outside (Out)": "外卡式 (Out)",
+    "Outside snap ring (OSR)": "外卡簧 (OSR)",
+    "section": "剖面"
 }
