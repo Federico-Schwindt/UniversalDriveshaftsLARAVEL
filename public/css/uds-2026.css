@@ -3538,3 +3538,69 @@ button.p-alt span{display:none}
 .g-rate--compact .g-rate__stars{font-size:.8rem}
 .n-hero__rating{margin-top:1.1rem}
 @media (prefers-reduced-motion:no-preference){.g-rate__t{transition:text-decoration-color .15s ease}}
+
+/* =====================================================================
+   HOW-TO-MEASURE DRAWINGS (App\Support\Measure)  —  part line work in ink,
+   dimensions in brand blue; a lit callout (.is-on) turns solid, the rest fade.
+   ===================================================================== */
+.md-svg{display:block;width:100%;height:auto;font-family:var(--font-m);overflow:visible}
+.md-part{fill:var(--paper-3);stroke:var(--ink-2);stroke-width:1.5;stroke-linejoin:round}
+.md-hole{fill:#fff;stroke:var(--ink-2);stroke-width:1.2}
+.md-line{fill:none;stroke:var(--ink-2);stroke-width:1.2}
+.md-thin{fill:none;stroke:var(--ink-3);stroke-width:.7}
+.md-hid{fill:none;stroke:var(--ink-3);stroke-width:.9;stroke-dasharray:5 3}
+.md-cl{fill:none;stroke:#8d98aa;stroke-width:.7;stroke-dasharray:16 3 3 3}
+.md-ph{fill:none;stroke:#8d98aa;stroke-width:1;stroke-dasharray:12 3 2 3 2 3}
+.md-note{fill:var(--ink-3);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+.md-dim{color:var(--blue);transition:opacity var(--dur-1) var(--ease-out)}
+.md-ext{stroke:currentColor;stroke-width:.7;opacity:.6}
+.md-dl{stroke:currentColor;stroke-width:1.1;fill:none}
+.md-arw{fill:currentColor}
+.md-badge-o{fill:#fff;stroke:currentColor;stroke-width:1.4}
+.md-badge text{fill:currentColor;font-size:11.5px;font-weight:600}
+.md-hi{fill:none;stroke:currentColor;stroke-width:2.6;opacity:0}
+.md-dim.is-on .md-hi{opacity:.9}
+.md-dim.is-on .md-dl{stroke-width:1.7}
+.md-dim.is-on .md-badge-o{fill:currentColor}
+.md-dim.is-on .md-badge text{fill:#fff}
+.md-svg.md-focus .md-dim{opacity:.13}
+.md-svg.md-focus .md-dim.is-on{opacity:1}
+@media (max-width:560px){.md-badge-o{r:13px}.md-badge text{font-size:14.5px}}   /* the sheet shrinks to ~330px on phones: keep the letters readable */
+/* letter chip used next to a column / spec name */
+.md-chip{display:inline-grid;place-items:center;width:1.45em;height:1.45em;border-radius:50%;flex:none;
+  border:1.3px solid currentColor;font-family:var(--font-m);font-size:.72rem;font-weight:600;line-height:1;letter-spacing:0;
+  color:var(--blue);background:#fff;text-transform:none}
+/* table header: the letter is a button (tap / keyboard), the whole cell is the hover target */
+.th-md{appearance:none;margin:0 0 0 .4rem;padding:0;cursor:help;vertical-align:-1px;
+  width:1.55em;height:1.55em;color:#c3d0e6;background:transparent;border-color:rgba(195,208,230,.5)}
+.ptbl thead th[data-md]:hover .th-md,.th-md:focus-visible,.th-md[aria-expanded="true"]{color:#fff;background:var(--blue-600);border-color:var(--blue-600)}
+.th-md:focus-visible{outline:2px solid var(--teal-300);outline-offset:2px}
+.md-pop{position:fixed;z-index:70;left:0;top:0;width:min(470px,calc(100vw - 24px));background:#fff;border:1px solid var(--line);
+  border-radius:var(--r);box-shadow:var(--sh-3);padding:.7rem .8rem .55rem;pointer-events:none;
+  opacity:0;visibility:hidden;transform:translateY(4px);transition:opacity var(--dur-1) var(--ease-out),transform var(--dur-2) var(--ease),visibility 0s linear var(--dur-2)}
+.md-pop.is-open{opacity:1;visibility:visible;transform:none;transition-delay:0s}
+.md-pop__t{display:flex;align-items:center;gap:.5rem;margin:0 0 .35rem;font-family:var(--font-h);font-weight:600;font-size:.9rem;color:var(--ink)}
+.md-pop .md-svg .md-dim{opacity:0}
+.md-pop .md-svg .md-dim.is-on{opacity:1}
+.md-pop .md-svg .md-dim.is-on .md-dl{stroke-width:2}
+/* "how to measure" panel above the category table */
+.md-panel{margin:0 0 1rem;border:1px solid var(--line);border-radius:var(--r);background:#fff}
+.md-panel > summary{display:flex;align-items:center;gap:.55rem;padding:.7rem 1rem;cursor:pointer;list-style:none;
+  font-family:var(--font-h);font-weight:600;font-size:.92rem;color:var(--ink);min-height:44px}
+.md-panel > summary::-webkit-details-marker{display:none}
+.md-panel > summary .i{color:var(--blue);font-size:1.1rem}
+.md-panel > summary::after{content:"";margin-left:auto;width:.5rem;height:.5rem;border-right:2px solid var(--ink-3);border-bottom:2px solid var(--ink-3);
+  transform:rotate(45deg) translateY(-2px);transition:transform var(--dur-2) var(--ease)}
+.md-panel[open] > summary::after{transform:rotate(-135deg) translateY(-2px)}
+.md-panel__body{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:1rem 1.5rem;align-items:center;padding:.25rem 1rem 1rem}
+@media (max-width:720px){.md-panel__body{grid-template-columns:1fr}}
+.md-legend{list-style:none;margin:0;padding:0;display:grid;gap:.15rem}
+.md-legend li{display:flex;align-items:center;gap:.55rem;padding:.35rem .5rem;border-radius:var(--r-xs);font-size:.88rem;color:var(--ink-2);cursor:default}
+.md-legend li.is-md,.uspecs > div.is-md{background:var(--blue-050)}
+.md-legend li.is-md .md-chip,.uspecs > div.is-md .md-chip{background:var(--blue);border-color:var(--blue);color:#fff}
+.md-note-txt{margin:.5rem 0 0;font-size:.8rem;color:var(--ink-3);line-height:1.5}
+/* product page: the drawing above the spec list */
+.pdp-md{margin:0 0 1rem;padding:.75rem 1rem .6rem;border:1px solid var(--line);border-radius:var(--r);background:#fff}
+.pdp-md figcaption{font-family:var(--font-m);font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:.3rem}
+.uspecs .k .md-chip{margin-right:.4rem;font-size:.68rem;vertical-align:1px}
+.uspecs > div[data-md]{cursor:default;transition:background var(--dur-1)}

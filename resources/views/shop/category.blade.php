@@ -54,6 +54,7 @@
 @include('shop.partials.js-i18n')
 <script src="{{ asset('js/catalog.js') }}?v={{ @filemtime(public_path('js/catalog.js')) }}" defer></script>
 <script src="{{ asset('js/shop-filters.js') }}?v={{ @filemtime(public_path('js/shop-filters.js')) }}" defer></script>
+@if($measure)<script src="{{ asset('js/measure.js') }}?v={{ @filemtime(public_path('js/measure.js')) }}" defer></script>@endif
 @endpush
 
 @push('schema')
@@ -140,9 +141,31 @@
       </select>
     </div>
 
+    @if($measure)
+      @php $mdLabels = array_column($schema['columns'], 'label', 'key'); @endphp
+      <details class="md-panel" data-md-scope>
+        <summary><x-icon name="ruler"/>{{ __('How to measure') }}</summary>
+        <div class="md-panel__body">
+          <div>{!! $measure['svg'] !!}</div>
+          <div>
+            <ul class="md-legend">
+              @foreach($measure['codes'] as $key => $letter)
+                <li data-md="{{ $key }}"><span class="md-chip">{{ $letter }}</span>{{ __($mdLabels[$key]) }}</li>
+              @endforeach
+            </ul>
+            <p class="md-note-txt">{{ __('Letters match the table columns. Not to scale. Measure the old part, or the mating part, before you order.') }}</p>
+          </div>
+        </div>
+      </details>
+    @endif
+
     <div id="shop-table">@include('shop.partials.table')</div>
   </div>
 </section>
+
+@if($measure)
+<div class="md-pop" id="md-pop" aria-hidden="true"><p class="md-pop__t"><span class="md-chip"></span><span></span></p>{!! $measure['svg'] !!}</div>
+@endif
 
 <div class="stock-pop" id="stock-pop"></div>
 <div class="img-pop" id="img-pop" aria-hidden="true"><img alt=""></div>

@@ -72,6 +72,7 @@
 @include('shop.partials.js-i18n')
 <script src="{{ asset('js/catalog.js') }}?v={{ @filemtime(public_path('js/catalog.js')) }}" defer></script>
 <script src="{{ asset('js/product.js') }}?v={{ @filemtime(public_path('js/product.js')) }}" defer></script>
+@if($measure)<script src="{{ asset('js/measure.js') }}?v={{ @filemtime(public_path('js/measure.js')) }}" defer></script>@endif
 @endpush
 
 @push('schema')
@@ -301,18 +302,23 @@
 
   {{-- specifications + notes --}}
   <div class="pdp__detail">
-    <section aria-labelledby="pdp-specs-h">
+    <section aria-labelledby="pdp-specs-h" @if($measure) data-md-scope @endif>
       <h2 id="pdp-specs-h">{{ __('Specifications') }} <small>{{ $p['sku'] }}{{ $seo['short'] ? ' · ' . $seo['short'] : '' }}</small></h2>
+      @if($measure)
+        <figure class="pdp-md"><figcaption>{{ __('How to measure') }}</figcaption>{!! $measure['svg'] !!}</figure>
+      @endif
+      @php $mdRow = function ($key) use ($measure) { $l = $measure['shown'][$key] ?? null; return $l ? [' data-md="' . e($key) . '"', '<span class="md-chip" aria-hidden="true">' . e($l) . '</span>'] : ['', '']; }; @endphp
       <dl class="uspecs">
         <div><dt class="k">{{ __('Part number') }}</dt><dd class="v">{{ $p['sku'] }}</dd></div>
         @if($seo['type'])<div><dt class="k">{{ __('Part type') }}</dt><dd class="v">{{ \App\Support\PartGlossary::t($seo['type']) }}</dd></div>@endif
         <div><dt class="k">{{ __('Condition') }}</dt><dd class="v">{{ $p['brand']==='OEM SPICER' ? __('New, OEM') : __('New') }}</dd></div>
         @if($p['brand'])<div><dt class="k">{{ __('Brand') }}</dt><dd class="v">{{ $p['brand'] }}</dd></div>@endif
-        @if($p['series'])<div><dt class="k">{{ __('Series') }}</dt><dd class="v">@if($seriesHub)<a href="/series/{{ $seriesHub['slug'] }}">{{ $p['series'] }}</a>@else{{ $p['series'] }}@endif</dd></div>@endif
+        @if($p['series'])@php [$mda, $mdc] = $mdRow('pa_series'); @endphp<div{!! $mda !!}><dt class="k">{!! $mdc !!}{{ __('Series') }}</dt><dd class="v">@if($seriesHub)<a href="/series/{{ $seriesHub['slug'] }}">{{ $p['series'] }}</a>@else{{ $p['series'] }}@endif</dd></div>@endif
         @if($p['style'])<div><dt class="k">{{ __('Style') }}</dt><dd class="v">{{ $p['style'] }}</dd></div>@endif
         @foreach(($p['specs'] ?? []) as $label => $val)
           @continue(in_array($label, ['Brand', 'Series', 'Style'], true) || $val === '')
-          <div><dt class="k">{{ __($label) }}</dt><dd class="v">{{ html_entity_decode($val) }}</dd></div>
+          @php [$mda, $mdc] = $mdRow('pa_' . str_replace(' ', '-', strtolower($label))); @endphp
+          <div{!! $mda !!}><dt class="k">{!! $mdc !!}{{ __($label) }}</dt><dd class="v">{{ html_entity_decode($val) }}</dd></div>
         @endforeach
         @if($p['weight'] !== '')<div><dt class="k">{{ __('Weight') }}</dt><dd class="v">{{ $p['weight'] }} lb</dd></div>@endif
       </dl>

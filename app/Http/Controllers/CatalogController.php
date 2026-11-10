@@ -86,6 +86,7 @@ class CatalogController extends Controller
             'cat' => ['slug' => $term->slug, 'name' => html_entity_decode($term->name)],
             'data' => $data,
             'schema' => $schema,
+            'measure' => \App\Support\Measure\Diagram::for($term->slug, array_column($schema['columns'], 'key'), null, __('How to measure :type', ['type' => \App\Support\PartGlossary::t(html_entity_decode($term->name))])),
             'filters' => $filters,
             'sort' => $sort,
             'q' => $q,
@@ -146,8 +147,19 @@ class CatalogController extends Controller
         $sameFit = $this->catalog->alternativeRows($p['id'], $altSchema['attrKeys']);
         foreach ($sameFit as &$sf) { $sf['price'] = $this->price((float) $sf['price']); $sf['regular'] = $this->price((float) $sf['regular']); }
         unset($sf);
+        // how-to-measure drawing: letters as in the category table, callouts only for the specs this part has
+        $measure = null;
+        if (\App\Support\Measure\Diagram::has($catSlug)) {
+            $have = [];
+            foreach (($p['specs'] ?? []) as $label => $v) {
+                if (\App\Support\Measure\Diagram::measured($v)) $have[] = 'pa_' . str_replace(' ', '-', strtolower($label));
+            }
+            $cols = array_column($this->catalog->categorySchema($catSlug)['columns'], 'key');
+            $measure = \App\Support\Measure\Diagram::for($catSlug, array_merge($cols, $have), $have, __('How to measure :sku', ['sku' => $p['sku']]));
+            if ($measure && !$measure['shown']) $measure = null;
+        }
         return view('shop.product', [
-            'p' => $p, 'group' => $grp, 'cat' => $cat, 'seo' => $seo, 'xref' => $xref, 'related' => $related, 'alts' => $alts, 'sameFit' => $sameFit, 'altSchema' => $altSchema,
+            'p' => $p, 'group' => $grp, 'cat' => $cat, 'seo' => $seo, 'xref' => $xref, 'related' => $related, 'alts' => $alts, 'sameFit' => $sameFit, 'altSchema' => $altSchema, 'measure' => $measure,
             'faq' => $this->catalog->productFaq($p, $seo, $xref, $catSlug),
             'descriptionHtml' => $this->catalog->descriptionHtml($p['id']),
             'seriesHub' => $p['series'] ? collect($this->catalog->seriesList())->first(fn ($s) => strcasecmp($s['name'], $p['series']) === 0) : null,
