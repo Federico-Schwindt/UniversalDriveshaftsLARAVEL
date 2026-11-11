@@ -820,5 +820,8 @@
     "wall": "paroi",
     "washer": "rondelle",
     "· page": "· page",
-    "— a different number, brand or lube spec, but the same fitment. Check the notes before you substitute.": "— un numéro, une marque ou une spécification de lubrification différente, mais avec le même montage. Vérifiez les notes avant de procéder au remplacement."
+    "— a different number, brand or lube spec, but the same fitment. Check the notes before you substitute.": "— un numéro, une marque ou une spécification de lubrification différente, mais avec le même montage. Vérifiez les notes avant de procéder au remplacement.",
+    "Vehicles this bearing is listed for": "Véhicules pour lesquels ce roulement est référencé",
+    ":n model|:n models": ":n modèle|:n modèles",
+    "From the complete driveshafts listed for these vehicles. Confirm the bearing ID and the mount dimensions above before you order.": "D’après les arbres de transmission complets référencés pour ces véhicules. Vérifiez le diamètre intérieur du roulement et les cotes du support avant de commander."
 }

@@ -161,7 +161,7 @@ class CatalogController extends Controller
             if ($measure && !$measure['shown']) $measure = null;
         }
         return view('shop.product', [
-            'p' => $p, 'group' => $grp, 'cat' => $cat, 'seo' => $seo, 'xref' => $xref, 'related' => $related, 'alts' => $alts, 'sameFit' => $sameFit, 'altSchema' => $altSchema, 'measure' => $measure,
+            'p' => $p, 'group' => $grp, 'cat' => $cat, 'seo' => $seo, 'xref' => $xref, 'bearingFits' => \App\Support\BearingFits::forSku((string) $p['sku']), 'related' => $related, 'alts' => $alts, 'sameFit' => $sameFit, 'altSchema' => $altSchema, 'measure' => $measure,
             'faq' => $this->catalog->productFaq($p, $seo, $xref, $catSlug),
             'descriptionHtml' => $this->catalog->descriptionHtml($p['id']),
             'seriesHub' => $p['series'] ? collect($this->catalog->seriesList())->first(fn ($s) => strcasecmp($s['name'], $p['series']) === 0) : null,

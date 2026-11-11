@@ -29,8 +29,10 @@ class DsbCatalog
     /**
      * Yoke catalog search. $spline (transmission yokes only) keeps the yokes whose spline count attribute
      * ("26/27 X 1.125") names that count; $ids limits the result to given product ids (restoring a saved build).
+     * $make (flange yokes) keeps the yokes whose own data names that vehicle make (App\Support\YokeMakes);
+     * `makes` lists the makes the series has, with counts, for the builder's "which make?" step.
      */
-    public function yokes(string $type, string $series, array $filters, int $page, int $perPage, string $spline = '', array $ids = []): array
+    public function yokes(string $type, string $series, array $filters, int $page, int $perPage, string $spline = '', array $ids = [], string $make = ''): array
     {
         $catId = self::YOKE_TYPES[$type] ?? self::FLANGE_CAT_ID;
         $whitelist = $type === 'flange' ? self::FLANGE_FILTERS : self::TRANS_FILTERS;
@@ -41,6 +43,19 @@ class DsbCatalog
         if ($ids) $q->whereIn('p.ID', array_map('intval', $ids));
         if ($series !== '') $this->whereSeries($q, $series);
         if ($type === 'trans' && preg_match('/^\d{1,2}$/', $spline)) $this->whereSpline($q, $spline);
+        $makes = []; $seriesTotal = null;
+        if ($type === 'flange') {
+            $byId = \App\Support\YokeMakes::forCategory($catId);
+            $inSeries = (clone $q)->pluck('p.ID')->map(fn ($id) => (int) $id);
+            $seriesTotal = $inSeries->count();
+            $counts = [];
+            foreach ($inSeries as $id) foreach ($byId[$id] ?? [] as $k) $counts[$k] = ($counts[$k] ?? 0) + 1;
+            foreach (\App\Support\YokeMakes::MAKES as $k => [$label]) if (!empty($counts[$k])) $makes[] = ['key' => $k, 'label' => $label, 'count' => $counts[$k]];
+            // a saved build restores its yoke by id whatever make was asked
+            if (!$ids && \App\Support\YokeMakes::valid($make)) {
+                $q->whereIn('p.ID', $inSeries->filter(fn ($id) => in_array($make, $byId[$id] ?? [], true))->values()->all() ?: [0]);
+            }
+        }
 
         foreach ($filters as $slug => $value) {
             if (!in_array($slug, $whitelist, true) || !is_string($value) || $value === '') continue;
@@ -65,6 +80,8 @@ class DsbCatalog
             'total'    => $total,
             'filters'  => $this->availableFilters($catId, $series, $whitelist) ?: (object) [],   // {} in the JSON, never []
             'spline_counts' => $type === 'trans' ? $this->splineCounts($series) : [],
+            'makes'    => $makes,
+            'series_total' => $seriesTotal,
         ];
     }
 

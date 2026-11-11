@@ -44,6 +44,13 @@
 .xrefs{display:flex;flex-wrap:wrap;gap:.45rem;list-style:none;padding:0;margin:0}
 .xrefs li{font-family:var(--font-m);font-size:.84rem;font-weight:500;padding:.35rem .65rem;border-radius:var(--r-xs);background:var(--paper-2);color:var(--ink)}
 .xrefs li a{color:var(--blue)}
+.pdp-fits > summary small{font:500 .78rem var(--font-m);color:var(--ink-3);margin-left:auto;padding-right:.5rem}
+.pdp-fits__list{display:grid;gap:.55rem;padding:0 0 1rem;font-size:.88rem;line-height:1.5}
+.pdp-fits__list p{margin:0}
+.pdp-fits__list b{margin-right:.35rem}
+.pdp-fits__list span{white-space:nowrap}
+.pdp-fits__list span + span::before{content:" · ";color:var(--ink-faint)}
+.pdp-fits__note{color:var(--ink-3);font-size:.8rem}
 /* folded sections (description, shipping estimate): a heading row that opens; the text stays on the page */
 .pdp-fold{border-top:1px solid var(--line)}
 .pdp-fold > summary{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 0;cursor:pointer;list-style:none;font-weight:600}
@@ -359,6 +366,20 @@
         </ul>
         <p>{{ __(':sku replaces or interchanges with :nums', ['sku' => $p['sku'], 'nums' => implode(', ', array_column($xref['xref'], 'num'))]) }}{{ __('. Cross-reference numbers are supplied for identification; compare the series, spline and bolt-pattern dimensions above before substituting.') }}</p>
       </section>
+      @endif
+
+      @if(!empty($bearingFits))
+      {{-- the vehicles whose complete driveshafts use this bearing (PTI application data, App\Support\BearingFits) --}}
+      <details class="pdp-fold pdp-fits" @if(count($bearingFits) <= 2) open @endif>
+        <summary>{{ __('Vehicles this bearing is listed for') }} <small>{{ trans_choice(':n model|:n models', $n = array_sum(array_map(fn ($m) => count($m['models']), $bearingFits)), ['n' => $n]) }}</small></summary>
+        <div class="pdp-fits__list">
+          @foreach($bearingFits as $mk)
+            <p><b>@if($mk['url'])<a href="{{ $mk['url'] }}">{{ $mk['make'] }}</a>@else{{ $mk['make'] }}@endif</b>
+              @foreach($mk['models'] as $md)<span>@if($md['url'])<a href="{{ $md['url'] }}">{{ $md['model'] }}</a>@else{{ $md['model'] }}@endif {{ $md['years'] }}</span> @endforeach</p>
+          @endforeach
+          <p class="pdp-fits__note">{{ __('From the complete driveshafts listed for these vehicles. Confirm the bearing ID and the mount dimensions above before you order.') }}</p>
+        </div>
+      </details>
       @endif
 
       <details class="pdp-fold pdp-fold--est"><summary>{{ __('Estimate shipping to your ZIP') }}</summary>@includeIf('partials.pdp-estimator')</details>

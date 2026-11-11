@@ -820,5 +820,8 @@
     "Not sold separately": "No se vende por separado",
     "Included": "Incluido",
     "Bracket Width": "Ancho de soporte",
-    "Max. joint angle": "Ángulo máx. de junta"
+    "Max. joint angle": "Ángulo máx. de junta",
+    "Vehicles this bearing is listed for": "Vehículos en los que va este rodamiento",
+    ":n model|:n models": ":n modelo|:n modelos",
+    "From the complete driveshafts listed for these vehicles. Confirm the bearing ID and the mount dimensions above before you order.": "Según los cardanes completos de estos vehículos. Confirma el diámetro interior del rodamiento y las medidas del soporte antes de comprar."
 }

@@ -61,7 +61,10 @@ class DsbController extends Controller
         'At this length a two-piece shaft with a center support bearing is the usual answer.', 'That is close to the limit.', 'That is over the safe speed.', 'Or consider a two-piece shaft.',
         'safe to :safe RPM', 'OK at :mph mph', 'near the limit at :mph mph', 'over the safe speed at :mph mph', 'Critical speed', 'Check it for your vehicle',
         'Inputs: Nc = 4.705×10⁶ × √(OD² + ID²) ÷ L², simply supported tube; OD :od in, wall :wall in, ID :id in, L :len in; safe = 75% of Nc.', 'Shaft RPM = :mph × :ratio × 336 ÷ :tire.',
-        ':mph mph, :ratio ratio, :tire in tire', 'photo of a shaft we build; yours is made to your measurements',
+        ':mph mph, :ratio ratio, :tire in tire',
+        // vehicle make before a new flange yoke, start over (2026-11-11)
+        'Vehicle make', 'No :series flange yoke names a vehicle make yet.', 'From your answers', '1 yoke listed', ':n yokes listed', 'Other make or not sure',
+        'See all :n flange yokes in :series', 'See every flange yoke in :series', 'Listed for :make: :n of :total.', 'Start over? Your answers will be cleared.',
         // builder v3 (2026-11): stages, spline guide, yoke stock, option headings, speed span
         'Vehicle', 'Application', 'Shaft', 'Ends', 'Length', 'Your price', 'How to count the splines', 'End view of a slip yoke: count every tooth, the two wide gaps count as one each',
         'Look into the open end of your old slip yoke, or at the output shaft it slides onto.', 'Put a marker dot on one tooth and count every tooth all the way around back to it.',
@@ -217,7 +220,19 @@ class DsbController extends Controller
             (int) $qs('per_page', '12'),
             $qs('spline'),
             $ids,
+            $qs('make'),
         )]);
+    }
+
+    /** GET /online-builder/drawing?f=&r=&a1=&c1= — a build's drawing as SVG; the shop station shows it on the work order. */
+    public function drawing(Request $r)
+    {
+        $q = fn (string $k) => is_scalar($v = $r->query($k)) ? (string) $v : '';
+        $svg = \App\Support\BuildDrawing::svg(['front_app' => $q('f'), 'rear_app' => $q('r'), 'pieces' => 'one',
+            'a1' => min(400, max(0, (float) $q('a1'))), 'c1' => min(400, max(0, (float) $q('c1')))]);
+        abort_unless($svg, 404);
+        return response($svg, 200, ['Content-Type' => 'image/svg+xml', 'X-Content-Type-Options' => 'nosniff', 'X-Robots-Tag' => 'noindex',
+            'Content-Security-Policy' => "default-src 'none'; style-src 'unsafe-inline'; img-src data:", 'Content-Disposition' => 'inline', 'Cache-Control' => 'public, max-age=86400']);
     }
 
     /** POST /dsb/quote — live server-side price for the current selections. */

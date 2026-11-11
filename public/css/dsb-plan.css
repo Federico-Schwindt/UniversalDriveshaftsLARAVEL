@@ -215,3 +215,33 @@
 /* first question: no back button, no empty dock (audit 2026-11-11) */
 #ubs-dsb .dsb-back:disabled{visibility:hidden}
 #ubs-dsb .bld-dock.is-empty{display:none!important}
+
+/* start over: always at the right of the step header, a real tap target on phones (owner, 2026-11-11) */
+#ubs-dsb .dsb-restart{margin-left:auto;flex:none;display:inline-flex;align-items:center;gap:.4rem;height:34px;padding:0 .75rem;border:1px solid var(--line-strong);
+  border-radius:var(--r-sm);background:#fff;color:var(--ink-2);font:600 .84rem var(--font-b);cursor:pointer;white-space:nowrap}
+#ubs-dsb .dsb-restart:hover{border-color:var(--ink-3);color:var(--ink)}
+#ubs-dsb .dsb-restart:focus-visible,#ubs-dsb .dsb-back:focus-visible{outline:0;box-shadow:var(--sh-focus);border-color:var(--blue)}
+#ubs-dsb .dsb-restart svg{width:16px;height:16px}
+#ubs-dsb .dsb-restart[hidden]{display:none}
+
+/* vehicle make before a new flange yoke: compact two-column list, "other / not sure" across the full width */
+#ubs-dsb .dsb-cards--brands{grid-template-columns:repeat(3,minmax(0,1fr))}
+#ubs-dsb .dsb-card--brand{min-height:58px}
+#ubs-dsb .dsb-card--all{grid-column:1/-1;background:var(--paper-2)}
+#ubs-dsb .dsb-brand-none{grid-column:1/-1;margin:0 0 .2rem}
+#ubs-dsb .dsb-seeall{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;margin:0 0 .9rem;padding:.6rem .8rem;
+  border:1px solid var(--blue-100);border-radius:var(--r);background:var(--blue-050);font-size:.88rem;color:var(--ink-2)}
+#ubs-dsb .dsb-seeall[hidden]{display:none}
+@media (max-width:760px){
+  #ubs-dsb .dsb-restart{height:44px;min-width:44px;padding:0 .7rem}
+  #ubs-dsb .dsb-back{height:44px;min-width:44px;justify-content:center}
+  #ubs-dsb .dsb-progress{gap:.5rem}
+  /* the step label on two lines so the start over button never hides it */
+  #ubs-dsb .dsb-progress-text{flex-direction:column;align-items:flex-start;gap:.1rem;line-height:1.25}
+  #ubs-dsb .dsb-progress-text span{max-width:100%}
+  #ubs-dsb .dsb-cards--brands{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #ubs-dsb .dsb-card--brand{padding:.7rem .75rem}
+  #ubs-dsb .dsb-card--brand .dsb-opt-arrow{display:none}
+  #ubs-dsb .dsb-seeall .dsb-btn{width:100%;justify-content:center}
+}
+@media (max-width:380px){ #ubs-dsb .dsb-restart span{display:none} }

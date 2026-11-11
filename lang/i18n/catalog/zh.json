@@ -820,5 +820,8 @@
     "wall": "壁厚",
     "washer": "垫圈",
     "· page": "· 页",
-    "— a different number, brand or lube spec, but the same fitment. Check the notes before you substitute.": "— 编号、品牌或润滑规格不同,但适配相同。替换前请查看备注。"
+    "— a different number, brand or lube spec, but the same fitment. Check the notes before you substitute.": "— 编号、品牌或润滑规格不同,但适配相同。替换前请查看备注。",
+    "Vehicles this bearing is listed for": "此轴承适用的车辆",
+    ":n model|:n models": ":n 个车型|:n 个车型",
+    "From the complete driveshafts listed for these vehicles. Confirm the bearing ID and the mount dimensions above before you order.": "依据这些车辆的整根传动轴资料。下单前请确认轴承内径和上方的支架尺寸。"
 }

@@ -796,5 +796,16 @@
     "spline dia": "スプライン径",
     "steel": "スチール",
     "tube dia": "チューブ径",
-    "up to :max in": "最大 :max in"
+    "up to :max in": "最大 :max in",
+    "What make is the vehicle?": "車両のメーカーは？",
+    "We show the flange yokes whose part data names that make. Not on the list, or not sure? See them all.": "部品データにそのメーカー名があるフランジヨークを表示します。一覧にない、またはわからない場合は、すべて表示してください。",
+    "No :series flange yoke names a vehicle make yet.": ":series のフランジヨークには、まだ車両メーカーの記載がありません。",
+    "From your answers": "ご回答より",
+    "1 yoke listed": "掲載ヨーク 1 点",
+    ":n yokes listed": "掲載ヨーク :n 点",
+    "Other make or not sure": "その他のメーカー／わからない",
+    "See all :n flange yokes in :series": ":series のフランジヨーク全 :n 点を見る",
+    "See every flange yoke in :series": ":series のフランジヨークをすべて見る",
+    "Listed for :make: :n of :total.": ":make 向け：:total 点中 :n 点。",
+    "Start over? Your answers will be cleared.": "最初からやり直しますか？回答は消去されます。"
 }

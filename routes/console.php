@@ -44,3 +44,5 @@ Schedule::command('chatbot:knowledge')->dailyAt('04:10')->withoutOverlapping(120
 
 // Online builder reference prices (supplier Action Machine, public product JSON): weekly, Sunday 04:10 Eastern
 Schedule::command('builder:sync-prices')->weeklyOn(0, '04:10')->withoutOverlapping(120);
+// the supplier's vehicle tags on flange yokes, for the builder's "which make?" step (App\Support\YokeMakes)
+Schedule::command('builder:sync-am-yokes')->weeklyOn(0, '04:40')->withoutOverlapping(30);

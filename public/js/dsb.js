@@ -18,6 +18,8 @@
   const $$ = (s, r) => Array.from((r || wrap).querySelectorAll(s));
   const esc = (x) => String(x ?? '').replace(/[&<>"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
   const money = (n) => CFG.currency + Number(n || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  // what a length / ratio field holds, as a plain number string: "52,5" from a comma keyboard, "52.5 in", '52.5"' → "52.5"
+  const decimal = (v) => { const m = String(v ?? '').replace(',', '.').match(/\d*\.?\d+/); return m ? m[0] : ''; };
   const fmtIn = (v) => (v === '' || v == null || isNaN(+v) ? '' : String(+v) + '"');
   const FLOW = CFG.flow || {nodes: {}, families: {}};
   const NODES = FLOW.nodes || {}, FAMS = FLOW.families || {}, VARIANTS = FLOW.series_variants || {};
@@ -27,7 +29,7 @@
     step: 'tree', node: 'start', answers: [], family: null,
     dutyKey: null, subcatKey: null, seriesKey: null, variant: '', materialKey: null,
     front: null, rear: null,
-    frontYoke: {kind: '', product: null, model: ''}, rearYoke: {kind: '', product: null}, hardware: {kind: '', product: null},
+    frontYoke: {kind: '', product: null, model: '', make: ''}, rearYoke: {kind: '', product: null, make: ''}, hardware: {kind: '', product: null},
     a1: '', c1: '', tier: 'certified', notes: '', quote: null, tubeOd: '', speed: {mph: '', ratio: '', tire: ''},
   };
   const ENG = FLOW.engineering || {}, PHOTOS = FLOW.photos || {}, COVER = CFG.amCoverage || {};
@@ -35,6 +37,7 @@
   // a leaf the supplier price table covers (family + series + material): priced from the table at our markdown
   const isReference = () => !!(state.family && state.seriesKey && ((COVER[state.family] || {})[state.seriesKey.toLowerCase()] || []).includes(state.materialKey || 'steel'));
   const cat = {filters: {front: {}, rear: {}}, page: {front: 1, rear: 1}};
+  const makeCache = {};   // series -> {makes: [{key, label, count}], total}: the vehicle makes its flange yokes name
   const products = {}; // id -> product card, cached for restores
   try { Object.assign(products, JSON.parse(sessionStorage.getItem('dsb:products') || '{}')); } catch (e) { /* private mode */ }
   const remember = (p) => { if (!p || !p.id) return; products[p.id] = p; try { sessionStorage.setItem('dsb:products', JSON.stringify(products)); } catch (e) { /* ignore */ } };
@@ -64,6 +67,11 @@
   const usedPrice = (app) => { const m = yokeTypeFor(app) === 'trans' ? CFG.yokes.used_trans : CFG.yokes.used_flange; return parseFloat((m || {})[(state.seriesKey || '').toLowerCase()] || 0); };
   const frontYokeAsk = () => { const f = fam(); return !!(f && f.yoke_choice !== false && yokeTypeFor(state.front)); };
   const maxLen = () => { const m = (CFG.maxLengths || {})[state.seriesKey]; return m ? m[state.materialKey || 'steel'] : null; };
+  // a new flange yoke asks the vehicle make first (owner, 2026-11-11), unless no yoke of the series names one (it could only say "see all")
+  const brandAsk = (side) => {
+    const y = side === 'front' ? state.frontYoke : state.rearYoke, mc = makeCache[state.seriesKey || ''];
+    return y.kind === 'new' && yokeTypeFor(side === 'front' ? state.front : state.rear) === 'flange' && !(mc && !mc.makes.length);
+  };
 
   function fixedSteps() {
     const f = fam(); if (!f) return [];
@@ -71,20 +79,20 @@
     if (aluEligible()) s.push('material');
     if (!f.front_app) s.push('front');
     s.push('rear');
-    if (yokeTypeFor(state.rear)) { s.push('rear_yoke'); if (state.rearYoke.kind === 'new') s.push('rear_pick'); }
+    if (yokeTypeFor(state.rear)) { s.push('rear_yoke'); if (state.rearYoke.kind === 'new') { if (brandAsk('rear')) s.push('rear_brand'); s.push('rear_pick'); } }
     const ref = isReference();
     if (state.rear === 'weld' && !ref) s.push('hardware');
     s.push('measure', 'speed');
     // the options step only when the supplier product has something to choose (once the quote says which product it is)
     const rp = refProduct();
     if (ref) { if (!(rp && rp.product && !realOptions(rp.product).length)) s.push('options'); }   // supplier builds never ask the front yoke
-    else if (frontYokeAsk()) { s.push('front_yoke'); if (state.frontYoke.kind === 'new') s.push('front_pick'); }
+    else if (frontYokeAsk()) { s.push('front_yoke'); if (state.frontYoke.kind === 'new') { if (brandAsk('front')) s.push('front_brand'); s.push('front_pick'); } }
     s.push('review');
     return s;
   }
-  const PHASES = [['Application', ['tree']], ['Shaft', ['series', 'material']], ['Ends', ['front', 'rear', 'rear_yoke', 'rear_pick', 'hardware']],
-    ['Length', ['measure', 'speed']], ['Your price', ['options', 'front_yoke', 'front_pick', 'review']]];
-  const STEP_NAMES = {series: 'U-joint series', material: 'Tube material', front: 'Front end', rear: 'Rear end', rear_yoke: 'Rear yoke', rear_pick: 'Pick the yoke', hardware: 'Rear hardware', measure: 'Measurements', speed: 'Speed check', options: 'Build options', front_yoke: 'Front yoke', front_pick: 'Pick the yoke', review: 'Your driveshaft'};
+  const PHASES = [['Application', ['tree']], ['Shaft', ['series', 'material']], ['Ends', ['front', 'rear', 'rear_yoke', 'rear_brand', 'rear_pick', 'hardware']],
+    ['Length', ['measure', 'speed']], ['Your price', ['options', 'front_yoke', 'front_brand', 'front_pick', 'review']]];
+  const STEP_NAMES = {series: 'U-joint series', material: 'Tube material', front: 'Front end', rear: 'Rear end', rear_yoke: 'Rear yoke', rear_brand: 'Vehicle make', rear_pick: 'Pick the yoke', hardware: 'Rear hardware', measure: 'Measurements', speed: 'Speed check', options: 'Build options', front_yoke: 'Front yoke', front_brand: 'Vehicle make', front_pick: 'Pick the yoke', review: 'Your driveshaft'};
 
   // ---------- pricing mirror (the server is authoritative) ----------
   function odRows() {
@@ -214,6 +222,7 @@
     $('[data-progress-bar]').style.width = Math.round(100 * (stage + frac) / PHASES.length) + '%';
     const first = state.step === 'tree' && !state.answers.length;
     $('[data-back]').disabled = first;
+    const rs = $('[data-restart]'); if (rs) rs.hidden = first;
     // nothing to sum up before the first answer: the dock stays out of the way
     const dock = document.querySelector('.bld-dock'); if (dock) dock.classList.toggle('is-empty', first);
   }
@@ -231,6 +240,8 @@
     if (name === 'speed') renderSpeed();
     if (name === 'options') renderOptions();
     if (name === 'review') renderReview();
+    if (name === 'rear_brand') renderBrands('rear');
+    if (name === 'front_brand') renderBrands('front');
     if (name === 'rear_pick') loadCatalog('rear');
     if (name === 'front_pick') loadCatalog('front');
     $$('.dsb-step').forEach((s) => s.classList.toggle('dsb-step--active', s.dataset.step === name));
@@ -406,8 +417,8 @@
       b.innerHTML = `${code ? '<span class="dsb-app-card-img dsb-app-card-img--line"></span>' : (img ? `<span class="dsb-app-card-img"><img src="${esc(img)}" alt="" loading="lazy"></span>` : '')}<span class="dsb-app-card-label">${esc(tl(a.label))}</span>${help[key] ? `<span class="dsb-app-card-desc">${esc(tl(help[key].description))}</span>` : ''}`;
       if (code) b.firstChild.appendChild(sectionArt(code, tl(a.label)));
       b.onclick = () => {
-        if (which === 'front') { if (state.front !== key) { state.front = key; state.frontYoke = {kind: '', product: null, model: ''}; state.rear = null; } }
-        else if (state.rear !== key) { state.rear = key; state.rearYoke = {kind: '', product: null}; state.hardware = {kind: '', product: null}; }
+        if (which === 'front') { if (state.front !== key) { state.front = key; state.frontYoke = {kind: '', product: null, model: '', make: ''}; state.rear = null; } }
+        else if (state.rear !== key) { state.rear = key; state.rearYoke = {kind: '', product: null, make: ''}; state.hardware = {kind: '', product: null}; }
         state.quote = null; requestQuote(); nextStep();
       };
       box.appendChild(b);
@@ -446,11 +457,41 @@
     const fx = facts(); const params = new URLSearchParams({type: type || 'flange', series: state.seriesKey || '', page: 1, per_page: 1, filters: '{}'});
     if (type === 'trans' && fx.spline) params.set('spline', fx.spline);
     fetch(CFG.endpoints.yokes + '?' + params).then((r) => r.json()).then(({data}) => {
+      if (data && (type || 'flange') === 'flange') makeCache[state.seriesKey || ''] = {makes: data.makes || [], total: data.series_total || 0};
       if (data && data.products && data.products.length) return;
       btn.disabled = true; btn.classList.add('is-off');
       const d = btn.querySelector('.dsb-card-desc');
       if (d) d.textContent = type === 'trans' && fx.spline ? t('None listed online for :series with :n splines. Reuse yours, or call us and we source one.', {series: tl(seriesLabel()), n: fx.spline}) : t('None listed online for :series. Reuse yours, or call us and we source one.', {series: tl(seriesLabel())});
     }).catch(() => {});
+  }
+  // the vehicle makes the series' flange yokes name, with counts (cached per series)
+  function yokeMakes() {
+    const key = state.seriesKey || '';
+    if (makeCache[key]) return Promise.resolve(makeCache[key]);
+    return fetch(CFG.endpoints.yokes + '?' + new URLSearchParams({type: 'flange', series: key, page: 1, per_page: 1, filters: '{}'})).then((r) => r.json())
+      .then(({data}) => (makeCache[key] = {makes: (data && data.makes) || [], total: (data && data.series_total) || 0}));
+  }
+  function renderBrands(side) {
+    const box = $(`[data-brand-choices="${side}"]`), y = side === 'front' ? state.frontYoke : state.rearYoke, series = state.seriesKey;
+    box.innerHTML = `<div class="dsb-loading">${esc(t('Loading…'))}</div>`;
+    // a different make starts the yoke list over (filters, page, and the yoke picked for the other make)
+    const pick = (key) => { if (y.make !== key) { y.make = key; y.product = null; cat.filters[side] = {}; cat.page[side] = 1; } state.quote = null; requestQuote(); nextStep(); };
+    const card = (key, title, desc) => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'dsb-card dsb-card--brand' + (key === 'all' ? ' dsb-card--all' : '');
+      if (y.make === key) b.classList.add('is-on');
+      b.innerHTML = `<span class="dsb-card-body"><span class="dsb-card-title">${esc(title)}</span>${desc ? `<span class="dsb-card-desc">${esc(desc)}</span>` : ''}</span><span class="dsb-opt-arrow" aria-hidden="true">›</span>`;
+      b.onclick = () => pick(key); box.appendChild(b);
+    };
+    yokeMakes().then(({makes, total}) => {
+      if (state.step !== side + '_brand' || state.seriesKey !== series) return;
+      box.innerHTML = '';
+      // the make the first answers named (a Ford slip yoke family, say) comes first
+      const said = String(facts().make || '').toLowerCase();
+      const named = (m) => !!said && m.label.split(' / ').some((w) => said.includes(w.toLowerCase()));
+      if (!makes.length) { const n = document.createElement('p'); n.className = 'dsb-hint dsb-brand-none'; n.textContent = t('No :series flange yoke names a vehicle make yet.', {series: tl(seriesLabel())}); box.appendChild(n); }
+      makes.slice().sort((a, b) => named(b) - named(a)).forEach((m) => card(m.key, tl(m.label), (named(m) ? t('From your answers') + ' · ' : '') + (m.count === 1 ? t('1 yoke listed') : t(':n yokes listed', {n: m.count}))));
+      card('all', t('Other make or not sure'), t('See all :n flange yokes in :series', {n: total, series: tl(seriesLabel())}));
+    }).catch(() => { box.innerHTML = ''; card('all', t('Other make or not sure'), t('See every flange yoke in :series', {series: tl(seriesLabel())})); });
   }
   function renderHardware() {
     const box = $('[data-hardware-choices]'); box.innerHTML = ''; const list = $('[data-hardware-list]'); list.hidden = true; list.innerHTML = '';
@@ -495,8 +536,21 @@
     grid.innerHTML = `<div class="dsb-loading">${esc(t('Loading…'))}</div>`;
     const params = new URLSearchParams({type, series: state.seriesKey || '', page: cat.page[side], per_page: 24, filters: JSON.stringify(cat.filters[side])});
     if (type === 'trans' && fx.spline && !cat.filters[side]['splines-count-dia']) params.set('spline', fx.spline);
+    const y = side === 'front' ? state.frontYoke : state.rearYoke, mk = type === 'flange' && y.make && y.make !== 'all' ? y.make : '';
+    if (mk) params.set('make', mk);
+    let sa = $('[data-seeall]', root);
+    if (!sa) { sa = document.createElement('div'); sa.className = 'dsb-seeall'; sa.dataset.seeall = ''; root.insertBefore(sa, fl); }
+    sa.hidden = true;
     fetch(CFG.endpoints.yokes + '?' + params).then((r) => r.json()).then(({data}) => {
       fl.innerHTML = '';
+      // filtered by make: say so, and keep every other yoke of the series one tap away
+      const m = mk && (data.makes || []).find((x) => x.key === mk);
+      if (m) {
+        $(`[data-pick-desc="${side}"]`).textContent = t('Flange yokes in :series', {series: tl(seriesLabel())}) + ' · ' + tl(m.label);
+        sa.hidden = false;
+        sa.innerHTML = `<span>${esc(t('Listed for :make: :n of :total.', {make: tl(m.label), n: m.count, total: data.series_total || 0}))}</span><button type="button" class="dsb-btn dsb-btn--ghost">${esc(t('See all :n flange yokes in :series', {n: data.series_total || 0, series: tl(seriesLabel())}))}</button>`;
+        sa.querySelector('button').onclick = () => { y.make = 'all'; cat.page[side] = 1; syncUrl(false); loadCatalog(side); };
+      }
       Object.entries(data.filters || {}).forEach(([slug, values]) => {
         const label = ({'hub-dia': 'Hub diameter', 'splines-count-dia': 'Splines', 'center-u-joint-to-end': 'U-joint center to end', 'bolt-circle-dia': 'Bolt circle', 'pilot-dia': 'Pilot diameter', 'series': 'Series'})[slug] || slug.replace(/-/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
         const d = document.createElement('div');
@@ -513,7 +567,7 @@
           <button type="button" class="dsb-card dsb-card--big" data-own><span class="dsb-card-body"><span class="dsb-card-title">${esc(t('Reuse mine'))}</span><span class="dsb-card-desc">${esc(t('The shop confirms the yoke with you before building.'))}</span></span><span class="dsb-opt-arrow" aria-hidden="true">›</span></button>
           <a class="dsb-card dsb-card--big" href="${esc(CFG.phoneHref || 'tel:18135246491')}"><span class="dsb-card-body"><span class="dsb-card-title">${esc(t('Call us to source one'))}</span><span class="dsb-card-desc">(813) 524-6491</span></span><span class="dsb-opt-arrow" aria-hidden="true">›</span></a></div>`;
         const clr = $('[data-clear]', grid); if (clr) clr.onclick = () => { cat.filters[side] = {}; cat.page[side] = 1; loadCatalog(side); };
-        $('[data-own]', grid).onclick = () => { if (side === 'front') state.frontYoke = {kind: 'own', product: null, model: state.frontYoke.model}; else state.rearYoke = {kind: 'own', product: null}; state.quote = null; requestQuote(); nextStep(); };
+        $('[data-own]', grid).onclick = () => { if (side === 'front') state.frontYoke = {kind: 'own', product: null, model: state.frontYoke.model, make: ''}; else state.rearYoke = {kind: 'own', product: null, make: ''}; state.quote = null; requestQuote(); nextStep(); };
         pag.innerHTML = ''; return;
       }
       grid.innerHTML = '';
@@ -696,7 +750,7 @@
   function setupMeasure() {
     const c1hidden = c1Skip();
     $('#dsb-field-c1').hidden = c1hidden; if (c1hidden) { state.c1 = ''; $('#dsb-inp-c1').value = ''; }
-    $('#dsb-inp-a1').value = state.a1; $('#dsb-inp-c1').value = state.c1;
+    ['a1', 'c1'].forEach((f) => { const el = $('#dsb-inp-' + f); if (decimal(el.value) !== (state[f] || '')) el.value = state[f]; });
     $('#dsb-slip-note').hidden = true;
     const help = (ENG.measure_help || {})[CFG.pieces === 'two' ? 'two' : state.front] || '';
     const hb = $('#dsb-measure-help'); hb.hidden = !help; hb.textContent = tl(help);
@@ -781,7 +835,8 @@
     return `<span class="dsb-badge dsb-badge--${sp.status || 'info'}">${esc(t('Critical speed'))}: ${esc(label)}</span>`;
   }
   function renderSpeed() {
-    ['mph', 'ratio', 'tire'].forEach((k) => { $('#dsb-speed-' + k).value = state.speed[k] || ''; });
+    // never rewrite a field that already says the same number: mid-typing "3," would lose its comma and become 373
+    ['mph', 'ratio', 'tire'].forEach((k) => { const el = $('#dsb-speed-' + k); if (decimal(el.value) !== (state.speed[k] || '')) el.value = state.speed[k] || ''; });
     const sp = speedCalc(); const box = $('#dsb-speed-result');
     if (!sp) { box.hidden = true; return; }
     box.hidden = false; box.className = 'dsb-speed-result' + (sp.status ? ' is-' + sp.status : '');
@@ -857,9 +912,7 @@
     $('#dsb-review-title').textContent = state.seriesKey ? titleText() : t('Custom driveshaft');
     const fits = (f.models || []).length ? t('Fits') + ': ' + f.models.join(', ') : '';
     $('#dsb-review-sub').textContent = [f.label ? tl(f.label) : '', fits, f.note ? tl(f.note) : ''].filter(Boolean).join(' · ');
-    // drawing + photos
-    const ph = photoFor(); const pf = $('#dsb-review-photo');
-    pf.hidden = !ph; pf.innerHTML = ph ? `<img src="${esc(ph.file)}" alt="${esc(ph.note || '')}" class="${ph.flip ? 'is-flip' : ''}"><figcaption>${esc(tl(ph.note || ''))} · ${esc(t('photo of a shaft we build; yours is made to your measurements'))}</figcaption>` : '';
+    // the drawing only, no photo above it (owner, 2026-11-11)
     const rPlan = planFor(state.front, state.rear), rBox = $('#dsb-review-plan'), dImg = $('#dsb-review-diagram-img');
     rBox.hidden = !rPlan; dImg.hidden = !!rPlan; dImg.src = rPlan ? '' : currentDiagram();
     if (rPlan) renderPlan(rBox, rPlan, false).catch(() => { rBox.hidden = true; dImg.hidden = false; dImg.src = currentDiagram(); });
@@ -915,6 +968,7 @@
     put('dsb_front', state.front); put('dsb_rear', state.rear);
     put('dsb_fy', state.frontYoke.kind); put('dsb_fyid', state.frontYoke.product && state.frontYoke.product.id); put('dsb_fmod', state.frontYoke.model);
     put('dsb_ry', state.rearYoke.kind); put('dsb_ryid', state.rearYoke.product && state.rearYoke.product.id);
+    put('dsb_fmk', state.frontYoke.make); put('dsb_rmk', state.rearYoke.make);
     put('dsb_hw', state.hardware.kind); put('dsb_hwid', state.hardware.product && state.hardware.product.id);
     put('dsb_a1', state.a1); put('dsb_c1', state.c1); if (state.tier === 'new') p.set('dsb_tier', 'new');
     put('dsb_mph', state.speed.mph); put('dsb_ratio', state.speed.ratio); put('dsb_tire', state.speed.tire);
@@ -935,7 +989,7 @@
   }
   function restore(p) {
     Object.assign(state, {step: 'tree', node: 'start', answers: [], family: null, dutyKey: null, subcatKey: null, seriesKey: null, variant: '', materialKey: null, front: null, rear: null, a1: '', c1: '', tier: 'certified', quote: null, tubeOd: '', speed: {mph: '', ratio: '', tire: ''}, speedSeen: false, optionsSeen: false});
-    state.frontYoke = {kind: '', product: null, model: ''}; state.rearYoke = {kind: '', product: null}; state.hardware = {kind: '', product: null};
+    state.frontYoke = {kind: '', product: null, model: '', make: ''}; state.rearYoke = {kind: '', product: null, make: ''}; state.hardware = {kind: '', product: null};
     const path = (p.get('dsb_p') || '').split('.').filter((x) => x !== '').map(Number);
     for (const idx of path) {
       const node = treeNode(state.node); const o = node && node.options[idx]; if (!o) break;
@@ -956,9 +1010,9 @@
     state.materialKey = state.seriesKey ? (aluEligible() && p.get('dsb_material') === 'aluminum' ? 'aluminum' : 'steel') : null;
     if (!f.front_app && p.get('dsb_front') && CFG.frontApps[p.get('dsb_front')]) state.front = p.get('dsb_front');
     if (p.get('dsb_rear') && CFG.rearApps[p.get('dsb_rear')] && rearApps().some(([k]) => k === p.get('dsb_rear'))) state.rear = p.get('dsb_rear');
-    const kinds = ['new', 'used', 'own'];
-    if (kinds.includes(p.get('dsb_fy')) && yokeTypeFor(state.front) && f.yoke_choice !== false) state.frontYoke = {kind: p.get('dsb_fy'), product: products[p.get('dsb_fyid')] || null, model: p.get('dsb_fmod') || ''};
-    if (kinds.includes(p.get('dsb_ry')) && yokeTypeFor(state.rear)) state.rearYoke = {kind: p.get('dsb_ry'), product: products[p.get('dsb_ryid')] || null};
+    const kinds = ['new', 'used', 'own'], make = (k) => (/^[a-z0-9-]{1,20}$/.test(p.get(k) || '') ? p.get(k) : '');
+    if (kinds.includes(p.get('dsb_fy')) && yokeTypeFor(state.front) && f.yoke_choice !== false) state.frontYoke = {kind: p.get('dsb_fy'), product: products[p.get('dsb_fyid')] || null, model: p.get('dsb_fmod') || '', make: make('dsb_fmk')};
+    if (kinds.includes(p.get('dsb_ry')) && yokeTypeFor(state.rear)) state.rearYoke = {kind: p.get('dsb_ry'), product: products[p.get('dsb_ryid')] || null, make: make('dsb_rmk')};
     if (['strap', 'ubolt', 'own'].includes(p.get('dsb_hw')) && state.rear === 'weld') state.hardware = {kind: p.get('dsb_hw'), product: products[p.get('dsb_hwid')] || null};
     if (parseFloat(p.get('dsb_a1')) > 0) state.a1 = p.get('dsb_a1');
     if (parseFloat(p.get('dsb_c1')) > 0) state.c1 = p.get('dsb_c1');
@@ -981,12 +1035,15 @@
       if (st === 'front' && !state.front) return st;
       if (st === 'rear' && !state.rear) return st;
       if (st === 'rear_yoke' && !state.rearYoke.kind) return st;
+      // a yoke already picked (a saved design from before this step) needs no make
+      if (st === 'rear_brand' && !state.rearYoke.make && !state.rearYoke.product) return st;
       if (st === 'rear_pick' && !state.rearYoke.product) return st;
       if (st === 'hardware' && (!state.hardware.kind || (state.hardware.kind !== 'own' && !state.hardware.product))) return st;
       if (st === 'measure' && measureError()) return st;
       if (st === 'speed' && !state.speedSeen && !state.speed.mph) return st;
       if (st === 'options' && !Object.keys(state.amOptions || {}).length && !state.optionsSeen) return st;
       if (st === 'front_yoke' && !state.frontYoke.kind) return st;
+      if (st === 'front_brand' && !state.frontYoke.make && !state.frontYoke.product) return st;
       if (st === 'front_pick' && !state.frontYoke.product) return st;
     }
     return 'review';
@@ -1046,14 +1103,24 @@
       .catch(() => toast(t('Network error. Please try again.')));
   }
 
+  // back to the first question with nothing chosen; the browser's Back still returns to the build that was cleared
+  function startOver() {
+    if (!window.confirm(t('Start over? Your answers will be cleared.'))) return;
+    restore(new URLSearchParams());
+    state.amOptions = {}; state.notes = ''; cat.filters = {front: {}, rear: {}}; cat.page = {front: 1, rear: 1};
+    $('#dsb-notes').value = ''; $$('.dsb-qty-input').forEach((x) => { x.value = 1; });
+    renderTree(); showStep('tree'); requestQuote();
+  }
+
   // ---------- bind ----------
   function bind() {
     $('[data-back]').onclick = goBack;
+    $('[data-restart]').onclick = startOver;
     ['a1', 'c1'].forEach((f) => {
-      $(`#dsb-inp-${f}`).addEventListener('input', (e) => { state[f] = e.target.value; checkLength(); paintPlan($('#dsb-plan-svg')); renderSheet(); renderPrice(); requestQuote(); syncUrl(false); });
+      $(`#dsb-inp-${f}`).addEventListener('input', (e) => { state[f] = decimal(e.target.value); checkLength(); paintPlan($('#dsb-plan-svg')); renderSheet(); renderPrice(); requestQuote(); syncUrl(false); });
     });
     $('[data-next="measure"]').onclick = () => { const me = measureError(); if (me) { toast(me); $(parseFloat(state.a1) > 0 ? '#dsb-inp-c1' : '#dsb-inp-a1').focus(); return; } if (!checkLength()) { toast($('#dsb-length-check').textContent); return; } nextStep(); };
-    ['mph', 'ratio', 'tire'].forEach((k) => $('#dsb-speed-' + k).addEventListener('input', (e) => { state.speed[k] = e.target.value; renderSpeed(); renderSheet(); syncUrl(false); }));
+    ['mph', 'ratio', 'tire'].forEach((k) => $('#dsb-speed-' + k).addEventListener('input', (e) => { state.speed[k] = decimal(e.target.value); renderSpeed(); renderSheet(); syncUrl(false); }));
     $('[data-next="speed"]').onclick = () => { state.speedSeen = true; requestQuote(); nextStep(); };
     $('[data-skip="speed"]').onclick = () => { state.speedSeen = true; state.speed = {mph: '', ratio: '', tire: ''}; renderSheet(); nextStep(); };
     $('#dsb-front-model').addEventListener('input', (e) => { state.frontYoke.model = e.target.value; syncUrl(false); });

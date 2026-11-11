@@ -796,5 +796,16 @@
     "Add the yoke shaft boot": "Agregar la funda del eje con yugo",
     "No strap kit": "Sin kit de abrazaderas",
     "With strap kit": "Con kit de abrazaderas",
-    "With pinion yoke replacement kit and strap kit": "Con kit de reemplazo del yugo del piñón y kit de abrazaderas"
+    "With pinion yoke replacement kit and strap kit": "Con kit de reemplazo del yugo del piñón y kit de abrazaderas",
+    "What make is the vehicle?": "¿De qué marca es el vehículo?",
+    "We show the flange yokes whose part data names that make. Not on the list, or not sure? See them all.": "Te mostramos los yugos de brida cuyos datos de pieza nombran esa marca. ¿No está en la lista o no estás seguro? Velos todos.",
+    "No :series flange yoke names a vehicle make yet.": "Ningún yugo de brida :series nombra todavía una marca de vehículo.",
+    "From your answers": "Según tus respuestas",
+    "1 yoke listed": "1 yugo en catálogo",
+    ":n yokes listed": ":n yugos en catálogo",
+    "Other make or not sure": "Otra marca o no estoy seguro",
+    "See all :n flange yokes in :series": "Ver los :n yugos de brida :series",
+    "See every flange yoke in :series": "Ver todos los yugos de brida :series",
+    "Listed for :make: :n of :total.": "Para :make: :n de :total.",
+    "Start over? Your answers will be cleared.": "¿Empezar de nuevo? Se borrarán tus respuestas."
 }

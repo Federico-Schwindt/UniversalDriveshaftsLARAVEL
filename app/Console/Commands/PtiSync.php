@@ -18,13 +18,15 @@ use Illuminate\Support\Facades\DB;
  *   --boxes    weight + box per part, read from PTI's own cart shipping quote (cart must be empty)
  *   --apply-boxes  copy PTI's packed weight and box onto our products (owner, 2026-10-24: use PTI's dimensions)
  *   --images   download PTI's photos for the parts we added from PTI into public/img/pti (watermarked; to be cleaned later)
+ *   --add=A,B  add these PTI parts a person chose (even ones the catalog sync left for review, or OEM-numbered "virtual"
+ *              rows PTI sells), read from PTI's part page; only parts PTI sells (has a price), same SKU / price rules as --create
  *
  * Linked products keep our price (owner, 2026-10-23). Anything ambiguous (both X and XU exist, only a
  * cross-ref/OEM match, several products match) is left unlinked with match=review for a person to decide.
  */
 class PtiSync extends Command
 {
-    protected $signature = 'pti:sync {--catalog} {--create} {--stock} {--boxes} {--apply-boxes} {--images} {--photos-for= : comma-separated PTI part numbers: also download photos for these linked parts (ours had none / a poor one)} {--limit=0 : max parts for --stock/--boxes} {--force : re-measure boxes already checked} {--dry : report only, write nothing}';
+    protected $signature = 'pti:sync {--catalog} {--create} {--stock} {--boxes} {--apply-boxes} {--images} {--photos-for= : comma-separated PTI part numbers: also download photos for these linked parts (ours had none / a poor one)} {--add= : comma-separated PTI part numbers to add by hand (see above)} {--limit=0 : max parts for --stock/--boxes} {--force : re-measure boxes already checked} {--dry : report only, write nothing}';
     protected $description = 'Sync parts, stock and ship boxes from the Powertrain Industries dealer portal';
 
     /** PTI component type => our product category slug and the label used in titles */
@@ -76,11 +78,12 @@ class PtiSync extends Command
     {
         if (!$pti->configured()) { $this->error('PTI_USER / PTI_PASS missing from .env'); return self::FAILURE; }
         $any = false;
-        foreach (['catalog', 'create', 'stock', 'boxes', 'apply-boxes', 'images', 'photos-for'] as $o) $any = $any || $this->option($o);
+        foreach (['catalog', 'create', 'stock', 'boxes', 'apply-boxes', 'images', 'photos-for', 'add'] as $o) $any = $any || $this->option($o);
         if (!$any) { $this->error('Pick at least one of --catalog --create --stock --boxes --apply-boxes --images'); return self::FAILURE; }
         try {
             if ($this->option('catalog')) $this->catalog($pti);
             if ($this->option('create')) $this->create($writer);
+            if ($this->option('add')) $this->add($pti, $writer);
             if ($this->option('stock')) $this->stock($pti, $writer);
             if ($this->option('boxes')) $this->boxes($pti);
             if ($this->option('apply-boxes')) $this->applyBoxes($writer);
@@ -114,8 +117,13 @@ class PtiSync extends Command
         foreach ($all as [$apiType, $type, $catalogName]) {
             try { $data = $pti->catalog($apiType, $catalogName); } catch (\Throwable $e) { $this->warn("$type: {$e->getMessage()}"); continue; }
             $items = $data['results'];
-            $oem = [];   // PTI "virtual" rows are OEM numbers pointing at a real PTI part
-            foreach ($items as $it) if (($it['is_virtual'] ?? '0') === '1') foreach ($it['related_parts'] ?? [] as $rp) $oem[strtoupper($rp['related_part_number'])][] = $it['part_number'];
+            $oem = []; $aliases = [];   // PTI "virtual" rows are OEM numbers pointing at a real PTI part
+            foreach ($items as $it) if (($it['is_virtual'] ?? '0') === '1') foreach ($it['related_parts'] ?? [] as $rp) {
+                $oem[strtoupper($rp['related_part_number'])][] = $it['part_number'];
+                // kept on the real part: the number, how PTI relates them, and what PTI says about that number
+                $aliases[strtoupper($rp['related_part_number'])][] = ['number' => trim((string) $it['part_number']), 'note' => trim((string) ($rp['notes'] ?? '')), 'alias' => true,
+                    'text' => trim(($it['notes'] ?? '') . ' ' . ($it['part_story']['sales_story'] ?? ''))];
+            }
             foreach ($items as $it) {
                 if (($it['is_virtual'] ?? '0') === '1') continue;
                 $pn = trim((string) $it['part_number']); $PN = strtoupper($pn);
@@ -124,7 +132,10 @@ class PtiSync extends Command
                 $specs = array_intersect_key($it, $data['cols']);
                 $pics = array_values(array_filter($it['part_picture_urls'] ?? [], fn ($u) => !str_contains($u, 'picture-missing')));
                 $price = (float) str_replace(['$', ','], '', (string) ($it['price'] ?? '')) ?: null;
-                $row = ['pti_type' => $type, 'pti_price' => $price, 'specs' => json_encode($specs), 'pictures' => json_encode($pics), 'updated_at' => now()];
+                $related = array_merge(array_map(fn ($rp) => ['number' => trim((string) ($rp['related_part_number'] ?? '')), 'note' => trim((string) ($rp['notes'] ?? '')), 'alias' => false],
+                    $it['related_parts'] ?? []), $aliases[$PN] ?? []);
+                $row = ['pti_type' => $type, 'pti_price' => $price, 'specs' => json_encode($specs), 'pictures' => json_encode($pics),
+                    'story' => trim((string) ($it['part_story']['sales_story'] ?? '')) ?: null, 'related' => $related ? json_encode($related) : null, 'updated_at' => now()];
 
                 $prev = $existing[$pn] ?? null;
                 if ($prev && in_array($prev->match, ['created', 'manual'], true)) {   // ours already: keep the link
@@ -166,28 +177,52 @@ class PtiSync extends Command
             ->filter(fn ($r) => !str_starts_with($r->pti_type, 'small:') || in_array(strtoupper(trim((string) (json_decode($r->specs, true)['brand'] ?? ''))), self::SMALL_BRANDS, true));
         $this->smallCategories($writer);
         $n = 0;
-        foreach ($rows as $r) {
-            // last guard against duplicates: someone may have added the SKU since --catalog ran
-            if (DB::connection('wp')->table('wp_postmeta as m')->join('wp_posts as p', 'p.ID', '=', 'm.post_id')->where('p.post_type', 'product')
-                ->whereNotIn('p.post_status', ['trash'])->where('m.meta_key', '_sku')->whereIn('m.meta_value', [$r->part_number, $r->part_number . 'U'])->exists()) {
-                $this->warn("skip {$r->part_number}: SKU now exists"); continue;
-            }
-            [$name, $attrs, $desc, $cat] = str_starts_with($r->pti_type, 'small:')
-                ? $this->describeSmall($r->part_number, substr($r->pti_type, 6), json_decode($r->specs, true) ?: [])
-                : $this->describe($r->part_number, $r->pti_type, json_decode($r->specs, true) ?: []);
-            if ($this->option('dry')) { $this->line("would create {$r->part_number}  \${$this->sell($r->pti_price)}  $name"); $n++; continue; }
-            $id = $writer->saveProduct(null, [
-                'name' => $name, 'slug' => '', 'status' => 'publish', 'sku' => $r->part_number . 'U',   // our SKUs for PTI parts end in U (owner, 2026-10-24); the title keeps PTI's number. Published right away (owner, 2026-11-04): pti:dewatermark runs after the sync
-                'regular_price' => (string) $this->sell($r->pti_price), 'sale_price' => '', 'cost' => (string) $r->pti_price,
-                'description' => $desc, 'short' => '', 'categories' => str_starts_with($r->pti_type, 'small:') ? array_values(array_unique(['small-parts', $cat])) : [$cat], 'attrs' => $attrs, 'images' => [],
-                'manage_stock' => false, 'stock_status' => 'outofstock',   // availability comes from PTI (--stock)
-                'seo_title' => '', 'seo_desc' => '', 'interchange' => '',
-            ]);
-            DB::table('pti_parts')->where('id', $r->id)->update(['wp_product_id' => $id, 'match' => 'created', 'updated_at' => now()]);
-            $n++;
-        }
+        foreach ($rows as $r) $n += (int) $this->createRow($r, $writer);
         Cache::forget('catalog_live_map');
         $this->info(($this->option('dry') ? 'would create ' : 'created ') . "$n product(s)");
+    }
+
+    /** Parts a person chose, straight from PTI's part page (owner, 2026-11-11: "crea los yugos… no como borradores"). */
+    private function add(PtiClient $pti, CatalogWriter $writer): void
+    {
+        foreach (array_filter(array_map('trim', explode(',', (string) $this->option('add')))) as $pn) {
+            try { $d = $pti->call('GET', 'my/parts/part/' . rawurlencode($pn))['part'] ?? null; } catch (\Throwable $e) { $this->warn("$pn: {$e->getMessage()}"); continue; }
+            $price = (float) str_replace(['$', ','], '', (string) ($d['price'] ?? ''));
+            $type = (string) ($d['catalog_result']['type'] ?? '');
+            if (!$d || $price <= 0) { $this->warn("$pn: PTI does not sell it (no price), not added"); continue; }
+            if (!isset(self::TYPES[$type])) { $this->warn("$pn: PTI type \"$type\" is not one we create"); continue; }
+            $specs = array_diff_key((array) ($d['catalog_result']['values'] ?? []), ['part_number' => 1, 'is_virtual' => 1]);
+            $pics = array_values(array_filter((array) ($d['part_picture_urls'] ?? []), fn ($u) => !str_contains((string) $u, 'picture-missing')));
+            $row = ['pti_type' => $type, 'pti_price' => $price, 'specs' => json_encode($specs), 'pictures' => json_encode($pics), 'updated_at' => now()];
+            if ($this->option('dry')) { $this->line("would add $pn  \${$this->sell($price)}"); continue; }
+            $exists = DB::table('pti_parts')->where('part_number', $pn)->exists();
+            DB::table('pti_parts')->updateOrInsert(['part_number' => $pn], $row + ['match' => 'none', 'wp_product_id' => null, 'review_reason' => 'added by hand (--add)'] + ($exists ? [] : ['created_at' => now()]));
+            if ($this->createRow(DB::table('pti_parts')->where('part_number', $pn)->first(), $writer)) $this->info("added $pn");
+        }
+        Cache::forget('catalog_live_map');
+    }
+
+    /** One PTI part as a published product of ours (SKU = PTI number + U, PTI price x 1.30). False when it was not created. */
+    private function createRow(object $r, CatalogWriter $writer): bool
+    {
+        // last guard against duplicates: someone may have added the SKU since --catalog ran
+        if (DB::connection('wp')->table('wp_postmeta as m')->join('wp_posts as p', 'p.ID', '=', 'm.post_id')->where('p.post_type', 'product')
+            ->whereNotIn('p.post_status', ['trash'])->where('m.meta_key', '_sku')->whereIn('m.meta_value', [$r->part_number, $r->part_number . 'U'])->exists()) {
+            $this->warn("skip {$r->part_number}: SKU now exists"); return false;
+        }
+        [$name, $attrs, $desc, $cat] = str_starts_with($r->pti_type, 'small:')
+            ? $this->describeSmall($r->part_number, substr($r->pti_type, 6), json_decode($r->specs, true) ?: [])
+            : $this->describe($r->part_number, $r->pti_type, json_decode($r->specs, true) ?: []);
+        if ($this->option('dry')) { $this->line("would create {$r->part_number}  \${$this->sell($r->pti_price)}  $name"); return true; }
+        $id = $writer->saveProduct(null, [
+            'name' => $name, 'slug' => '', 'status' => 'publish', 'sku' => $r->part_number . 'U',   // our SKUs for PTI parts end in U (owner, 2026-10-24); the title keeps PTI's number. Published right away (owner, 2026-11-04): pti:dewatermark runs after the sync
+            'regular_price' => (string) $this->sell($r->pti_price), 'sale_price' => '', 'cost' => (string) $r->pti_price,
+            'description' => $desc, 'short' => '', 'categories' => str_starts_with($r->pti_type, 'small:') ? array_values(array_unique(['small-parts', $cat])) : [$cat], 'attrs' => $attrs, 'images' => [],
+            'manage_stock' => false, 'stock_status' => 'outofstock',   // availability comes from PTI (--stock)
+            'seo_title' => '', 'seo_desc' => '', 'interchange' => '',
+        ]);
+        DB::table('pti_parts')->where('id', $r->id)->update(['wp_product_id' => $id, 'match' => 'created', 'updated_at' => now()]);
+        return true;
     }
 
     /** Categories the small parts need that we don't have yet, created under Small Parts. */
