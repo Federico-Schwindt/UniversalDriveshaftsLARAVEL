@@ -274,8 +274,10 @@ class PackingService
 
             if (in_array($type, ['custom_build', 'premade_build', 'driveshaft'], true)) {
                 // a driveshaft (builder, premade build or vehicle-finder shaft): one box each, always.
-                $w = (float) ($meta['weight_lb'] ?? 0) ?: ($pid ? $products->weight($pid) : 0.0) ?: self::DEFAULT_UNIT_LB;
-                $dims = $this->dimsFor($pid, $it, 'driveshaft');
+                // A builder shaft is no product: it is weighed and boxed from its own build (length, tube, ends).
+                $est = !$pid && is_array($meta['config'] ?? null) ? \App\Support\ShaftWeight::estimate($meta['config']) : null;
+                $w = (float) ($meta['weight_lb'] ?? 0) ?: ($pid ? $products->weight($pid) : 0.0) ?: ($est['weight'] ?? 0.0) ?: self::DEFAULT_UNIT_LB;
+                $dims = $est['dims'] ?? $this->dimsFor($pid, $it, 'driveshaft');
                 for ($i = 0; $i < $qty; $i++) $boxes[] = ['kind' => 'driveshaft', 'weight' => $w, 'dims' => $dims];
                 $driveshaftUnits += $qty; $totalWeight += $w * $qty;
                 $excludedValue += (float) (is_array($it) ? ($it['price'] ?? 0) : ($it->price ?? 0)) * $qty;
