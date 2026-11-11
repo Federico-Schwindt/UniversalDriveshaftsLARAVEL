@@ -1,153 +1,213 @@
-/* Online builder, Oct 2026 redesign: classic engineering-sheet look on the UDS tokens.
-   Loaded after dsb.css; #ubs-dsb raises specificity over the !important rules in uds-2026.css. */
-#ubs-dsb{
-  --ink-navy:#0b1a33; --sheet-line:#d6dfee; --sheet-grid:rgba(18,70,171,.06); --sheet-paper:#fbfcfe;
-  max-width:none;border:1px solid var(--sheet-line);border-radius:16px;box-shadow:0 1px 0 rgba(11,26,51,.04),0 18px 40px -28px rgba(11,26,51,.35);overflow:visible;background:#fff
-}
-#ubs-dsb .dsb-layout{display:grid;grid-template-columns:minmax(0,1fr) 352px;align-items:start}
-#ubs-dsb .dsb-main{min-width:0;border-right:1px solid var(--sheet-line)}
+/* Online builder: the technical drawings (designer line art), the measuring sheet and the build sheet aside.
+   Loaded after dsb.css. */
 
-/* steps: drawing-sheet tabs */
-#ubs-dsb .dsb-crumbs{gap:0;padding:0;background:var(--sheet-paper);border-bottom:1px solid var(--sheet-line);border-radius:16px 0 0 0;scrollbar-width:none}
-#ubs-dsb .dsb-crumbs::-webkit-scrollbar{display:none}
-#ubs-dsb .dsb-crumb{flex:1 1 0;min-width:118px;border:0!important;border-radius:0!important;background:transparent;padding:14px 14px 13px;gap:10px;border-right:1px solid var(--sheet-line)!important;position:relative}
-#ubs-dsb .dsb-crumb:last-child{border-right:0!important}
-#ubs-dsb .dsb-crumb::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:transparent}
-#ubs-dsb .dsb-crumb-num{width:24px;height:24px;background:#fff;border:1px solid var(--sheet-line);color:var(--ink-3)}
-#ubs-dsb .dsb-crumb-label{font-size:.78rem;font-weight:600;color:var(--ink-2)}
-#ubs-dsb .dsb-crumb-value{font-size:.72rem;color:var(--ink-faint);max-width:120px}
-#ubs-dsb .dsb-crumb.completed{background:transparent}
-#ubs-dsb .dsb-crumb.completed .dsb-crumb-num{background:var(--ink-navy);border-color:var(--ink-navy);color:#fff}
-#ubs-dsb .dsb-crumb.completed .dsb-crumb-value{color:var(--blue)}
-#ubs-dsb .dsb-crumb.active{background:#fff!important}
-#ubs-dsb .dsb-crumb.active::after{background:var(--blue)}
-#ubs-dsb .dsb-crumb.active .dsb-crumb-num{background:var(--blue)!important;border-color:var(--blue);color:#fff!important}
-#ubs-dsb .dsb-crumb.active .dsb-crumb-label{color:var(--ink)!important}
-#ubs-dsb .dsb-crumb.active .dsb-crumb-value{color:var(--blue)!important}
-#ubs-dsb .dsb-crumb:hover:not(.active){background:#fff}
-
-#ubs-dsb .dsb-stage{padding:clamp(18px,2.4vw,32px)}
-#ubs-dsb .dsb-step-title{font-size:1.28rem;letter-spacing:-.01em}
-#ubs-dsb .dsb-step-head{padding-bottom:16px;margin-bottom:20px;border-bottom:1px dashed var(--sheet-line)}
-
-/* option cards */
-#ubs-dsb .dsb-card,#ubs-dsb .dsb-mode-card,#ubs-dsb .dsb-app-card{border:1px solid var(--sheet-line)!important;background:#fff;box-shadow:none}
-#ubs-dsb .dsb-card:hover,#ubs-dsb .dsb-mode-card:hover,#ubs-dsb .dsb-app-card:hover{border-color:var(--blue)!important;box-shadow:0 10px 24px -18px rgba(18,70,171,.55);transform:translateY(-2px)}
-#ubs-dsb .dsb-mode-card--selected,#ubs-dsb .dsb-app-card--selected{border-color:var(--blue)!important;box-shadow:inset 0 0 0 1px var(--blue);background:var(--blue-050,#f1f5fd)}
-#ubs-dsb .dsb-app-cards{grid-template-columns:repeat(auto-fill,156px);justify-content:start;gap:12px}
-#ubs-dsb .dsb-app-card{width:156px;height:100%;min-height:190px;display:flex;flex-direction:column}
-#ubs-dsb .dsb-app-card{position:relative;padding:12px;border-radius:12px!important}
-#ubs-dsb .dsb-app-card--selected::before{content:"";position:absolute;top:10px;right:10px;width:18px;height:18px;border-radius:50%;background:var(--blue) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E") center/12px no-repeat;z-index:1}
-#ubs-dsb .dsb-app-card-img--line{display:grid;place-items:center;height:96px;flex:none;border-radius:8px;border:1px solid var(--sheet-line);
-  background:var(--sheet-paper) linear-gradient(var(--sheet-grid) 1px,transparent 1px) 0 0/12px 12px,var(--sheet-paper) linear-gradient(90deg,var(--sheet-grid) 1px,transparent 1px) 0 0/12px 12px}
-#ubs-dsb .dsb-app-card-label{font-weight:600;font-size:.9rem;line-height:1.3;margin-top:10px}
-
-/* designer line drawings (sections) */
-.dsb-art{display:block;width:100%;height:100%;padding:6px 8px;box-sizing:border-box}
+/* designer line drawings (sections) inside option tiles */
+.dsb-art{display:block;width:100%;height:100%;padding:4px 8px;box-sizing:border-box}
 .dsb-art svg{width:100%;height:100%;display:block;overflow:visible}
 .dsb-art .points,.dsb-art title,.dsb-art #canvas_background{display:none}
-.dsb-art path,.dsb-art line,.dsb-art polyline,.dsb-art ellipse,.dsb-art circle,.dsb-art polygon,.dsb-art rect{stroke:var(--ink-navy,#0b1a33)!important}
+.dsb-art path,.dsb-art line,.dsb-art polyline,.dsb-art ellipse,.dsb-art circle,.dsb-art polygon,.dsb-art rect{stroke:var(--ink,#141b28)!important}
 .dsb-art [fill="#ffffff"],.dsb-art [fill="#fff"],.dsb-art [fill="white"]{fill:#fff!important}
 
 /* measuring on the drawing */
-#ubs-dsb .dsb-plan{position:relative;border:1px solid var(--ink-navy);border-radius:4px;background:#fff;margin:0 0 20px;overflow:hidden}
-#ubs-dsb .dsb-plan-head,#ubs-dsb .dsb-plan-foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:9px 14px;font-size:.78rem}
-#ubs-dsb .dsb-plan-head{background:var(--ink-navy);color:#fff}
+#ubs-dsb .dsb-plan{position:relative;border:1px solid var(--line-strong,#d4dae6);border-radius:var(--r,6px);background:#fff;margin:0 0 1.1rem;overflow:hidden}
+#ubs-dsb .dsb-plan-head,#ubs-dsb .dsb-plan-foot{display:flex;justify-content:space-between;gap:.8rem;flex-wrap:wrap;padding:.55rem .9rem;font-size:.78rem}
+#ubs-dsb .dsb-plan-head{background:var(--paper-2,#f6f8fc);border-bottom:1px solid var(--line,#e4e8f0);color:var(--ink-2)}
 #ubs-dsb .dsb-plan-head span:first-child{display:inline-flex;align-items:center;gap:.45rem}
-#ubs-dsb .dsb-plan-head svg{width:15px;height:15px}
-#ubs-dsb .dsb-plan-code{font-family:var(--font-m);color:#b7cdf0}
-#ubs-dsb .dsb-plan-foot{border-top:1px solid var(--sheet-line);font-family:var(--font-m);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);font-size:.68rem}
-.dsb-plan-svg{display:block;padding:10px 12px 4px;
-  background:linear-gradient(var(--sheet-grid,rgba(18,70,171,.06)) 1px,transparent 1px) 0 0/16px 16px,linear-gradient(90deg,var(--sheet-grid,rgba(18,70,171,.06)) 1px,transparent 1px) 0 0/16px 16px,#fbfcfe}
+#ubs-dsb .dsb-plan-head .i{width:15px;height:15px}
+#ubs-dsb .dsb-plan-code{font-family:var(--font-m);color:var(--ink-3)}
+#ubs-dsb .dsb-plan-foot{border-top:1px solid var(--line,#e4e8f0);font-family:var(--font-m);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);font-size:.68rem}
+.dsb-plan-svg{display:block;padding:10px 12px 4px;background:linear-gradient(rgba(18,70,171,.06) 1px,transparent 1px) 0 0/16px 16px,linear-gradient(90deg,rgba(18,70,171,.06) 1px,transparent 1px) 0 0/16px 16px,#fbfcfe}
 .dsb-plan-svg svg{display:block;width:100%;height:auto;max-height:380px;overflow:hidden}
 .dsb-plan-svg text.dim-text{cursor:default}
 #ubs-dsb .dsb-plan .dsb-plan-svg text.dim-text[data-field]{cursor:pointer;fill:#1246ab;font-family:var(--font-m),monospace!important;font-weight:600!important;font-size:9px!important;transition:fill .15s}
-#ubs-dsb .dsb-plan .dsb-plan-svg text.dim-text[data-field]:hover,#ubs-dsb .dsb-plan .dsb-plan-svg text.dim-text[data-field]:focus{fill:#c0392b;outline:none}
-.dsb-plan-svg text.dim-text.is-set{fill:#0b1a33!important;font-family:var(--font-m),monospace!important}
+#ubs-dsb .dsb-plan .dsb-plan-svg text.dim-text[data-field]:hover,#ubs-dsb .dsb-plan .dsb-plan-svg text.dim-text[data-field]:focus{fill:#b42318;outline:none}
+.dsb-plan-svg text.dim-text.is-set{fill:#141b28!important;font-family:var(--font-m),monospace!important}
 #ubs-dsb .dsb-plan .dsb-plan-svg text.dim-text.is-editing{opacity:0}
-#ubs-dsb .dsb-plan-input{position:absolute;z-index:3;width:128px;height:40px;padding:0 10px;text-align:center;font:600 1rem/1 var(--font-m);color:var(--ink-navy);
-  background:#fff;border:2px solid var(--blue)!important;border-radius:8px!important;box-shadow:0 10px 24px -10px rgba(18,70,171,.55)!important}
-#ubs-dsb .dsb-fields{gap:16px}
-#ubs-dsb .dsb-hint{font-size:.8rem;color:var(--ink-3)}
+#ubs-dsb .dsb-plan-input{position:absolute;z-index:3;width:128px;height:40px;padding:0 10px;text-align:center;font:600 1rem/1 var(--font-m);color:var(--ink);background:#fff;border:2px solid var(--blue)!important;border-radius:var(--r-sm,4px)!important;box-shadow:0 6px 18px -8px rgba(18,70,171,.5)!important}
 
 /* review drawing */
-#ubs-dsb .dsb-review-plan{border:1px solid var(--sheet-line);border-radius:8px;margin-bottom:10px}
+#ubs-dsb .dsb-review-plan{width:100%;padding:4px}
+#ubs-dsb .dsb-review-plan svg{max-height:260px}
 
 /* build sheet */
-#ubs-dsb .dsb-sheet{position:sticky;top:92px;display:flex;flex-direction:column;background:#fff;border-radius:0 16px 16px 0}
-#ubs-dsb .dsb-sheet-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:14px 18px;background:var(--ink-navy);color:#fff;border-radius:0 15px 0 0}
-#ubs-dsb .dsb-sheet-kicker{font-family:var(--font-h);font-weight:600;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase}
-#ubs-dsb .dsb-sheet-type{font-family:var(--font-m);font-size:.72rem;color:#b7cdf0}
-#ubs-dsb .dsb-sheet-draw{min-height:150px;display:grid;place-items:center;gap:6px;padding:12px;border-bottom:1px solid var(--sheet-line);
-  background:linear-gradient(var(--sheet-grid) 1px,transparent 1px) 0 0/14px 14px,linear-gradient(90deg,var(--sheet-grid) 1px,transparent 1px) 0 0/14px 14px,var(--sheet-paper)}
-#ubs-dsb .dsb-sheet-draw .dsb-art{width:60%;height:110px}
+#ubs-dsb .dsb-sheet{position:sticky;top:84px;display:flex;flex-direction:column;background:#fff;border-radius:0 var(--r,6px) var(--r,6px) 0}
+#ubs-dsb .dsb-sheet-head{display:flex;justify-content:space-between;align-items:center;gap:.5rem;padding:.8rem 1.1rem;border-bottom:1px solid var(--line,#e4e8f0);background:var(--paper-2,#f6f8fc);border-radius:0 var(--r,6px) 0 0}
+#ubs-dsb .dsb-sheet-head b{font:600 .9rem var(--font-h)}
+#ubs-dsb .dsb-sheet-head span{font:500 .72rem var(--font-m);color:var(--ink-3)}
+#ubs-dsb .dsb-sheet-draw{min-height:140px;display:grid;place-items:center;gap:6px;padding:.7rem;border-bottom:1px solid var(--line,#e4e8f0);background:linear-gradient(rgba(18,70,171,.06) 1px,transparent 1px) 0 0/14px 14px,linear-gradient(90deg,rgba(18,70,171,.06) 1px,transparent 1px) 0 0/14px 14px,#fbfcfe}
+#ubs-dsb .dsb-sheet-draw .dsb-art{width:60%;height:100px}
 #ubs-dsb .dsb-sheet-draw .dsb-plan-svg{background:none;padding:0;width:100%}
-#ubs-dsb .dsb-sheet-draw .dsb-plan-svg svg{max-height:190px}
-#ubs-dsb .dsb-sheet-draw img{max-width:100%;max-height:150px;object-fit:contain}
-#ubs-dsb .dsb-sheet-empty{max-width:24ch;text-align:center;font-size:.84rem;color:var(--ink-3);line-height:1.5}
-#ubs-dsb .dsb-sheet-hint{font-family:var(--font-m);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--blue)}
-#ubs-dsb .dsb-sheet-specs{margin:0;padding:10px 18px 12px;display:grid}
-#ubs-dsb .dsb-sheet-specs > div{display:flex;align-items:baseline;gap:8px;padding:7px 0;font-size:.85rem;border-bottom:1px dotted var(--sheet-line)}
+#ubs-dsb .dsb-sheet-draw .dsb-plan-svg svg{max-height:180px}
+#ubs-dsb .dsb-sheet-draw img{max-width:100%;max-height:140px;object-fit:contain}
+#ubs-dsb .dsb-sheet-empty{max-width:24ch;text-align:center;font-size:.82rem;color:var(--ink-3);line-height:1.5}
+#ubs-dsb .dsb-sheet-hint{font:500 .68rem var(--font-m);text-transform:uppercase;letter-spacing:.08em;color:var(--blue)}
+#ubs-dsb .dsb-sheet-specs{margin:0;padding:.5rem 1.1rem .6rem;display:grid;max-height:46vh;overflow:auto}
+#ubs-dsb .dsb-sheet-specs > div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 .5rem;align-items:center;padding:.4rem 0;border-bottom:1px solid var(--line-2,#eef1f7)}
 #ubs-dsb .dsb-sheet-specs > div:last-child{border-bottom:0}
-#ubs-dsb .dsb-sheet-specs dt{flex:none;width:76px;color:var(--ink-3);font-family:var(--font-m);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em}
-#ubs-dsb .dsb-sheet-specs dd{margin:0;color:var(--ink);font-weight:500;min-width:0;overflow-wrap:anywhere}
-#ubs-dsb .dsb-sheet-specs .is-empty dt{width:auto;text-transform:none;letter-spacing:0;font-family:var(--font-b,inherit);font-size:.85rem}
-#ubs-dsb .dsb-sheet-price{display:grid;gap:2px;padding:14px 18px;border-top:1px solid var(--sheet-line);background:var(--sheet-paper)}
-#ubs-dsb .dsb-sheet-price .dsb-hero-price-label{font-family:var(--font-m);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3)}
-#ubs-dsb .dsb-sheet-price .dsb-hero-price-value{font-size:2rem;line-height:1.1;color:var(--ink-navy);letter-spacing:-.02em}
-#ubs-dsb .dsb-sheet-price small{color:var(--ink-3);font-size:.78rem}
-#ubs-dsb .dsb-sheet .dsb-cart-footer{padding:14px 18px 18px;background:#fff;border-top:1px solid var(--sheet-line);border-radius:0 0 16px 0;display:grid;gap:12px}
-#ubs-dsb .dsb-sheet .dsb-cart-row{display:grid;gap:10px}
-#ubs-dsb .dsb-sheet .dsb-add-btn{width:100%;justify-content:space-between}
-#ubs-dsb .dsb-sheet .dsb-cart-status{font-size:.8rem;margin:0}
+#ubs-dsb .dsb-sheet-specs dt{grid-column:1;margin:0;font:500 .68rem var(--font-m);text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3)}
+#ubs-dsb .dsb-sheet-specs dd{grid-column:1;margin:0;font-size:.84rem;font-weight:500;color:var(--ink);overflow-wrap:anywhere;line-height:1.35}
+#ubs-dsb .dsb-sheet-specs .dsb-edit{grid-column:2;grid-row:1/3}
+#ubs-dsb .dsb-sheet-specs .is-empty dt{text-transform:none;letter-spacing:0;font:400 .85rem var(--font-b);color:var(--ink-3)}
+#ubs-dsb .dsb-sheet-price{display:grid;gap:2px;padding:.8rem 1.1rem;border-top:1px solid var(--line,#e4e8f0);background:var(--paper-2,#f6f8fc)}
+#ubs-dsb .dsb-sheet-price-label{font:500 .68rem var(--font-m);text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3)}
+#ubs-dsb .dsb-sheet-price-value{font:600 1.7rem/1.1 var(--font-m);letter-spacing:-.02em;color:var(--ink)}
+#ubs-dsb .dsb-sheet-price-value.is-pending{font:600 1rem/1.3 var(--font-h);color:var(--ink-2)}
+#ubs-dsb .dsb-sheet-price small{color:var(--ink-3);font-size:.76rem;line-height:1.4}
 
 /* mobile price bar */
-.dsb-mbar{display:none}
 @media (max-width:1023px){
-  #ubs-dsb .dsb-layout{grid-template-columns:minmax(0,1fr)}
-  #ubs-dsb .dsb-main{border-right:0;border-bottom:1px solid var(--sheet-line)}
-  #ubs-dsb .dsb-crumbs{border-radius:16px 16px 0 0}
-  #ubs-dsb .dsb-sheet{position:static;border-radius:0 0 16px 16px}
+  #ubs-dsb .dsb-sheet{position:static;border-radius:0 0 var(--r,6px) var(--r,6px)}
   #ubs-dsb .dsb-sheet-head{border-radius:0}
-  #ubs-dsb .dsb-sheet .dsb-cart-footer{border-radius:0 0 16px 16px}
-  .dsb-mbar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:12px;
-    padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--sheet-line,#d6dfee);box-shadow:0 -10px 24px -18px rgba(11,26,51,.45);transition:transform .25s}
+  #ubs-dsb .dsb-sheet-specs{max-height:none}
+  .dsb-mbar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:.8rem;padding:.55rem 1rem calc(.55rem + env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--line,#e4e8f0);box-shadow:0 -8px 20px -16px rgba(11,26,51,.4);transition:transform .25s}
   .dsb-mbar.is-off{transform:translateY(110%)}
-  .dsb-mbar small{display:block;font-family:var(--font-m);font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3)}
-  .dsb-mbar b{font-family:var(--font-m);font-size:1.25rem;color:#0b1a33}
-  .dsb-mbar .dsb-btn{padding:.7rem 1.1rem!important}
-  body:has(.dsb-mbar:not(.is-off)) .floaty{bottom:84px}
-  #ubs-dsb .dsb-app-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-  #ubs-dsb .dsb-app-card{width:auto}
+  .dsb-mbar small{display:block;font:500 .64rem var(--font-m);text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3)}
+  .dsb-mbar b{font:600 1.1rem var(--font-m);color:var(--ink)}
+  .dsb-mbar .dsb-btn{min-height:40px;padding:0 .9rem}
+  body:has(.dsb-mbar:not(.is-off)) .floaty{bottom:76px}
+  /* the fixed bar never covers the last input or the Continue button */
+  body:has(.dsb-mbar:not(.is-off)) .dsb-stage{padding-bottom:84px}
 }
 @media (max-width:560px){
-  #ubs-dsb{border-radius:12px}
-  #ubs-dsb .dsb-crumb{min-width:104px;padding:11px 10px}
-  #ubs-dsb .dsb-crumb-value{max-width:84px}
   .dsb-plan-svg{padding:6px 4px 2px}
   #ubs-dsb .dsb-plan .dsb-plan-svg text.dim-text[data-field]{font-size:11px!important}
 }
-@media (prefers-reduced-motion:reduce){#ubs-dsb .dsb-card:hover,#ubs-dsb .dsb-mode-card:hover,#ubs-dsb .dsb-app-card:hover{transform:none}.dsb-mbar{transition:none}}
-@media print{.dsb-mbar,#ubs-dsb .dsb-sheet .dsb-cart-footer{display:none!important}}
-.dsb-art--flip svg{transform:scaleX(-1)}
-#ubs-dsb .dsb-app-card-img{height:96px;flex:none}#ubs-dsb .dsb-app-card-img img{max-height:96px}
+@media (prefers-reduced-motion:reduce){.dsb-mbar{transition:none}}
+@media print{.dsb-mbar{display:none!important}}
 
-/* yoke catalog: every card the same size (owner, 2026-10-25) */
-#ubs-dsb .dsb-catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));grid-auto-rows:1fr;gap:14px}
-#ubs-dsb .dsb-catalog-card{display:flex;flex-direction:column;gap:6px;height:100%;padding:12px;text-align:left;background:#fff;border:1px solid var(--sheet-line)!important;border-radius:12px!important;box-shadow:none!important;cursor:pointer;transition:border-color .15s,box-shadow .2s,transform .2s}
-#ubs-dsb .dsb-catalog-card:hover,#ubs-dsb .dsb-catalog-card:focus-visible{border-color:var(--blue)!important;box-shadow:0 10px 24px -18px rgba(18,70,171,.55)!important;transform:translateY(-2px);outline:none}
-#ubs-dsb .dsb-cat-img{display:grid;place-items:center;height:132px;flex:none;border-radius:8px;border:1px solid var(--sheet-line);overflow:hidden;
-  background:linear-gradient(var(--sheet-grid) 1px,transparent 1px) 0 0/12px 12px,linear-gradient(90deg,var(--sheet-grid) 1px,transparent 1px) 0 0/12px 12px,var(--sheet-paper)}
-#ubs-dsb .dsb-cat-img img{display:block;width:auto;height:auto;max-width:88%;max-height:118px;object-fit:contain}
-#ubs-dsb .dsb-cat-img:empty::after{content:"";width:46px;height:46px;opacity:.35;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230b1a33' stroke-width='1.5'%3E%3Cpath d='M21 8 12 3 3 8v8l9 5 9-5z'/%3E%3Cpath d='M3 8l9 5 9-5M12 13v8'/%3E%3C/svg%3E") center/contain no-repeat}
-#ubs-dsb .dsb-cat-sku{margin-top:4px;font-family:var(--font-m);font-size:.74rem;font-weight:600;color:var(--blue);letter-spacing:.01em}
-#ubs-dsb .dsb-cat-name{font-size:.84rem;font-weight:500;line-height:1.35;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.7em}
-#ubs-dsb .dsb-cat-specs{display:grid;margin-top:2px;border-top:1px dotted var(--sheet-line)}
-#ubs-dsb .dsb-cat-specs > span{display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px dotted var(--sheet-line);font-size:.74rem;min-height:1.6em}
-#ubs-dsb .dsb-cat-specs i{font-style:normal;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#ubs-dsb .dsb-cat-specs b{font-family:var(--font-m);font-weight:600;color:var(--ink);white-space:nowrap}
-#ubs-dsb .dsb-cat-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding-top:8px}
-#ubs-dsb .dsb-cat-price{font-family:var(--font-m);font-weight:700;font-size:1.02rem;color:var(--ink-navy)}
-#ubs-dsb .dsb-cat-select{display:inline-flex;align-items:center;min-height:34px;padding:0 14px;border-radius:999px;background:var(--blue);color:#fff;font-family:var(--font-h);font-weight:600;font-size:.8rem}
-#ubs-dsb .dsb-catalog-card:hover .dsb-cat-select{background:var(--blue-700,#0d337d)}
-@media (max-width:560px){#ubs-dsb .dsb-catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}#ubs-dsb .dsb-cat-img{height:104px}#ubs-dsb .dsb-cat-img img{max-height:92px}#ubs-dsb .dsb-cat-specs > span{font-size:.68rem}}
+/* ============================================================================
+   BUILDER v3 (2026-11): one question at a time in a single centred column, no
+   drawing preview; a slim dock at the bottom carries the answers and the price.
+   Loaded last: everything is scoped to #ubs-dsb to win over dsb.css.
+   ========================================================================== */
+.bld-head .pagehead__row{align-items:center}
+.bld-switch{display:inline-flex;padding:3px;background:var(--paper-2);border:1px solid var(--line);border-radius:var(--r)}
+.bld-switch a{padding:.45rem .9rem;border-radius:var(--r-sm);color:var(--ink-2);font-weight:600;font-size:.88rem}
+.bld-switch a.is-on{background:#fff;color:var(--ink);box-shadow:var(--sh-1)}
+.bldwrap{padding-top:.75rem}
+#ubs-dsb .dsb-sheet{display:none!important}
+#ubs-dsb .dsb-layout{display:block;max-width:880px;margin:0 auto}
+#ubs-dsb .dsb-main{background:#fff;border:1px solid var(--line);border-radius:var(--r);box-shadow:none;padding:0}
+/* progress: back, step label, a thin bar */
+#ubs-dsb .dsb-progress{display:flex;align-items:center;gap:.75rem;padding:.75rem 1.1rem;border-bottom:1px solid var(--line);position:relative;background:#fff;border-radius:var(--r) var(--r) 0 0}
+#ubs-dsb .dsb-back{display:inline-flex;align-items:center;gap:.35rem;height:34px;padding:0 .7rem;border:1px solid var(--line-strong);border-radius:var(--r-sm);background:#fff;color:var(--ink-2);font:600 .84rem var(--font-b)}
+#ubs-dsb .dsb-back:hover{border-color:var(--ink-3);color:var(--ink)}
+#ubs-dsb .dsb-progress-text{display:flex;align-items:baseline;gap:.5rem;min-width:0;font-size:.86rem;color:var(--ink-2)}
+#ubs-dsb .dsb-progress-text b{font:600 .74rem var(--font-m);letter-spacing:.04em;text-transform:uppercase;color:var(--blue)}
+#ubs-dsb .dsb-progress-text span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#ubs-dsb .dsb-bar{position:absolute;left:0;right:0;bottom:-1px;height:3px;background:transparent;border-radius:0}
+#ubs-dsb .dsb-bar i{display:block;height:100%;background:var(--blue);border-radius:0;transition:width var(--dur-2) var(--ease)}
+#ubs-dsb .dsb-stage{padding:1.5rem 1.4rem 1.75rem}
+#ubs-dsb .dsb-step-head{margin-bottom:1.1rem}
+#ubs-dsb .dsb-step-title{font-size:1.35rem;font-weight:600;line-height:1.25;margin:0;color:var(--ink)}
+#ubs-dsb .dsb-step-desc{margin:.35rem 0 0;color:var(--ink-3);font-size:.92rem;max-width:62ch}
+/* answers: a row per choice, art on the left when there is a drawing, a clear selected state */
+#ubs-dsb .dsb-tree-list,#ubs-dsb .dsb-cards,#ubs-dsb [data-yoke-choices],#ubs-dsb .dsb-app-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem}
+#ubs-dsb .dsb-tree--list .dsb-tree-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:.45rem}
+#ubs-dsb .dsb-opt,#ubs-dsb .dsb-card,#ubs-dsb .dsb-app-card{position:relative;display:flex;align-items:center;gap:.85rem;width:100%;min-width:0;min-height:60px;margin:0;
+  padding:.8rem .95rem;background:#fff;border:1px solid var(--line-strong);border-radius:var(--r);box-shadow:none;text-align:left;cursor:pointer;
+  transition:border-color var(--dur-1) var(--ease-out),background var(--dur-1) var(--ease-out)}
+#ubs-dsb .dsb-opt:hover,#ubs-dsb .dsb-card:hover,#ubs-dsb .dsb-app-card:hover{border-color:var(--blue);transform:none;box-shadow:none}
+#ubs-dsb .dsb-opt.is-on,#ubs-dsb .dsb-card.is-on,#ubs-dsb .dsb-app-card.is-on,#ubs-dsb .dsb-app-card.dsb-app-card--on{border-color:var(--blue);background:var(--blue-050);box-shadow:inset 0 0 0 1px var(--blue)}
+#ubs-dsb .dsb-opt-art,#ubs-dsb .dsb-opt-img{flex:none;width:96px;height:56px;display:grid;place-items:center;border-radius:var(--r-sm);background:var(--paper-2);overflow:hidden}
+#ubs-dsb .dsb-opt-art svg,#ubs-dsb .dsb-opt-img img{width:100%;height:100%;object-fit:contain}
+#ubs-dsb .dsb-opt-body,#ubs-dsb .dsb-card-body{display:flex;flex-direction:column;gap:.15rem;flex:1;min-width:0}
+#ubs-dsb .dsb-opt-label,#ubs-dsb .dsb-card-title{font:600 .95rem/1.3 var(--font-b);color:var(--ink)}
+#ubs-dsb .dsb-opt-note,#ubs-dsb .dsb-card-desc{font-size:.82rem;line-height:1.4;color:var(--ink-3)}
+#ubs-dsb .dsb-card-mono{font:500 .74rem var(--font-m);color:var(--ink-3)}
+#ubs-dsb .dsb-card-price{flex:none;font:600 .92rem var(--font-m);color:var(--ink)}
+#ubs-dsb .dsb-opt-arrow{flex:none;color:var(--ink-3);font-size:1.1rem}
+#ubs-dsb .dsb-opt.is-on .dsb-opt-arrow,#ubs-dsb .dsb-card.is-on .dsb-opt-arrow{color:var(--blue)}
+#ubs-dsb .dsb-tree--list .dsb-opt{min-height:46px;padding:.55rem .75rem}
+#ubs-dsb .dsb-tree--list .dsb-opt-arrow{display:none}
+#ubs-dsb .dsb-tree-group{grid-column:1/-1;margin:.6rem 0 .1rem;font:600 .74rem var(--font-m);letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3)}
+#ubs-dsb .dsb-tree-search{grid-column:1/-1;margin-bottom:.6rem;height:42px}
+/* front / rear ends: the drawing on top, the name under it */
+#ubs-dsb .dsb-app-cards{grid-template-columns:repeat(3,minmax(0,1fr))}
+#ubs-dsb .dsb-app-card{flex-direction:column;align-items:stretch;gap:.5rem;padding:.7rem}
+#ubs-dsb .dsb-app-card img,#ubs-dsb .dsb-app-card svg{width:100%;height:84px;object-fit:contain;background:var(--paper-2);border-radius:var(--r-sm)}
+/* catalog picks. Kit row: photo | part number, name (2 lines max), series | price. The grid column and the photo box
+   are the same size at every width (a phone rule in dsb.css made the column 48px under a 64px box: text ran under it). */
+#ubs-dsb .dsb-catalog-card,#ubs-dsb .dsb-hw{min-width:0;overflow:hidden;border-color:var(--line-strong)}
+#ubs-dsb .dsb-catalog-card:hover,#ubs-dsb .dsb-catalog-card.is-on,#ubs-dsb .dsb-hw:hover,#ubs-dsb .dsb-hw.is-on{border-color:var(--blue)}
+#ubs-dsb .dsb-hw{grid-template-columns:56px minmax(0,1fr) auto;gap:.85rem;padding:.65rem .85rem;min-height:72px}
+#ubs-dsb .dsb-hw-img{position:relative;width:56px;height:56px;padding:0;border:1px solid var(--line);border-radius:var(--r-sm);background:#fff;overflow:hidden;box-sizing:border-box}
+#ubs-dsb .dsb-hw-img img{position:absolute;inset:3px;width:calc(100% - 6px);height:calc(100% - 6px);max-width:none;max-height:none;object-fit:contain}
+#ubs-dsb .dsb-hw-img:empty::after{content:"";position:absolute;inset:14px;border-radius:2px;background:var(--paper-2)}
+#ubs-dsb .dsb-hw-body{gap:.15rem}
+#ubs-dsb .dsb-hw-body b{font:600 .8rem var(--font-m);color:var(--blue)}
+#ubs-dsb .dsb-hw-body span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:.86rem;line-height:1.35;color:var(--ink)}
+#ubs-dsb .dsb-hw-body small{font:500 .72rem var(--font-m);color:var(--ink-3)}
+#ubs-dsb .dsb-hw-price{font:600 .95rem var(--font-m);white-space:nowrap}
+#ubs-dsb .dsb-hw-title{margin:1.1rem 0 .35rem;font:600 .78rem var(--font-m);letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3)}
+#ubs-dsb .dsb-cat-img{display:grid;place-items:center;height:110px;overflow:hidden;background:#fff}
+#ubs-dsb .dsb-cat-img img{display:block;width:100%;height:100%;object-fit:contain}
+#ubs-dsb .dsb-cat-name{overflow-wrap:anywhere}
+/* spline counting guide */
+#ubs-dsb .dsb-guidebox{margin:0 0 1.1rem}
+.sg{display:grid;grid-template-columns:180px minmax(0,1fr);gap:1.1rem;align-items:center;padding:1rem;background:var(--paper-2);border:1px solid var(--line);border-radius:var(--r)}
+.sg-svg{width:100%;height:auto}
+.sg-barrel{fill:#fff;stroke:var(--ink-3);stroke-width:1.5}
+.sg-root{fill:#e9edf3;stroke:var(--ink-3);stroke-width:1}
+.sg-tooth{fill:#c9d1dc;stroke:var(--ink-3);stroke-width:.8}
+.sg-blind{fill:#ffd9b8;stroke:#d9661f;stroke-width:1.4}
+.sg-num{font:600 10px var(--font-m);fill:var(--blue-700);text-anchor:middle}
+.sg-arrow{fill:none;stroke:var(--blue);stroke-width:2}
+.sg-arrowhead{fill:var(--blue)}
+.sg-text h3{margin:0 0 .4rem;font-size:1rem}
+.sg-text ol{margin:0;padding-left:1.1rem;display:grid;gap:.3rem;font-size:.88rem;color:var(--ink-2)}
+.sg-key{display:flex;align-items:center;gap:.4rem;margin:.6rem 0 0;font-size:.8rem;color:var(--ink-3)}
+.sg-key-blind{width:14px;height:10px;background:#ffd9b8;border:1.4px solid #d9661f;border-radius:2px}
+/* the dock */
+#ubs-dsb .bld-dock{position:sticky;bottom:0;z-index:20;display:flex!important;align-items:center;justify-content:space-between;gap:1rem;max-width:880px;margin:.9rem auto 0;
+  padding:.7rem 1rem;background:#fff;border:1px solid var(--line-strong);border-radius:var(--r);box-shadow:0 -6px 18px -14px rgba(11,26,51,.5)}
+.bld-dock__sum{min-width:0;font-size:.84rem;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bld-dock__price{flex:none;display:flex;align-items:baseline;gap:.45rem}
+.bld-dock__price small{font:600 .7rem var(--font-m);letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3)}
+.bld-dock__price b{font:600 1.1rem var(--font-m);color:var(--ink)}
+.bld-help{max-width:880px;margin:1rem auto 0;font-size:.86rem;color:var(--ink-3);text-align:center}
+.bld-help a{font-weight:600}
+@media (max-width:760px){
+  #ubs-dsb .dsb-stage{padding:1.1rem .9rem 1.25rem}
+  #ubs-dsb .dsb-tree-list,#ubs-dsb .dsb-cards,#ubs-dsb [data-yoke-choices]{grid-template-columns:1fr}
+  #ubs-dsb .dsb-tree--list .dsb-tree-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #ubs-dsb .dsb-app-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #ubs-dsb .dsb-opt-art,#ubs-dsb .dsb-opt-img{width:72px;height:46px}
+  #ubs-dsb .dsb-step-title{font-size:1.15rem}
+  .sg{grid-template-columns:96px minmax(0,1fr);gap:.75rem;align-items:start;padding:.8rem}.sg-svg{max-width:96px}
+  .sg-text ol{font-size:.84rem}
+  /* phones: the answers first, the counting guide right under them */
+  #ubs-dsb [data-step="tree"].dsb-step--active{display:flex;flex-direction:column}
+  #ubs-dsb [data-step="tree"] .dsb-guidebox{order:3;margin:1rem 0 0}
+  #ubs-dsb .bld-dock{margin-inline:-.25rem;border-radius:var(--r) var(--r) 0 0}
+}
+
+/* a choice that cannot be taken here (no catalog yoke fits): visible, with its reason, not clickable */
+#ubs-dsb .dsb-card.is-off{opacity:.6;cursor:not-allowed;background:var(--paper-2)}
+#ubs-dsb .dsb-card.is-off .dsb-opt-arrow{visibility:hidden}
+#ubs-dsb .dsb-empty--yoke{display:grid;gap:.6rem;max-width:520px;padding:.25rem 0;text-align:left;grid-column:1/-1}
+#ubs-dsb .dsb-empty--yoke p{margin:0 0 .2rem;color:var(--ink-2);font-size:.95rem}
+#ubs-dsb .dsb-empty--yoke .dsb-btn{justify-self:start}
+#ubs-dsb a.dsb-card{color:inherit;text-decoration:none}
+#ubs-dsb .dsb-catalog-filters label{font:600 .72rem var(--font-m);letter-spacing:.03em;text-transform:none;color:var(--ink-3)}
+#ubs-dsb .dsb-tag--plain{background:var(--paper-2);border-color:var(--line);color:var(--ink-2)}
+
+/* end choices: a real shaft photo cropped on the end being chosen */
+#ubs-dsb .dsb-app-card-img--photo{display:block;height:96px;border-radius:var(--r-sm);background:#fff;overflow:hidden;border:1px solid var(--line)}
+#ubs-dsb .dsb-app-card .dsb-app-card-img--photo img{width:100%;height:100%;object-fit:cover;background:#fff;border-radius:0}
+#ubs-dsb .dsb-app-card-img--line{display:grid;place-items:center;height:96px;background:#fff;border:1px solid var(--line);border-radius:var(--r-sm)}
+#ubs-dsb .dsb-app-card-img--line svg{width:88%;height:auto;max-height:80px;background:none}
+#ubs-dsb .dsb-app-card-label{font:600 .95rem/1.3 var(--font-b);color:var(--ink)}
+#ubs-dsb .dsb-app-card-desc,#ubs-dsb .dsb-app-card small{font-size:.82rem;line-height:1.4;color:var(--ink-3)}
+#ubs-dsb .dsb-stage{min-height:0}   /* the card ends with its content (it left an empty band under short steps) */
+/* build options: our headings, one clean row per choice */
+#ubs-dsb .dsb-optgroup{margin:0 0 1.1rem}
+#ubs-dsb .dsb-optgroup h3{margin:0 0 .45rem;font:600 .78rem var(--font-m);letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3)}
+#ubs-dsb .dsb-optgroup{display:grid;gap:.45rem}
+#ubs-dsb .dsb-length-check{font:500 .88rem/1.45 var(--font-b);letter-spacing:0}
+/* end choices: our drawing, centred on white */
+#ubs-dsb .dsb-app-card-img--line .dsb-art{display:block;width:92%;max-width:240px;margin:auto}
+#ubs-dsb .dsb-app-card-img--line .dsb-art svg{display:block;width:100%;height:auto;max-height:84px;background:none}
+#ubs-dsb .dsb-app-card-img--line{height:76px}
+/* one frame only: the step card; the old widget wrapper drew a second white box around it */
+.bldwrap #ubs-dsb.ubs-dsb-wrap{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}

@@ -71,7 +71,7 @@ class CheckinBridgeTest extends TestCase
             [$e->labor_request, $e->driveshaft_pieces, $e->driveshaft_material, $e->designer_type, $e->measurement_a, $e->measurement_b, $e->measurement_c, $e->payment, $e->job_status, $e->created_by_name, (int) $e->location_id]);
         $this->assertEquals(900, $e->total);
         $this->assertStringContainsString('ONLINE ORDER ' . $order->order_number, $e->notes);
-        $this->assertStringContainsString('Front application: Slip Yoke with Flange Yoke', $e->notes);
+        $this->assertStringContainsString('Front end: Slip Yoke with Flange Yoke', $e->notes);
         $this->assertStringContainsString('Customer notes: Lowered 2 in.', $e->notes);
         $info = json_decode($e->custom, true);
         $this->assertSame([$order->order_number, $order->email, 'Paid online', 'UPS Ground', '$945.00'], [$info['Online order'], $info['Customer e-mail'], $info['Payment'], $info['Delivery'], $info['Order total']]);

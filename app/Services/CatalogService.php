@@ -1238,8 +1238,8 @@ class CatalogService
         }
         if (($p['stock_status'] ?? '') === 'instock' && ($p['stock'] ?? 0) > 0) {
             $faq[] = [__('Is :sku in stock?', ['sku' => $sku]), $p['stock'] == 1
-                ? __('Yes. :n is in stock in Florida. Orders placed before 2pm ET on a weekday ship the same day.', ['n' => $p['stock']])
-                : __('Yes. :n are in stock in Florida. Orders placed before 2pm ET on a weekday ship the same day.', ['n' => $p['stock']])];
+                ? __('Yes. :n is in stock in Florida. Orders placed before 2pm EST on a weekday ship the same day.', ['n' => stock_label($p['stock'])])
+                : __('Yes. :n are in stock in Florida. Orders placed before 2pm EST on a weekday ship the same day.', ['n' => stock_label($p['stock'])])];
         }
         return array_slice($faq, 0, 4);
     }

@@ -75,22 +75,6 @@ class AppServiceProvider extends ServiceProvider
                 }
             }));
 
-            // Wishlist product ids for the current viewer, so the PDP and the
-            // catalog table can pre-render the heart toggle as filled. Shared
-            // from a composer (not the layout's own @php block) because
-            // Blade renders an @extends child view BEFORE the parent layout,
-            // so a variable the layout defines is invisible to that child.
-            // computed once per request: this composer fires for every view and component (hundreds per table page)
-            static $wished = null;
-            if ($wished === null) {
-                try {
-                    $key = Auth::check() ? ['user_id' => Auth::id()] : ['session_id' => session()->getId()];
-                    $wished = DB::table('wishlists')->where($key)->pluck('wp_product_id')->all();
-                } catch (\Throwable $e) {
-                    $wished = [];
-                }
-            }
-            $view->with('udsWished', $wished);
         });
     }
 }

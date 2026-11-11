@@ -35,130 +35,65 @@
     setTimeout(showAll, 1200);
   }
 
-  /* ---------- sticky header shadow ---------- */
+  /* ---------- top bar shadow once the page scrolls under it ---------- */
   function initHeader() {
     var head = document.getElementById('uhead');
     if (!head) return;
     var ticking = false;
-    // stick only once the header actually reaches the top (below the promo bar), with hysteresis
-    var promo = document.querySelector('.upromo');
-    function update() {
-      var offset = promo ? promo.offsetHeight : 0, y = window.scrollY, on = head.classList.contains('is-stuck');
-      if (!on && y > offset + 2) head.classList.add('is-stuck');
-      else if (on && y < Math.max(0, offset - 12)) head.classList.remove('is-stuck');
-      ticking = false;
-    }
+    function update() { head.classList.toggle('is-stuck', window.scrollY > 2); ticking = false; }
     window.addEventListener('scroll', function () {
       if (!ticking) { window.requestAnimationFrame(update); ticking = true; }
     }, { passive: true });
     update();
   }
 
-  /* ---------- mobile drawer ---------- */
-  function initDrawer() {
-    var burger = document.getElementById('uburger');
-    var drawer = document.getElementById('udrawer');
-    if (!burger || !drawer) return;
-    var closeBtn = drawer.querySelector('[data-drawer-close]');
-    var scrim = drawer.querySelector('.udrawer__scrim');
-    function open() {
-      drawer.classList.add('is-open');
-      drawer.setAttribute('aria-hidden', 'false');
-      burger.setAttribute('aria-expanded', 'true');
-      document.documentElement.style.overflow = 'hidden';
+  /* ---------- sidebar menu (partials/sidebar): groups open and close, the desktop sidebar folds to an icon
+     rail (remembered; the layout head applies it before paint), and below 1100px it is the off-canvas menu ---------- */
+  function initSidebar() {
+    var sb = document.getElementById('sb');
+    if (!sb) return;
+    var html = document.documentElement, burger = document.getElementById('uburger'), scrim = document.querySelector('.sb-scrim');
+    var desk = window.matchMedia('(min-width:1100px)'), fold = sb.querySelector('[data-sb-fold]');
+    var t = window.udsT || function (s) { return s; };
+    function setRail(on) {
+      html.classList.toggle('sb-rail', on);
+      try { localStorage.setItem('uds.rail', on ? '1' : '0'); } catch (e) {}
+      if (fold) { var l = on ? t('Expand menu') : t('Collapse menu'); fold.setAttribute('aria-label', l); fold.title = l; }
+      window.dispatchEvent(new Event('resize'));   // the parts tables refit to the new width
+    }
+    if (fold && html.classList.contains('sb-rail')) { fold.setAttribute('aria-label', t('Expand menu')); fold.title = t('Expand menu'); }
+    // focus moves only for keyboard users: a programmatic focus after a tap leaves a focus ring on phones
+    function open(kbd) {
+      html.classList.add('sb-open'); if (scrim) scrim.hidden = false;
+      if (burger) burger.setAttribute('aria-expanded', 'true');
+      html.style.overflow = 'hidden';
+      var x = sb.querySelector('.sb__x'); if (x && kbd) x.focus();
     }
     function close() {
-      drawer.classList.remove('is-open');
-      drawer.setAttribute('aria-hidden', 'true');
-      burger.setAttribute('aria-expanded', 'false');
-      document.documentElement.style.overflow = '';
+      if (!html.classList.contains('sb-open')) return;
+      html.classList.remove('sb-open'); if (scrim) scrim.hidden = true;
+      if (burger) burger.setAttribute('aria-expanded', 'false');
+      html.style.overflow = '';
     }
-    burger.addEventListener('click', function () {
-      drawer.classList.contains('is-open') ? close() : open();
+    sb.addEventListener('click', function (e) {
+      // the group names are links (Parts catalog → /shop, My account → the account…); the arrow beside each opens its list
+      var b = e.target.closest('.sb__tog, .sb__subbtn');
+      if (b) {
+        var box = b.closest('.sb__grp, .sb__sub');
+        var on = !box.classList.contains('is-open');
+        box.classList.toggle('is-open', on); b.setAttribute('aria-expanded', on ? 'true' : 'false');
+        return;
+      }
+      if (e.target.closest('[data-sb-fold]')) { setRail(!html.classList.contains('sb-rail')); return; }
+      if (e.target.closest('[data-sb-close]')) { close(); if (burger && e.detail === 0) burger.focus(); }
     });
-    if (closeBtn) closeBtn.addEventListener('click', close);
+    if (burger) burger.addEventListener('click', function (e) { if (html.classList.contains('sb-open')) close(); else open(e.detail === 0); if (e.detail !== 0) burger.blur(); });
     if (scrim) scrim.addEventListener('click', close);
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && drawer.classList.contains('is-open')) close();
-    });
-    drawer.addEventListener('click', function (e) {
-      var a = e.target.closest('a[href]');
-      if (a && !a.hasAttribute('data-drawer-close')) close();
-    });
-  }
-
-  /* ---------- header dropdown menus (hover on desktop, click on touch, keyboard) ---------- */
-  function initMenus() {
-    var items = document.querySelectorAll('.umenu__item.has-menu');
-    var touch = window.matchMedia('(hover: none)').matches || window.innerWidth <= 1240;
-    items.forEach(function (item) {
-      var trigger = item.querySelector('.umenu__link');
-      var menu = item.querySelector('.umega');
-      if (!trigger || !menu) return;
-      trigger.setAttribute('aria-expanded', 'false');
-      trigger.setAttribute('aria-haspopup', 'true');
-      function setOpen(v) {
-        menu.classList.toggle('is-open', v);
-        trigger.setAttribute('aria-expanded', v ? 'true' : 'false');
-      }
-      if (touch && trigger.tagName === 'A') {
-        trigger.addEventListener('click', function (e) {
-          if (!menu.classList.contains('is-open')) { e.preventDefault(); setOpen(true); }
-        });
-      }
-      trigger.addEventListener('keydown', function (e) {
-        if (e.key === 'ArrowDown') { e.preventDefault(); setOpen(true); var f = menu.querySelector('a'); if (f) f.focus(); }
-        if (e.key === 'Escape') setOpen(false);
-      });
-      item.addEventListener('focusout', function () {
-        setTimeout(function () { if (!item.contains(document.activeElement)) setOpen(false); }, 0);
-      });
-      document.addEventListener('click', function (e) {
-        if (!item.contains(e.target)) setOpen(false);
-      });
-    });
-  }
-
-  /* ---------- mark the current top-level nav item ---------- */
-  function initActiveNav() {
-    var path = location.pathname.replace(/\/$/, '') || '/';
-    document.querySelectorAll('.umenu__link[data-match]').forEach(function (link) {
-      var pats = link.getAttribute('data-match').split(',');
-      var hit = pats.some(function (p) {
-        p = p.trim();
-        return p === '/' ? path === '/' : (path === p || path.indexOf(p + '/') === 0);
-      });
-      if (hit) link.classList.add('is-active');
-    });
-  }
-
-  /* ---------- "Our locations" store popover: was hover/focus-within only in
-     CSS, so it never opened on tap (no hover on touch) and aria-expanded sat
-     on "false" forever regardless of state. Click-driven now, same pattern as
-     the header mega menus. ---------- */
-  function initStoreMenu() {
-    var wrap = document.querySelector('.upromo__stores');
-    var trigger = wrap && wrap.querySelector('.upromo__storebtn');
-    var menu = wrap && wrap.querySelector('.upromo__storemenu');
-    if (!wrap || !trigger || !menu) return;
-    trigger.setAttribute('aria-haspopup', 'true');
-    function setOpen(v) {
-      wrap.classList.toggle('is-open', v);
-      trigger.setAttribute('aria-expanded', v ? 'true' : 'false');
-    }
-    trigger.addEventListener('click', function (e) {
-      e.stopPropagation();
-      setOpen(!wrap.classList.contains('is-open'));
-    });
-    trigger.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') { setOpen(false); trigger.blur(); }
-    });
-    document.addEventListener('click', function (e) {
-      if (!wrap.contains(e.target)) setOpen(false);
-    });
-    wrap.addEventListener('focusout', function () {
-      setTimeout(function () { if (!wrap.contains(document.activeElement)) setOpen(false); }, 0);
-    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && html.classList.contains('sb-open')) { close(); if (burger) burger.focus(); } });
+    (desk.addEventListener ? desk.addEventListener.bind(desk, 'change') : desk.addListener.bind(desk))(function () { if (desk.matches) close(); });
+    // the current page's link in view in a long menu
+    var cur = sb.querySelector('.sb__list a.is-on'), sc = sb.querySelector('.sb__scroll');
+    if (cur && sc && cur.offsetTop > sc.clientHeight - 60) sc.scrollTop = cur.offsetTop - sc.clientHeight / 2;
   }
 
   /* ---------- language menus (partials/lang-switch): a <details> opens on its own; this closes the
@@ -192,8 +127,20 @@
     });
   }
 
+  /* ---------- "About …" popovers (.cinfo): hover and focus are CSS; a tap toggles them (iOS gives buttons no focus) ---------- */
+  function initInfoPops() {
+    document.addEventListener('click', function (e) {
+      var b = e.target.closest('.cinfo__btn'), cur = b && b.parentNode;
+      document.querySelectorAll('.cinfo.is-open').forEach(function (c) { if (c !== cur) c.classList.remove('is-open'); });
+      if (cur) cur.classList.toggle('is-open');
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') document.querySelectorAll('.cinfo.is-open').forEach(function (c) { c.classList.remove('is-open'); });
+    });
+  }
+
   function boot() {
-    initReveal(); initHeader(); initDrawer(); initMenus(); initActiveNav(); initStoreMenu(); initLangMenus();
+    initReveal(); initHeader(); initSidebar(); initInfoPops(); initLangMenus();
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot);

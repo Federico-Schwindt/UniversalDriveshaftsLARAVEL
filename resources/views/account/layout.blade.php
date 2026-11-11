@@ -31,7 +31,7 @@
 </div>
 
 <section class="acct-page"><div class="wrap"><div class="acct-shell">
-  @include('account.partials.sidebar', ['active' => trim($__env->yieldContent('active','dashboard'))])
+  {{-- the account menu lives under "My account" in the site sidebar (owner, 2026-11): no second menu in the page --}}
   <main class="acct-main" id="acct-main">
     @if(empty($user->email_verified_at))
       <div class="acct-note">

@@ -5,45 +5,45 @@ namespace App\Services;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Read-only catalog queries against the copied WordPress/WooCommerce DB (connection 'wp').
- * Ports DSB_Yoke_Ajax + dsb_premade_products from ubs-driveshaft-builder v2.9.1.
+ * Read-only catalog queries for the driveshaft builder against the local WooCommerce catalog (connection 'wp').
+ * Yokes (flange / transmission) and u-joint hardware (strap and u-bolt kits).
  */
 class DsbCatalog
 {
     public const FLANGE_CAT_ID = 307;    // product_cat: flange yokes
-    public const TRANS_CAT_ID  = 1802;   // product_cat: transmission yokes
-    public const PREMADE_CAT_ID = 5377;  // product_cat: pre-made driveshafts
+    public const TRANS_CAT_ID  = 1802;   // product_cat: transmission (slip) yokes
+    public const STRAP_CAT_ID  = 4839;   // product_cat: strap kits
+    public const UBOLT_CAT_ID  = 4838;   // product_cat: u-bolt kits
 
     public const FLANGE_FILTERS = ['pilot-dia', 'cj-to-flat', 'bolt-holes', 'bolt-circle-dia'];
     public const TRANS_FILTERS  = ['splines-count-dia', 'center-u-joint-to-end', 'hub-dia'];
+    public const HARDWARE_ATTRS = ['series', 'fits-cap-dia', 'thread-dia'];
+
+    /** Builder end type -> the yoke category the customer picks a new part from. */
+    public const YOKE_TYPES = ['flange' => self::FLANGE_CAT_ID, 'trans' => self::TRANS_CAT_ID];
+    /** Hardware kind -> category. */
+    public const HARDWARE_TYPES = ['strap' => self::STRAP_CAT_ID, 'ubolt' => self::UBOLT_CAT_ID];
 
     private const UPLOADS = '/uploads/wp/';   // local mirror of the old WordPress uploads (App\Support\WpUploads)
 
-    /** Yoke catalog search — mirrors AJAX dsb_yoke_catalog. */
-    public function yokes(string $type, string $series, array $filters, int $page, int $perPage): array
+    /**
+     * Yoke catalog search. $spline (transmission yokes only) keeps the yokes whose spline count attribute
+     * ("26/27 X 1.125") names that count; $ids limits the result to given product ids (restoring a saved build).
+     */
+    public function yokes(string $type, string $series, array $filters, int $page, int $perPage, string $spline = '', array $ids = []): array
     {
-        $catId = $type === 'flange' ? self::FLANGE_CAT_ID : self::TRANS_CAT_ID;
+        $catId = self::YOKE_TYPES[$type] ?? self::FLANGE_CAT_ID;
         $whitelist = $type === 'flange' ? self::FLANGE_FILTERS : self::TRANS_FILTERS;
         $perPage = max(1, min(48, $perPage));
         $page = max(1, $page);
 
         $q = $this->productBase($catId);
-
-        if ($series !== '') {
-            $slug = \Str::slug($series);
-            $q->whereExists(function ($sub) use ($slug) {
-                $sub->select(DB::raw(1))
-                    ->from('wp_term_relationships as tr2')
-                    ->join('wp_term_taxonomy as tt2', 'tt2.term_taxonomy_id', '=', 'tr2.term_taxonomy_id')
-                    ->join('wp_terms as t2', 't2.term_id', '=', 'tt2.term_id')
-                    ->whereColumn('tr2.object_id', 'p.ID')
-                    ->where('tt2.taxonomy', 'pa_series')
-                    ->where('t2.slug', $slug);
-            });
-        }
+        if ($ids) $q->whereIn('p.ID', array_map('intval', $ids));
+        if ($series !== '') $this->whereSeries($q, $series);
+        if ($type === 'trans' && preg_match('/^\d{1,2}$/', $spline)) $this->whereSpline($q, $spline);
 
         foreach ($filters as $slug => $value) {
-            if (!in_array($slug, $whitelist, true) || $value === '') continue;
+            if (!in_array($slug, $whitelist, true) || !is_string($value) || $value === '') continue;
             $q->whereExists(function ($sub) use ($slug, $value) {
                 $sub->select(DB::raw(1))
                     ->from('wp_term_relationships as trf')
@@ -56,85 +56,36 @@ class DsbCatalog
         }
 
         $total = (clone $q)->count();
-        $rows = $q->orderBy('p.post_title')
-            ->forPage($page, $perPage)
-            ->get(['p.ID', 'p.post_title']);
-
-        $products = $rows->map(function ($r) use ($whitelist) {
-            return [
-                'id'         => (int) $r->ID,
-                'name'       => $r->post_title,
-                'price'      => $this->price($r->ID),
-                'image'      => $this->thumb($r->ID),
-                'sku'        => $this->meta($r->ID, '_sku'),
-                'attributes' => $this->attributeValues($r->ID, $whitelist),
-            ];
-        })->values()->all();
+        $rows = $q->orderBy('p.post_title')->forPage($page, $perPage)->get(['p.ID', 'p.post_title']);
 
         return [
-            'products' => $products,
+            'products' => $rows->map(fn ($r) => $this->card((int) $r->ID, $r->post_title, $whitelist))->values()->all(),
             'page'     => $page,
             'pages'    => (int) ceil($total / $perPage),
             'total'    => $total,
             'filters'  => $this->availableFilters($catId, $series, $whitelist),
+            'spline_counts' => $type === 'trans' ? $this->splineCounts($series) : [],
         ];
     }
 
-    /** Premade driveshaft search — mirrors AJAX dsb_premade_products (keyword search on series label). */
-    public function premades(string $seriesLabel, int $page, string $lengthFilter): array
+    /**
+     * Strap or u-bolt kits for a series. Kits are tagged with the series they fit ("1350", "1480, 1550");
+     * when nothing in the category is tagged for the series every kit is listed so the customer can still pick.
+     */
+    public function hardware(string $kind, string $series): array
     {
-        $perPage = 6;
-        $page = max(1, $page);
-
-        $q = $this->productBase(self::PREMADE_CAT_ID);
-
-        if ($seriesLabel !== '') {
-            // WP 's' search: title OR excerpt OR content
-            $q->where(function ($w) use ($seriesLabel) {
-                $like = '%' . str_replace(['%', '_'], ['\\%', '\\_'], $seriesLabel) . '%';
-                $w->where('p.post_title', 'like', $like)
-                  ->orWhere('p.post_content', 'like', $like)
-                  ->orWhere('p.post_excerpt', 'like', $like);
-            });
+        $catId = self::HARDWARE_TYPES[$kind] ?? null;
+        if (!$catId) return ['products' => [], 'total' => 0, 'matched_series' => false];
+        $q = $this->productBase($catId);
+        $matched = true;
+        if ($series !== '') {
+            $this->whereSeries($q, $series);
+            if (!(clone $q)->exists()) { $q = $this->productBase($catId); $matched = false; }
         }
-        if ($lengthFilter !== '') {
-            $q->whereExists(function ($sub) use ($lengthFilter) {
-                $sub->select(DB::raw(1))
-                    ->from('wp_term_relationships as trl')
-                    ->join('wp_term_taxonomy as ttl', 'ttl.term_taxonomy_id', '=', 'trl.term_taxonomy_id')
-                    ->join('wp_terms as tl', 'tl.term_id', '=', 'ttl.term_id')
-                    ->whereColumn('trl.object_id', 'p.ID')
-                    ->where('ttl.taxonomy', 'pa_overall-len')
-                    ->where('tl.name', $lengthFilter);
-            });
-        }
-
-        $total = (clone $q)->count();
-        $rows = $q->orderBy('p.post_title')->forPage($page, $perPage)->get(['p.ID', 'p.post_title', 'p.post_content', 'p.post_excerpt']);
-
-        $products = $rows->map(function ($r) {
-            $sku = (string) $this->meta($r->ID, '_sku');
-            $hasAb = (bool) preg_match('/^(5A|4A)/i', $sku)
-                || stripos($r->post_title, 'Duramax') !== false
-                || stripos($r->post_content ?? '', 'Duramax') !== false
-                || stripos($r->post_excerpt ?? '', 'Duramax') !== false;
-            return [
-                'id'        => (int) $r->ID,
-                'name'      => $r->post_title,
-                'price'     => $this->price($r->ID),
-                'image'     => $this->thumb($r->ID),
-                'sku'       => $sku,
-                'has_ab'    => $hasAb,
-            ];
-        })->values()->all();
-
-        return [
-            'products'       => $products,
-            'total'          => $total,
-            'pages'          => (int) ceil($total / $perPage),
-            'per_page'       => $perPage,
-            'length_options' => $this->lengthOptions(),
-        ];
+        $rows = $q->orderBy('p.post_title')->limit(24)->get(['p.ID', 'p.post_title']);
+        $products = $rows->map(fn ($r) => $this->card((int) $r->ID, $r->post_title, self::HARDWARE_ATTRS))
+            ->filter(fn ($c) => $c['price'] > 0)->values()->all();
+        return ['products' => $products, 'total' => count($products), 'matched_series' => $matched];
     }
 
     /** Product price straight from WP meta — server-side source of truth. */
@@ -143,10 +94,20 @@ class DsbCatalog
         return (float) $this->meta($productId, '_price');
     }
 
-    /** A published product in the pre-made driveshaft category — the only IDs the builder may price as a premade. */
-    public function isPremade(int $productId): bool
+    /** A published product in one of the given categories: the only ids the builder prices as a yoke or a kit. */
+    public function inCategory(int $productId, array $catIds): bool
     {
-        return $productId > 0 && $this->productBase(self::PREMADE_CAT_ID)->where('p.ID', $productId)->exists();
+        if ($productId <= 0) return false;
+        return DB::connection('wp')->table('wp_posts as p')
+            ->where('p.ID', $productId)->where('p.post_type', 'product')->where('p.post_status', 'publish')
+            ->whereExists(function ($sub) use ($catIds) {
+                $sub->select(DB::raw(1))
+                    ->from('wp_term_relationships as tr')
+                    ->join('wp_term_taxonomy as tt', 'tt.term_taxonomy_id', '=', 'tr.term_taxonomy_id')
+                    ->whereColumn('tr.object_id', 'p.ID')
+                    ->where('tt.taxonomy', 'product_cat')
+                    ->whereIn('tt.term_id', $catIds);
+            })->exists();
     }
 
     public function productName(int $productId): ?string
@@ -155,7 +116,89 @@ class DsbCatalog
         return $r?->post_title;
     }
 
+    public function productSku(int $productId): string
+    {
+        return (string) $this->meta($productId, '_sku');
+    }
+
+    /** Name, SKU, price and photo of one product, for the order line and the review page. */
+    public function part(int $productId): ?array
+    {
+        $name = $this->productName($productId);
+        if ($name === null) return null;
+        return ['id' => $productId, 'name' => $name, 'sku' => $this->productSku($productId), 'price' => $this->price($productId), 'image' => $this->thumb($productId)];
+    }
+
     // ---- internals -------------------------------------------------------
+
+    private function card(int $id, string $title, array $attrs): array
+    {
+        return [
+            'id'         => $id,
+            'name'       => $title,
+            'price'      => $this->price($id),
+            'image'      => $this->thumb($id),
+            'sku'        => $this->productSku($id),
+            'attributes' => $this->attributeValues($id, $attrs),
+        ];
+    }
+
+    private function whereSeries($q, string $series): void
+    {
+        $slug = \Str::slug($series);
+        $name = strtoupper(trim($series));
+        $q->whereExists(function ($sub) use ($slug, $name) {
+            $sub->select(DB::raw(1))
+                ->from('wp_term_relationships as tr2')
+                ->join('wp_term_taxonomy as tt2', 'tt2.term_taxonomy_id', '=', 'tr2.term_taxonomy_id')
+                ->join('wp_terms as t2', 't2.term_id', '=', 'tt2.term_id')
+                ->whereColumn('tr2.object_id', 'p.ID')
+                ->where('tt2.taxonomy', 'pa_series')
+                // exact slug, or a comma list that names the series ("1480, 1550")
+                ->where(fn ($w) => $w->where('t2.slug', $slug)
+                    ->orWhere('t2.name', 'like', $name . ',%')->orWhere('t2.name', 'like', '%, ' . $name)->orWhere('t2.name', 'like', '%, ' . $name . ',%'));
+        });
+    }
+
+    /** Spline count attribute values look like "27 X 1.125", "26/27 X 1.125" or "32X34": match the count as a whole number. */
+    private function whereSpline($q, string $spline): void
+    {
+        $q->whereExists(function ($sub) use ($spline) {
+            $sub->select(DB::raw(1))
+                ->from('wp_term_relationships as trs')
+                ->join('wp_term_taxonomy as tts', 'tts.term_taxonomy_id', '=', 'trs.term_taxonomy_id')
+                ->join('wp_terms as ts', 'ts.term_id', '=', 'tts.term_id')
+                ->whereColumn('trs.object_id', 'p.ID')
+                ->where('tts.taxonomy', 'pa_splines-count-dia')
+                ->whereRaw('ts.name REGEXP ?', ['^([0-9]+/)?' . (int) $spline . '([ /Xx]|$)']);
+        });
+    }
+
+    /** The spline counts our transmission yokes exist in for a series (one number per count, ascending). */
+    public function splineCounts(string $series): array
+    {
+        return \Cache::remember('dsb_splines_' . \Str::slug($series), 600, function () use ($series) {
+            $q = $this->productBase(self::TRANS_CAT_ID);
+            if ($series !== '') $this->whereSeries($q, $series);
+            $ids = $q->pluck('p.ID');
+            if ($ids->isEmpty()) return [];
+            $names = DB::connection('wp')->table('wp_term_relationships as tr')
+                ->join('wp_term_taxonomy as tt', 'tt.term_taxonomy_id', '=', 'tr.term_taxonomy_id')
+                ->join('wp_terms as t', 't.term_id', '=', 'tt.term_id')
+                ->whereIn('tr.object_id', $ids)->where('tt.taxonomy', 'pa_splines-count-dia')
+                ->distinct()->pluck('t.name');
+            $counts = [];
+            foreach ($names as $n) {
+                if (preg_match('/^(\d{1,2})(?:\/(\d{1,2}))?/', trim($n), $m)) {
+                    $counts[(int) $m[1]] = true;
+                    if (!empty($m[2])) $counts[(int) $m[2]] = true;
+                }
+            }
+            $out = array_keys($counts);
+            sort($out);
+            return $out;
+        });
+    }
 
     private function productBase(int $catId)
     {
@@ -209,25 +252,9 @@ class DsbCatalog
 
     private function availableFilters(int $catId, string $series, array $slugs): array
     {
-        return \Cache::remember("dsb_yoke_filters_{$catId}_{$series}", 300, function () use ($catId, $series, $slugs) {
-            $q = DB::connection('wp')->table('wp_posts as p')
-                ->where('p.post_type', 'product')->where('p.post_status', 'publish')
-                ->whereExists(function ($sub) use ($catId) {
-                    $sub->select(DB::raw(1))->from('wp_term_relationships as tr')
-                        ->join('wp_term_taxonomy as tt', 'tt.term_taxonomy_id', '=', 'tr.term_taxonomy_id')
-                        ->whereColumn('tr.object_id', 'p.ID')
-                        ->where('tt.taxonomy', 'product_cat')->where('tt.term_id', $catId);
-                });
-            if ($series !== '') {
-                $slug = \Str::slug($series);
-                $q->whereExists(function ($sub) use ($slug) {
-                    $sub->select(DB::raw(1))->from('wp_term_relationships as tr2')
-                        ->join('wp_term_taxonomy as tt2', 'tt2.term_taxonomy_id', '=', 'tr2.term_taxonomy_id')
-                        ->join('wp_terms as t2', 't2.term_id', '=', 'tt2.term_id')
-                        ->whereColumn('tr2.object_id', 'p.ID')
-                        ->where('tt2.taxonomy', 'pa_series')->where('t2.slug', $slug);
-                });
-            }
+        return \Cache::remember("dsb_yoke_filters_{$catId}_" . \Str::slug($series), 300, function () use ($catId, $series, $slugs) {
+            $q = $this->productBase($catId);
+            if ($series !== '') $this->whereSeries($q, $series);
             $ids = $q->pluck('p.ID');
             if ($ids->isEmpty()) return (object) [];
 
@@ -243,24 +270,5 @@ class DsbCatalog
             foreach ($out as &$vals) natsort($vals) && $vals = array_values($vals);
             return $out ?: (object) [];
         });
-    }
-
-    private function lengthOptions(): array
-    {
-        $rows = DB::connection('wp')->table('wp_term_relationships as tr')
-            ->join('wp_term_taxonomy as tt', 'tt.term_taxonomy_id', '=', 'tr.term_taxonomy_id')
-            ->join('wp_terms as t', 't.term_id', '=', 'tt.term_id')
-            ->join('wp_posts as p', 'p.ID', '=', 'tr.object_id')
-            ->where('p.post_type', 'product')->where('p.post_status', 'publish')
-            ->where('tt.taxonomy', 'pa_overall-len')
-            ->whereExists(function ($sub) {
-                $sub->select(DB::raw(1))->from('wp_term_relationships as trc')
-                    ->join('wp_term_taxonomy as ttc', 'ttc.term_taxonomy_id', '=', 'trc.term_taxonomy_id')
-                    ->whereColumn('trc.object_id', 'p.ID')
-                    ->where('ttc.taxonomy', 'product_cat')->where('ttc.term_id', self::PREMADE_CAT_ID);
-            })
-            ->distinct()->pluck('t.name')->all();
-        natsort($rows);
-        return array_values($rows);
     }
 }

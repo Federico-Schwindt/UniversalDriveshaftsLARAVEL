@@ -2,36 +2,29 @@
 @section('robots','noindex,follow')
 @section('title','Quick order by part number | Universal Driveshafts')
 @section('desc','Enter part numbers (SKUs) and quantities to add multiple driveshaft parts to your cart at once.')
+@section('bodyclass','pg')
 @section('content')
-<style>
-.qo-skuwrap{position:relative}
-.qo-sug{position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:30;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 34px rgba(16,32,64,.18);max-height:330px;overflow-y:auto}
-.qo-sug-item{display:flex;align-items:center;gap:11px;padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--line);text-align:left}
-.qo-sug-item:last-child{border-bottom:0}
-.qo-sug-item:hover,.qo-sug-item.hi{background:var(--blue-soft,#eaf0fc)}
-.qo-sug-img{width:42px;height:36px;flex:none;display:flex;align-items:center;justify-content:center;background:var(--bg-soft);border-radius:7px;overflow:hidden;color:#9aa6b8}
-.qo-sug-img img{max-width:100%;max-height:100%;object-fit:contain}
-.qo-sug-b{flex:1;min-width:0}
-.qo-sug-b b{display:block;font-size:.86rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
-.qo-sug-b span{font-size:.75rem;color:var(--ink-faint);font-variant-numeric:tabular-nums}
-.qo-sug-price{font-weight:800;color:var(--blue);font-size:.86rem;white-space:nowrap;font-variant-numeric:tabular-nums}
-.qo-prod.bad{color:#c0392b}
-</style>
-<section class="phero"><div class="wrap"><div class="accentline"></div>
-<h1>{!! __('Quick order by part number') !!}</h1>
-<p class="lead">{!! __('Start typing a part number or name, pick from the suggestions, set quantities, and add everything to your cart at once.') !!}</p></div></section>
+<div class="wrap pagehead">
+  <nav class="ucrumb" aria-label="{{ __('Breadcrumb') }}"><a href="/">{{ __('Home') }}</a><x-icon name="caret-right"/><a href="/shop">{{ __('Catalog') }}</a><x-icon name="caret-right"/><span aria-current="page">{{ __('Quick order') }}</span></nav>
+  <div class="pagehead__row">
+    <h1>{!! __('Quick order by part number') !!}</h1>
+    <div class="btn-row"><a class="btn btn-ghost btn-sm" href="/shop"><x-icon name="grid"/> {!! __('Browse the catalog') !!}</a></div>
+  </div>
+  <p class="pagehead__sub">{!! __('Start typing a part number or name, pick from the suggestions, set quantities, and add everything to your cart at once.') !!}</p>
+</div>
 
-<section class="section" style="padding-top:30px"><div class="wrap">
+<section class="catsec catsec--end"><div class="wrap">
   <div class="qo">
     <div class="qo-head"><span>{!! __('Part Number (SKU)') !!}</span><span>{!! __('Qty') !!}</span><span>{!! __('Product') !!}</span><span></span></div>
     <div id="qo-rows"></div>
-    <button type="button" class="btn btn-ghost u-mt" id="qo-more">{!! __('+ Add another row') !!}</button>
+    <button type="button" class="btn btn-ghost btn-sm u-mt" id="qo-more">{!! __('+ Add another row') !!}</button>
     <div class="qo-foot">
       <button type="button" class="btn btn-primary" id="qo-add">{!! __('Add all to Cart') !!} <x-icon name="arrow-right"/></button>
       <a href="/cart" class="btn btn-ghost">{!! __('View Cart') !!}</a>
     </div>
     <div id="qo-msg" class="qo-msg" hidden></div>
   </div>
+  <p class="pg-note">{!! __('Parts that need a quote cannot be added here: call (813) 524-6491.') !!}</p>
 </div></section>
 
 <script>

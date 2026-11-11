@@ -1,35 +1,23 @@
 <style>
-/* ===== UDS account portal — 2026-10 redesign, on the uds-2026 tokens ===== */
-.acct-page{--acct-gap:24px;background:var(--paper-2);padding:28px 0 64px}
-.acct-shell{display:grid;grid-template-columns:240px minmax(0,1fr);gap:var(--acct-gap);align-items:start}
+/* ===== UDS account portal — on the uds-2026 tokens; 2026-11: the menu is the site sidebar's "My account" group ===== */
+.acct-page{--acct-gap:20px;background:var(--paper-2);padding:24px 0 56px}
+.acct-shell{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;align-items:start}
 
 /* identity band */
 .acct-hero{background:var(--paper);border-bottom:1px solid var(--line)}
 .acct-hero-in{display:flex;align-items:center;gap:18px;padding-block:22px;flex-wrap:wrap}
-.acct-av{width:56px;height:56px;flex:none;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font:700 1.35rem/1 Poppins,"Poppins Fallback",sans-serif;letter-spacing:.02em}
+.acct-av{width:52px;height:52px;flex:none;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font:600 1.25rem/1 var(--font-h);letter-spacing:.02em;overflow:hidden}
 .acct-idt{min-width:0;flex:1}
 .acct-idt h1{margin:0;font-size:1.45rem;line-height:1.2;letter-spacing:-.01em;text-wrap:balance}
 .acct-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-top:5px;color:var(--ink-3);font-size:.88rem}
 .acct-meta .mono{font-family:"IBM Plex Mono","Plex Mono Fallback",monospace;font-size:.8rem;font-variant-numeric:tabular-nums}
-.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:.74rem;font-weight:700;letter-spacing:.01em;white-space:nowrap;line-height:1.5}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:var(--r-sm);font-size:.74rem;font-weight:600;letter-spacing:.01em;white-space:nowrap;line-height:1.5}
 .chip svg{width:13px;height:13px}
 .chip--ok{background:var(--teal-050);color:var(--teal-ink)}
 .chip--warn{background:var(--warn-bg);color:var(--warn)}
 .chip--blue{background:var(--blue-050);color:var(--blue-700)}
 .acct-hero-act{display:flex;gap:10px;flex-wrap:wrap}
 
-/* navigation: a list on desktop, a scrolling tab strip on phones */
-.acct-nav{position:sticky;top:96px;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg,16px);padding:8px}
-.acct-nav a,.acct-nav button{display:flex;align-items:center;gap:11px;width:100%;padding:10px 12px;border-radius:10px;border:0;background:none;color:var(--ink-2);font:600 .92rem/1.3 inherit;text-decoration:none;cursor:pointer;text-align:left}
-.acct-nav a svg,.acct-nav button svg{width:18px;height:18px;flex:none;color:var(--ink-3)}
-.acct-nav a:hover{background:var(--paper-2);color:var(--ink)}
-.acct-nav a.on{background:var(--blue-050);color:var(--blue-700)}
-.acct-nav a.on svg{color:var(--blue)}
-.acct-nav .cnt{margin-left:auto;font:500 .74rem/1 "IBM Plex Mono",monospace;color:var(--ink-3);background:var(--paper-3);border-radius:999px;padding:3px 8px}
-.acct-nav hr{border:0;border-top:1px solid var(--line);margin:8px 4px}
-.acct-nav form{margin:0}
-.acct-nav button:hover{background:var(--err-bg);color:var(--err)}
-.acct-nav button:hover svg{color:var(--err)}
 .acct-help{margin:10px 12px 6px;font-size:.8rem;color:var(--ink-3);line-height:1.5}
 .acct-help a{color:var(--blue);font-weight:700;text-decoration:none;font-family:"IBM Plex Mono",monospace}
 
@@ -105,7 +93,7 @@ a.orow:hover{background:var(--paper-2)}
 .ohead span:last-child{text-align:right}
 
 /* status pills (shared with designs / requests / buy again) */
-.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:.75rem;font-weight:700;white-space:nowrap;line-height:1.5;width:max-content}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:var(--r-sm);font-size:.75rem;font-weight:600;white-space:nowrap;line-height:1.5;width:max-content}
 .pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
 .pill-paid,.pill-completed,.pill-scheduled,.pill-delivered{background:var(--ok-bg);color:var(--ok)}
 .pill-pending,.pill-processing,.pill-new{background:var(--warn-bg);color:var(--warn)}
@@ -186,18 +174,6 @@ a.orow:hover{background:var(--paper-2)}
 
 @media (max-width:1060px){.alinks{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:960px){
-  .acct-page{padding-top:0}
-  .acct-shell{grid-template-columns:1fr;gap:18px}
-  .acct-nav{position:sticky;top:0;z-index:5;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;border-radius:0;border-width:0 0 1px;margin:0 calc(var(--gutter) * -1);padding:8px calc(var(--gutter) - 4px);scroll-snap-type:x proximity}
-  .acct-nav::-webkit-scrollbar{display:none}
-  .acct-nav a{width:auto;flex:none;white-space:nowrap;padding:9px 13px;scroll-snap-align:start}
-  .acct-nav .cnt{margin-left:4px}
-  .acct-nav hr,.acct-help{display:none}
-  /* phones: Sign out stays reachable as the last tab */
-  .acct-nav form{flex:none}
-  .acct-nav button{width:auto;white-space:nowrap;padding:9px 13px}
-  /* more tabs off to the right: fade the edge so the strip reads as scrollable */
-  .acct-nav.has-more{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 40px),transparent)}
   .acol,.aset-grid{grid-template-columns:1fr}
   .aset{grid-template-columns:1fr;gap:12px}
 }
@@ -236,7 +212,7 @@ a.orow:hover{background:var(--paper-2)}
 /* business account (tiers, invoices) */
 .biz-pitch{display:flex;flex-direction:column;align-items:flex-start;gap:14px;max-width:62ch}
 .biz-pitch p{margin:0;line-height:1.6}
-.biz-badge{font-family:var(--font-h);font-weight:700;font-size:.85rem;padding:5px 12px;border-radius:999px;white-space:nowrap}
+.biz-badge{font-family:var(--font-h);font-weight:600;font-size:.85rem;padding:4px 10px;border-radius:var(--r-sm);white-space:nowrap}
 .biz-badge--bronze{background:#f6e8dc;color:#8a4b1c}
 .biz-badge--silver{background:#eceff3;color:#3d4757}
 .biz-badge--gold{background:#fbf0cc;color:#7a5800}
@@ -292,4 +268,5 @@ a.orow:hover{background:var(--paper-2)}
 .avp-fold>summary .btn{pointer-events:none}
 .avp-fold[open]>summary{margin-bottom:14px}
 .avp-fold[open]>summary .avp-chg{display:none}
+.orow .orma{display:block;margin-top:.25rem;font-size:.75rem;color:var(--warn,#9a6b12);font-weight:600}
 </style>

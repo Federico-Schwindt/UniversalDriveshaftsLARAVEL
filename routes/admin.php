@@ -143,7 +143,10 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
         Route::post('/leads/{id}/delete', [LeadsController::class, 'destroy']);
         Route::get('/designs', [LeadsController::class, 'designs']);
         Route::get('/rma', [\App\Http\Controllers\RmaController::class, 'adminList']);
-        Route::post('/rma/{id}', [\App\Http\Controllers\RmaController::class, 'adminUpdate']);
+        Route::get('/rma/{id}', [\App\Http\Controllers\RmaController::class, 'adminShow'])->whereNumber('id');
+        Route::post('/rma/{id}', [\App\Http\Controllers\RmaController::class, 'adminUpdate'])->whereNumber('id');
+        Route::post('/rma/{id}/note', [\App\Http\Controllers\RmaController::class, 'adminNote'])->whereNumber('id');
+        Route::post('/rma/{id}/tracking', [\App\Http\Controllers\RmaController::class, 'adminTracking'])->whereNumber('id');
     });
     Route::middleware('admin.section:recovery')->get('/recovery', [\App\Http\Controllers\RecoveryController::class, 'admin']);
     Route::middleware('admin.section:reports')->get('/reports', [ReportsController::class, 'index']);

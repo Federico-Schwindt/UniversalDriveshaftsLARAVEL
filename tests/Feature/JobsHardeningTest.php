@@ -218,7 +218,7 @@ class JobsHardeningTest extends TestCase
     {
         $o = $this->order(['delivered_at' => '2026-07-01 18:05:00', 'tracking_number' => '9400111899223344556677', 'tracking_carrier' => 'USPS']);
         app(\App\Services\OrderMailer::class)->sendDelivered($o);
-        $this->assertStringContainsString('2:05 PM ET', $this->sentMail()[0]->getOriginalMessage()->getHtmlBody());
+        $this->assertStringContainsString('2:05 PM EST', $this->sentMail()[0]->getOriginalMessage()->getHtmlBody());
 
         $this->clearMail();
         $o2 = $this->order(['tracking_service' => 'Shipped by PTI (dropship)']);

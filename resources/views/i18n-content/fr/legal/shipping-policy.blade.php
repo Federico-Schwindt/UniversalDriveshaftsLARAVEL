@@ -14,7 +14,7 @@
   <div class="box">
     <p style="margin-top:0"><b>En un coup d'œil</b></p>
     <ul style="margin-bottom:0">
-      <li>Les commandes passées avant 14h00 (heure de l'Est) un jour ouvrable sont expédiées le jour même (articles en stock).</li>
+      <li>Les commandes passées avant 14h00 (EST) un jour ouvrable sont expédiées le jour même (articles en stock).</li>
       <li>Tarifs UPS et FedEx en direct lors du paiement, calculés selon les dimensions réelles des cartons nécessaires à votre commande. Nous n'expédions pas par USPS.</li>
       <li>Les grosses commandes sont expédiées sur palette par transporteur routier (LTL), avec tarif en direct lors du paiement.</li>
       <li>Livraison terrestre gratuite aux États-Unis pour les commandes supérieures à <b>${{ $min }}</b> dans les 48 états continentaux (tubes et arbres de transmission complets exclus).</li>
@@ -24,7 +24,7 @@
   </div>
 
   <h2>1. Délai de traitement</h2>
-  <p>Les commandes passées avant 14h00 (heure de l'Est) un jour ouvrable sont expédiées le jour même. Les commandes passées plus tard, les week-ends ou les jours fériés sont expédiées le jour ouvrable suivant. Les arbres de transmission sur mesure, les tubes coupés à longueur et les articles sur commande spéciale sont expédiés dès leur fabrication ou leur réception ; le délai estimé est indiqué sur la page produit ou confirmé avec vous après la commande. Les délais de livraison indiqués par les transporteurs sont estimatifs et ne sont pas garantis.</p>
+  <p>Les commandes passées avant 14h00 (EST) un jour ouvrable sont expédiées le jour même. Les commandes passées plus tard, les week-ends ou les jours fériés sont expédiées le jour ouvrable suivant. Les arbres de transmission sur mesure, les tubes coupés à longueur et les articles sur commande spéciale sont expédiés dès leur fabrication ou leur réception ; le délai estimé est indiqué sur la page produit ou confirmé avec vous après la commande. Les délais de livraison indiqués par les transporteurs sont estimatifs et ne sont pas garantis.</p>
 
   <h2>2. Mode de calcul des frais de port</h2>
   <p>Les frais de port sont calculés lors du paiement sur la base des tarifs UPS et FedEx en direct pour votre adresse et les cartons réels nécessaires à votre commande. Nous emballons conformément aux règles des transporteurs :</p>

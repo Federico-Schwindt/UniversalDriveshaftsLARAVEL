@@ -29,7 +29,6 @@ class SeoController extends Controller
         ['/shop', '0.9', 'daily'],
         ['/catalog/driveshafts', '0.9', 'weekly'],
         ['/online-builder', '0.9', 'weekly'],
-        ['/online-builder/two-piece', '0.8', 'weekly'],
         ['/premade-driveshafts', '0.8', 'weekly'],
         ['/shop/complete-driveshafts/by-vehicle', '0.7', 'weekly'],
         ['/driveshaft-designer', '0.7', 'monthly'],
@@ -207,7 +206,7 @@ class SeoController extends Controller
     {
         $map = [
             '/' => 'home', '/shop' => 'shop/catalog', '/catalog/driveshafts' => 'finder', '/online-builder' => 'designer',
-            '/online-builder/two-piece' => 'designer', '/premade-driveshafts' => 'premade', '/shop/complete-driveshafts/by-vehicle' => 'finder-all',
+            '/premade-driveshafts' => 'premade', '/shop/complete-driveshafts/by-vehicle' => 'finder-all',
             '/driveshaft-designer' => 'designer-tool', '/heavy-duty-driveshafts' => 'heavy-duty', '/industrial-driveshafts' => 'industrial',
             '/custom-off-road-driveshafts' => 'offroad', '/pto-agriculture' => 'pto', '/services' => 'services', '/about-us' => 'about',
             '/contact' => 'contact', '/wholesale' => 'wholesale', '/return-policy' => 'return-policy', '/terms' => 'terms',

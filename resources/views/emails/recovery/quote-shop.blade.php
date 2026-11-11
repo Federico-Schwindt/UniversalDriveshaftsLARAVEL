@@ -10,7 +10,7 @@
     <tr><td style="color:#5c6879;vertical-align:top;">E-mail</td><td><a href="mailto:{{ $q['email'] }}" style="color:#1246ab;">{{ $q['email'] }}</a></td></tr>
     <tr><td style="color:#5c6879;vertical-align:top;">Phone</td><td>{{ $q['phone'] ?: '—' }}</td></tr>
     @if($q['note'])<tr><td style="color:#5c6879;vertical-align:top;">Note</td><td>{{ $q['note'] }}</td></tr>@endif
-    <tr><td style="color:#5c6879;vertical-align:top;">Received</td><td>{{ now()->format('D M j, g:i a') }} ET &middot; IP {{ $q['ip'] }}</td></tr>
+    <tr><td style="color:#5c6879;vertical-align:top;">Received</td><td>{{ now()->format('D M j, g:i a') }} EST &middot; IP {{ $q['ip'] }}</td></tr>
   </table>
   <p style="margin:22px 0 0;font-size:14px;">Reply to this e-mail to answer the customer directly. @if($q['url'])<a href="{{ $q['url'] }}" style="color:#1246ab;">Part page</a> &middot; @endif<a href="{{ url('/admin/leads') }}" style="color:#1246ab;">All leads</a></p>
 @endsection

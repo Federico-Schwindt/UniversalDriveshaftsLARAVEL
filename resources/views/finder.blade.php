@@ -1,12 +1,10 @@
 @extends('layouts.app')
 @section('title', __('Complete driveshafts by vehicle') . ' | Universal Driveshafts')
 @section('desc', __('Choose your make, year and model and we narrow the catalog to the complete driveshaft that fits. 4,500+ driveshafts, 1955 to 2026.'))
+@section('bodyclass','pg')
 @section('content')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <style>
-.fdr-top{background:var(--paper-2,#f6f8fc);border-bottom:1px solid var(--line,#e4e8f0);padding:22px 0 30px}
-.fdr-top h1{margin:0;font-size:clamp(1.8rem,3.4vw,2.6rem);letter-spacing:-.02em}
-.fdr-lead{margin:10px 0 0;max-width:62ch;color:var(--ink-2,#3a4557);font-size:clamp(1rem,1.3vw,1.12rem);line-height:1.6}
 .fdr-body{background:var(--paper,#fff);padding:28px 0 64px;min-height:60vh}
 /* stepper: make → year → model → drive (+ any extra question the catalog asks) */
 .fdr-steps{list-style:none;margin:0 0 26px;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,230px));gap:10px;align-items:stretch}
@@ -77,8 +75,17 @@ button.fdr-step:focus-visible{outline:2px solid var(--blue,#1246ab);outline-offs
 #fdr-table td:nth-child(2){min-width:84px}
 #fdr-table td[data-label="Loc"],#fdr-table td[data-label="Drive"],#fdr-table td[data-label="Make"]{white-space:nowrap}
 #fdr-table td[data-label="Loc"]{white-space:normal;min-width:70px}
-.fdr-sel{font-size:.78rem;color:var(--ink-2,#3a4557);line-height:1.3;display:block}
-.fdr-sel b{display:block;color:#e0822a;text-transform:uppercase;font-size:.84rem}
+.fdr-sel{font-size:.78rem;color:var(--warn,#9a6b12);line-height:1.3;display:block;font-weight:600}
+/* the open question: which step, and what to choose */
+.fdr-q{margin:0 0 12px}
+.fdr-q__n{margin:0 0 2px;font:600 .74rem var(--font-m);letter-spacing:.04em;text-transform:uppercase;color:var(--blue)}
+.fdr-q h2{margin:0;font-size:1.25rem}
+/* results held back while a step is open: the count, and a way to look early */
+.fdr-wait{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;margin:18px 0 0;padding:14px 16px;
+  background:var(--paper-2);border:1px solid var(--line);border-left:3px solid var(--blue);border-radius:var(--r)}
+.fdr-wait b{display:block;font-size:1rem}
+.fdr-wait span{display:block;font-size:.88rem;color:var(--ink-2)}
+.fdr-missing{margin:0 0 12px;padding:10px 12px;background:var(--warn-bg,#fdf6e3);border:1px solid #ecd9a4;border-radius:var(--r-sm);color:var(--warn,#9a6b12);font-size:.88rem}
 .fdr-ph{width:64px;height:40px;color:var(--ink-faint,#697687);opacity:.7}
 .fdr-pic{width:70px;height:52px;object-fit:contain;background:#fff;border:1px solid var(--line,#e4e8f0);border-radius:5px;vertical-align:middle;cursor:zoom-in}
 .fdr-zoom{position:fixed;width:320px;height:320px;background:#fff;border:1px solid var(--line-strong,#d4dae6);border-radius:10px;box-shadow:0 20px 50px -12px rgba(11,26,58,.5);padding:8px;display:none;z-index:300;pointer-events:none}
@@ -125,13 +132,14 @@ button.fdr-step:focus-visible{outline:2px solid var(--blue,#1246ab);outline-offs
 }
 </style>
 
-<section class="fdr-top"><div class="wrap">
-  <div class="crumb" style="margin-bottom:10px"><a href="/">{{ __('Home') }}</a><span class="sep">/</span><a href="/shop">{{ __('Catalog') }}</a><span class="sep">/</span><span>{{ __('Complete driveshafts') }}</span></div>
-  <div class="fdr-top-row">
+<div class="wrap pagehead">
+  <nav class="ucrumb" aria-label="{{ __('Breadcrumb') }}"><a href="/">{{ __('Home') }}</a><x-icon name="caret-right"/><a href="/shop">{{ __('Catalog') }}</a><x-icon name="caret-right"/><span aria-current="page">{{ __('Complete driveshafts') }}</span></nav>
+  <div class="pagehead__row">
     <h1>{{ __('Complete driveshafts') }}</h1>
+    <div class="btn-row"><a class="btn btn-ghost btn-sm" href="/online-builder"><x-icon name="wrench"/> {{ __('Build one to spec') }}</a></div>
   </div>
-  <p class="fdr-lead">{{ __('Pick your make, year, model and drive, and we narrow 4,500+ complete driveshafts down to the one that fits, with price and stock.') }}</p>
-</div></section>
+  <p class="pagehead__sub">{{ __('Pick your make, year, model and drive, and we narrow 4,500+ complete driveshafts down to the one that fits, with price and stock.') }}</p>
+</div>
 
 <section class="fdr-body"><div class="wrap" id="fdr">
   <div class="fdr-bar" id="fdr-bar"></div>
@@ -140,19 +148,18 @@ button.fdr-step:focus-visible{outline:2px solid var(--blue,#1246ab);outline-offs
   <p class="fdr-help">{{ __('Not sure about a detail? Call (813) 524-6491 and a driveline tech will confirm the fit before you order.') }}</p>
   @php $vehMakes = app(\App\Services\VehiclePages::class)->makeMap(); @endphp
   @if($vehMakes)
-  <nav class="veh-browse" aria-labelledby="veh-browse-h" style="margin-top:34px;padding-top:22px;border-top:1px solid var(--line,#e3e8f0)">
-    <h2 id="veh-browse-h" style="font-size:1.1rem;margin-bottom:.4rem">{{ __('Browse driveshafts by make') }}</h2>
-    <p style="margin:0 0 .8rem;color:var(--ink-2,#4c5a6e);font-size:.92rem">{{ __('Every model we cover, year by year, with part numbers and prices.') }} <a href="/driveshafts">{{ __('All makes') }}</a></p>
-    <ul style="list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:.4rem .9rem;font-size:.9rem">
+  <nav class="veh-browse" aria-labelledby="veh-browse-h" style="margin-top:1.75rem;padding-top:1.1rem;border-top:1px solid var(--line)">
+    <div class="catsec__head"><h2 id="veh-browse-h">{{ __('Browse driveshafts by make') }}</h2><a class="textlink" href="/driveshafts">{{ __('All makes') }} <x-icon name="arrow-right"/></a></div>
+    <ul class="pg-chips">
       @foreach($vehMakes as $vSlug => $vName)<li><a href="/driveshafts/{{ $vSlug }}">{{ $vName }} {{ __('driveshafts') }}</a></li>@endforeach
     </ul>
   </nav>
   @endif
-  <p class="xref-note" style="margin-top:18px;text-align:center;margin-inline:auto">{{ __('Vehicle makes, logos, models and manufacturer part numbers are trademarks of their respective owners, used for identification and fitment reference only. Universal Driveshafts is not affiliated with them. Fitment data may contain errors, verify before ordering.') }} <a href="/terms">{{ __('Terms of use') }}</a></p>
+  <p class="xref-note">{{ __('Vehicle makes, logos, models and manufacturer part numbers are trademarks of their respective owners, used for identification and fitment reference only. Universal Driveshafts is not affiliated with them. Fitment data may contain errors, verify before ordering.') }} <a href="/terms">{{ __('Terms of use') }}</a></p>
 </div></section>
 
 @if(app()->getLocale() !== 'en')
-<script>window.UDS_T=Object.assign(window.UDS_T||{},{!! json_encode(collect(['Add :sku to cart','Remove :item','Loc','Speeds','Trans code','Wheelbase','Bed','Rear wheels','Could not load the catalog. Please try again or call (813) 524-6491.','&larr; Back','&times;','Clear all','UDS','Choose','Steps','Change :item','Change','Choose below','Next','Start over','No driveshaft found','Nothing in the catalog matches that combination. Change a selection, or call (813) 524-6491 and we will build one to your measurements.','Open the online builder','More than one driveshaft fits these answers. Match the ID code or center bearing number on your current shaft against the notes below, or call us and we will confirm it.','Weld to weld: ','(Save','core','Call for price','Please select','Add to cart','Get a quote','Open part page','Complete driveshaft','Add','Pic','Price','Part number','Model','Drive','Ctr. brg','Notes','Could not add this part.','&larr; Back to vehicle search'])->mapWithKeys(fn ($k) => [$k => __($k)]), JSON_UNESCAPED_UNICODE|JSON_HEX_TAG|JSON_HEX_AMP) !!});</script>
+<script>window.UDS_T=Object.assign(window.UDS_T||{},{!! json_encode(collect(['Step :n','Choose the :item',':n driveshafts fit so far','Answer the question above to see your exact driveshaft.','Show all :n now','Choose :item first','Missing step:','Choose it above to see which shaft is yours and add it to the cart.','Add :sku to cart','Remove :item','Loc','Speeds','Trans code','Wheelbase','Bed','Rear wheels','Could not load the catalog. Please try again or call (813) 524-6491.','&larr; Back','&times;','Clear all','UDS','Choose','Steps','Change :item','Change','Choose below','Next','Start over','No driveshaft found','Nothing in the catalog matches that combination. Change a selection, or call (813) 524-6491 and we will build one to your measurements.','Open the online builder','More than one driveshaft fits these answers. Match the ID code or center bearing number on your current shaft against the notes below, or call us and we will confirm it.','Weld to weld: ','(Save','core','Call for price','Please select','Add to cart','Get a quote','Open part page','Complete driveshaft','Add','Pic','Price','Part number','Model','Drive','Ctr. brg','Notes','Could not add this part.','&larr; Back to vehicle search'])->mapWithKeys(fn ($k) => [$k => __($k)]), JSON_UNESCAPED_UNICODE|JSON_HEX_TAG|JSON_HEX_AMP) !!});</script>
 @endif
 <script>var TT=function(s){return (window.UDS_T||{})[s]||s;};
 (function(){
@@ -170,8 +177,9 @@ button.fdr-step:focus-visible{outline:2px solid var(--blue,#1246ab);outline-offs
   function qs(c){var p=new URLSearchParams();ORDER.forEach(function(k){if(c[k]!==undefined&&c[k]!=='')p.set(k,c[k]);});return p.toString();}
   function keys(c){return ORDER.filter(function(k){return c[k]!==undefined;});}
 
+  var early=false;   // "Show all now" while a step is still open; reset by every answer
   function load(chosen,push){
-    root.classList.add('fdr-busy'); var q=qs(chosen);
+    early=false; root.classList.add('fdr-busy'); var q=qs(chosen);
     fetch('/api/catalog/driveshafts/step'+(q?'?'+q:''),{headers:{'X-Requested-With':'XMLHttpRequest'}}).then(function(r){return r.json();}).then(function(d){
       state=d; if(push)history.pushState(d.chosen,'',location.pathname+(qs(d.chosen)?'?'+qs(d.chosen):'')); render();
     }).catch(function(){main.innerHTML='<p class="fdr-note">'+TT("Could not load the catalog. Please try again or call (813) 524-6491.")+'</p>';})
@@ -201,23 +209,33 @@ button.fdr-step:focus-visible{outline:2px solid var(--blue,#1246ab);outline-offs
       return '<li><div class="fdr-step'+(now?' is-now':'')+'"'+(now?' aria-current="step"':'')+'><span class="fdr-step__t">'+num+esc(lab(k))+'</span><span class="fdr-step__v">'+(now?TT("Choose below"):TT("Next"))+'</span></div></li>';
     }).join('')+(ks.length?'<li style="display:flex"><button type="button" class="fdr-reset" id="fdr-clear">'+TT("Start over")+'</button></li>':'')+'</ol>';
     quick.innerHTML='';
-    var html=n?question(n):'';
-    if(state.results)html+=results(state.results,c,!!n);
+    var count=state.results?state.results.length:(state.candidate_count||0);
+    var html=n?question(n,steps.indexOf(n.facet)+1,steps.length,count):'';
+    if(n&&count){
+      // a step is still open: the count and a way to look early, not a table full of "please select" rows
+      html+='<div class="fdr-wait"><div><b>'+TT(":n driveshafts fit so far").replace(':n',count)+'</b><span>'+TT("Answer the question above to see your exact driveshaft.")+'</span></div>'
+        +(state.results&&!early?'<button type="button" class="btn btn-ghost btn-sm" id="fdr-early">'+TT("Show all :n now").replace(':n',count)+'</button>':'')+'</div>';
+      if(state.results&&early)html+=results(state.results,c,true);
+    }
+    else if(state.results)html+=results(state.results,c,false);
     else if(!n)html+=results([],c,false);
     main.innerHTML=html;
   }
-  function question(n){
+  function question(n,idx,total,count){
     var isMake=n.facet==='make', longest=n.options.reduce(function(a,o){return Math.max(a,String(o).length);},0);
     var tiles=n.options.map(function(o){
       if(isMake){var l=logo(o);return '<button type="button" class="fdr-tile is-make" data-facet="make" data-val="'+esc(o)+'">'+(l?'<img src="'+l+'" alt="" loading="lazy">':'<i class="mono">'+TT("UDS")+'</i>')+'<span>'+esc(o)+'</span></button>';}
       return '<button type="button" class="fdr-tile'+(longest>12?' is-text':'')+'" data-facet="'+esc(n.facet)+'" data-val="'+esc(o)+'"><b>'+esc(o)+'</b></button>';
     }).join('');
-    return '<h2 class="sr-only">'+esc(TT("Choose")+' '+lab(n.facet))+'</h2><div class="fdr-tiles'+(isMake?' is-makes':(n.facet==='year'?' is-years':''))+(n.options.length<5&&!isMake?' few':'')+'">'+tiles+'</div>';
+    var head='<div class="fdr-q"><p class="fdr-q__n">'+TT("Step :n").replace(':n',idx)+'</p><h2>'+esc(TT("Choose the :item").replace(':item',lab(n.facet).toLowerCase()))+'</h2></div>';
+    return head+'<div class="fdr-tiles'+(isMake?' is-makes':(n.facet==='year'?' is-years':''))+(n.options.length<5&&!isMake?' few':'')+'">'+tiles+'</div>';
   }
   function results(rows,c,pending,title){
     if(!rows.length)return '<div class="fdr-card"><h2 style="margin-top:0">'+TT("No driveshaft found")+'</h2><p>'+TT("Nothing in the catalog matches that combination. Change a selection, or call (813) 524-6491 and we will build one to your measurements.")+'</p><a class="btn btn-primary" href="/online-builder">'+TT("Open the online builder")+'</a></div>';
     var l=c.make?logo(c.make):null;
     var head=title?'<div class="fdr-veh"><div><h2>'+esc(title)+'</h2></div></div>':'<div class="fdr-veh">'+(l?'<img src="'+l+'" alt="">':'')+'<div><h2>'+esc([c.make,c.model].filter(Boolean).join(' '))+'</h2><p>'+esc([c.year,c.drive].filter(Boolean).join(' · '))+'</p></div></div>';
+    var open=state.next?state.next.facet:null;
+    var missing=pending&&open?'<p class="fdr-missing"><b>'+TT("Missing step:")+' '+esc(lab(open))+'</b> '+TT("Choose it above to see which shaft is yours and add it to the cart.")+'</p>':'';
     var note=(!pending&&!title&&rows.length>1)?'<p class="fdr-note">'+TT("More than one driveshaft fits these answers. Match the ID code or center bearing number on your current shaft against the notes below, or call us and we will confirm it.")+'</p>':'';
     var nf=state.next?state.next.facet:null;
     var body=rows.map(function(r){
@@ -225,7 +243,7 @@ button.fdr-step:focus-visible{outline:2px solid var(--blue,#1246ab);outline-offs
       var extra=Object.keys(f).filter(function(k){return ['drive','loc'].indexOf(k)<0;}).map(function(k){return lab(k)+': '+f[k].values.join(' / ');});
       if(r.weld_to_weld&&r.weld_to_weld.length)extra.push(TT("Weld to weld: ")+r.weld_to_weld.join(' / '));
       var price=r.can_buy?((r.price_list?'<span class="fdr-was">'+money(r.price_list)+'</span>':'')+'<span class="fdr-now">'+money(r.price)+'</span>'+(r.price_list?'<span class="fdr-save">'+TT("(Save")+' '+money(r.price_list-r.price)+')</span>':'')+(r.core_price?'<span class="fdr-core">+ '+money(r.core_price)+' '+TT("core")+'</span>':'')):'<span class="fdr-call">'+TT("Call for price")+'</span>';
-      var add=pending&&!title?'<span class="fdr-sel">'+TT("Please select")+'<b>'+esc(lab(nf))+'</b></span>':(r.can_buy?'<span class="p-add"><button class="p-plus" data-add="'+esc(r.part_number)+'" aria-label="'+TT("Add :sku to cart").replace(':sku',esc(r.sku||r.part_number))+'" title="'+TT("Add to cart")+'">+<span class="fdr-addtxt">'+TT("Add to cart")+'</span></button></span>':'<button type="button" class="btn btn-line btn-sm" data-quote="'+esc(r.sku||r.part_number)+'" data-pn="'+esc(r.part_number)+'" data-vehicle="'+esc([c.year,c.make,c.model,c.drive].filter(Boolean).join(' '))+'">'+TT("Get a quote")+'</button>');
+      var add=pending&&!title?'<span class="fdr-sel">'+esc(TT("Choose :item first").replace(':item',lab(nf).toLowerCase()))+'</span>':(r.can_buy?'<span class="p-add"><button class="p-plus" data-add="'+esc(r.part_number)+'" aria-label="'+TT("Add :sku to cart").replace(':sku',esc(r.sku||r.part_number))+'" title="'+TT("Add to cart")+'">+<span class="fdr-addtxt">'+TT("Add to cart")+'</span></button></span>':'<button type="button" class="btn btn-line btn-sm" data-quote="'+esc(r.sku||r.part_number)+'" data-pn="'+esc(r.part_number)+'" data-vehicle="'+esc([c.year,c.make,c.model,c.drive].filter(Boolean).join(' '))+'">'+TT("Get a quote")+'</button>');
       var fits=r.fits&&r.fits.length?'<ul class="fdr-fits">'+r.fits.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>':'';
       return '<tr><td data-label="Add">'+add+'</td><td data-label="Pic">'+(r.image?'<img class="fdr-pic" width="70" height="52" loading="lazy" src="'+esc(r.image)+'" data-full="'+esc(r.image)+'" alt="'+esc(r.sku||r.part_number)+'">':PH)+'</td><td data-label="Price">'+price+'</td>'+
         '<td data-label="Part number"><a class="fdr-pn" href="/catalog/driveshafts/part/'+encodeURIComponent(r.sku||r.part_number)+'" title="'+TT("Open part page")+'">'+esc(r.sku||r.part_number)+' &#8599;</a><span class="fdr-desc">'+esc(r.description||TT("Complete driveshaft"))+(r.condition&&r.condition!=='new'?' ('+esc(r.condition)+')':'')+'</span>'+fits+'</td>'+
@@ -235,13 +253,14 @@ button.fdr-step:focus-visible{outline:2px solid var(--blue,#1246ab);outline-offs
         '<td data-label="Notes" class="l"><span class="fdr-id">'+esc((r.notes||[]).join(' | ')||'-')+'</span>'+(extra.length?'<span class="fdr-more">'+esc(extra.join(' · '))+'</span>':'')+'</td></tr>';
     }).join('');
     var th=function(k,t){return '<th'+(c[k]!==undefined?' class="hl"':'')+'>'+t+(c[k]!==undefined?'<small>['+esc(c[k])+']</small>':'')+'</th>';};
-    return '<div class="fdr-card">'+head+note+'<div class="ptbl-wrap"><table class="ptbl" id="fdr-table"><thead><tr><th>'+TT("Add")+'</th><th>'+TT("Pic")+'</th><th>'+TT("Price")+'</th><th>'+TT("Part number")+'</th>'+(title?'':th('model',TT("Model")))+th('drive',TT("Drive"))+th('loc',TT("Loc"))+'<th>'+TT("Ctr. brg")+'</th><th class="l">'+TT("Notes")+'</th></tr></thead><tbody>'+body+'</tbody></table></div></div>';
+    return '<div class="fdr-card">'+head+missing+note+'<div class="ptbl-wrap"><table class="ptbl" id="fdr-table"><thead><tr><th>'+TT("Add")+'</th><th>'+TT("Pic")+'</th><th>'+TT("Price")+'</th><th>'+TT("Part number")+'</th>'+(title?'':th('model',TT("Model")))+th('drive',TT("Drive"))+th('loc',TT("Loc"))+'<th>'+TT("Ctr. brg")+'</th><th class="l">'+TT("Notes")+'</th></tr></thead><tbody>'+body+'</tbody></table></div></div>';
   }
   document.addEventListener('click',function(e){
     var o=e.target.closest('.fdr-tile'); if(o){var c=Object.assign({},state.chosen||{});c[o.getAttribute('data-facet')]=o.getAttribute('data-val');load(c,true);window.scrollTo({top:root.getBoundingClientRect().top+scrollY-100,behavior:'smooth'});return;}
     var d=e.target.closest('[data-drop]'); if(d){dropFrom(d.getAttribute('data-drop'));return;}
     if(e.target.closest('#fdr-back')){var ks=keys(state.chosen||{});if(ks.length)dropFrom(ks[ks.length-1]);return;}
     if(e.target.closest('#fdr-clear')){load({},true);return;}
+    if(e.target.closest('#fdr-early')){early=true;render();return;}
     var a=e.target.closest('[data-add]'); if(a){a.disabled=true;var c3=state.chosen||{};fetch('/catalog/driveshafts/add',{method:'POST',headers:{'X-CSRF-TOKEN':CSRF,'X-Requested-With':'XMLHttpRequest','Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({part_number:a.getAttribute('data-add'),qty:1,vehicle:[c3.year,c3.make,c3.model,c3.drive].filter(Boolean).join(' ')})}).then(function(r){return r.json();}).then(function(d){a.disabled=false;if(d.success){var was=a.innerHTML;a.textContent='✓';document.querySelectorAll('[data-cart-count]').forEach(function(b){b.textContent=d.count;b.hidden=false;});setTimeout(function(){a.innerHTML=was;},1400);}else{alert(d.message||TT("Could not add this part."));}}).catch(function(){a.disabled=false;});}
   });
   function dropFrom(k){var i=ORDER.indexOf(k),c2={};

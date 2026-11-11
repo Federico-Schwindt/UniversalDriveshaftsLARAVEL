@@ -191,7 +191,7 @@ return [
     'groups' => [
         'complete-driveshafts' => 'Balanced, ready-to-install driveshafts: premade shafts by vehicle, short-couple assemblies and certified take-offs. Find yours by year, make and model, or by series and length.',
         'driveshaft-components' => 'Every component of a driveshaft, organized by series: u-joints, weld yokes, slip and end yokes, flange yokes, CV heads, center support bearings and flex discs.',
-        'custom-cut-tubing' => 'DOM steel and aluminum driveshaft tubing in the common OD and wall sizes, sold by the foot and cut to your length.',
+        'driveshaft-tubing' => 'DOM steel and aluminum driveshaft tubing in the common OD and wall sizes, sold by the foot and cut to your length.',
         'small-parts' => 'The small hardware a driveshaft rebuild needs: snap rings, strap and u-bolt kits, dust caps, balance weights and bushings.',
     ],
 

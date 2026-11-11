@@ -63,45 +63,6 @@ class ProductController extends Controller
             'error' => $added ? null : ($skipped ? __('This part is priced on request. Call (813) 524-6491 for a quote.') : __('Part not found.'))], $added ? 200 : 422);
     }
 
-    // ---- WISHLIST -----------------------------------------------------
-
-    public function wishlist()
-    {
-        return view('wishlist', ['items' => $this->wishItems()]);
-    }
-
-    public function wishAdd(Request $r)
-    {
-        $p = $this->products->byId((int) $r->input('product_id'));
-        if (!$p) return response()->json(['success' => false], 404);
-        $key = $this->wishKey();
-        $exists = DB::table('wishlists')->where($key)->where('wp_product_id', $p['id'])->exists();
-        if (!$exists) {
-            DB::table('wishlists')->insert($key + [
-                'wp_product_id' => $p['id'], 'name' => $p['name'], 'sku' => $p['sku'],
-                'price' => $p['price'], 'image' => $p['image'], 'created_at' => now(), 'updated_at' => now(),
-            ]);
-        }
-        return response()->json(['success' => true, 'count' => DB::table('wishlists')->where($key)->count(), 'in' => true]);
-    }
-
-    public function wishRemove(Request $r)
-    {
-        $key = $this->wishKey();
-        DB::table('wishlists')->where($key)->where('wp_product_id', (int) $r->input('product_id'))->delete();
-        return response()->json(['success' => true, 'count' => DB::table('wishlists')->where($key)->count()]);
-    }
-
-    private function wishItems()
-    {
-        return DB::table('wishlists')->where($this->wishKey())->orderByDesc('id')->get();
-    }
-
-    private function wishKey(): array
-    {
-        return Auth::check() ? ['user_id' => Auth::id()] : ['session_id' => session()->getId()];
-    }
-
     // ---- WHOLESALE (B2B) ----------------------------------------------
 
     /** Apply the logged-in user's approved wholesale discount to a catalog price. */

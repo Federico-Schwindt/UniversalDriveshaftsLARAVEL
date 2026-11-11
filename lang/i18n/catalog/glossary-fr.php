@@ -81,6 +81,7 @@ return array (
   'Certifed Driveshafts' => 'Arbres de transmission certifiés',
   'Driveshaft Components' => 'Composants d\'arbre de transmission',
   'Custom Cut Tubing' => 'Tube coupé sur mesure',
+  'Driveshaft Tubing' => 'Tube d\'arbre de transmission',
   'Small Parts' => 'Petites pièces',
   'Driveshafts' => 'Arbres de transmission',
   'Driveshaft' => 'Arbre de transmission',

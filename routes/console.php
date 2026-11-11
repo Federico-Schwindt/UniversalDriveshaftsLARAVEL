@@ -41,3 +41,6 @@ require __DIR__ . '/console-chat.php';       // UDS Assistant chat (media prunin
 Schedule::command('b2b:tiers')->dailyAt('00:10')->timezone('America/New_York')->withoutOverlapping(60);   // B2B tiers: drop on the 1st when last month fell short
 Schedule::command('b2b:terms-reminders')->dailyAt('08:30')->timezone('America/New_York')->withoutOverlapping(60);   // Net terms invoices due soon / overdue
 Schedule::command('chatbot:knowledge')->dailyAt('04:10')->withoutOverlapping(120);
+
+// Online builder reference prices (supplier Action Machine, public product JSON): weekly, Sunday 04:10 Eastern
+Schedule::command('builder:sync-prices')->weeklyOn(0, '04:10')->withoutOverlapping(120);

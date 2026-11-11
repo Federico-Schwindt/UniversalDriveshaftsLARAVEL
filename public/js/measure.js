@@ -26,6 +26,34 @@
   document.addEventListener('mouseover', function (e) { track(e.target); });
   document.addEventListener('focusin', function (e) { track(e.target); });
 
+  /* product page: the drawing shows only the letters; the caption corner reads out the dimension under the pointer
+     with this part's value ("E · CJ to flat · 2.205"). The spec list stays still (owner, 2026-11) */
+  document.querySelectorAll('.pdp-md').forEach(function (fig) {
+    var scope = fig.closest('[data-md-scope]'), svg = fig.querySelector('.md-svg'), read = fig.querySelector('.pdp-md__read');
+    if (!scope || !svg) return;
+    var info = {}, T = window.udsT || String;
+    function yn(v) { return v === 'Y' ? T('Yes') : v === 'N' ? T('No') : v; }
+    scope.querySelectorAll('[data-md]').forEach(function (row) {
+      var dt = row.querySelector('dt'), dd = row.querySelector('dd'), chip = row.querySelector('.md-chip');
+      if (!dt || !dd) return;
+      info[row.getAttribute('data-md')] = {
+        letter: chip ? chip.textContent.trim() : '',
+        label: dt.textContent.replace(chip ? chip.textContent : '', '').trim(),
+        value: yn(dd.textContent.trim())
+      };
+    });
+    if (!read) return;
+    var idle = read.textContent;
+    function say(key) {
+      var d = key && info[key];
+      read.textContent = d ? [d.letter, d.label, d.value].filter(Boolean).join('  ·  ') : idle;
+      fig.classList.toggle('is-reading', !!d);
+    }
+    scope.addEventListener('mouseover', function (e) { var el = e.target.closest('[data-md], .md-dim'); say(el ? (el.getAttribute('data-md') || el.getAttribute('data-dim')) : null); });
+    scope.addEventListener('mouseleave', function () { say(null); });
+    scope.addEventListener('focusin', function (e) { var el = e.target.closest('[data-md], .md-dim'); say(el ? (el.getAttribute('data-md') || el.getAttribute('data-dim')) : null); });
+  });
+
   var pop = document.getElementById('md-pop');
   if (!pop) return;
   var psvg = pop.querySelector('.md-svg');

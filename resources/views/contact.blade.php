@@ -1,17 +1,19 @@
 @extends('layouts.app')
 @section('title', __('Contact Universal Driveshafts | Odessa, FL · (813) 524-6491'))
 @section('desc', __('Universal Driveshafts LLC, 11611 Prospect Drive STE 4, Odessa, FL 33556 (Tampa Bay). Call (813) 524-6491, e-mail inquiry@universaldriveshafts.com or send a message.'))
+@section('bodyclass','pg')
 @section('content')
-<section class="phero"><div class="wrap">
-  <div class="crumb"><a href="/">{{ __('Home') }}</a><span class="sep">/</span><span>{{ __('Contact us') }}</span></div>
-  <div class="accentline"></div>
-  <h1>{{ __('Contact a driveline tech') }}</h1>
-  <p class="lead">{{ __('Send us the part number, the measurements, or just the problem. A driveline tech reads every message.') }}</p>
-</div></section>
+<div class="wrap pagehead">
+  <nav class="ucrumb" aria-label="{{ __('Breadcrumb') }}"><a href="/">{{ __('Home') }}</a><x-icon name="caret-right"/><span aria-current="page">{{ __('Contact us') }}</span></nav>
+  <div class="pagehead__row">
+    <h1>{{ __('Contact a driveline tech') }}</h1>
+    <div class="btn-row"><a class="btn btn-primary btn-sm" href="tel:+18135246491"><x-icon name="phone"/> (813) 524-6491</a><a class="btn btn-ghost btn-sm" href="https://wa.me/18136445707" target="_blank" rel="noopener"><x-icon name="whatsapp"/> {{ __('WhatsApp') }}</a></div>
+  </div>
+  <p class="pagehead__sub">{{ __('Send us the part number, the measurements, or just the problem. A driveline tech reads every message.') }}</p>
+</div>
 
-<section class="section section--snug"><div class="wrap"><div class="guidewrap">
-  <div class="gmain">
-    <div class="fitform-wrap" id="fitment">
+<section class="catsec catsec--end"><div class="wrap"><div class="pg-cols">
+  <div class="pg-form" id="fitment">
       @if(session('fitment_ok'))
         <div class="fit-thanks">
           <h2>{{ __('Message received') }}</h2>
@@ -27,7 +29,7 @@
 <div class="dsg-attach" id="dsg-attach">
   <div class="dsg-attach__img"><img src="/driveshaft-designer/svg/{{ $dsgSections }}?style=uds&dims={{ urlencode(http_build_query($dsgDims, '', '&')) }}" alt="{{ __('Your driveshaft drawing') }}"></div>
   <div class="dsg-attach__body">
-    <span class="kicker">{{ __('Drawing attached') }}</span>
+    <span class="dsg-attach__lbl">{{ __('Drawing attached') }}</span>
     <b>{{ substr_count($dsgSections, '+') + 0 === 2 ? __('Driveshaft two piece') : __('Driveshaft one piece') }} · <span class="u-mono">{{ $dsgSections }}</span></b>
     @if($dsgDims)<p class="u-mono">@foreach($dsgDims as $k => $v){{ $k }} {{ $v }}@if(!$loop->last) · @endif @endforeach</p>@else<p>{{ __('No measurements entered yet. You can still send it; we will ask for them.') }}</p>@endif
     <a href="{{ $dsgUrl }}" class="textlink">{{ __('Open the drawing') }} <x-icon name="arrow-right"/></a>
@@ -54,23 +56,30 @@
         <button type="submit">{{ __('Send message') }}</button>
       </form>
       @endif
-    </div>
   </div>
 
-  <aside class="gside">
-    <div class="sbcard">
+  <aside class="pg-side">
+    <div class="pg-card">
       <h2>Universal Driveshafts LLC</h2>
-      <p style="font-family:var(--font-h);font-weight:600;color:var(--blue)">{{ __('OEM driveshafts and parts') }}</p>
       {{-- the full address is public for local search (owner, 2026-11-04: Odessa is the shop) --}}
       <p><a href="{{ config('uds.pickup.maps') }}" target="_blank" rel="noopener">11611 Prospect Drive STE 4<br>Odessa, FL 33556</a><br><span class="muted">{{ __('Tampa Bay area, Florida') }}</span></p>
-      <h2 style="margin-top:1.4rem">{{ __('Opening hours') }}</h2>
       <p>{{ __('Monday to Friday, 8:00am to 5:00pm') }}<br>{{ __('Saturday, 9:00am to 2:00pm') }}</p>
     </div>
-    <div class="sbcard">
+    <div class="pg-card">
       <h2>{{ __('Reach us directly') }}</h2>
-      <a class="help-row" href="tel:+18135246491"><span class="ic ic-phone"><x-icon name="phone"/></span>(813) 524-6491</a>
-      <a class="help-row" href="tel:+18136445707"><span class="ic ic-phone"><x-icon name="phone"/></span>(813) 644-5707</a>
-      <a class="help-row" href="mailto:inquiry@universaldriveshafts.com"><span class="ic ic-mail"><x-icon name="mail"/></span>inquiry@universaldriveshafts.com</a>
+      <div class="pg-rows">
+        <a href="tel:+18135246491"><x-icon name="phone"/><span class="pg-tel">(813) 524-6491</span></a>
+        <a href="tel:+18136445707"><x-icon name="phone"/><span class="pg-tel">(813) 644-5707</span> <span class="muted">{{ __('OEM and fleet') }}</span></a>
+        <a href="mailto:inquiry@universaldriveshafts.com"><x-icon name="mail"/>inquiry@universaldriveshafts.com</a>
+      </div>
+    </div>
+    <div class="pg-card">
+      <h2>{{ __('Faster than a message') }}</h2>
+      <div class="pg-rows">
+        <a href="/track-order"><x-icon name="truck"/>{{ __('Track an order') }}</a>
+        <a href="/rma"><x-icon name="returns"/>{{ __('Returns and RMA') }}</a>
+        <a href="/online-builder"><x-icon name="wrench"/>{{ __('Price a custom driveshaft') }}</a>
+      </div>
     </div>
   </aside>
 </div></div></section>

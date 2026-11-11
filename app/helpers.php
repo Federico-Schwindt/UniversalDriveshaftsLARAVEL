@@ -35,3 +35,12 @@ if (!function_exists('i18n_view')) {
         return view()->exists($v) ? $v : null;
     }
 }
+
+if (!function_exists('stock_label')) {
+    /** A stock count as customers see it: the real number up to 50, "50+" above (owner, 2026-11). */
+    function stock_label($n): string
+    {
+        $n = (int) $n;
+        return $n > 50 ? '50+' : (string) $n;
+    }
+}

@@ -28,7 +28,7 @@ class CatalogController extends Controller
         abort_unless($g, 404);
         // single-category group -> jump straight to the table
         if (count($g['subcategories']) === 1) {
-            return redirect("/shop/{$group}/{$g['subcategories'][0]['slug']}", 301); // permanent: /shop/custom-cut-tubing
+            return redirect("/shop/{$group}/{$g['subcategories'][0]['slug']}", 301); // permanent: /shop/driveshaft-tubing
         }
         return view('shop.group', ['group' => $g]);
     }
@@ -203,6 +203,8 @@ class CatalogController extends Controller
         if (!$p) return response()->json(['found' => false], 404);
         $p['price'] = $this->price($p['price']);
         $p['regular'] = $this->price($p['regular']);
+        // customers see the count up to 50, "50+" above it (owner, 2026-11) — the JSON must not leak the real number
+        if (isset($p['stock']) && $p['stock'] !== null) $p['stock'] = stock_label($p['stock']);
         return response()->json(['found' => true, 'product' => $p]);
     }
 

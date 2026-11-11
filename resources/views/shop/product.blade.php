@@ -27,23 +27,35 @@
 <meta property="product:retailer_item_id" content="{{ $p['sku'] }}">
 <meta property="product:condition" content="new">
 <style>
-/* buy row: qty + Add + wishlist stay on one line (the heart used to wrap onto its own 52x25 row on phones) */
-.pdp__cart .pdp__wish{order:2;width:48px;min-height:48px;align-self:stretch}
 .pdp__cart .pdp__ftnote,.pdp__cart .pdp__msg{order:3;flex-basis:100%}
 @media (max-width:560px){.pdp__cart{flex-wrap:wrap}.pdp__cart .btn{min-width:0;flex:1 1 0}.pdp__cart .btn-line{flex-basis:100%}}
-.pdp__secondary a,.pdp__secondary button{min-height:40px}
 .pdp__sku{font-family:var(--font-m);font-weight:600;font-size:.95rem;letter-spacing:.02em;color:var(--blue);margin:0}
-.pdp h1.pdp__name{font-family:var(--font-h);font-weight:700;font-size:clamp(1.35rem,1.05rem + 1.2vw,1.85rem);line-height:1.25;letter-spacing:-.015em;color:var(--ink);margin:.3rem 0 0;max-width:none}
-.uspecs > div{background:var(--paper-2);border-radius:var(--r-sm);padding:.85rem 1rem;display:flex;flex-direction:column;gap:.2rem}
-.pdp__xref{border-top:1px solid var(--line);padding-block:clamp(1.75rem,1rem + 2vw,2.75rem);display:grid;gap:1.25rem}
-.pdp__xref h2{font-size:1.28rem;margin:0}
-.pdp__xref p{margin:0;color:var(--ink-2);line-height:1.65}
+.pdp h1.pdp__name{font-family:var(--font-h);font-weight:600;font-size:clamp(1.3rem,1.1rem + .8vw,1.7rem);line-height:1.25;letter-spacing:-.01em;color:var(--ink);margin:.3rem 0 0;max-width:none}
+/* specs read like a data sheet: label left, value right, one hairline per row */
+.pdp .uspecs{display:grid;grid-template-columns:1fr;gap:0;margin:0;border-top:1px solid var(--line)}
+.uspecs > div{display:grid;grid-template-columns:minmax(0,42%) minmax(0,1fr);gap:1rem;align-items:baseline;padding:.5rem .1rem;border-bottom:1px solid var(--line);background:none;border-radius:0}
+.uspecs dt{font-size:.84rem;color:var(--ink-3)}
+.uspecs dd{margin:0;font-size:.9rem;color:var(--ink)}
+.pdp__side{display:grid;gap:1.5rem;align-content:start}
+.pdp__xref{display:grid;gap:.6rem}
+.pdp__xref h2{font-size:1.05rem;margin:0}
+.pdp__xref p{margin:0;color:var(--ink-3);font-size:.84rem;line-height:1.55}
 .pdp__xref .k{font-family:var(--font-m);font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);display:block;margin-bottom:.3rem}
 .xrefs{display:flex;flex-wrap:wrap;gap:.45rem;list-style:none;padding:0;margin:0}
 .xrefs li{font-family:var(--font-m);font-size:.84rem;font-weight:500;padding:.35rem .65rem;border-radius:var(--r-xs);background:var(--paper-2);color:var(--ink)}
 .xrefs li a{color:var(--blue)}
-.pdp__desc{border-top:1px solid var(--line);padding-block:clamp(1.75rem,1rem + 2vw,2.75rem)}
-.pdp__desc > h2{font-size:1.28rem;margin-bottom:1rem}
+/* folded sections (description, shipping estimate): a heading row that opens; the text stays on the page */
+.pdp-fold{border-top:1px solid var(--line)}
+.pdp-fold > summary{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 0;cursor:pointer;list-style:none;font-weight:600}
+.pdp-fold > summary::-webkit-details-marker{display:none}
+.pdp-fold > summary::after{content:"+";font:400 1.4rem/1 var(--font-b);color:var(--blue)}
+.pdp-fold[open] > summary::after{content:"\2212"}
+.pdp-fold > summary h2{font-size:1.15rem;margin:0}
+.pdp-fold > .prose{padding-bottom:1.5rem}
+.pdp-fold--est{border:1px solid var(--line);border-radius:var(--r);padding:0 1rem}
+.pdp-fold--est > summary{font-size:.92rem;padding:.75rem 0}
+.pdp-fold--est .est{margin:0 0 1rem;padding:0;border:0;background:none}
+.pdp-fold--est .est__head h2{display:none}
 .prose{max-width:78ch;color:var(--ink-2);line-height:1.7;font-size:.97rem}
 .prose h3{font-size:1.08rem;margin:1.5rem 0 .5rem;color:var(--ink)}
 .prose h4{font-size:.98rem;margin:1.2rem 0 .4rem;color:var(--ink)}
@@ -54,15 +66,14 @@
 .prose th,.prose td{border:1px solid var(--line);padding:.45rem .7rem;text-align:left;vertical-align:top}
 .prose th{background:var(--paper-2);font-family:var(--font-m);font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint)}
 .prose strong{color:var(--ink)}
-.pdp__rel{border-top:1px solid var(--line);padding-block:clamp(1.75rem,1rem + 2vw,2.75rem)}
-.pdp__rel h2{font-size:1.28rem;margin-bottom:.4rem}
-.pdp__rel > p{color:var(--ink-2);margin-bottom:1.25rem;max-width:64ch}
+.pdp__rel{border-top:1px solid var(--line);padding-block:clamp(1.5rem,1rem + 1.5vw,2.25rem)}
+.pdp__rel h2{font-size:1.15rem;margin-bottom:.4rem}
+.pdp__rel-all{display:inline-flex;margin-bottom:1rem;font-size:.9rem}
 .pdp__rel .pcard__name{font-size:.84rem;min-height:0}
-.pgrid{grid-template-columns:repeat(4,minmax(0,1fr))}.pgrid .pcard{min-width:0}.pcard__media{overflow:hidden;min-height:0}.pcard__media img{width:auto;height:auto;max-width:100%;max-height:100%}
+.pgrid .pcard{min-width:0}.pcard__media{overflow:hidden;min-height:0}.pcard__media img{width:auto;height:auto;max-width:100%;max-height:100%}
 .pcard__media:not(:has(img)){background:var(--paper-2)}.pcard__media > .i{font-size:2.4rem;opacity:.35}
-@media (max-width:640px){.pdp__rel .pgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.pdp__faq{border-top:1px solid var(--line);padding-block:clamp(1.75rem,1rem + 2vw,2.75rem)}
-.pdp__faq h2{font-size:1.28rem;margin-bottom:.25rem}
+.pdp__faq{border-top:1px solid var(--line);padding-block:clamp(1.5rem,1rem + 1.5vw,2.25rem)}
+.pdp__faq h2{font-size:1.15rem;margin-bottom:.25rem}
 .pdp__faq .faq{margin-top:1rem;max-width:78ch}
 .pdp__detail h2 small{display:block;font-family:var(--font-b);font-weight:400;font-size:.85rem;color:var(--ink-faint);margin-top:.2rem}
 </style>
@@ -112,7 +123,7 @@
       'price'           => number_format($p['price'], 2, '.', ''),
       'priceCurrency'   => 'USD',
       'availability'    => 'https://schema.org/' . $avail,
-      'inventoryLevel'  => $mode === 'in' && ($p['stock'] ?? 0) > 0 && ($p['stock_source'] ?? 'ours') !== 'supplier' ? ['@type' => 'QuantitativeValue', 'value' => (int) $p['stock']] : null,
+      'inventoryLevel'  => $mode === 'in' && ($p['stock'] ?? 0) > 0 && ($p['stock_source'] ?? 'ours') !== 'supplier' ? (((int) $p['stock']) > 50 ? ['@type' => 'QuantitativeValue', 'minValue' => 50] : ['@type' => 'QuantitativeValue', 'value' => (int) $p['stock']]) : null,
       'itemCondition'   => 'https://schema.org/NewCondition',
       'priceValidUntil' => now()->addYear()->toDateString(),
       'seller'          => ['@id' => $base . '/#organization'],
@@ -223,7 +234,7 @@
           <p class="pdp__stock pdp__stock--in"><x-icon name="truck"/><b>{{ __('Ships from our supplier') }}</b></p>
           <p class="pdp__stocknote">{{ __('Not on our Florida shelf right now; our supplier has it. Call (813) 524-6491 for a ship date.') }}</p>
         @else
-          <p class="pdp__stock pdp__stock--in"><x-icon name="check"/><b>{{ __('In stock') }}</b><span>{{ ($p['stock'] ?? 0) > 0 ? __(':n ready to ship', ['n' => $p['stock']]) : '' }}</span></p>
+          <p class="pdp__stock pdp__stock--in"><x-icon name="check"/><b>{{ __('In stock') }}</b><span>{{ ($p['stock'] ?? 0) > 0 ? __(':n ready to ship', ['n' => stock_label($p['stock'])]) : '' }}</span></p>
           @include('partials.ship-countdown', ['class' => 'shipcd--pdp'])
         @endif
       @elseif($mode === 'bo')
@@ -235,7 +246,6 @@
       @endif
 
       @unless($callPrice)@include('partials.affirm-msg', ['amount' => $p['price'], 'class' => 'affirm-msg--pdp'])@endunless
-      @php $pdpWished = in_array($p['id'], $udsWished ?? []); @endphp
       @includeIf('partials.pdp-notify')       {{-- back-in-stock / quote capture (recovery agent) --}}
       @if($callPrice)
       <div class="pdp__cart">
@@ -256,26 +266,15 @@
           <x-icon name="cart"/><span>{{ __('Add to cart') }}</span>
         </button>
         @if($byFoot)<p class="pdp__ftnote"><x-icon name="ruler"/> {{ __('Quantity is in') }} <b>{{ __('feet') }}</b>: <span data-ft-live>1 ft = 12" · ${{ number_format($p['price'],2) }}</span></p>@endif
-        <button type="button" class="pdp__wish{{ $pdpWished ? ' is-on' : '' }}" id="pdp-wish"
-                data-wish="{{ $p['id'] }}" aria-pressed="{{ $pdpWished ? 'true' : 'false' }}"
-                aria-label="{{ $pdpWished ? __('Remove from wishlist') : __('Add to wishlist') }}"
-                title="{{ $pdpWished ? __('Remove from wishlist') : __('Add to wishlist') }}">
-          <x-icon name="heart"/>
-        </button>
       </div>
       @endif
 
-      <div class="pdp__secondary">
-        <a href="/cart"><x-icon name="cart"/> {{ __('View cart') }}</a>
-        <a href="/contact"><x-icon name="headset"/> {{ __('Ask about fitment') }}</a>
-      </div>
-
-      <x-google-rating variant="card"/>
       <ul class="pdp__assure">
-        <li><x-icon name="truck"/><span><b>{{ __('Free shipping on parts orders over $') }}{{ number_format(config('uds.free_shipping_min')) }}.</b> {{ __('Tubing and complete driveshafts always ship at live UPS rates, calculated at checkout.') }}</span></li>
-        <li><x-icon name="returns"/><span><b>{{ __('14-day returns.') }}</b> {{ __('Wrong or damaged part? We send a prepaid label.') }}</span></li>
-        <li><x-icon name="headset"/><span><b>{{ __('Fitment help before you buy.') }}</b> {{ __('Call (813) 524-6491 and talk to a driveline tech.') }}</span></li>
+        <li><x-icon name="truck"/><span>{{ __('Free shipping on parts orders over $') }}{{ number_format(config('uds.free_shipping_min')) }}</span></li>
+        <li><x-icon name="returns"/><span>{{ __('14-day returns') }}</span></li>
+        <li><x-icon name="headset"/><span>{{ __('Fitment help:') }} <a href="tel:18135246491">(813) 524-6491</a></span></li>
       </ul>
+      <x-google-rating variant="compact" class="pdp__rating"/>
     </div>
   </div>
 
@@ -305,16 +304,16 @@
     <section aria-labelledby="pdp-specs-h" @if($measure) data-md-scope @endif>
       <h2 id="pdp-specs-h">{{ __('Specifications') }} <small>{{ $p['sku'] }}{{ $seo['short'] ? ' · ' . $seo['short'] : '' }}</small></h2>
       @if($measure)
-        <figure class="pdp-md"><figcaption>{{ __('How to measure') }}</figcaption>{!! \App\Support\Measure\Sketch::uniq($measure['svg']) !!}</figure>
+        <figure class="pdp-md"><figcaption><span>{{ __('How to measure') }}</span><span class="pdp-md__read" aria-live="polite">{{ __('Point at a letter to read its measurement') }}</span></figcaption>{!! \App\Support\Measure\Sketch::uniq($measure['svg']) !!}</figure>
       @endif
       @php $mdRow = function ($key) use ($measure) { $l = $measure['shown'][$key] ?? null; return $l ? [' data-md="' . e($key) . '"', '<span class="md-chip" aria-hidden="true">' . e($l) . '</span>'] : ['', '']; }; @endphp
       <dl class="uspecs">
         <div><dt class="k">{{ __('Part number') }}</dt><dd class="v">{{ $p['sku'] }}</dd></div>
         @if($seo['type'])<div><dt class="k">{{ __('Part type') }}</dt><dd class="v">{{ \App\Support\PartGlossary::t($seo['type']) }}</dd></div>@endif
         <div><dt class="k">{{ __('Condition') }}</dt><dd class="v">{{ $p['brand']==='OEM SPICER' ? __('New, OEM') : __('New') }}</dd></div>
-        @if($p['brand'])<div><dt class="k">{{ __('Brand') }}</dt><dd class="v">{{ $p['brand'] }}</dd></div>@endif
+        @if($p['brand'])@php [$mda, $mdc] = $mdRow('pa_brand'); @endphp<div{!! $mda !!}><dt class="k">{!! $mdc !!}{{ __('Brand') }}</dt><dd class="v">{{ $p['brand'] }}</dd></div>@endif
         @if($p['series'])@php [$mda, $mdc] = $mdRow('pa_series'); @endphp<div{!! $mda !!}><dt class="k">{!! $mdc !!}{{ __('Series') }}</dt><dd class="v">@if($seriesHub)<a href="/series/{{ $seriesHub['slug'] }}">{{ $p['series'] }}</a>@else{{ $p['series'] }}@endif</dd></div>@endif
-        @if($p['style'])<div><dt class="k">{{ __('Style') }}</dt><dd class="v">{{ $p['style'] }}</dd></div>@endif
+        @if($p['style'])@php [$mda, $mdc] = $mdRow('pa_style'); @endphp<div{!! $mda !!}><dt class="k">{!! $mdc !!}{{ __('Style') }}</dt><dd class="v">{{ $p['style'] }}</dd></div>@endif
         @foreach(($p['specs'] ?? []) as $label => $val)
           @continue(in_array($label, ['Brand', 'Series', 'Style'], true) || $val === '')
           @php [$mda, $mdc] = $mdRow('pa_' . str_replace(' ', '-', strtolower($label))); @endphp
@@ -324,75 +323,69 @@
       </dl>
     </section>
 
-    <section aria-labelledby="pdp-fit-h">
-      <h2 id="pdp-fit-h">{{ __('Fitment') }}</h2>
-      <div class="pdp__notes">
-        @if($p['notes'])
-          <p>{{ $p['notes'] }}</p>
-        @endif
-        @if(!empty($xref['application']))
-          <p><b>{{ __('Fits / application:') }}</b> {{ implode('; ', $xref['application']) }}</p>
-        @endif
-        @if($p['series'] && $seriesHub && ($seriesHub['cap'] ?? null))
-          <p>{{ __(':series series parts use :cap u-joint bearing caps', ['series' => $p['series'], 'cap' => $seriesHub['cap']]) }}{{ $seriesHub['width'] ? __(' on a :w snap-ring-to-snap-ring width', ['w' => $seriesHub['width']]) : '' }} {{ __('(nominal). Confirm the cap diameter on the mating yoke or joint before ordering.') }}</p>
-        @endif
-        @if(!$p['notes'] && empty($xref['application']) && !($seriesHub['cap'] ?? null))
-          <p>{{ __('No fitment notes recorded for this part. Measure the shaft or send us the number off the old component and we will confirm it before you order.') }}</p>
-        @endif
-      </div>
-      <div class="pdp__help">
-        @if($seriesHub)<a class="textlink" href="/series/{{ $seriesHub['slug'] }}">{{ __('All :series series parts', ['series' => $seriesHub['name']]) }} <x-icon name="arrow-right"/></a>@endif
-        @if($catPath)<a class="textlink" href="{{ $catPath }}">{{ __('All :type', ['type' => \App\Support\PartGlossary::t($cat['name'])]) }} <x-icon name="arrow-right"/></a>@endif
-        <a class="textlink" href="/contact">{{ __('Ask a driveline tech about fitment') }} <x-icon name="arrow-right"/></a>
-      </div>
-    </section>
-  </div>
-
-  {{-- cross-reference (OEM / competitor numbers from pa_partn-number) --}}
-  @if(!empty($xref['xref']) || !empty($xref['application']))
-  <section class="pdp__xref" aria-labelledby="pdp-xref-h">
-    <h2 id="pdp-xref-h">{{ __('Interchange / cross-reference') }}</h2>
-    @if(!empty($xref['xref']))
-      <div>
-        <span class="k">{{ __('Replaces / interchanges with') }}</span>
+    <div class="pdp__side">
+      <section aria-labelledby="pdp-fit-h">
+        <h2 id="pdp-fit-h">{{ __('Fitment') }}</h2>
+        <div class="pdp__notes">
+          @if($p['notes'])
+            <p>{{ $p['notes'] }}</p>
+          @endif
+          @if(!empty($xref['application']))
+            <p><b>{{ __('Fits / application:') }}</b> {{ implode('; ', $xref['application']) }}</p>
+          @endif
+          @if($p['series'] && $seriesHub && ($seriesHub['cap'] ?? null))
+            <p>{{ __(':series series parts use :cap u-joint bearing caps', ['series' => $p['series'], 'cap' => $seriesHub['cap']]) }}{{ $seriesHub['width'] ? __(' on a :w snap-ring-to-snap-ring width', ['w' => $seriesHub['width']]) : '' }} {{ __('(nominal). Confirm the cap diameter on the mating yoke or joint before ordering.') }}</p>
+          @endif
+          @if(!$p['notes'] && empty($xref['application']) && !($seriesHub['cap'] ?? null))
+            <p>{{ __('Send us the number off the old part and we will confirm the fit before you order.') }}</p>
+          @endif
+        </div>
+        <div class="pdp__help">
+          @if($seriesHub)<a class="textlink" href="/series/{{ $seriesHub['slug'] }}">{{ __('All :series series parts', ['series' => $seriesHub['name']]) }} <x-icon name="arrow-right"/></a>@endif
+          @if($catPath)<a class="textlink" href="{{ $catPath }}">{{ __('All :type', ['type' => \App\Support\PartGlossary::t($cat['name'])]) }} <x-icon name="arrow-right"/></a>@endif
+          <a class="textlink" href="/contact">{{ __('Ask a driveline tech about fitment') }} <x-icon name="arrow-right"/></a>
+        </div>
+      </section>
+      @if(!empty($xref['xref']))
+      <section class="pdp__xref" aria-labelledby="pdp-xref-h">
+        <h2 id="pdp-xref-h">{{ __('Interchange / cross-reference') }}</h2>
         <ul class="xrefs">
           @foreach($xref['xref'] as $x)
             <li>@if($x['sku'])<a href="/parts/{{ rawurlencode($x['sku']) }}">{{ $x['num'] }}</a>@else{{ $x['num'] }}@endif</li>
           @endforeach
         </ul>
-      </div>
-      <p>{{ __(':sku replaces or interchanges with :nums', ['sku' => $p['sku'], 'nums' => implode(', ', array_column($xref['xref'], 'num'))]) }}{{ __('. Cross-reference numbers are supplied for identification; compare the series, spline and bolt-pattern dimensions above before substituting.') }}</p>
-    @endif
-    @if(!empty($xref['application']))
-      <p><span class="k">{{ __('Fits / application') }}</span>{{ implode('; ', $xref['application']) }}</p>
-    @endif
-  </section>
-  @endif
+        <p>{{ __(':sku replaces or interchanges with :nums', ['sku' => $p['sku'], 'nums' => implode(', ', array_column($xref['xref'], 'num'))]) }}{{ __('. Cross-reference numbers are supplied for identification; compare the series, spline and bolt-pattern dimensions above before substituting.') }}</p>
+      </section>
+      @endif
+
+      <details class="pdp-fold pdp-fold--est"><summary>{{ __('Estimate shipping to your ZIP') }}</summary>@includeIf('partials.pdp-estimator')</details>
+    </div>
+  </div>
 
   {{-- alternative parts: exact-fitment matches + same number under another brand, in the category table format --}}
-  @includeIf('partials.pdp-estimator')     {{-- shipping estimator (commerce agent) --}}
-  @includeIf('partials.pdp-also-bought')   {{-- customers also bought (commerce agent) --}}
   @if(!empty($sameFit))
   <section class="ualts" id="pdp-alts" aria-labelledby="pdp-alts-h">
     <h2 id="pdp-alts-h">{{ __('Alternative parts for :sku', ['sku' => $p['sku']]) }}</h2>
-    <p>{{ $p['series'] ? __('Same measurements in the :series series', ['series' => $p['series']]) : __('Same measurements') }} {{ __('— a different number, brand or lube spec, but the same fitment. Check the notes before you substitute.') }}</p>
+    <p>{{ __('Same fitment, another number or brand. Check the notes before you substitute.') }}</p>
     <div class="shop-bleed"><div id="shop-table" class="ptfit">@include('shop.partials.search-table', ['data' => ['items' => $sameFit], 'schema' => $altSchema])</div>@include('shop.partials.table-fit')</div>
   </section>
   @endif
 
+  @includeIf('partials.pdp-also-bought')   {{-- customers also bought (commerce agent) --}}
+
   {{-- long description (WooCommerce content, sanitized) --}}
   @if($descriptionHtml)
-  <section class="pdp__desc" aria-labelledby="pdp-desc-h">
-    <h2 id="pdp-desc-h">{{ __('About :sku', ['sku' => $p['sku']]) }}</h2>
+  <details class="pdp-fold pdp__desc">
+    <summary><h2 id="pdp-desc-h">{{ __('About :sku', ['sku' => $p['sku']]) }}</h2></summary>
     <div class="prose">{!! $descriptionHtml !!}</div>
-  </section>
+  </details>
   @endif
 
   {{-- related parts: same series + category --}}
   @if($related)
   <section class="pdp__rel" aria-labelledby="pdp-rel-h">
     <h2 id="pdp-rel-h">{{ $p['series'] ? __('Related :type in the :series series', ['type' => (!empty($cat['name']) ? \App\Support\PartGlossary::t($cat['name']) : __('parts')), 'series' => $p['series']]) : __('Related :type', ['type' => (!empty($cat['name']) ? \App\Support\PartGlossary::t($cat['name']) : __('parts'))]) }}</h2>
-    <p>{{ $p['series'] ? __('Other :type that share the :series series.', ['type' => mb_strtolower($cat ? \App\Support\PartGlossary::t($cat['name']) : __('parts')), 'series' => $p['series']]) : __('Other :type that share the same category.', ['type' => mb_strtolower($cat ? \App\Support\PartGlossary::t($cat['name']) : __('parts'))]) }} @if($catPath)<a href="{{ $catPath }}{{ $p['series'] && $seriesHub ? '?series=' . $seriesHub['slug'] : '' }}">{{ __('See the full table') }}</a>.@endif</p>
+    @if($catPath)<a class="textlink pdp__rel-all" href="{{ $catPath }}{{ $p['series'] && $seriesHub ? '?series=' . $seriesHub['slug'] : '' }}">{{ __('See the full table') }} <x-icon name="arrow-right"/></a>@endif
     <div class="pgrid">
       @foreach($related as $r)
         <a class="pcard" href="/parts/{{ rawurlencode($r['sku']) }}">
@@ -414,13 +407,12 @@
     <h2 id="pdp-faq-h">{{ $p['sku'] }} {{ __('questions') }}</h2>
     <div class="faq">
       @foreach($faq as $i => $f)
-        <details @if($i === 0) open @endif><summary>{{ $f[0] }}</summary><p>{{ $f[1] }}</p></details>
+        <details><summary>{{ $f[0] }}</summary><p>{{ $f[1] }}</p></details>
       @endforeach
     </div>
   </section>
   @endif
 
-  <p class="xref-note">{{ __('Manufacturer names, series designations and part numbers shown in this catalog (including Spicer') }}<sup>{{ __('®') }}</sup>{{ __(', Dana') }}<sup>{{ __('®') }}</sup>{{ __(', Neapco') }}<sup>{{ __('®') }}</sup> {{ __('and vehicle makes) are trademarks of their respective owners and are used for identification and cross-reference only. They do not indicate affiliation, endorsement, or that the part was made by that manufacturer unless the brand is expressly stated. Parts under a UDS part number are UDS-brand replacements. Interchange data, stock and images are provided for reference and may contain errors, so verify fitment before ordering.') }} <a href="/copyright">{{ __('Copyright & trademark notice') }}</a> {{ __('·') }} <a href="/terms">{{ __('Terms of use') }}</a></p>
 </div>
 @if($byFoot)
 {{-- sold-by-the-foot heads-up: shown once per session per tube, re-opened from the badge --}}

@@ -42,9 +42,8 @@
 
 @push('head')
 <style>
-.ucathead__blurb{margin:.75rem 0 0;color:var(--ink-2);max-width:72ch;line-height:1.6}
 .ucathead__series{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem;margin-top:1rem;font-size:.84rem;color:var(--ink-faint)}
-.ucathead__series a{font-family:var(--font-m);font-weight:600;font-size:.8rem;padding:.3rem .65rem;border-radius:var(--r-pill);background:#fff;border:1px solid var(--line);color:var(--blue)}
+.ucathead__series a{font-family:var(--font-m);font-weight:600;font-size:.8rem;padding:.3rem .6rem;border-radius:var(--r-sm);background:#fff;border:1px solid var(--line);color:var(--blue)}
 .ucathead__series a:hover{border-color:var(--blue)}
 .ucathead__series a small{font-weight:500;color:var(--ink-faint);margin-left:.3rem}
 </style>
@@ -93,8 +92,11 @@
       <a href="/shop/{{ $group['slug'] }}">{{ __($group['label']) }}</a><x-icon name="caret-right"/>
       <span aria-current="page">{{ \App\Support\PartGlossary::t($cat['name']) }}</span>
     </nav>
-    <h1>{{ \App\Support\PartGlossary::t($cat['name']) }}@if(isset($filters['pa_series'])) <span style="color:var(--ink-faint);font-weight:500">· {{ strtoupper($filters['pa_series']) }} {{ __('series') }}</span>@elseif($page > 1) <span style="color:var(--ink-faint);font-weight:500">{{ __('· page') }} {{ $page }}</span>@endif</h1>
-    @if($intro !== '')<p class="ucathead__blurb">{{ $intro }}</p>@endif
+    <div class="ucathead__row">
+      <h1>{{ \App\Support\PartGlossary::t($cat['name']) }}@if(isset($filters['pa_series'])) <span class="ucathead__sub">· {{ strtoupper($filters['pa_series']) }} {{ __('series') }}</span>@elseif($page > 1) <span class="ucathead__sub">{{ __('· page') }} {{ $page }}</span>@endif</h1>
+      {{-- the category copy shows on hover / focus only (owner, 2026-11): still on the page for search engines --}}
+      @if($intro !== '')<span class="cinfo"><button type="button" class="cinfo__btn"><x-icon name="info"/>{{ __('About :name', ['name' => mb_strtolower(\App\Support\PartGlossary::t($cat['name']))]) }}</button><span class="cinfo__pop" role="tooltip">{{ $intro }}</span></span>@endif
+    </div>
     @if($catSeries)
       <nav class="ucathead__series" aria-label="{{ __('Series in this category') }}">
         <span>{{ __('By series:') }}</span>
@@ -103,18 +105,6 @@
         @endforeach
         <a href="/series" style="color:var(--ink-2)">{{ __('All series') }}</a>
       </nav>
-    @endif
-    @if(count($siblings) > 1)
-      <div class="usiblings" role="list" aria-label="{{ __('Related categories') }}">
-        @foreach($siblings as $s)
-          @if($s['slug'] !== $cat['slug'])
-            <a class="usib" role="listitem" href="/shop/{{ $group['slug'] }}/{{ $s['slug'] }}">
-              <span>@if($s['image'])<img src="{{ $s['image'] }}" alt="{{ \App\Support\PartGlossary::t($s['name']) }}" width="30" height="30" loading="lazy">@else<x-icon name="package"/>@endif</span>
-              <b>{{ \App\Support\PartGlossary::t($s['name']) }}</b>
-            </a>
-          @endif
-        @endforeach
-      </div>
     @endif
   </div>
 </header>
@@ -171,7 +161,4 @@
 <div class="stock-pop" id="stock-pop"></div>
 <div class="img-pop" id="img-pop" aria-hidden="true"><img alt=""></div>
 
-<div class="wrap">
-  <p class="xref-note">{{ __('Manufacturer names, series designations and part numbers shown in this catalog (including Spicer') }}<sup>{{ __('®') }}</sup>{{ __(', Dana') }}<sup>{{ __('®') }}</sup>{{ __(', Neapco') }}<sup>{{ __('®') }}</sup> {{ __('and vehicle makes) are trademarks of their respective owners and are used for identification and cross-reference only. They do not indicate affiliation, endorsement, or that the part was made by that manufacturer unless the brand is expressly stated. Parts under a UDS part number are UDS-brand replacements. Interchange data, stock and images are provided for reference and may contain errors, so verify fitment before ordering.') }} <a href="/copyright">{{ __('Copyright & trademark notice') }}</a> {{ __('·') }} <a href="/terms">{{ __('Terms of use') }}</a></p>
-</div>
 @endsection

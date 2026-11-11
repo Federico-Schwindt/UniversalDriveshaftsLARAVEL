@@ -13,13 +13,15 @@ class SignedInSmokeTest extends TestCase
     use DatabaseTransactions;
 
     private const PAGES = ['/account', '/account/orders', '/account/addresses', '/account/addresses?edit=new&kind=dropship', '/account/addresses?billing=1',
-        '/account/designs', '/account/requests', '/account/settings', '/account/buy-again', '/wishlist', '/cart'];
+        '/account/designs', '/account/requests', '/account/settings', '/account/buy-again', '/cart'];
 
     public function test_account_pages_render(): void
     {
         Mail::fake();
         $u = User::query()->where('is_admin', 0)->firstOrFail();
         foreach (self::PAGES as $p) $this->actingAs($u)->get($p)->assertOk();
+        // the wishlist was removed (owner, 2026-11): old links land on the catalog
+        $this->actingAs($u)->get('/wishlist')->assertRedirect('/shop');
         if ($o = \DB::table('orders')->where('user_id', $u->id)->first()) $this->actingAs($u)->get('/account/orders/' . $o->order_number)->assertOk();
     }
 

@@ -59,6 +59,7 @@ class OrderStatusController extends Controller
         foreach ($events as $ev) { if (!isset($byType[$ev->type])) $byType[$ev->type] = $ev; }
 
         return view('order-status', [
+            'rmas' => \App\Support\Rma::forOrder($order),
             'order' => $order,
             'items' => $items,
             'events' => $events->filter(fn ($e) => !str_starts_with($e->type, 'notify:'))->values(),

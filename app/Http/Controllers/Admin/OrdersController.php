@@ -134,7 +134,8 @@ class OrdersController extends Controller
             'ship_to' => app(\App\Services\PtiDropship::class)->shipTo($order),
             'rows' => DB::table('pti_dropships')->where('order_id', $order->id)->whereIn('status', ['placed', 'prepared'])->orderBy('id')->get(),
         ] : null;
-        return view('admin.orders.show', compact('order', 'items', 'events', 'notes', 'customerOrders', 'customer', 'custStats', 'activity', 'specs', 'pack', 'labels', 'ship', 'freight', 'ptiDs'));
+        $rmas = \App\Support\Rma::forOrder($order);   // return / exchange / cancellation requests on this order
+        return view('admin.orders.show', compact('order', 'items', 'events', 'notes', 'customerOrders', 'customer', 'custStats', 'activity', 'specs', 'pack', 'labels', 'ship', 'freight', 'ptiDs', 'rmas'));
     }
 
     /** What the "Book freight" card and modal need: the pallets, the customer's delivery answer, pickup days. */

@@ -15,7 +15,7 @@
   <span class="no">{!! $mark($o->order_number) !!}@if($summary)<small class="oparts">{!! $mark($summary) !!}</small>@endif</span>
   <span class="po">@if($o->po_number)<span class="po-l">{{ __('PO') }}</span> {!! $mark($o->po_number) !!}@else<span class="muted">—</span>@endif</span>
   <span class="dt">{{ \Carbon\Carbon::parse($o->created_at)->isoFormat('ll') }}</span>
-  <span class="st"><span class="pill pill-{{ $sk }}">{{ __($sl) }}</span></span>
+  <span class="st"><span class="pill pill-{{ $sk }}">{{ __($sl) }}</span>@if(!empty($rma))<small class="orma">{{ __(\App\Support\Rma::typeLabel($rma->type)) }}: {{ \App\Support\Rma::customerState($rma)[0] }}</small>@endif</span>
   <span class="trk">@if($o->tracking_number){{ strtoupper((string) $o->tracking_carrier) }} {{ $o->tracking_number }}@else{{ $o->shipped_at ? __('Shipped') : __('Not shipped yet') }}@endif</span>
   <span class="tot">${{ number_format($o->total, 2) }}</span>
 </a>

@@ -40,7 +40,7 @@ class OrderMailer
         $terms = $order->payment_method === 'net_terms';
         $unpaid = ($order->payment_status ?? 'unpaid') === 'unpaid' && $order->payment_method !== 'pay_at_pickup';
         $data = ['order' => $order, 'items' => $items, 'statusUrl' => OrderEvents::statusUrl($order), 'payUrl' => $unpaid && PayLink::payable($order) ? PayLink::url($order) : null,
-            'hero' => ['kicker' => 'Order ' . $order->order_number, 'title' => "Thanks, {$name} — we have your order.", 'text' => $pickup ? 'We will let you know as soon as it is ready for pickup in Florida.' : 'Stock parts leave Florida the same business day when ordered before 2 pm ET; custom shafts are built to order.'],
+            'hero' => ['kicker' => 'Order ' . $order->order_number, 'title' => "Thanks, {$name} — we have your order.", 'text' => $pickup ? 'We will let you know as soon as it is ready for pickup in Florida.' : 'Stock parts leave Florida the same business day when ordered before 2 pm EST; custom shafts are built to order.'],
             'preheader' => 'Order ' . $order->order_number . ' · $' . number_format($order->total, 2) . ($unpaid ? ($terms ? ' · invoice on terms' : ' · payment pending') : '')];
         try { Mailer::send($order->email, "Order {$order->order_number} confirmed — Universal Driveshafts", 'emails.order.confirmation', $data, ['replyTo' => [config('uds.email')]]); } catch (\Throwable $e) { report($e); }
         if (!\App\Support\Settings::get('notify.new_order', true)) return;
@@ -72,7 +72,7 @@ class OrderMailer
         if (OrderEvents::imported($order)) return;
         $name = trim($order->billing_first_name ?: 'there');
         // stored in UTC (the carrier's scan time when known); customers read Eastern, labelled so it's never ambiguous
-        $when = $order->delivered_at ? \Carbon\Carbon::parse($order->delivered_at, 'UTC')->timezone('America/New_York')->format('l, F j \a\t g:i A') . ' ET' : 'today';
+        $when = $order->delivered_at ? \Carbon\Carbon::parse($order->delivered_at, 'UTC')->timezone('America/New_York')->format('l, F j \a\t g:i A') . ' EST' : 'today';
         Mailer::simple($order->email, "Delivered: order {$order->order_number} — Universal Driveshafts", [
             'kicker' => 'Delivered', 'title' => "Your order arrived, {$name}.", 'intro' => "Order {$order->order_number} was delivered {$when}." . ($order->tracking_number ? " ({$order->tracking_carrier} · {$order->tracking_number})" : ''),
             'paragraphs' => ['Please check the parts against your order as soon as you can. If anything is damaged in transit or does not match what you ordered, reply to this e-mail or call (813) 524-6491 within 48 hours and we will sort it out.'],
