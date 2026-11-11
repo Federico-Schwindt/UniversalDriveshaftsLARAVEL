@@ -59,20 +59,6 @@ return [
             'strict' => false,
         ],
 
-        // the shop's work order station (uds-checkin on driveshaftsindustries.com, Neon Postgres): App\Services\CheckinBridge
-        // writes online-builder orders there. Unset = the bridge is off (staging and tests never touch the real station).
-        // Hostinger's libpq sends no SNI, so Neon needs its endpoint id in the password: postgresql://user:endpoint%3Dep-xxx%3Bpassword@ep-xxx-pooler.…
-        'checkin' => [
-            'driver' => 'pgsql',
-            'url' => env('CHECKIN_DATABASE_URL'),
-            'charset' => 'utf8',
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'search_path' => 'public',
-            'sslmode' => 'require',
-            'options' => [PDO::ATTR_TIMEOUT => 15],   // Neon wakes a suspended database in a few seconds
-        ],
-
         'sqlite' => [
             'driver' => 'sqlite',
             'url' => env('DB_URL'),
