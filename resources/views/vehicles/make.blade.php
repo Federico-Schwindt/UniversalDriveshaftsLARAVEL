@@ -21,7 +21,7 @@
   'mainEntity' => ['@@type' => 'ItemList', 'numberOfItems' => $n, 'itemListElement' => collect($models)->values()->map(fn ($m, $i) => [
       '@@type' => 'ListItem', 'position' => $i + 1, 'name' => "{$m['make']} {$m['model']} driveshafts", 'url' => url($m['url']),
   ])->all()],
-], JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE) !!}</script>
+], JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_HEX_TAG|JSON_HEX_AMP) !!}</script>
 @endpush
 @section('content')
 @php

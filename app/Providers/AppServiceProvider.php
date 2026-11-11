@@ -32,6 +32,8 @@ class AppServiceProvider extends ServiceProvider
         \Illuminate\Support\Facades\RateLimiter::for('login', fn ($r) => [
             \Illuminate\Cache\RateLimiting\Limit::perMinute(5)->by(strtolower((string) $r->input('email')) . '|' . $r->ip()),
             \Illuminate\Cache\RateLimiting\Limit::perHour(30)->by('h|' . strtolower(trim((string) $r->input('email')))),
+            // and per IP alone, so one address can't walk the customer list a few passwords at a time
+            \Illuminate\Cache\RateLimiting\Limit::perMinute(20)->by('ip|' . $r->ip()),
         ]);
         \Illuminate\Support\Facades\RateLimiter::for('register', fn ($r) => \Illuminate\Cache\RateLimiting\Limit::perMinute(5)->by($r->ip()));
         \Illuminate\Support\Facades\RateLimiter::for('forms', fn ($r) => \Illuminate\Cache\RateLimiting\Limit::perMinute(10)->by($r->ip()));
@@ -46,7 +48,8 @@ class AppServiceProvider extends ServiceProvider
         // A Mailable returned from toMail is sent as is, so ->locale() also covers the template chrome.
         \Illuminate\Auth\Notifications\ResetPassword::toMailUsing(function ($notifiable, string $token) {
             $email = $notifiable->getEmailForPasswordReset();
-            $url = url(route('password.reset', ['token' => $token, 'email' => $email], false));
+            // from APP_URL, never the request's Host header (a spoofed Host would otherwise receive the token)
+            $url = rtrim((string) config('app.url'), '/') . route('password.reset', ['token' => $token, 'email' => $email], false);
             $loc = \App\Support\MailLocale::valid(($notifiable->locale ?? null) ?: app()->getLocale());
             $t = fn (string $s, array $rep = []) => __($s, $rep, $loc);
             $subject = $t('Reset your Universal Driveshafts password');

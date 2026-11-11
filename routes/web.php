@@ -130,9 +130,9 @@ Route::redirect('/one-piece-designer', '/online-builder', 301);
 Route::redirect('/two-piece-designer', '/online-builder', 301);
 Route::get('/dsb/yokes', [\App\Http\Controllers\DsbController::class, 'yokes']);
 // /dsb/premades retired (builder is custom-only, Nov 2026)
-Route::post('/dsb/quote', [\App\Http\Controllers\DsbController::class, 'quote']);
-Route::post('/dsb/save-design', [\App\Http\Controllers\DsbController::class, 'saveDesign']);
-Route::post('/dsb/submit', [\App\Http\Controllers\DsbController::class, 'submit']);
+Route::post('/dsb/quote', [\App\Http\Controllers\DsbController::class, 'quote'])->middleware('throttle:120,1');
+Route::post('/dsb/save-design', [\App\Http\Controllers\DsbController::class, 'saveDesign'])->middleware('throttle:forms');
+Route::post('/dsb/submit', [\App\Http\Controllers\DsbController::class, 'submit'])->middleware('throttle:30,1');
 Route::get('/cart', [\App\Http\Controllers\ShopController::class, 'cart']);
 Route::get('/cart/mini', [\App\Http\Controllers\ShopController::class, 'mini']);
 Route::get('/checkout/pickup-info', [\App\Http\Controllers\ShopController::class, 'pickupInfo'])->middleware('throttle:30,1');
@@ -144,7 +144,7 @@ Route::post('/cart/coupon/remove', [\App\Http\Controllers\ShopController::class,
 Route::get('/checkout', [\App\Http\Controllers\ShopController::class, 'checkout']);
 Route::post('/checkout/shipping-options', [\App\Http\Controllers\ShopController::class, 'shippingOptions'])->middleware('throttle:40,1');
 Route::post('/checkout/place', [\App\Http\Controllers\ShopController::class, 'place'])->middleware('throttle:10,1');
-Route::get('/order-received/{number}', [\App\Http\Controllers\ShopController::class, 'received']);
+Route::get('/order-received/{number}', [\App\Http\Controllers\ShopController::class, 'received'])->middleware('throttle:lookup');
 Route::view('/pto-agriculture','pto');
 Route::get('/shop', [\App\Http\Controllers\CatalogController::class, 'index']);
 Route::get('/shop/quick-view/{id}', [\App\Http\Controllers\CatalogController::class, 'quickView'])->whereNumber('id');
@@ -222,7 +222,7 @@ Route::get('/geo', function(\Illuminate\Http\Request $r){
         } catch (\Throwable $e) {}
         return ['country'=>'US','country_name'=>'United States','state'=>'','state_name'=>'','city'=>'','zip'=>''];
     });
-});
+})->withoutMiddleware(\App\Http\Controllers\CommerceController::STATELESS);   // background call: never writes the session
 Route::get('/login', [\App\Http\Controllers\AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [\App\Http\Controllers\AuthController::class, 'login'])->middleware('throttle:login');
 Route::get('/register', [\App\Http\Controllers\AuthController::class, 'showRegister']);
@@ -233,9 +233,9 @@ Route::post('/register/resend', [\App\Http\Controllers\AuthController::class, 'r
 Route::post('/auth/google', [\App\Http\Controllers\AuthController::class, 'google'])->middleware('throttle:forms');
 Route::post('/logout', [\App\Http\Controllers\AuthController::class, 'logout']);
 Route::get('/forgot-password', [\App\Http\Controllers\AuthController::class, 'showForgot'])->name('password.request');
-Route::post('/forgot-password', [\App\Http\Controllers\AuthController::class, 'sendReset'])->name('password.email');
+Route::post('/forgot-password', [\App\Http\Controllers\AuthController::class, 'sendReset'])->name('password.email')->middleware('throttle:forms');
 Route::get('/reset-password/{token}', [\App\Http\Controllers\AuthController::class, 'showReset'])->name('password.reset');
-Route::post('/reset-password', [\App\Http\Controllers\AuthController::class, 'resetPassword'])->name('password.update');
+Route::post('/reset-password', [\App\Http\Controllers\AuthController::class, 'resetPassword'])->name('password.update')->middleware('throttle:forms');
 // DiceBear profile pictures (account + assistant); only account/bot seeds are kept on disk. 300/min: a picker shuffle loads 18
 Route::get('/avatar/{style}/{seed}', [\App\Http\Controllers\AvatarController::class, 'show'])->where(['style' => '[a-z-]{2,32}', 'seed' => '[A-Za-z0-9-]{1,40}'])->middleware('throttle:300,1');
 Route::get('/wholesale', [\App\Http\Controllers\AccountController::class, 'wholesale']);
@@ -321,7 +321,7 @@ Route::post('/stripe/webhook', [\App\Http\Controllers\ShopController::class, 'we
 Route::get('/search', [\App\Http\Controllers\SearchController::class, 'page'])->middleware('throttle:search');
 Route::get('/api/search', [\App\Http\Controllers\SearchController::class, 'api'])->middleware('throttle:search');
 Route::get('/quick-order', [\App\Http\Controllers\ProductController::class, 'quickOrderPage']);
-Route::post('/quick-order/resolve', [\App\Http\Controllers\ProductController::class, 'quickResolve']);
+Route::post('/quick-order/resolve', [\App\Http\Controllers\ProductController::class, 'quickResolve'])->middleware('throttle:lookup');
 Route::post('/quick-order/add', [\App\Http\Controllers\ProductController::class, 'quickAdd'])->middleware('throttle:30,1');
 // the wishlist was removed (owner, 2026-11): old links go to the catalog
 Route::redirect('/wishlist', '/shop', 301);
@@ -361,7 +361,7 @@ Route::get('/api/catalog/driveshafts/makes', [\App\Http\Controllers\DriveshaftFi
 Route::get('/api/catalog/driveshafts/options', [\App\Http\Controllers\DriveshaftFinderController::class, 'options'])->middleware('throttle:search');
 Route::get('/api/catalog/driveshafts/step', [\App\Http\Controllers\DriveshaftFinderController::class, 'step'])->middleware('throttle:search');
 Route::get('/api/catalog/driveshafts/search', [\App\Http\Controllers\DriveshaftFinderController::class, 'search'])->middleware('throttle:search');
-Route::post('/catalog/driveshafts/add', [\App\Http\Controllers\DriveshaftFinderController::class, 'add']);
+Route::post('/catalog/driveshafts/add', [\App\Http\Controllers\DriveshaftFinderController::class, 'add'])->middleware('throttle:30,1');
 Route::get('/catalog/driveshafts/part/{pn}', [\App\Http\Controllers\DriveshaftFinderController::class, 'part'])->where('pn', '[A-Za-z0-9._ -]+');
 
 // SEO landing pages, split per area so they can be worked on independently

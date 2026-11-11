@@ -103,6 +103,26 @@ class BuilderReferencePricingTest extends TestCase
         $this->assertNull(AmPricing::lengthAnswer(['values' => ['87.75 Inch or Less', '88 - 93.50 Inches']], 94));
     }
 
+    /** security review 2026-11-11: the variant price covers the front end and hardware, so a posted yoke or kit never reaches the build sheet */
+    public function test_supplier_priced_build_drops_a_front_yoke_or_kit_it_did_not_price(): void
+    {
+        $yoke = (int) \DB::table('catalog_live')->join('wp_term_relationships', 'object_id', '=', 'wp_product_id')
+            ->join('wp_term_taxonomy', 'wp_term_taxonomy.term_taxonomy_id', '=', 'wp_term_relationships.term_taxonomy_id')
+            ->join('wp_terms', 'wp_terms.term_id', '=', 'wp_term_taxonomy.term_id')->where('wp_terms.slug', 'transmission-yokes')->where('price', '>', 0)->value('wp_product_id');
+        $kit = (int) \DB::table('catalog_live')->join('wp_term_relationships', 'object_id', '=', 'wp_product_id')
+            ->join('wp_term_taxonomy', 'wp_term_taxonomy.term_taxonomy_id', '=', 'wp_term_relationships.term_taxonomy_id')
+            ->where('wp_term_taxonomy.term_id', \App\Services\DsbCatalog::STRAP_CAT_ID)->where('price', '>', 0)->value('wp_product_id');
+        $r = $this->post('/dsb/submit', $this->build(['front_yoke_kind' => 'new', 'front_yoke_product_id' => $yoke, 'hardware_kind' => 'strap', 'hardware_product_id' => $kit]))->assertOk();
+        $this->assertSame(435.13, $r->json('data.price.final'));
+        $cfg = collect(app(CartService::class)->items())->last()['meta']['config'];
+        $this->assertSame('none', $cfg['front_yoke']['kind']);
+        $this->assertSame(['kind' => 'none', 'product_id' => 0], $cfg['hardware']);
+        $this->assertSame('trans', $cfg['front_app']);
+        $rows = collect(\App\Support\BuildConfig::rows($cfg))->pluck('value', 'label');
+        $this->assertFalse($rows->has('Front yoke'));
+        $this->assertFalse($rows->has('Rear u-joint hardware'));
+    }
+
     public function test_cart_line_carries_the_reference_product_and_options(): void
     {
         $r = $this->post('/dsb/submit', $this->build(['am_options' => json_encode(['Rear U-Joint Hardware' => 'Driveshaft & 1310 Strap Kit (GM)'])]))->assertOk();

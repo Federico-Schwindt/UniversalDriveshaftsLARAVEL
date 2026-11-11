@@ -151,7 +151,9 @@ class PayLink
         if ($order->coupon_code && OrderEvents::record($order, 'notify:coupon:used', 'Coupon counted', $order->coupon_code, true)) {
             try { app(\App\Services\CouponService::class)->markUsed($order->coupon_code); } catch (\Throwable $e) { report($e); }
         }
-        if ($order->sms_opt_in && $order->phone && OrderEvents::record($order, 'notify:sms:placed', 'Confirmation text sent', $order->phone, true)) {
+        // an order not paid yet (pay at pickup, invoice) texts only a U.S. / Canadian number: no free texts abroad
+        $smsOk = $order->payment_status === 'paid' || \App\Services\SmsService::domestic((string) $order->phone);
+        if ($order->sms_opt_in && $order->phone && $smsOk && OrderEvents::record($order, 'notify:sms:placed', 'Confirmation text sent', $order->phone, true)) {
             $statusUrl = OrderEvents::statusUrl($order);
             $sms = OrderEvents::isPickup($order)
                 ? "Universal Driveshafts: order {$order->order_number} received for LOCAL PICKUP in Florida, total \${$order->total}. We'll text you when it's ready. Pickup " . config('uds.pickup.hours') . "; other times call (813) 524-6491 first. Status: {$statusUrl}"

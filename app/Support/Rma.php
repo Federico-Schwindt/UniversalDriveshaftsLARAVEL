@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -34,6 +35,12 @@ class Rma
 
     public const OPEN = ['new', 'approved', 'received'];
 
+    /** Returns and exchanges can be requested within this many days of delivery (/return-policy). */
+    public const WINDOW_DAYS = 14;
+
+    /** Days allowed for transit when the carrier never reported the delivery (UPS Ground: 1 to 5 business days). */
+    private const TRANSIT_DAYS = 5;
+
     public const RESOLUTIONS = [
         'refund' => 'Refund', 'replacement' => 'Replacement sent', 'store_credit' => 'Store credit',
         'repair' => 'Repaired and returned', 'cancelled' => 'Order cancelled', 'no_charge' => 'Closed, no charge',
@@ -65,6 +72,38 @@ class Rma
             'rejected' => [__('Not approved'), __('Questions? Reply to our e-mail or call :phone.', ['phone' => config('uds.pickup.phone')])],
             default => [__('Withdrawn'), ''],
         };
+    }
+
+    /** The last day a return or exchange can be requested for this order; null while it has not shipped yet. */
+    public static function windowEnds(object $order): ?Carbon
+    {
+        if ($order->delivered_at) $from = Carbon::parse($order->delivered_at);
+        elseif ($order->shipped_at) $from = Carbon::parse($order->shipped_at)->addDays(self::TRANSIT_DAYS);
+        elseif ($order->status === 'completed') $from = Carbon::parse($order->paid_at ?: $order->created_at);
+        else return null;
+        return $from->addDays(self::WINDOW_DAYS)->endOfDay();
+    }
+
+    /**
+     * Why a return or exchange can't be filed online, or null when it can (owner, 2026-11-11: the window is 14 days and
+     * nobody may file after it). It needs a real order so the date can be checked; warranty claims go through the shop.
+     * Cancellations have their own rule (only before the order ships).
+     */
+    public static function refusal(string $type, ?object $order, string $typed = ''): ?string
+    {
+        if ($type === 'cancel') return null;
+        $phone = config('uds.pickup.phone');
+        if (!$order) {
+            return $typed === ''
+                ? __('Please enter your order number. It is in the subject line of your confirmation e-mail. No order number? Call us at :phone.', ['phone' => $phone])
+                : __('We could not find order :n. Check the number in your confirmation e-mail, or call us at :phone.', ['n' => $typed, 'phone' => $phone]);
+        }
+        $ends = self::windowEnds($order);
+        if ($ends && now()->gt($ends)) {
+            return __('Returns and exchanges can be requested within :days days of delivery. For order :n that time ended on :date. For a warranty claim on a defective part, call us at :phone.',
+                ['days' => self::WINDOW_DAYS, 'n' => $order->order_number, 'date' => $ends->isoFormat('LL'), 'phone' => $phone]);
+        }
+        return null;
     }
 
     public static function record(int $rmaId, string $type, string $label, ?string $detail = null, ?int $userId = null): void

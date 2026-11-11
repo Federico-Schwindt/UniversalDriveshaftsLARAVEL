@@ -136,7 +136,7 @@
     if(!w._fade){w._fade=1;w.addEventListener('scroll',fades,{passive:true});}
   });}
   fades(); window.addEventListener('resize',fades);
-  function esc(s){var d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;}
+  function esc(s){return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; });}
   /* strings in the visitor's language: the page injects window.UDS_T; English falls through */
   function T(s){var d=window.UDS_T||{};return d[s]||s;}
 })();

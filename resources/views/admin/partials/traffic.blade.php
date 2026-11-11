@@ -75,7 +75,7 @@
   var box = document.querySelector('[data-traffic]'); if (!box) return;
   var side = box.querySelector('[data-tr-side]'), sub = box.querySelector('[data-tr-sub]'), liveEl = box.querySelector('[data-tr-live]');
   var list = box.querySelector('[data-tr-list]'), pick = box.querySelector('[data-tr-pick]'), el = document.getElementById('tr-globe-gl');
-  var esc = function (s) { var d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
   var n = function (v) { return Math.round(v).toLocaleString('en-US'); };
   var money = function (v) { return '$' + Number(v || 0).toLocaleString('en-US', { maximumFractionDigits: 0 }); };
   var data = null, mode = '28d', globe = null, sel = null;

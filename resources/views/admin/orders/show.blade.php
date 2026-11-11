@@ -654,7 +654,7 @@ document.addEventListener('click', function (e) {
     var review = form.querySelector('[data-pti-review]'), prepBtn = form.querySelector('[data-pti-prepare]');
     var CSRF = form.querySelector('[name=_token]').value, dsId = null;
     var STORES = @json(\App\Services\PtiDropship::STORES);
-    var esc = function (s) { var d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; };
+    var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
     var money = function (n) { return '$' + Number(n || 0).toFixed(2); };
     function post(url, data) {
       return fetch(url, { method: 'POST', headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }, body: data })

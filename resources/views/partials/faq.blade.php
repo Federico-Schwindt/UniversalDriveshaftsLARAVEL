@@ -18,6 +18,6 @@
         '@type' => 'Question', 'name' => $f[0],
         'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f[1]],
     ])->all(),
-  ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+  ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) !!}</script>
   @endpush
 @endif

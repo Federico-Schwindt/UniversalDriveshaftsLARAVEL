@@ -25,6 +25,17 @@ class SignedInSmokeTest extends TestCase
         if ($o = \DB::table('orders')->where('user_id', $u->id)->first()) $this->actingAs($u)->get('/account/orders/' . $o->order_number)->assertOk();
     }
 
+    /** /wholesale for every account state: none, pending, approved (2026-11-11: a 500 for approved accounts only). */
+    public function test_wholesale_page_renders_for_each_account_state(): void
+    {
+        $u = User::query()->where('is_admin', 0)->firstOrFail();
+        foreach (['none', 'pending', 'approved'] as $state) {
+            $u->forceFill(['wholesale_status' => $state])->save();
+            $res = $this->actingAs($u->fresh())->get('/wholesale')->assertOk();
+            if ($state === 'approved') $res->assertSee('wholesale account')->assertSee('% trade discount', false);
+        }
+    }
+
     public function test_checkout_renders_with_a_cart(): void
     {
         Mail::fake();

@@ -24,6 +24,7 @@
   function money(n){return '$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   try{var saved=localStorage.getItem(KEY);if(saved&&/^\d{5}$/.test(saved))zip.value=saved;}catch(e){}
+  document.addEventListener('uds:zip',function(e){if(e.detail!==zip.value)zip.value=e.detail;});
   function syncQty(){if(pageQty){var n=parseInt(pageQty.value,10);if(n>0)qty.value=n;}}
   syncQty();
   if(pageQty){pageQty.addEventListener('input',syncQty);pageQty.addEventListener('change',syncQty);document.querySelectorAll('[data-qty]').forEach(function(b){b.addEventListener('click',function(){setTimeout(syncQty,0);});});}
@@ -34,6 +35,7 @@
     var z=zip.value.trim(),q=Math.max(1,parseInt(qty.value,10)||1);
     if(!/^\d{5}$/.test(z)){show('<p class="est__err">'+TT("Enter a 5-digit US ZIP code.")+'</p>');zip.focus();return;}
     try{localStorage.setItem(KEY,z);}catch(e){}
+    document.dispatchEvent(new CustomEvent('uds:zip',{detail:z}));   // the delivery date above follows
     go.disabled=true;show('<p class="est__wait">'+TT("Getting UPS rates for")+' '+esc(z)+'…</p>');
     fetch('/shop/estimate',{method:'POST',headers:{'X-CSRF-TOKEN':CSRF,'X-Requested-With':'XMLHttpRequest','Content-Type':'application/x-www-form-urlencoded','Accept':'application/json'},
       body:new URLSearchParams({id:form.dataset.estId,qty:q,zip:z})})

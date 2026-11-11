@@ -12,7 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->validateCsrfTokens(except: ['stripe/webhook', 'webhooks/shipstation']);
+        // only APP_URL's host (and its subdomains, e.g. www → CanonicalPath) may build absolute links; another Host header is refused
+        $middleware->trustHosts();
+        // one-click unsubscribe (List-Unsubscribe-Post) comes from the mail provider without a CSRF token; the token in the path is the credential
+        $middleware->validateCsrfTokens(except: ['stripe/webhook', 'webhooks/shipstation', 'cart/recovery/unsubscribe/*', 'newsletter/unsubscribe/*']);
         $middleware->alias(['admin.section' => \App\Http\Middleware\AdminSection::class,
             'admin' => \App\Http\Middleware\AdminMiddleware::class]);
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);

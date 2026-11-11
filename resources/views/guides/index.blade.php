@@ -20,7 +20,7 @@
       '@@type' => 'ListItem', 'position' => $i + 1, 'url' => $base . '/guides/' . array_keys($guides)[$i], 'name' => $g['h1'],
     ])->all(),
   ],
-], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) !!}</script>
 @include('partials.breadcrumb-schema', ['crumbs' => [['Home', $base . '/'], ['Guides', $base . '/guides']]])
 @endpush
 

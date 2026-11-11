@@ -60,10 +60,10 @@
       </div></td>
       @foreach($schema['columns'] as $col)
         @if($col['key']==='pa_notes')
-          <td class="l" data-label="{{ __('Notes') }}" data-col="notes">@if(!empty($p['attrs']['pa_notes']))<span class="p-notes">{{ $p['attrs']['pa_notes'] }}</span>@else<span class="p-muted">-</span>@endif</td>
+          <td class="l" data-label="{{ __('Notes') }}" data-col="notes">@if(!empty($p['attrs']['pa_notes']))<span class="p-notes">{{ preg_replace(['/\s+,/', '/,(?=[A-Za-z])/'], [',', ', '], $p['attrs']['pa_notes']) }}</span>@else<span class="p-muted">-</span>@endif</td>
         @else
           @php $cv = $p['attrs'][$col['key']] ?? '-'; $cvu = strtoupper(trim((string) $cv)); @endphp
-          <td data-label="{{ __($col['label']) }}" data-col="{{ $col['key'] }}">{{ in_array($cvu, ['Y', 'YES'], true) ? __('Yes') : (in_array($cvu, ['N', 'NO'], true) ? __('No') : $cv) }}</td>
+          <td data-label="{{ __($col['label']) }}" data-col="{{ $col['key'] }}"@if(trim((string) $cv) === '' || $cv === '-') data-empty @endif>{{ in_array($cvu, ['Y', 'YES'], true) ? __('Yes') : (in_array($cvu, ['N', 'NO'], true) ? __('No') : $cv) }}</td>
         @endif
       @endforeach
     </tr>
@@ -72,7 +72,7 @@
 </table></div>
 
 @if($data['pages'] > 1)
-  @php $qs = function ($pg) use ($qbase, $sort) { $params = array_merge($qbase, $sort !== 'price_asc' ? ['sort' => $sort] : [], $pg > 1 ? ['page' => $pg] : []); return '?' . http_build_query($params ?: ['page' => 1]); }; @endphp
+  @php $qs = function ($pg) use ($qbase, $sort) { $params = array_merge($qbase, $sort !== 'popular' ? ['sort' => $sort] : [], $pg > 1 ? ['page' => $pg] : []); return '?' . http_build_query($params ?: ['page' => 1]); }; @endphp
   <div class="shop-pg">
     @if($data['page']>1)<a data-page href="{{ $qs($data['page']-1) }}" aria-label="{{ __('Previous page') }}"><x-icon name="arrow-left"/></a>@else<span class="dis" aria-hidden="true"><x-icon name="arrow-left"/></span>@endif
     @php $start=max(1,$data['page']-2); $end=min($data['pages'],$start+4); $start=max(1,$end-4); @endphp

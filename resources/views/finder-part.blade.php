@@ -43,7 +43,7 @@
       'vehicleConfiguration' => $a['drive'] ?: null,
   ]))->values()->all() ?: null,
   'offers' => !empty($p['can_buy']) && !empty($p['price']) ? ['@@type' => 'Offer', 'price' => number_format((float) $p['price'], 2, '.', ''), 'priceCurrency' => 'USD', 'availability' => 'https://schema.org/InStock', 'url' => url()->current(), 'seller' => ['@@id' => rtrim(config('app.url'), '/') . '/#organization'], 'itemCondition' => 'https://schema.org/NewCondition'] : null,
-]), JSON_UNESCAPED_SLASHES) !!}</script>
+]), JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) !!}</script>
 @include('partials.breadcrumb-schema', ['crumbs' => [['Home', url('/')], ['Complete driveshafts', url('/catalog/driveshafts')], [$pn, url()->current()]]])
 @endpush
 @section('content')

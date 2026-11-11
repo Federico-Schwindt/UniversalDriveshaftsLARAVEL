@@ -63,7 +63,7 @@ class DsbCatalog
             'page'     => $page,
             'pages'    => (int) ceil($total / $perPage),
             'total'    => $total,
-            'filters'  => $this->availableFilters($catId, $series, $whitelist),
+            'filters'  => $this->availableFilters($catId, $series, $whitelist) ?: (object) [],   // {} in the JSON, never []
             'spline_counts' => $type === 'trans' ? $this->splineCounts($series) : [],
         ];
     }
@@ -252,11 +252,12 @@ class DsbCatalog
 
     private function availableFilters(int $catId, string $series, array $slugs): array
     {
-        return \Cache::remember("dsb_yoke_filters_{$catId}_" . \Str::slug($series), 300, function () use ($catId, $series, $slugs) {
+        // plain arrays only: the cache does not restore objects (an empty list came back as __PHP_Incomplete_Class)
+        return \Cache::remember("dsb_yoke_filters_v2_{$catId}_" . \Str::slug($series), 300, function () use ($catId, $series, $slugs) {
             $q = $this->productBase($catId);
             if ($series !== '') $this->whereSeries($q, $series);
             $ids = $q->pluck('p.ID');
-            if ($ids->isEmpty()) return (object) [];
+            if ($ids->isEmpty()) return [];
 
             $rows = DB::connection('wp')->table('wp_term_relationships as tr')
                 ->join('wp_term_taxonomy as tt', 'tt.term_taxonomy_id', '=', 'tr.term_taxonomy_id')
@@ -268,7 +269,7 @@ class DsbCatalog
             $out = [];
             foreach ($rows as $r) $out[substr($r->taxonomy, 3)][] = $r->name;
             foreach ($out as &$vals) natsort($vals) && $vals = array_values($vals);
-            return $out ?: (object) [];
+            return $out;
         });
     }
 }

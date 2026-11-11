@@ -7,7 +7,6 @@
 {{-- ================= HERO / PROGRESS ================= --}}
 <section class="ck-hero"><div class="wrap">
   <div>
-    <p class="ck-eyebrow">{!! __('Universal Driveshafts') !!}</p>
     <h1>{!! __('Secure checkout') !!}</h1>
     <div class="ck-trust">
       <span><svg viewBox="0 0 24 24"><path d="M12 1l9 4v6c0 5.5-3.8 10.7-9 12-5.2-1.3-9-6.5-9-12V5l9-4zm-1 14.6l6-6-1.4-1.4L11 12.8 8.4 10.2 7 11.6l4 4z"/></svg>{!! __('256-bit SSL encrypted') !!}</span>
@@ -33,7 +32,8 @@
     @include('partials.ship-countdown', ['class' => 'shipcd--ck'])
     @if($stripeKey && !$freightCart)
     {{-- Apple Pay / Google Pay: the wallet supplies contact, address and payment, so none of the form below is needed --}}
-    <div class="co-express" id="co-express" hidden>
+    {{-- shown from the start with the button row reserved, so the form does not jump down when the wallet buttons load; hidden when no wallet is available --}}
+    <div class="co-express is-loading" id="co-express">
       <div class="co-express__h"><b>{!! __('Express checkout') !!}</b><span>{!! __('Pay with your wallet, no forms to fill.') !!}</span></div>
       <div id="express-btns"></div>
       <p class="co-express__terms">{!! __('By paying with your wallet you agree to the') !!} <a href="/terms" target="_blank" rel="noopener">{!! __('Terms of Use &amp; Conditions of Sale') !!}</a> {!! __('and the') !!} <a href="/return-policy" target="_blank" rel="noopener">{!! __('Return Policy') !!}</a>.</p>
@@ -410,8 +410,10 @@
     var rem=FREEMIN-FREEBASE, tube=SUBTOTAL-FREEBASE>0.009;
     if(tube){bar.className='freeship';bar.textContent=udsT('Tubing and driveshafts ship at the carrier rate and do not qualify for free shipping.');}
     else if(rem<=0){bar.className='freeship done';bar.textContent=udsT('Free US ground shipping applied.');}
-    else{bar.className='freeship';bar.textContent=udsT('Only :amount left to qualify for FREE Shipping!',{amount:money(rem)});}
+    else{bar.className='freeship';bar.textContent=udsT(':amount more for free US ground shipping.',{amount:money(rem)});}
   }
+  /* the ZIP typed here is remembered for the delivery date on product pages and the cart (js/arrival.js) */
+  ['co-bzip','co-szip'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('change',function(){var z=(el.value||'').replace(/\D/g,'').slice(0,5);if(z.length===5){try{localStorage.setItem('uds.zip',z);}catch(e){}}});});
   /* ShopController::freeShipCountry: continental US only */
   function couponShipOk(){
     var diff=document.querySelector('[name=ship_to_different]'), p=(diff&&diff.checked)?'shipping':'billing';
@@ -666,11 +668,15 @@
   /* Express checkout: Apple Pay / Google Pay buttons. The wallet hands over contact, address and payment; rates come
      from the same endpoint as the form, and the order is placed through /checkout/place like any other. */
   (function(){
-    var box=document.getElementById('co-express'); if(!box||!window.udsStripe)return;
+    var box=document.getElementById('co-express'); if(!box)return;
+    if(!window.udsStripe){box.hidden=true;return;}
     var S=window.udsStripe, err=document.getElementById('express-err'), rates={}, chosen=null;
     var ece=S.elements.create('expressCheckout',{buttonType:{applePay:'buy',googlePay:'buy'},buttonHeight:48,paymentMethods:{applePay:'always',googlePay:'always',link:'never',paypal:'never',amazonPay:'never'}});
     ece.mount('#express-btns');
-    ece.on('ready',function(e){box.hidden=!(e.availablePaymentMethods&&(e.availablePaymentMethods.applePay||e.availablePaymentMethods.googlePay));});
+    var settled=false;
+    ece.on('ready',function(e){settled=true;box.classList.remove('is-loading');box.hidden=!(e.availablePaymentMethods&&(e.availablePaymentMethods.applePay||e.availablePaymentMethods.googlePay));});
+    ece.on('loaderror',function(){settled=true;box.hidden=true;});
+    setTimeout(function(){if(!settled)box.hidden=true;},8000);
     function cents(n){return Math.round(n*100);}
     var expressUS=true;   // the wallet's address decides whether a free-shipping coupon applies (continental US only)
     function totalWith(rate){var d=discount().amt, free=coupon&&coupon.free_shipping&&expressUS; return Math.max(0,SUBTOTAL-d)+(free?0:rate);}

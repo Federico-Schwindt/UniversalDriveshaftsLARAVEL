@@ -286,6 +286,65 @@
     return box;
   }
 
+  /* the guided driveshaft build (driveshaft_builder): the server sends every label already in the customer's language */
+  var ICON_SHAFT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10v4M6 9v6M6 12h12M18 9v6M21 10v4"/></svg>';
+  function wBuildChoices(w, live) {
+    var box = el('div', 'ua-w ua-w-bopts');
+    if (w.stage) box.appendChild(el('div', 'ua-w__h', ICON_SHAFT + '<span>' + esc(w.stage) + '</span>'));
+    var list = el('div', 'ua-bopts');
+    w.options.forEach(function (o) {
+      var price = o.price != null ? (o.price > 0 ? '+' + money(o.price) : money(0)) : (o.from != null ? esc((w.labels && w.labels.from || 'from :price').replace(':price', money(o.from))) : '');
+      var b = el('button', 'ua-bopt', '<span class="ua-bopt__main"><b>' + esc(o.label) + '</b>' + (o.note ? '<small>' + esc(o.note) + '</small>' : '') + '</span>' + (price ? '<span class="ua-bopt__price ua-mono">' + price + '</span>' : '') + '<span class="ua-ord__go" aria-hidden="true">' + ICON.arrow + '</span>');
+      b.type = 'button'; b.disabled = !live;
+      b.addEventListener('click', function () { b.classList.add('is-on'); tapSend(box, o.label); });
+      list.appendChild(b);
+    });
+    box.appendChild(list);
+    return box;
+  }
+  function wBuild(w, live) {
+    var L = w.labels || {};
+    var box = el('div', 'ua-w ua-w-build');
+    if (w.photo) { var f = box.appendChild(el('figure', 'ua-build__ph', '<img src="' + esc(w.photo) + '" alt="" loading="lazy"><figcaption>' + esc(L.photo || '') + '</figcaption>')); f.querySelector('img').addEventListener('error', function () { f.remove(); }); }
+    box.appendChild(el('div', 'ua-build__hd', '<b>' + esc(w.title) + '</b>' + (w.fits ? '<small>' + esc((L.fits || 'Fits') + ': ' + w.fits) + '</small>' : '')));
+    if (w.specs && w.specs.length) {
+      var dl = el('dl', 'ua-build__specs');
+      w.specs.forEach(function (r) { dl.appendChild(el('div', '', '<dt>' + esc(r.q) + '</dt><dd>' + esc(r.a) + '</dd>')); });
+      box.appendChild(dl);
+    }
+    var lines = el('ul', 'ua-sum__lines');
+    (w.lines || []).forEach(function (l) { lines.appendChild(el('li', '', '<span>' + esc(l.label) + '</span><b>' + money(l.usd) + '</b>')); });
+    box.appendChild(lines);
+    box.appendChild(el('dl', 'ua-sum__tot', '<div class="is-total"><dt>' + esc(L.total || 'Total') + '</dt><dd>' + money(w.price) + '</dd></div>'));
+    if (w.speed) box.appendChild(el('p', 'ua-build__speed', '<b>' + esc(L.speed || 'Speed check') + '</b> ' + esc(w.speed)));
+    var act = el('div', 'ua-w__act ua-w__act--full');
+    var add = act.appendChild(el('button', 'ua-wbtn ua-wbtn--pri', ICON.check + esc(L.add || 'Add to cart')));
+    add.type = 'button'; add.disabled = !live;
+    add.addEventListener('click', function () { tapSend(box, L.add_say || L.add || 'Add it to my cart'); });
+    var open = act.appendChild(el('a', 'ua-wbtn', esc(L.open || 'Open in the builder'))); open.href = w.link; open.target = '_blank'; open.rel = 'noopener';
+    box.appendChild(act);
+    return box;
+  }
+  function wBuildAdded(w) {
+    var L = w.labels || {};
+    var box = el('div', 'ua-w ua-w-done');
+    box.appendChild(el('div', 'ua-done__top', '<span class="ua-done__ic">' + ICON.check + '</span><span><b>' + esc(L.done || 'Added to your cart') + '</b><small>' + esc(w.title) + ' · ' + (w.qty > 1 ? w.qty + ' × ' : '') + money(w.price) + '</small></span>'));
+    var act = el('div', 'ua-w__act');
+    act.appendChild(el('a', 'ua-wbtn ua-wbtn--pri', esc(L.checkout || 'Checkout'))).href = w.checkout;
+    act.appendChild(el('a', 'ua-wbtn', esc(L.cart || 'View cart'))).href = w.cart;
+    box.appendChild(act);
+    return box;
+  }
+  function wBuildLink(w) {
+    var box = el('div', 'ua-w ua-w-blink');
+    if (w.stage) box.appendChild(el('div', 'ua-w__h', ICON_SHAFT + '<span>' + esc(w.stage) + '</span>'));
+    if (w.text) box.appendChild(el('p', 'ua-build__note', esc(w.text)));
+    var act = el('div', 'ua-w__act');
+    var a = act.appendChild(el('a', 'ua-wbtn', esc((w.labels || {}).open || 'Open'))); a.href = w.link; a.target = '_blank'; a.rel = 'noopener';
+    box.appendChild(act);
+    return box;
+  }
+
   function widgets(list, live) {
     (list || []).forEach(function (w) {
       var node = null;
@@ -295,6 +354,10 @@
         else if (w.type === 'confirm') node = wConfirm(w, live);
         else if (w.type === 'placed') node = wPlaced(w);
         else if (w.type === 'choices') { if (!live) return; node = wChoices(w, live); }
+        else if (w.type === 'build_choices') { if (!live) return; node = wBuildChoices(w, live); }
+        else if (w.type === 'build') node = wBuild(w, live);
+        else if (w.type === 'build_added') node = wBuildAdded(w);
+        else if (w.type === 'build_link') { if (!live) return; node = wBuildLink(w); }
       } catch (e) { node = null; }
       if (node) { log.appendChild(node); scrollDown(); }
     });

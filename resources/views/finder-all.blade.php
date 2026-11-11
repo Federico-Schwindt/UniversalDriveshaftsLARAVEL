@@ -10,7 +10,7 @@
 @push('schema')
 @include('partials.breadcrumb-schema', ['crumbs' => [
   ['Home', rtrim(config('app.url'),'/').'/'], ['Catalog', rtrim(config('app.url'),'/').'/shop'],
-  [$group['label'], rtrim(config('app.url'),'/').'/shop/'.$group['slug']], ['Complete Driveshafts', url()->current()],
+  [$group['label'], rtrim(config('app.url'),'/').'/shop/'.$group['slug']], ['By vehicle', url()->current()],
 ]])
 @endpush
 @section('content')
@@ -28,7 +28,7 @@
       <a href="/">{{ __('Home') }}</a><x-icon name="caret-right"/>
       <a href="/shop">{{ __('Catalog') }}</a><x-icon name="caret-right"/>
       <a href="/shop/{{ $group['slug'] }}">{{ __($group['label']) }}</a><x-icon name="caret-right"/>
-      <span aria-current="page">{{ __('Complete Driveshafts') }}</span>
+      <span aria-current="page">{{ __('By vehicle') }}</span>
     </nav>
     <h1>{{ __('Complete Driveshafts') }}</h1>
     <p class="ucathead__blurb">{{ __('Assembled, balanced and ready to install. Every part number here is a complete shaft for a specific vehicle — the fastest way to the right one is the vehicle finder.') }}</p>
@@ -81,10 +81,10 @@
           <td data-label="{{ __('Pic') }}" data-col="pic">@if($d['image'])<img class="p-pic" width="44" height="44" src="{{ $d['image'] }}" data-zoom="{{ $d['image'] }}" alt="{{ $d['sku'] }}" loading="lazy">@else<span class="p-pic-ph">{!! $ds !!}</span>@endif</td>
           <td data-label="{{ __('Part #') }}" data-col="part"><a class="p-pn" href="{{ $d['url'] }}">{{ $d['sku'] }}<x-icon name="arrow-up-right"/></a></td>
           <td data-label="{{ __('Price') }}" data-col="price"><div class="p-price">@if($d['can_buy'])<span class="now">{{ $money($d['price']) }}</span>@if($d['core_price'])<span class="save">+ {{ $money($d['core_price']) }} {{ __('core') }}</span>@endif @else<span class="p-muted">{{ __('Call for price') }}</span>@endif</div></td>
-          <td class="l" data-label="Description" data-col="desc">{{ $d['description'] ?: __('Complete driveshaft') }}@if($d['condition'] && $d['condition'] !== 'new') <span class="p-muted">({{ $d['condition'] }})</span>@endif</td>
-          <td data-label="Type" data-col="type">{{ $pieces($d['description']) }}</td>
-          <td class="l" data-label="Fits" data-col="fits">@if(!empty($d['fits']))<span class="p-notes">{{ implode(' · ', array_slice($d['fits'], 0, 2)) }}@if(count($d['fits']) > 2) <a href="{{ $d['url'] }}">+{{ count($d['fits']) - 2 }} {{ __('more') }}</a>@endif</span>@else<span class="p-muted">-</span>@endif</td>
-          <td data-label="Weight" data-col="weight">{{ $d['weight'] ? number_format($d['weight'], 1) . ' lb' : '-' }}</td>
+          <td class="l" data-label="{{ __('Description') }}" data-col="desc">{{ $d['description'] ?: __('Complete driveshaft') }}@if($d['condition'] && $d['condition'] !== 'new') <span class="p-muted">({{ $d['condition'] }})</span>@endif</td>
+          @php $pc = $pieces($d['description']); @endphp<td data-label="{{ __('Type') }}" data-col="type"@if($pc === '-') data-empty @endif>{{ __($pc) }}</td>
+          <td class="l" data-label="{{ __('Fits') }}" data-col="fits">@if(!empty($d['fits']))<span class="p-notes">{{ implode(' · ', array_slice($d['fits'], 0, 2)) }}@if(count($d['fits']) > 2) <a href="{{ $d['url'] }}">+{{ count($d['fits']) - 2 }} {{ __('more') }}</a>@endif</span>@else<span class="p-muted">-</span>@endif</td>
+          <td data-label="{{ __('Weight') }}" data-col="weight">{{ $d['weight'] ? number_format($d['weight'], 1) . ' lb' : '-' }}</td>
         </tr>
       @endforeach
       </tbody>

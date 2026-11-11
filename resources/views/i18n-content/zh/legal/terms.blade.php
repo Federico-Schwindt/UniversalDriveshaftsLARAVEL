@@ -13,7 +13,7 @@
   <p><b>Universal Driveshafts LLC</b>（“<b>UDS</b>”、“我们”或“我们的”）<br><span style="color:var(--ink-faint)">生效日期：2026年11月1日</span></p>
 
   <div class="box"><p class="caps" style="margin:0 0 8px">请仔细阅读，这些条款包含具有约束力的仲裁条款和集体诉讼豁免（第 17 节）、我们的责任限制（第 12 节）以及影响您合法权益的免责声明（第 11 节）。</p>
-  <p style="margin:0">通过访问或使用 udshafts.com（即“<b>本网站</b>”）、创建账户、请求报价，或通过任何渠道（在线、电话、电子邮件或当面）向 UDS 下订单，即表示您同意受本使用条款与销售条件（即“<b>本条款</b>”）、我们的<a href="/return-policy">退货、退款与保修政策</a>、我们的<a href="/copyright">版权、商标与 DMCA 通告</a>以及我们的<a href="/privacy-policy">隐私政策</a>的约束，上述所有文件均通过引用纳入本条款。如果您不同意，请勿使用本网站或向我们购买产品。</p></div>
+  <p style="margin:0">通过访问或使用 universaldriveshafts.com（即“<b>本网站</b>”）、创建账户、请求报价，或通过任何渠道（在线、电话、电子邮件或当面）向 UDS 下订单，即表示您同意受本使用条款与销售条件（即“<b>本条款</b>”）、我们的<a href="/return-policy">退货、退款与保修政策</a>、我们的<a href="/copyright">版权、商标与 DMCA 通告</a>以及我们的<a href="/privacy-policy">隐私政策</a>的约束，上述所有文件均通过引用纳入本条款。如果您不同意，请勿使用本网站或向我们购买产品。</p></div>
 
   <ol class="toc">
     <li><a href="#s1">谁可以使用本网站</a></li><li><a href="#s2">企业间销售与消费销售</a></li><li><a href="#s3">账户与安全</a></li><li><a href="#s4">订单、接受与取消</a></li><li><a href="#s5">定价、错误与供货情况</a></li><li><a href="#s6">付款</a></li><li><a href="#s7">运输、所有权与灭失风险</a></li><li><a href="#s8">适配性、交叉参考与规格</a></li><li><a href="#s9">定制传动轴</a></li><li><a href="#s10">安装、使用与安全</a></li><li><a href="#s11">保修免责声明</a></li><li><a href="#s12">责任限制</a></li><li><a href="#s13">赔偿</a></li><li><a href="#s14">知识产权</a></li><li><a href="#s15">您的内容与评价</a></li><li><a href="#s16">禁止行为</a></li><li><a href="#s17">争议解决与仲裁</a></li><li><a href="#s18">管辖法律与审判地</a></li><li><a href="#s19">第三方服务与链接</a></li><li><a href="#s20">通信与短信</a></li><li><a href="#s21">终止</a></li><li><a href="#s22">本条款的变更</a></li><li><a href="#s23">一般规定</a></li><li><a href="#s24">联系方式</a></li>

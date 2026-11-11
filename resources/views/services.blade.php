@@ -60,7 +60,7 @@
       'category' => 'Driveshaft service',
     ],
   ])->all(),
-], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) !!}</script>
 @include('partials.breadcrumb-schema', ['crumbs' => [['Home', $base . '/'], ['Services', $base . '/services']]])
 @endpush
 

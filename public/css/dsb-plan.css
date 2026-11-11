@@ -211,3 +211,7 @@
 #ubs-dsb .dsb-app-card-img--line{height:76px}
 /* one frame only: the step card; the old widget wrapper drew a second white box around it */
 .bldwrap #ubs-dsb.ubs-dsb-wrap{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}
+
+/* first question: no back button, no empty dock (audit 2026-11-11) */
+#ubs-dsb .dsb-back:disabled{visibility:hidden}
+#ubs-dsb .bld-dock.is-empty{display:none!important}

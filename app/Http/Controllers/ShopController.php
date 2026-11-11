@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\DB;
 
 class ShopController extends Controller
 {
+    /** Unpaid pay-at-pickup orders one account may have open at a time. */
+    public const OPEN_PICKUP_ORDERS = 2;
+
     public function __construct(private CartService $cart, private DsbCatalog $catalog, private CouponService $coupons)
     {
     }
@@ -19,8 +22,11 @@ class ShopController extends Controller
     public function cart()
     {
         $this->settlePending();
+        $items = $this->cart->items();
         return view('cart', [
-            'items' => $this->cart->items(),
+            'items' => $items,
+            // parts that go with what is in the cart, matched on fitment (CompleteJob)
+            'job' => $items ? app(\App\Services\CompleteJob::class)->forCart(array_values($items)) : ['items' => [], 'build' => false],
             'subtotal' => $this->cart->subtotal(),
             'freeMin' => CartService::freeMin(),
             'freeBase' => $this->cart->freeShippingBase(),
@@ -42,7 +48,7 @@ class ShopController extends Controller
     }
 
     /** Same price the catalog pages show (CatalogController::price): approved wholesale accounts get their discount. */
-    private static function shopperPrice(float $base): float
+    public static function shopperPrice(float $base): float
     {
         $u = \Auth::user();
         if ($u && ($u->wholesale_status ?? '') === 'approved' && ($u->wholesale_discount ?? 0) > 0) {
@@ -119,7 +125,7 @@ class ShopController extends Controller
     public function applyCoupon(\Illuminate\Http\Request $r)
     {
         $sub = $this->cart->subtotal();
-        [$ok, $c, $err] = $this->coupons->validate((string) $r->input('code'), $sub, $this->cart->items());
+        [$ok, $c, $err] = $this->coupons->validate((string) $r->input('code'), $sub, $this->cart->items(), null, (int) session('pending_order_id') ?: null);
         if (!$ok) return response()->json(['success' => false, 'message' => __($err)], 422);
         $this->cart->setCoupon($c->code);
         $disc = $this->coupons->discountFor($c, $sub, $this->cart->items());
@@ -140,7 +146,7 @@ class ShopController extends Controller
     {
         $code = $this->cart->getCoupon();
         if (!$code) return [null, 0.0, false];
-        [$ok, $c] = $this->coupons->validate($code, $this->cart->subtotal(), $this->cart->items(), $email);
+        [$ok, $c] = $this->coupons->validate($code, $this->cart->subtotal(), $this->cart->items(), $email, (int) session('pending_order_id') ?: null);
         if (!$ok) { $this->cart->clearCoupon(); return [null, 0.0, false]; }
         return [$c, $this->coupons->discountFor($c, $this->cart->subtotal(), $this->cart->items()), (bool) $c->free_shipping];
     }
@@ -242,11 +248,7 @@ class ShopController extends Controller
         $pending = $this->pendingOrder();
         if ($pending && $pending->stripe_payment_intent) {
             $state = \App\Support\PayLink::existingState($pending);
-            if ($state === 'succeeded') {
-                $this->cart->clear(); session()->forget('pending_order_id');
-                return response()->json(['success' => true, 'data' => ['order_number' => $pending->order_number, 'total' => (float) $pending->total, 'client_secret' => null,
-                    'redirect' => '/order-received/' . $pending->order_number . '?email=' . urlencode($pending->email)]]);
-            }
+            if ($state === 'succeeded') return $this->paidResponse($pending);
             if ($state === 'processing') return response()->json(['success' => false, 'errors' => [__('A payment for this order is already being processed. Please check back in a few minutes — you have not been charged twice.')]], 409);
         }
         if (!$this->cart->count()) return response()->json(['success' => false, 'errors' => [__('Your cart is empty.')]], 422);
@@ -302,6 +304,15 @@ class ShopController extends Controller
         $payAtPickup = !$netTerms && $isPickup && $r->input('payment_method') === 'pay_at_pickup';
         if (!$isPickup && $r->input('payment_method') === 'pay_at_pickup') {
             return response()->json(['success' => false, 'errors' => [__('Pay at pickup is only available with local pickup. Please choose another payment method.')]], 422);
+        }
+        // nothing is paid up front, yet the order takes the parts off the shelf, texts and e-mails, and queues shop work:
+        // only for a signed-in account with a confirmed e-mail, and a couple of open ones at a time
+        if ($payAtPickup && !\Auth::user()?->email_verified_at) {
+            return response()->json(['success' => false, 'errors' => [__('Pay at pickup needs a signed-in account with a confirmed e-mail. Sign in, or pay by card now.')]], 422);
+        }
+        if ($payAtPickup && DB::table('orders')->where('user_id', \Auth::id())->where('payment_method', 'pay_at_pickup')->where('payment_status', 'unpaid')
+                ->whereNotIn('status', ['completed', 'cancelled', 'refunded', 'failed'])->count() >= self::OPEN_PICKUP_ORDERS) {
+            return response()->json(['success' => false, 'errors' => [__('You already have orders waiting to be paid at pickup. Pay this one by card, or call (813) 524-6491.')]], 422);
         }
 
         // a saved card must be one of this account's own cards
@@ -365,8 +376,11 @@ class ShopController extends Controller
                 'totals' => ['subtotal' => $subtotal, 'discount' => $disc, 'shipping' => $shipCost, 'total' => $total]], 409);
         }
         $stripeCard = \App\Support\PayLink::stripeReady() && !$payAtPickup && !$netTerms;
+        if ($pending && $pending->stripe_payment_intent && \App\Support\PayLink::stripeReady() && ($stop = $this->retireIntent($pending))) return $stop;
 
-        $order = DB::transaction(function () use ($r, $ship, $subtotal, $total, $shipCost, $cpnDisc, $cpn, $payAtPickup, $dest, $netTerms, $useTier, $tier, $tierAmt, $pending) {
+        $order = DB::transaction(function () use ($r, $ship, $subtotal, $total, $shipCost, $cpnDisc, $cpn, $payAtPickup, $dest, $netTerms, $useTier, $tier, $tierAmt, $pending, $stripeCard) {
+            // the last use of a limited coupon goes to one checkout only (the row lock makes the other one wait for this commit)
+            if ($cpn && !$this->coupons->claim($cpn, (string) $r->input('email'), $pending->id ?? null)) return 'coupon';
             $row = [
                 'locale' => app()->getLocale(),   // e-mails and texts go out in it
                 'user_id' => \Auth::id(),
@@ -417,8 +431,11 @@ class ShopController extends Controller
                 'updated_at' => now(),
             ];
             if ($pending) {
-                // the same checkout tried again: one order, re-priced to what is in the cart now
+                // the same checkout tried again: one order, re-priced to what is in the cart now — unless the webhook
+                // marked it paid since it was read (a paid order is never re-priced or turned unpaid again)
                 $orderId = $pending->id;
+                $now = DB::table('orders')->where('id', $orderId)->lockForUpdate()->first(['payment_status', 'status']);
+                if (!$now || $now->payment_status !== 'unpaid' || !in_array($now->status, ['pending', 'failed'], true)) return 'changed';
                 DB::table('orders')->where('id', $orderId)->update($row);
                 DB::table('order_items')->where('order_id', $orderId)->delete();
             } else {
@@ -434,8 +451,22 @@ class ShopController extends Controller
                     'created_at' => now(), 'updated_at' => now(),
                 ]);
             }
-            return DB::table('orders')->find($orderId);
+            $order = DB::table('orders')->find($orderId);
+            // an invoice / pickup order is committed now, so it uses the coupon under the same lock (placedNotices then
+            // skips it); a card order holds it until paid (CouponService::taken)
+            if ($cpn && !$stripeCard && \App\Support\OrderEvents::record($order, 'notify:coupon:used', 'Coupon counted', $cpn->code, true)) $this->coupons->markUsed($cpn->code);
+            return $order;
         });
+        if ($order === 'coupon') {
+            $this->cart->clearCoupon();
+            return response()->json(['success' => false, 'errors' => [__('The coupon on your cart is no longer valid for this order. It has been removed — please review the new total and place the order again.')]], 422);
+        }
+        if ($order === 'changed') {
+            $now = DB::table('orders')->find($pending->id);
+            if ($now && $now->payment_status === 'paid') return $this->paidResponse($now);
+            session()->forget('pending_order_id');
+            return response()->json(['success' => false, 'errors' => [__('Your earlier order changed while you were checking out. Please review your cart and place the order again.')]], 409);
+        }
 
         // Stripe PaymentIntent when keys are configured; otherwise manual-payment mode.
         $clientSecret = null;
@@ -515,12 +546,41 @@ class ShopController extends Controller
         } catch (\Throwable $e) { report($e); }
     }
 
+    /**
+     * A retry is about to re-price the unpaid card order: its earlier payment is cancelled first, so it can no longer go
+     * through for the old cart. Null once Stripe confirms it is cancelled; otherwise the answer for the customer (it was
+     * paid meanwhile, it is still clearing, or Stripe could not be asked).
+     */
+    private function retireIntent(object $pending): ?\Illuminate\Http\JsonResponse
+    {
+        $url = 'https://api.stripe.com/v1/payment_intents/' . rawurlencode($pending->stripe_payment_intent);
+        try {
+            $st = \Http::asForm()->withToken(config('services.stripe.secret'))->post($url . '/cancel')->json('status');
+            // refused: an earlier retry already cancelled it, or it went through — ask Stripe what it is now
+            if ($st !== 'canceled') $st = \Http::withToken(config('services.stripe.secret'))->get($url)->json('status');
+        } catch (\Throwable $e) { report($e); $st = null; }
+        if ($st === 'canceled') return null;
+        if ($st === 'succeeded' && \App\Support\PayLink::existingState($pending) === 'succeeded') return $this->paidResponse($pending);
+        if (in_array($st, ['succeeded', 'processing'], true)) {
+            return response()->json(['success' => false, 'errors' => [__('A payment for this order is already being processed. Please check back in a few minutes — you have not been charged twice.')]], 409);
+        }
+        return response()->json(['success' => false, 'errors' => [__('We could not reach the card processor. Please try again in a moment.')]], 503);
+    }
+
+    /** The answer to a checkout whose order turned out to be paid already: its cart is done with, show the receipt. */
+    private function paidResponse(object $order): \Illuminate\Http\JsonResponse
+    {
+        $this->cart->clear(); session()->forget('pending_order_id');
+        return response()->json(['success' => true, 'data' => ['order_number' => $order->order_number, 'total' => (float) $order->total, 'client_secret' => null,
+            'redirect' => '/order-received/' . $order->order_number . '?email=' . urlencode($order->email)]]);
+    }
+
     // ---- CONFIRMATION + TRACKING --------------------------------------
 
     public function received(Request $r, string $number)
     {
         $order = DB::table('orders')->where('order_number', $number)->first();
-        abort_unless($order && strcasecmp($order->email, (string) $r->query('email')) === 0, 404);
+        abort_unless($order && trim((string) $order->email) !== '' && strcasecmp($order->email, (string) $r->query('email')) === 0, 404);
         // the customer lands here straight from Stripe, usually before the webhook: ask Stripe directly
         $processing = false;
         if ($order->payment_status === 'unpaid' && $order->stripe_payment_intent) {
