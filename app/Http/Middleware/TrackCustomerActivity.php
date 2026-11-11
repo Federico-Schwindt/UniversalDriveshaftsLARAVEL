@@ -24,7 +24,8 @@ class TrackCustomerActivity
     public function terminate(Request $request, Response $response): void
     {
         $u = $request->user();
-        if (!$u || $u->is_admin || $request->is(...self::SKIP)) return;
+        // a page the browser fetched ahead of time (pointer resting on a link) was not necessarily opened
+        if (!$u || $u->is_admin || $request->prefetch() || $request->is(...self::SKIP)) return;
         $status = $response->getStatusCode();
         $get = $request->isMethod('GET') || $request->isMethod('HEAD');
         $html = str_contains((string) $response->headers->get('Content-Type'), 'text/html');

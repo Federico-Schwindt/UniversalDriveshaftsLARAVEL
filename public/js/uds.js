@@ -82,10 +82,25 @@
         var box = b.closest('.sb__grp, .sb__sub');
         var on = !box.classList.contains('is-open');
         box.classList.toggle('is-open', on); b.setAttribute('aria-expanded', on ? 'true' : 'false');
+        place(box.closest('.sb__grp'));
         return;
       }
       if (e.target.closest('[data-sb-fold]')) { setRail(!html.classList.contains('sb-rail')); return; }
       if (e.target.closest('[data-sb-close]')) { close(); if (burger && e.detail === 0) burger.focus(); }
+    });
+    // folded rail: a group's links fly out beside its icon (CSS), lifted when they would run past the bottom of the window
+    function place(g) {
+      var l = g && g.querySelector('.sb__list');
+      if (!l || !html.classList.contains('sb-rail')) return;
+      l.style.top = '';
+      var r = l.getBoundingClientRect();
+      if (!r.height) return;
+      var over = r.bottom - (window.innerHeight - 12);
+      if (over > 0) l.style.top = -Math.min(over, r.top - 12) + 'px';
+    }
+    [].forEach.call(sb.querySelectorAll('.sb__grp'), function (g) {
+      g.addEventListener('mouseenter', function () { place(g); });
+      g.addEventListener('focusin', function () { place(g); });
     });
     if (burger) burger.addEventListener('click', function (e) { if (html.classList.contains('sb-open')) close(); else open(e.detail === 0); if (e.detail !== 0) burger.blur(); });
     if (scrim) scrim.addEventListener('click', close);
@@ -128,6 +143,18 @@
   }
 
   /* ---------- "About …" popovers (.cinfo): hover and focus are CSS; a tap toggles them (iOS gives buttons no focus) ---------- */
+  /* ---------- pages fetched ahead of time (the layout's speculation rules) carry the cart as it was: putting the
+     rules back throws those copies away, so this runs whenever something is added to the cart ---------- */
+  function initPrefetch() {
+    window.addEventListener('uds:cart', function () {
+      [].forEach.call(document.querySelectorAll('script[type="speculationrules"]'), function (s) {
+        var n = document.createElement('script'); n.type = 'speculationrules'; n.textContent = s.textContent;
+        [].forEach.call(s.attributes, function (a) { n.setAttribute(a.name, a.value); });
+        s.replaceWith(n);
+      });
+    });
+  }
+
   function initInfoPops() {
     document.addEventListener('click', function (e) {
       var b = e.target.closest('.cinfo__btn'), cur = b && b.parentNode;
@@ -140,7 +167,7 @@
   }
 
   function boot() {
-    initReveal(); initHeader(); initSidebar(); initInfoPops(); initLangMenus();
+    initReveal(); initHeader(); initSidebar(); initInfoPops(); initLangMenus(); initPrefetch();
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot);

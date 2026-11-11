@@ -117,6 +117,7 @@
         p.then(function (r) { return r.clone().json(); }).then(function (j) {
           if (!j || !j.success) return;
           load();   // owner, 2026-10-24: refresh the count only; the panel opens from the cart icon
+          window.dispatchEvent(new Event('uds:cart'));   // pages fetched ahead of time show the old cart: uds.js drops them
         }).catch(function () {});
       }
       return p;

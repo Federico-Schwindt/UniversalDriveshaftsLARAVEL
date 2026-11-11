@@ -441,6 +441,15 @@ class CatalogService
         $term = $this->term($catSlug);
         if (!$term) return ['items' => [], 'total' => 0, 'page' => 1, 'pages' => 0];
 
+        // a search without attribute filters runs on the in-memory index (same matching and order as the SQL below)
+        if ($q !== '' && !array_filter($filters, fn ($v) => $v !== '' && $v !== null) && !str_starts_with($sort, 'attr:')) {
+            $all = $this->searchIds($q, (int) $term->term_taxonomy_id, $sort);
+            $total = count($all);
+            $pages = (int) ceil($total / $perPage);
+            $page = max(1, min($page, max(1, $pages)));
+            return ['items' => $this->listItems($catSlug, array_slice($all, ($page - 1) * $perPage, $perPage), $attrKeys), 'total' => $total, 'page' => $page, 'pages' => $pages];
+        }
+
         $base = $this->db()->table('wp_posts as p')
             ->join('wp_term_relationships as tr', 'tr.object_id', '=', 'p.ID')
             ->where('tr.term_taxonomy_id', $term->term_taxonomy_id)
@@ -508,8 +517,13 @@ class CatalogService
         }
         $ids = $sel->offset(($page - 1) * $perPage)->limit($perPage)->pluck('p.ID')->all();
 
+        return ['items' => $this->listItems($catSlug, $ids, $attrKeys), 'total' => $total, 'page' => $page, 'pages' => $pages];
+    }
+
+    /** Listing rows for one page of ids; products with no picture (or the placeholder) borrow one from a same-series sibling. */
+    private function listItems(string $catSlug, array $ids, array $attrKeys): array
+    {
         $items = $this->hydrateList($ids, $attrKeys);
-        // products with no picture (or the placeholder) borrow one from a same-series sibling in this category
         $seriesImg = null;
         foreach ($items as &$it) {
             if (!self::imageMissing($it['image'] ?? '')) continue;
@@ -519,8 +533,105 @@ class CatalogService
             if (!empty($seriesImg[$s])) $it['image'] = $seriesImg[$s];
         }
         unset($it);
+        return $items;
+    }
 
-        return ['items' => $items, 'total' => $total, 'page' => $page, 'pages' => $pages];
+    /* ---------- search index ---------- */
+
+    /**
+     * Every published product as a few short lowercase strings. A search used to be SQL LIKE over a postmeta derived
+     * table, 100–190 ms a query and 17 of them for one results page (2 s; owner, 2026-11-11: "2s no es aceptable");
+     * scanning ~3,000 strings in PHP takes about a millisecond.
+     * 'p' => [id => [sku lowercase, title + sku haystack, sku, price|null, lifetime sales, [product_cat term_taxonomy_id, …]]],
+     * 'cat' => [term_taxonomy_id => [slug, name]].
+     */
+    public function searchIndex(): array
+    {
+        return $this->remember('search:index', 21600, function () {   // catalog edits bump catalog_ver, so 6 h only ages the sales order
+            $titles = $this->db()->table('wp_posts')->where('post_type', 'product')->where('post_status', 'publish')->pluck('post_title', 'ID');
+            $meta = [];
+            foreach ($this->db()->table('wp_postmeta as m')->join('wp_posts as p', 'p.ID', '=', 'm.post_id')
+                ->where('p.post_type', 'product')->where('p.post_status', 'publish')->whereIn('m.meta_key', ['_sku', '_price', 'total_sales'])
+                ->groupBy('m.post_id', 'm.meta_key')->select('m.post_id', 'm.meta_key', DB::raw('MAX(m.meta_value) as s'), DB::raw('MAX(m.meta_value+0) as n'))->get() as $r) {
+                $meta[(int) $r->post_id][$r->meta_key] = $r->meta_key === '_sku' ? (string) $r->s : ($r->s === null || $r->s === '' ? null : (float) $r->n);
+            }
+            $cats = []; $catOf = [];
+            foreach ($this->db()->table('wp_term_relationships as tr')
+                ->join('wp_term_taxonomy as tt', 'tt.term_taxonomy_id', '=', 'tr.term_taxonomy_id')
+                ->join('wp_terms as t', 't.term_id', '=', 'tt.term_id')
+                ->where('tt.taxonomy', 'product_cat')->select('tr.object_id', 'tt.term_taxonomy_id', 't.slug', 't.name')->get() as $r) {
+                $cats[(int) $r->term_taxonomy_id] = [$r->slug, html_entity_decode($r->name)];
+                $catOf[(int) $r->object_id][] = (int) $r->term_taxonomy_id;
+            }
+            $p = [];
+            foreach ($titles as $id => $title) {
+                $m = $meta[$id] ?? []; $sku = (string) ($m['_sku'] ?? '');
+                $p[(int) $id] = [mb_strtolower($sku), self::haystack([(string) $title, html_entity_decode((string) $title), $sku]), $sku,
+                    $m['_price'] ?? null, (float) ($m['total_sales'] ?? 0), array_values(array_unique($catOf[$id] ?? []))];
+            }
+            return ['p' => $p, 'cat' => $cats];
+        });
+    }
+
+    /**
+     * Ids of the published products whose title or SKU contains $q (literal, any case), optionally only those in one
+     * category, in the listing's order. 'relevance': the part number itself first (exact, then starting a dash-separated
+     * part: "1310" → 5-1310XU), then part numbers containing it, then title matches; best sellers first inside each band.
+     */
+    public function searchIds(string $q, ?int $ttid = null, string $sort = 'relevance'): array
+    {
+        $ql = mb_strtolower(trim($q));
+        if ($ql === '') return [];
+        $hits = [];
+        foreach ($this->searchIndex()['p'] as $id => $r) {
+            if (!self::found($r[1], $q) || ($ttid !== null && !in_array($ttid, $r[5], true))) continue;
+            $hits[$id] = $r;
+        }
+        $band = fn ($s) => $s === $ql ? 0 : (str_starts_with($s, $ql) || str_contains($s, '-' . $ql) ? 1 : (str_contains($s, $ql) ? 2 : 3));
+        $price = fn ($r) => $r[3] ?? -INF;   // SQL puts a missing price first going up
+        uksort($hits, fn ($a, $b) => match ($sort) {
+            'popular' => $hits[$b][4] <=> $hits[$a][4] ?: $price($hits[$a]) <=> $price($hits[$b]),
+            'price_asc' => $price($hits[$a]) <=> $price($hits[$b]),
+            'price_desc' => $price($hits[$b]) <=> $price($hits[$a]),
+            'part_asc' => strcmp($hits[$a][0], $hits[$b][0]),
+            'part_desc' => strcmp($hits[$b][0], $hits[$a][0]),
+            'name' => strcmp($hits[$a][1], $hits[$b][1]),
+            default => $band($hits[$a][0]) <=> $band($hits[$b][0]) ?: $hits[$b][4] <=> $hits[$a][4] ?: strcmp($hits[$a][0], $hits[$b][0]),
+        } ?: $a <=> $b);
+        return array_keys($hits);
+    }
+
+    /**
+     * Lowercase search text of a record: each value as written and folded to ASCII, so "1310 series" finds a title with
+     * non-breaking spaces and "cardán" finds "cardan", as the database's LIKE did. Fields are joined with \x1f, which
+     * nobody types, so a phrase never matches across two fields.
+     */
+    public static function haystack(array $values): string
+    {
+        $out = [];
+        foreach ($values as $v) { $out[mb_strtolower((string) $v)] = true; $out[mb_strtolower(\Illuminate\Support\Str::ascii((string) $v))] = true; }
+        return implode("\x1f", array_keys($out));
+    }
+
+    /** Does a haystack() contain $q, as typed or folded to ASCII (a query that folds to nothing, "日本", is matched as typed)? */
+    public static function found(string $hay, string $q): bool
+    {
+        static $memo = [];
+        if (count($memo) > 200) $memo = [];
+        $n = $memo[$q] ??= array_values(array_unique(array_filter([mb_strtolower(trim($q)), trim(mb_strtolower(\Illuminate\Support\Str::ascii(trim($q))))], fn ($x) => $x !== '')));
+        foreach ($n as $x) if (str_contains($hay, $x)) return true;
+        return false;
+    }
+
+    /** Categories holding products whose title or SKU contains $q: [['slug', 'name', 'n'], …], most hits first. */
+    public function searchCategories(string $q): array
+    {
+        $idx = $this->searchIndex(); $n = [];
+        foreach ($this->searchIds($q, null, 'part_asc') as $id) foreach ($idx['p'][$id][5] as $tt) $n[$tt] = ($n[$tt] ?? 0) + 1;
+        arsort($n);
+        $out = [];
+        foreach ($n as $tt => $c) if (isset($idx['cat'][$tt])) $out[] = ['slug' => $idx['cat'][$tt][0], 'name' => $idx['cat'][$tt][1], 'n' => $c];
+        return $out;
     }
 
     /** Build display rows for product IDs (order preserved), incl. dynamic attribute columns. */

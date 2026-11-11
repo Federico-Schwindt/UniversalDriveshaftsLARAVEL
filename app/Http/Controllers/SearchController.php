@@ -6,7 +6,6 @@ use App\Services\CatalogService;
 use App\Services\DriveshaftFinder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 /** Catalog-wide search: the header widget (JSON) and the full results page, both grouped by category. */
 class SearchController extends Controller
@@ -192,20 +191,10 @@ class SearchController extends Controller
     private function matchingCategoriesUncached(string $q, int $limit): array
     {
         $map = $this->catalog->allCategorySlugs();
-        $db = DB::connection('wp');
-        $skuSub = $db->table('wp_postmeta')->select('post_id', DB::raw('MAX(meta_value) as sv'))->where('meta_key', '_sku')->groupBy('post_id');
-        $rows = $db->table('wp_posts as p')->leftJoinSub($skuSub, 'sk', 'sk.post_id', '=', 'p.ID')
-            ->join('wp_term_relationships as tr', 'tr.object_id', '=', 'p.ID')
-            ->join('wp_term_taxonomy as tt', 'tt.term_taxonomy_id', '=', 'tr.term_taxonomy_id')
-            ->join('wp_terms as t', 't.term_id', '=', 'tt.term_id')
-            ->where('p.post_type', 'product')->where('p.post_status', 'publish')->where('tt.taxonomy', 'product_cat')
-            ->where(fn ($w) => $w->where('p.post_title', 'like', '%' . $q . '%')->orWhere('sk.sv', 'like', '%' . $q . '%'))
-            ->groupBy('t.slug', 't.name')->select('t.slug', 't.name', DB::raw('COUNT(DISTINCT p.ID) as n'))
-            ->orderByDesc('n')->get();
         $out = [];
-        foreach ($rows as $row) {
-            if (!isset($map[$row->slug])) continue;
-            $out[] = ['slug' => $row->slug, 'name' => html_entity_decode($row->name), 'group' => $map[$row->slug], 'n' => (int) $row->n];
+        foreach ($this->catalog->searchCategories($q) as $c) {
+            if (!isset($map[$c['slug']])) continue;
+            $out[] = $c + ['group' => $map[$c['slug']]];
             if (count($out) >= $limit) break;
         }
         return $out;

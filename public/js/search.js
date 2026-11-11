@@ -72,6 +72,9 @@
     html += '<p class="us-tip">' + T('Type a part number, a series like <b>1310</b> or a name. Press <kbd>Enter</kbd> for the full results page, <kbd>↑</kbd><kbd>↓</kbd> to move, <kbd>Esc</kbd> to close.') + '</p>';
     hint.innerHTML = html;
   }
+  // answers already seen are shown again at once (backspace, retyping); a newer keystroke cancels the request before it;
+  // "Searching…" appears only when an answer is slow, so a fast one never flickers
+  var memo = {}, memoN = 0, ctl = null;
   function run(now){
     var q = input.value.trim();
     clearBtn.hidden = !q;
@@ -80,10 +83,27 @@
     t = setTimeout(function(){
       if (q === lastQ) return; lastQ = q;
       var my = ++seq;
-      hint.hidden = false; hint.innerHTML = '<span class="us-busy">' + T('Searching…') + '</span>';
-      fetch('/api/search?q=' + encodeURIComponent(q), {headers:{'Accept':'application/json'}}).then(function(r){ return r.json(); })
-        .then(function(d){ if (my === seq) render(d, q); }).catch(function(){ if (my === seq) hint.innerHTML = T('Search failed — try again.'); });
-    }, now ? 0 : 160);
+      if (ctl) { try { ctl.abort(); } catch (e) {} }
+      if (memo[q]) { render(memo[q], q); return; }
+      ctl = window.AbortController ? new AbortController() : null;
+      var busy = setTimeout(function(){ if (my === seq){ hint.hidden = false; hint.innerHTML = '<span class="us-busy">' + T('Searching…') + '</span>'; } }, 180);
+      fetch('/api/search?q=' + encodeURIComponent(q), {headers:{'Accept':'application/json'}, signal: ctl ? ctl.signal : undefined}).then(function(r){ return r.json(); })
+        .then(function(d){ clearTimeout(busy); if (memoN++ > 60){ memo = {}; memoN = 0; } memo[q] = d; if (my === seq) render(d, q); })
+        .catch(function(e){ clearTimeout(busy); if (e && e.name === 'AbortError') return; if (my === seq){ hint.hidden = false; hint.innerHTML = T('Search failed — try again.'); } });
+    }, now ? 0 : 110);
+  }
+  // the full results page is fetched while the shopper reads the list, so Enter or "See all" opens it at once
+  var specT = null, specEl = null;
+  function prefetchPage(q){
+    clearTimeout(specT);
+    if (!(window.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules'))) return;
+    specT = setTimeout(function(){
+      if (q !== input.value.trim()) return;
+      if (specEl) specEl.remove();
+      specEl = document.createElement('script'); specEl.type = 'speculationrules';
+      specEl.textContent = JSON.stringify({prefetch: [{source: 'list', urls: ['/search?q=' + encodeURIComponent(q)]}]});
+      document.head.appendChild(specEl);
+    }, 500);
   }
   function render(d, q){
     var groups = d.groups || []; items = []; active = -1;
@@ -106,6 +126,7 @@
           '</a>';
         }).join('') + '</section>';
     }).join('');
+    prefetchPage(q);
     foot.hidden = false;
     foot.innerHTML = '<a class="us-all" href="/search?q=' + encodeURIComponent(q) + '">' + T((d.total || items.length) === 1 ? 'See :n result for “:q”' : 'See all :n results for “:q”', {n: (d.total || items.length), q: esc(q)}) + ARROW + '</a>';
     input.setAttribute('aria-expanded', 'true');

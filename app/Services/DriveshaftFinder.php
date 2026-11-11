@@ -161,12 +161,11 @@ class DriveshaftFinder
     {
         $term = self::pn($term);
         if (mb_strlen($term) < 2) return [];
-        $like = '%' . str_replace(['%', '_'], ['\%', '\_'], $term) . '%';
-        $pns = self::fitments()->where(fn ($w) => $w->where('part_number', 'like', $like)->orWhere('c_brg', 'like', $like)
-            ->orWhere('notes', 'like', $like))->distinct()->limit(40)->pluck('part_number');
-        // active parts only: a shaft PTI dropped must not resurface through the description match
-        $pns = $pns->merge(DB::table('ds_parts')->where('is_active', 1)->where(fn ($w) => $w->where('part_number', 'like', $like)->orWhere('description', 'like', $like))
-            ->limit(40)->pluck('part_number'))->unique()->take(40);
+        // shafts whose fitments name it (part number, carrier bearing, notes) first, then by part number or description
+        $idx = $this->searchIndex(); $pns = [];
+        foreach ($idx as $pn => $r) { if (count($pns) >= 40) break; if ($r[1] !== '' && CatalogService::found($r[1], $term)) $pns[$pn] = true; }
+        foreach ($idx as $pn => $r) { if (count($pns) >= 40) break; if (CatalogService::found($r[0], $term)) $pns[$pn] = true; }
+        $pns = collect(array_map('strval', array_keys($pns)));
         if ($pns->isEmpty()) return [];
         $rows = self::fitments()->whereIn('part_number', $pns)->get();
         $out = $this->results($rows, true);
@@ -175,6 +174,27 @@ class DriveshaftFinder
             if (!in_array($pn, $have, true)) $out = array_merge($out, $this->results(collect(), true, [$pn]));
         }
         return $out;
+    }
+
+    /**
+     * The active shafts as lowercase strings for search(): [part number => [part number + description, part number +
+     * carrier bearing + notes of its fitment rows ('' without any)]]. The LIKE over 42,000 fitment rows took 65–230 ms
+     * of every search; this scan takes about a millisecond. Active parts only: a shaft PTI dropped never resurfaces.
+     */
+    private function searchIndex(): array
+    {
+        return \Illuminate\Support\Facades\Cache::remember('finder:search-index', 3600, function () {
+            $parts = []; $fit = [];
+            foreach (DB::table('ds_parts')->where('is_active', 1)->get(['part_number', 'description']) as $p) $parts[$p->part_number] = (string) $p->description;
+            foreach (self::fitments()->select('part_number', 'c_brg', 'notes')->distinct()->get() as $f) {
+                $fit[$f->part_number] ??= [$f->part_number];
+                array_push($fit[$f->part_number], (string) $f->c_brg, (string) $f->notes);
+            }
+            $idx = [];
+            foreach ($parts as $pn => $desc) $idx[$pn] = [CatalogService::haystack([$pn, $desc]), isset($fit[$pn]) ? CatalogService::haystack(array_unique($fit[$pn])) : ''];
+            ksort($idx, SORT_STRING | SORT_FLAG_CASE);
+            return $idx;
+        });
     }
 
     /** Customer-safe part payload. price_cost and supplier are never read into it. */
