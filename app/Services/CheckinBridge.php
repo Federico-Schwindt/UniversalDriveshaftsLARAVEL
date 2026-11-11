@@ -81,9 +81,12 @@ class CheckinBridge
         $out = []; $gone = [];
         foreach ($lines->values() as $i => $item) {
             $job = $lines->count() > 1 ? $order->order_number . '-' . ($i + 1) : $order->order_number;
-            $res = CheckinApi::put($job, self::payload($order, $item, $i + 1, $lines->count()));
+            $payload = self::payload($order, $item, $i + 1, $lines->count());
+            $res = CheckinApi::put($job, $payload);
             $out[$job] = (int) $res['id'];
-            if (!empty($res['deleted'])) $gone[] = $job;   // the shop deleted it on purpose: never recreated
+            if (!empty($res['deleted'])) { $gone[] = $job; continue; }   // the shop deleted it on purpose: never recreated
+            // already there: its build card is brought up to date (the notes stay the shop's)
+            if (empty($res['created'])) CheckinApi::patch($job, ['order' => $order->order_number, 'build' => $payload['entry']['build']]);
         }
         $detail = implode(' · ', array_map(fn ($job, $id) => "Job {$job} = check-in #{$id}" . (in_array($job, $gone, true) ? ' (deleted at the shop)' : ''), array_keys($out), $out));
         OrderEvents::record($order, 'checkin:sent', 'Work order sent to the shop station', $detail, true);
@@ -212,7 +215,7 @@ class CheckinBridge
                 'state' => (string) $o->{$p . 'state'}, 'zip' => (string) $o->{$p . 'postcode'}, 'country' => self::country((string) $o->{$p . 'country'}),
             ],
             'entry' => [
-                'notes' => self::sheet($o, $item, $c, $k, $n),
+                'notes' => self::summary($o, $item, $c, $k, $n),
                 'laborRequest' => 'Custom Made Driveshaft',
                 'driveshaftPieces' => $two ? '2 Pieces' : '1 Piece',
                 'driveshaftMaterial' => ucfirst((string) ($c['material'] ?? '')),
@@ -224,24 +227,91 @@ class CheckinBridge
                 'payment' => in_array($o->payment_status, ['paid', 'partially_refunded'], true) ? 'Paid' : 'Unpaid',
                 // the builder's drawing with the customer's dimensions, shown on the work order as its product image
                 'productImage' => (string) (\App\Support\BuildDrawing::url($c) ?? ''),
-                'custom' => self::info($o, $item, $k, $n),
+                // everything else is the "Online build" card, grouped for the bench (owner, 2026-11-11: "necesito todo más organizado");
+                // no flat "custom" list any more (and an empty PHP array would go out as [] where the station wants an object)
+                'build' => self::build($o, $item, $c, $k, $n),
             ],
             'parts' => self::parts($item, $c, (array) ($meta['price'] ?? [])),
         ];
     }
 
-    /** The build sheet in the work order's "Notes" box: what to build, line by line. */
-    private static function sheet(object $o, object $item, array $c, int $k, int $n): string
+    /**
+     * The work order's notes: a few lines to read at a glance (what, ends, length, yokes, the customer's words). The full
+     * build is the "Online build" card; the notes stay short so the shop can add its own.
+     */
+    private static function summary(object $o, object $item, array $c, int $k, int $n): string
     {
-        $head = 'ONLINE ORDER ' . $o->order_number . ($n > 1 ? " (shaft {$k} of {$n})" : '');
-        $line = $item->name . '  ×' . (int) $item->qty . '  ($' . number_format((float) $item->price, 2) . ' each)';
-        $rows = array_map(fn ($r) => $r['label'] . ': ' . $r['value'], BuildConfig::rows($c));
-        $url = self::buildUrl($c);
-        return implode("\n", array_filter([$head, $line, '', ...$rows, $o->customer_note ? "\nOrder note: " . trim($o->customer_note) : null, $url ? "\nDrawing and full build: {$url}" : null], fn ($v) => $v !== null));
+        $rows = [];
+        foreach (BuildConfig::rows($c) as $r) $rows[$r['label']] = $r['value'];
+        $shaft = implode(' · ', array_filter([
+            $rows['Series'] ?? null,
+            trim(($rows['Tube material'] ?? '') . (isset($rows['Tube OD']) ? ' ' . $rows['Tube OD'] . ' tube' : ''), ' ') ?: null,
+            $rows['Component grade'] ?? null,
+        ]));
+        $ends = trim(($rows['Front end'] ?? '') . ' → ' . ($rows['Rear end'] ?? ''), ' →');
+        $len = implode(' · ', array_filter([isset($rows['Measurement A1']) ? 'A1 ' . $rows['Measurement A1'] : null, isset($rows['Measurement C1']) ? 'C1 ' . $rows['Measurement C1'] : null]));
+        $lines = [
+            'ONLINE ORDER ' . $o->order_number . ($n > 1 ? " (shaft {$k} of {$n})" : '') . ' — custom driveshaft from the online builder. Every detail is in the Online build card.',
+            $shaft, $ends, $len,
+        ];
+        foreach (['Front yoke', 'Rear yoke', 'Rear u-joint hardware'] as $l) if (!empty($rows[$l])) $lines[] = "{$l}: {$rows[$l]}";
+        if (!empty($rows['Customer notes'])) $lines[] = 'Customer notes: ' . $rows['Customer notes'];
+        if (trim((string) $o->customer_note) !== '') $lines[] = 'Order note: ' . trim((string) $o->customer_note);
+        return implode("\n", array_filter($lines, fn ($l) => trim((string) $l) !== ''));
     }
 
-    /** "Additional information" on the work order: where the job came from and where it goes. */
-    private static function info(object $o, object $item, int $k, int $n): array
+    /**
+     * The "Online build" card on the work order: the drawing, the figures that matter at a glance, then the build grouped
+     * the way the bench reads it — application, shaft, ends and yokes, measurements, the customer's notes, the order.
+     */
+    private static function build(object $o, object $item, array $c, int $k, int $n): array
+    {
+        $answers = array_map(fn ($qa) => (string) (is_array($qa) ? ($qa['q'] ?? '') : ''), (array) ($c['answers'] ?? []));
+        $shaft = ['Configuration', 'Duty rating', 'Series', 'Tube material', 'Tube OD', 'Component grade'];
+        // in this order, whatever order the build sheet lists them in
+        $measure = ['Measurement A1' => 'A1 · overall length', 'Measurement C1' => 'C1 · u-joint center to center', 'Measurement B1' => 'B1', 'Overall length' => 'Overall length', 'Critical speed check' => 'Critical speed'];
+        $groups = ['Application' => [], 'Shaft' => [], 'Ends and yokes' => [], 'Measurements' => [], 'Customer notes' => []];
+        $byLabel = [];
+        foreach (BuildConfig::rows($c) as $r) {
+            [$l, $v] = [$r['label'], $r['value']];
+            $byLabel[$l] = $v;
+            if ($l === 'Build') continue;
+            if (isset($measure[$l])) continue;
+            $g = match (true) {
+                in_array($l, $answers, true), in_array($l, ['Vehicle', 'Shaft'], true) => 'Application',
+                in_array($l, $shaft, true) => 'Shaft',
+                $l === 'Customer notes' => 'Customer notes',
+                default => 'Ends and yokes',
+            };
+            $groups[$g][] = [$l, $v];
+        }
+        foreach ($measure as $l => $label) if (isset($byLabel[$l])) $groups['Measurements'][] = [$label, $byLabel[$l]];
+        if (trim((string) $o->customer_note) !== '') $groups['Customer notes'][] = ['Order note', trim((string) $o->customer_note)];
+        $groups['Order'] = self::orderRows($o, $item, $k, $n);
+        $sections = [];
+        foreach ($groups as $title => $rows) if ($rows) $sections[] = ['title' => $title, 'rows' => array_map(fn ($r) => [Str::limit($r[0], 80, ''), Str::limit($r[1], 600)], array_slice($rows, 0, 30))];
+
+        $two = ($c['pieces'] ?? 'one') === 'two';
+        $highlights = array_values(array_filter([
+            isset($byLabel['Measurement A1']) ? ['label' => 'A1', 'value' => $byLabel['Measurement A1']] : null,
+            isset($byLabel['Measurement C1']) ? ['label' => 'C1', 'value' => $byLabel['Measurement C1']] : null,
+            !empty($c['series_key']) ? ['label' => 'Series', 'value' => (string) $c['series_key'] . (!empty($c['series_variant']) ? ' (' . $c['series_variant'] . ')' : '')] : null,
+            !empty($c['material']) ? ['label' => 'Tube', 'value' => trim(ucfirst((string) $c['material']) . ' ' . ($byLabel['Tube OD'] ?? ''))] : null,
+            ['label' => 'Type', 'value' => $two ? '2 pieces' : '1 piece'],
+            ['label' => 'Qty', 'value' => (string) max(1, (int) $item->qty)],
+        ]));
+        return [
+            'title' => Str::limit((string) $item->name, 200, ''),
+            'subtitle' => 'Order ' . $o->order_number . ($n > 1 ? " · shaft {$k} of {$n}" : '') . ' · $' . number_format((float) $item->price, 2) . ((int) $item->qty > 1 ? ' each' : ''),
+            'highlights' => array_map(fn ($h) => ['label' => Str::limit($h['label'], 40, ''), 'value' => Str::limit($h['value'], 80, '')], array_slice($highlights, 0, 8)),
+            'sections' => $sections,
+            'links' => ['build' => (string) (self::buildUrl($c) ?? ''), 'drawing' => (string) (\App\Support\BuildDrawing::url($c) ?? '')],
+            'note' => 'A1 and C1 are shaft measurements from the online builder: A1 = overall length, from the flange face or the end of the slip yoke (pushed fully in) to the far end; C1 = u-joint center to u-joint center. They are not the A/B/C vehicle measurements of the check-in form.',
+        ];
+    }
+
+    /** The order side of the card: where the job came from, how it is paid, where it goes. [[label, value], …] */
+    private static function orderRows(object $o, object $item, int $k, int $n): array
     {
         $pickup = OrderEvents::isPickup($o);
         $ship = $o->ship_to_different && $o->shipping_address_1;
@@ -256,28 +326,22 @@ class CheckinBridge
             in_array($o->payment_status, ['paid', 'partially_refunded'], true) => 'Paid online',
             default => 'Not paid yet',
         };
-        $c = (array) ((json_decode((string) $item->meta, true) ?: [])['config'] ?? []);
         $others = DB::table('order_items')->where('order_id', $o->id)->whereNotIn('type', self::TYPES)->sum('qty');
-        $info = [
-            'Online order' => $o->order_number . ($n > 1 ? " · shaft {$k} of {$n}" : ''),
-            'Ordered' => \Carbon\Carbon::parse($o->created_at, 'UTC')->timezone('America/New_York')->format('M j, Y g:i A') . ' EST',
-            'Quantity' => (string) (int) $item->qty,
-            'Shaft price' => '$' . number_format((float) $item->price, 2) . ((int) $item->qty > 1 ? ' each' : ''),
-            'Customer e-mail' => (string) $o->email,
-            'Customer phone' => (string) $o->phone,
-            'Payment' => $pay,
+        $rows = [
+            ['Online order', $o->order_number . ($n > 1 ? " · shaft {$k} of {$n}" : '')],
+            ['Ordered', \Carbon\Carbon::parse($o->created_at, 'UTC')->timezone('America/New_York')->format('M j, Y g:i A') . ' EST'],
+            ['Quantity', (string) (int) $item->qty],
+            ['Shaft price', '$' . number_format((float) $item->price, 2) . ((int) $item->qty > 1 ? ' each' : '')],
+            ['Payment', $pay],
             // a pickup customer pays the whole order at the counter; other parts on a web order are the store's to pack
-            'Collect at pickup' => $o->payment_method === 'pay_at_pickup' && $o->payment_status !== 'paid' ? '$' . number_format((float) $o->total, 2) . ' (whole order)' : null,
-            'Delivery' => $pickup ? 'Local pickup' : (string) ($o->shipping_label ?: 'Ship'),
-            'Ship to' => $pickup ? null : $address,
-            'Other items on the order' => $others > 0 ? (int) $others . ' catalog part(s), packed by the store' : null,
-            'Open this build' => self::buildUrl($c),
+            ['Collect at pickup', $o->payment_method === 'pay_at_pickup' && $o->payment_status !== 'paid' ? '$' . number_format((float) $o->total, 2) . ' (whole order)' : ''],
+            ['Delivery', $pickup ? 'Local pickup' : (string) ($o->shipping_label ?: 'Ship')],
+            ['Ship to', $pickup ? '' : $address],
+            ['Customer e-mail', (string) $o->email],
+            ['Customer phone', (string) $o->phone],
+            ['Other items on the order', $others > 0 ? (int) $others . ' catalog part(s), packed by the store' : ''],
         ];
-        // every answer and choice from the builder, by its own name (the measurements are the builder's, see "How the builder measures")
-        foreach (BuildConfig::rows($c) as $r) $info[$r['label']] ??= $r['value'];
-        $info['How the builder measures'] = 'A1 = overall length, from the flange face or the end of the slip yoke (pushed fully in) to the far end. '
-            . 'C1 = u-joint center to u-joint center. These are shaft measurements, not the A/B/C vehicle measurements of the check-in form.';
-        return array_filter($info, fn ($v) => $v !== null && $v !== '');
+        return array_values(array_filter($rows, fn ($r) => trim((string) $r[1]) !== ''));
     }
 
     /**
@@ -319,7 +383,8 @@ class CheckinBridge
             'dsb_hw' => in_array($y('hardware')['kind'] ?? '', ['strap', 'ubolt', 'own'], true) ? $y('hardware')['kind'] : '', 'dsb_hwid' => (int) ($y('hardware')['product_id'] ?? 0) ?: '',
             'dsb_a1' => (float) ($c['a1'] ?? 0) > 0 ? (string) (float) $c['a1'] : '', 'dsb_c1' => (float) ($c['c1'] ?? 0) > 0 ? (string) (float) $c['c1'] : '',
             'dsb_tier' => ($c['price_tier'] ?? '') === 'new' ? 'new' : '', 'dsb_seen' => 'so', 'dsb_step' => 'review',
-            'dsb_mph' => $c['speed']['mph'] ?? '', 'dsb_ratio' => $c['speed']['ratio'] ?? '', 'dsb_tire' => $c['speed']['tire'] ?? '',
+            'dsb_mph' => (float) ($c['speed']['mph'] ?? 0) > 0 ? $c['speed']['mph'] : '', 'dsb_ratio' => (float) ($c['speed']['ratio'] ?? 0) > 0 ? $c['speed']['ratio'] : '',
+            'dsb_tire' => (float) ($c['speed']['tire'] ?? 0) > 0 ? $c['speed']['tire'] : '',
         ], fn ($v) => $v !== '' && $v !== null);
         // the supplier options the price came from (as the builder's own link carries them: dsb_o0=name=value)
         $i = 0;

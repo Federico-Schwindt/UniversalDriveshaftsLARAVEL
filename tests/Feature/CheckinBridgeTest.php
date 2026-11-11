@@ -47,6 +47,9 @@ class CheckinBridgeTest extends TestCase
         $want = 'sha256=' . hash_hmac('sha256', "{$ts}.{$r->method()}.{$path}.{$r->body()}", self::SECRET);
         if (!hash_equals($want, $r->header('X-UDS-Signature')[0] ?? '') || abs(time() - (int) $ts) > 300) return Http::response(['error' => 'Bad signature'], 401);
         $body = json_decode($r->body(), true) ?: [];
+        // like the station's schema: "custom" and "build" must be JSON objects (an empty PHP array would be [])
+        $obj = json_decode($r->body());
+        foreach (['custom', 'build'] as $k) if (isset($obj->entry) && property_exists($obj->entry, $k) && !is_object($obj->entry->{$k})) return Http::response(['error' => "entry.{$k}: expected an object"], 400);
         $this->calls[] = ['method' => $r->method(), 'path' => $u['path'], 'body' => $body];
         if ($r->method() === 'GET') {
             parse_str($u['query'] ?? '', $q);
@@ -63,6 +66,7 @@ class CheckinBridgeTest extends TestCase
         if (($body['payment'] ?? null) === 'Paid' && $e['payment'] !== 'Paid') { $e['payment'] = 'Paid'; $changed[] = 'payment'; }
         if (!empty($body['cancel']) && !$e['cancelled']) { $e['cancelled'] = true; $changed[] = 'notes'; if ($e['status'] !== 'Completed') { $e['status'] = 'On hold'; $changed[] = 'jobStatus'; } }
         if (!empty($body['complete']) && !$e['cancelled'] && $e['status'] !== 'Completed') { $e['status'] = 'Completed'; $changed[] = 'jobStatus'; }
+        if (!empty($body['build']) && ($e['payload']['entry']['build'] ?? null) != $body['build']) { $e['payload']['entry']['build'] = $body['build']; $changed[] = 'build'; }
         return Http::response(['id' => $e['id'], 'changed' => $changed, 'status' => $e['status'], 'payment' => $e['payment']]);
     }
 
@@ -85,6 +89,13 @@ class CheckinBridgeTest extends TestCase
             'material' => 'steel', 'price_tier' => 'certified', 'front_app' => 'slip_flange', 'front_app_label' => 'Slip Yoke with Flange Yoke', 'rear_app' => 'flange', 'rear_app_label' => 'Flange Yoke',
             'length' => 0, 'a1' => 52.25, 'b1' => 0, 'c1' => 4.5, 'flange_yoke' => ['kind' => 'none', 'product_id' => 0], 'trans_yoke' => ['kind' => 'none', 'product_id' => 0], 'notes' => 'Lowered 2 in.'];
         return ['type' => 'custom_build', 'name' => 'Custom Driveshaft — ' . $cfg['series_label'], 'price' => 900, 'meta' => json_encode(['config' => $cfg, 'summary' => 'x', 'price' => $price])];
+    }
+
+    /** A row of the build card: section title → label → value. */
+    private function row(array $build, string $section, string $label): ?string
+    {
+        foreach ($build['sections'] as $s) if ($s['title'] === $section) foreach ($s['rows'] as [$l, $v]) if ($l === $label) return $v;
+        return null;
     }
 
     private function calls(string $method): array
@@ -111,25 +122,39 @@ class CheckinBridgeTest extends TestCase
         $this->assertSame(['Custom Made Driveshaft', '1 Piece', 'Steel', 'One Piece', '52.25"', '', '4.5"', 'Paid'],
             [$e['laborRequest'], $e['driveshaftPieces'], $e['driveshaftMaterial'], $e['designerType'], $e['measurementA'], $e['measurementB'], $e['measurementC'], $e['payment']]);
         $this->assertEquals(900, $e['total']);
-        $this->assertStringContainsString('ONLINE ORDER ' . $order->order_number, $e['notes']);
-        $this->assertStringContainsString('Front end: Slip Yoke with Flange Yoke', $e['notes']);
-        $this->assertStringContainsString('Customer notes: Lowered 2 in.', $e['notes']);
+        // short notes, one fact per line (owner, 2026-11-11: "es difícil leer muchísimo texto en una sola columna")
+        $lines = explode("\n", $e['notes']);
+        $this->assertStringStartsWith('ONLINE ORDER ' . $order->order_number, $lines[0]);
+        $this->assertContains('Slip Yoke with Flange Yoke → Flange Yoke', $lines);
+        $this->assertContains('A1 52.25" · C1 4.5"', $lines);
+        $this->assertContains('Customer notes: Lowered 2 in.', $lines);
+        $this->assertLessThanOrEqual(10, count($lines));
         // the builder's drawing is the work order's product image
         $this->assertStringContainsString('/online-builder/drawing?f=slip_flange&r=flange&a1=52.25&c1=4.5', $e['productImage']);
-        $info = $e['custom'];
-        $this->assertSame([$order->order_number, $order->email, 'Paid online', 'UPS Ground', '$900.00'], [$info['Online order'], $info['Customer e-mail'], $info['Payment'], $info['Delivery'], $info['Shaft price']]);
-        $this->assertStringContainsString('12 Test St, Tampa, FL 33601', $info['Ship to']);
-        $this->assertSame(['1350 Series', 'Steel', 'Slip Yoke with Flange Yoke', '52.25"', '1 catalog part(s), packed by the store'],
-            [$info['Series'], $info['Tube material'], $info['Front end'], $info['Measurement A1'], $info['Other items on the order']]);
-        $this->assertStringContainsString('These are shaft measurements', $info['How the builder measures']);
-        $this->assertStringContainsString('dsb_a1=52.25', $info['Open this build']);
+        // everything else is the Online build card, grouped for the bench; no flat list of 30 fields any more
+        $this->assertArrayNotHasKey('custom', $e);
+        $b = $e['build'];
+        $this->assertSame(['Shaft', 'Ends and yokes', 'Measurements', 'Customer notes', 'Order'], array_column($b['sections'], 'title'));
+        $this->assertSame(['1350 Series', 'Steel', 'Slip Yoke with Flange Yoke', '52.25"', '4.5"'],
+            [$this->row($b, 'Shaft', 'Series'), $this->row($b, 'Shaft', 'Tube material'), $this->row($b, 'Ends and yokes', 'Front end'), $this->row($b, 'Measurements', 'A1 · overall length'), $this->row($b, 'Measurements', 'C1 · u-joint center to center')]);
+        $this->assertSame([$order->order_number, $order->email, 'Paid online', 'UPS Ground', '$900.00', '1 catalog part(s), packed by the store'],
+            [$this->row($b, 'Order', 'Online order'), $this->row($b, 'Order', 'Customer e-mail'), $this->row($b, 'Order', 'Payment'), $this->row($b, 'Order', 'Delivery'), $this->row($b, 'Order', 'Shaft price'), $this->row($b, 'Order', 'Other items on the order')]);
+        $this->assertStringContainsString('12 Test St, Tampa, FL 33601', $this->row($b, 'Order', 'Ship to'));
+        $this->assertSame(['A1', 'C1', 'Series', 'Tube', 'Type', 'Qty'], array_column($b['highlights'], 'label'));
+        $this->assertStringContainsString('shaft measurements', $b['note']);
+        $this->assertStringContainsString('dsb_a1=52.25', $b['links']['build']);
+        $this->assertStringNotContainsString('dsb_mph', $b['links']['build'], 'no empty speed values in the link');
+        $this->assertStringContainsString('/online-builder/drawing?', $b['links']['drawing']);
         $this->assertCount(1, $p['parts'], 'only the shaft (no yoke or kit chosen here); the U-joint on the order is not the station\'s');
         $this->assertTrue(OrderEvents::has($order, 'checkin:sent'));
         $this->assertStringContainsString("Job {$order->order_number} = check-in #1000", DB::table('order_events')->where('order_id', $order->id)->where('type', 'checkin:sent')->value('detail'));
 
-        // a retry (or a second trigger) never makes a second work order
+        // a retry (or a second trigger) never makes a second work order; it only brings the build card up to date
         $this->assertSame([$order->order_number => 1000], CheckinBridge::send((int) $order->id));
         $this->assertCount(1, $this->wo);
+        $refresh = $this->calls('PATCH');
+        $this->assertCount(1, $refresh);
+        $this->assertSame(['order', 'build'], array_keys($refresh[0]['body']));
     }
 
     /** Owner, 2026-11-11: "usamos el checkin o workstation solo para custom driveshafts" — a pre-made shaft is not a work order. */
@@ -145,8 +170,10 @@ class CheckinBridgeTest extends TestCase
         [$a, $b] = [$this->wo[$order->order_number . '-1']['payload'], $this->wo[$order->order_number . '-2']['payload']];
         $this->assertSame(['2 Pieces', 'Two Piece', 'Unpaid', ''], [$a['entry']['driveshaftPieces'], $a['entry']['designerType'], $a['entry']['payment'], $a['entry']['productImage']], 'the builder draws one-piece shafts only');
         $this->assertEquals(1800, $b['entry']['total']);
-        $this->assertSame(['Local pickup', 'Pays at pickup', '2', '$945.00 (whole order)'], [$b['entry']['custom']['Delivery'], $b['entry']['custom']['Payment'], $b['entry']['custom']['Quantity'], $b['entry']['custom']['Collect at pickup']]);
-        $this->assertArrayNotHasKey('Ship to', $b['entry']['custom']);
+        $card = $b['entry']['build'];
+        $this->assertSame(['Local pickup', 'Pays at pickup', '2', '$945.00 (whole order)'], [$this->row($card, 'Order', 'Delivery'), $this->row($card, 'Order', 'Payment'), $this->row($card, 'Order', 'Quantity'), $this->row($card, 'Order', 'Collect at pickup')]);
+        $this->assertNull($this->row($card, 'Order', 'Ship to'));
+        $this->assertStringContainsString('shaft 2 of 2', $card['subtitle']);
         $this->assertSame(2, $b['parts'][0]['qty']);
         $this->assertCount(2, $this->calls('PUT'), 'the pre-made shaft never went');
     }
