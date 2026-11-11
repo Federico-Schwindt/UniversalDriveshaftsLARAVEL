@@ -113,26 +113,6 @@
     ip.style.left=x+'px'; ip.style.top=y+'px';
   }
 
-  /* ---------- wishlist toggle (delegated: table rows re-render on filter/sort) ---------- */
-  function toggleWish(btn){
-    if(btn.classList.contains('is-busy'))return;
-    var on=btn.classList.contains('is-on');
-    btn.classList.add('is-busy');
-    fetch(on?'/wishlist/remove':'/wishlist/add',{method:'POST',
-      headers:{'X-CSRF-TOKEN':CSRF,'X-Requested-With':'XMLHttpRequest','Content-Type':'application/x-www-form-urlencoded'},
-      body:new URLSearchParams({product_id:btn.getAttribute('data-wish')})})
-      .then(function(r){return r.json();}).then(function(d){
-        btn.classList.remove('is-busy');
-        if(!d.success)return;
-        btn.classList.toggle('is-on',!on);
-        btn.setAttribute('aria-pressed',(!on)?'true':'false');
-        var lbl=(!on)?T('Remove from wishlist'):T('Add to wishlist');
-        btn.setAttribute('aria-label',lbl); btn.title=lbl;
-        var b=document.querySelector('[data-wish-count]');
-        if(b){b.textContent=d.count;b.hidden=d.count===0;}
-      }).catch(function(){btn.classList.remove('is-busy');});
-  }
-
   /* ---------- add (click) ---------- */
   document.addEventListener('click',function(e){
     var altBtn=e.target.closest('.p-alt[data-alt-for]');
@@ -145,16 +125,14 @@
       addToCart(add.getAttribute('data-add'),1,add); return;
     }
     if(altPop.classList.contains('on') && !e.target.closest('#alt-pop')) altPop.classList.remove('on');
-    var wish=e.target.closest('.p-wish');
-    if(wish){ toggleWish(wish); return; }
   });
-  /* wide tables: fade the right edge while there is more to scroll to */
+  /* wide tables: fade the right edge while there is more to scroll to (a table in a .ptfit box fits itself instead) */
   function fades(){document.querySelectorAll('.ptbl-wrap').forEach(function(w){
+    if(w.closest('.ptfit'))return;
     var on=w.scrollWidth>w.clientWidth+2&&w.scrollLeft+w.clientWidth<w.scrollWidth-2; w.classList.toggle('is-scroll',on);
     if(!w._fade){w._fade=1;w.addEventListener('scroll',fades,{passive:true});}
   });}
   fades(); window.addEventListener('resize',fades);
-  var st=document.getElementById('shop-table'); if(st&&window.MutationObserver)new MutationObserver(fades).observe(st,{childList:true});
   function esc(s){var d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;}
   /* strings in the visitor's language: the page injects window.UDS_T; English falls through */
   function T(s){var d=window.UDS_T||{};return d[s]||s;}

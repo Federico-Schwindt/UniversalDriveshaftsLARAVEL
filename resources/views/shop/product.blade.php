@@ -376,7 +376,7 @@
   <section class="ualts" id="pdp-alts" aria-labelledby="pdp-alts-h">
     <h2 id="pdp-alts-h">{{ __('Alternative parts for :sku', ['sku' => $p['sku']]) }}</h2>
     <p>{{ $p['series'] ? __('Same measurements in the :series series', ['series' => $p['series']]) : __('Same measurements') }} {{ __('— a different number, brand or lube spec, but the same fitment. Check the notes before you substitute.') }}</p>
-    <div id="shop-table">@include('shop.partials.search-table', ['data' => ['items' => $sameFit], 'schema' => $altSchema])</div>
+    <div class="shop-bleed"><div id="shop-table" class="ptfit">@include('shop.partials.search-table', ['data' => ['items' => $sameFit], 'schema' => $altSchema])</div>@include('shop.partials.table-fit')</div>
   </section>
   @endif
 

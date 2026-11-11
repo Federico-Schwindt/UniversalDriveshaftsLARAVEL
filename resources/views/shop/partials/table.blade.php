@@ -41,9 +41,7 @@
   <tbody>
   @foreach($data['items'] as $p)
     <tr>
-      @php $rowWished = in_array($p['id'], $udsWished ?? []); @endphp
       <td data-label="{{ __('Add') }}" data-col="add"><span class="p-add">
-        <button class="p-wish{{ $rowWished ? ' is-on' : '' }}" data-wish="{{ $p['id'] }}" aria-pressed="{{ $rowWished ? 'true' : 'false' }}" aria-label="{{ $rowWished ? __('Remove from wishlist') : __('Add to wishlist') }}" title="{{ $rowWished ? __('Remove from wishlist') : __('Add to wishlist') }}"><x-icon name="heart"/></button>
         @if($p['price'] > 0)
         <button class="p-plus" data-add="{{ $p['id'] }}"@if(!empty($p['has_alt'])) data-has-alt @endif data-stock="{{ ($p['stock'] ?? 0) > 0 ? $p['stock'] : '' }}" data-status="{{ $p['stock_status'] }}" data-source="{{ $p['stock_source'] ?? '' }}" aria-label="{{ __('Add :sku to cart', ['sku' => $p['sku']]) }}" title="{{ __('Add to cart') }}"><x-icon name="cart"/><span class="p-plus__t">{{ __('Add') }}</span></button>
         @else
@@ -52,7 +50,7 @@
         @endif
       </span></td>
       <td data-label="{{ __('Pic') }}" data-col="pic">@if($p['image'])<img class="p-pic" width="88" height="88" src="{{ $p['image'] }}" data-zoom="{{ $p['image'] }}" alt="{{ $p['sku'] }} {{ \Illuminate\Support\Str::limit($svc->cleanName($p), 60, '') }}" loading="lazy">@else<span class="p-pic-ph">{!! $ds !!}</span>@endif</td>
-      <td data-label="{{ __('Part #') }}" data-col="part"><a class="p-pn" href="/parts/{{ rawurlencode($p['sku']) }}">{{ $p['sku'] ?: '-' }}<x-icon name="arrow-up-right"/></a>@if(!empty($p['has_alt']))<button type="button" class="p-alt" data-alt-for="{{ $p['id'] }}" title="{{ __('Alternate parts available') }}" aria-label="{{ __('See alternate parts') }}"><x-icon name="warning"/><span>{{ __('Alt parts') }}</span></button>@endif</td>
+      <td data-label="{{ __('Part #') }}" data-col="part"><a class="p-pn{{ mb_strlen($p['sku']) > 20 ? ' p-pn--long' : '' }}" href="/parts/{{ rawurlencode($p['sku']) }}">{{ $p['sku'] ?: '-' }}<x-icon name="arrow-up-right"/></a>@if(!empty($p['has_alt']))<button type="button" class="p-alt" data-alt-for="{{ $p['id'] }}" title="{{ __('Alternate parts available') }}" aria-label="{{ __('See alternate parts') }}"><x-icon name="warning"/><span>{{ __('Alt parts') }}</span></button>@endif</td>
       <td data-label="{{ __('Price') }}" data-col="price"><div class="p-price">
         @if($p['price'] <= 0)<span class="call">{{ __('Call for price') }}</span>@else
         @if($p['on_sale'])<span class="was">${{ number_format($p['regular'],2) }}</span>@endif

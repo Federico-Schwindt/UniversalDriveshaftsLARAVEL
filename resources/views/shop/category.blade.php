@@ -159,8 +159,9 @@
       </details>
     @endif
 
-    <div id="shop-table">@include('shop.partials.table')</div>
   </div>
+  {{-- outside the rail: the table uses the screen and always shows every column ("TABLE FIT" in uds-2026.css) --}}
+  <div class="shop-bleed"><div id="shop-table" class="ptfit">@include('shop.partials.table')</div>@include('shop.partials.table-fit')</div>
 </section>
 
 @if($measure)

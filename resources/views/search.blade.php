@@ -47,6 +47,9 @@
     </div>
   @endif
 
+  @if($nCats)
+  {{-- every table whole on screen and all the same width: the set takes its widest table's ("TABLE FIT" in uds-2026.css) --}}
+  <div class="shop-bleed"><div class="ptfit-set">
   @foreach($sections as $s)
     <section class="srch-sec{{ in_array($s['cat']['slug'], ['xref', 'exact'], true) ? ' xref-sec' : '' }}" id="cat-{{ $s['cat']['slug'] }}">
       <div class="srch-sec__head">
@@ -57,7 +60,7 @@
         <p class="xref-cap"><x-icon name="returns"/><span class="xref-cap__t">{{ trans_choice('These UDS parts replace the competitor / OEM number|These UDS parts replace the competitor / OEM numbers', count($s['xref'])) }} @foreach($s['xref'] as $n)<b>{{ $n }}</b>@if(!$loop->last), @endif @endforeach — {{ __('the matched number is shown in the') }} <em>{!! __('Replaces') !!}</em> {!! __('column.') !!}</span></p>
       @endif
       @php $shown = !empty($s['cat']['group']) ? array_slice($s['data']['items'], 0, $rowCap) : $s['data']['items']; @endphp
-      @include('shop.partials.search-table', ['data' => ['items' => $shown] + $s['data'], 'schema' => $s['schema']])
+      <div class="ptfit">@include('shop.partials.search-table', ['data' => ['items' => $shown] + $s['data'], 'schema' => $s['schema']])</div>@include('shop.partials.table-fit')
       @if($s['data']['total'] > count($shown))
         <p class="srch-more">{{ __('Showing :n of :total.', ['n' => count($shown), 'total' => number_format($s['data']['total'])]) }}
           @if(!empty($s['cat']['group']))<a class="btn btn-line btn-sm" href="/shop/{{ $s['cat']['group'] }}/{{ $s['cat']['slug'] }}?q={{ rawurlencode($q) }}">{{ __('Show all :n in :cat', ['n' => number_format($s['data']['total']), 'cat' => \App\Support\PartGlossary::t($s['cat']['name'])]) }}</a>
@@ -73,7 +76,7 @@
         <h2>{!! __('Complete driveshafts') !!} <span>{{ trans_choice(':count part|:count parts', count($driveshafts)) }}</span></h2>
         <a class="textlink" href="/shop/complete-driveshafts/by-vehicle?q={{ rawurlencode($q) }}">{!! __('Open category') !!} <x-icon name="arrow-right"/></a>
       </div>
-      <div class="ptbl-wrap"><table class="ptbl">
+      <div class="ptfit"><div class="ptbl-wrap"><table class="ptbl">
         <thead><tr><th>{!! __('Add') !!}</th><th>{!! __('Pic') !!}</th><th>{!! __('Part #') !!}</th><th>{!! __('Price') !!}</th><th class="l">{!! __('Description') !!}</th><th class="l">{!! __('Fits') !!}</th><th>{!! __('Weight') !!}</th></tr></thead>
         <tbody>
         @foreach(array_slice($driveshafts, 0, $rowCap) as $d)
@@ -88,11 +91,13 @@
           </tr>
         @endforeach
         </tbody>
-      </table></div>
+      </table></div></div>@include('shop.partials.table-fit')
       @if(count($driveshafts) > $rowCap)
         <p class="srch-more">{{ __('Showing :n of :total.', ['n' => $rowCap, 'total' => count($driveshafts)]) }} <a class="btn btn-line btn-sm" href="/shop/complete-driveshafts/by-vehicle?q={{ rawurlencode($q) }}">{{ __('Show all :n in :cat', ['n' => count($driveshafts), 'cat' => __('Complete driveshafts')]) }}</a></p>
       @endif
     </section>
+  @endif
+  </div></div>
   @endif
 </div></section>
 
