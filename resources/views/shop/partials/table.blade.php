@@ -33,8 +33,8 @@
       @if($col['key']==='pa_notes')
         <th class="l">{{ __('Notes') }}</th>
       @else
-        @php $sl=$sortLink('attr:'.$col['key']); @endphp
-        <th><a class="th-sort" data-sort rel="nofollow" href="{{ $sl['href'] }}">{{ __($col['label']) }}{!! $arrow($sl) !!}</a></th>
+        @php $sl=$sortLink('attr:'.$col['key']); $mdl = $measure['codes'][$col['key']] ?? null; @endphp
+        <th @if($mdl) data-md="{{ $col['key'] }}" @endif><a class="th-sort" data-sort rel="nofollow" href="{{ $sl['href'] }}">{{ __($col['label']) }}{!! $arrow($sl) !!}</a>@if($mdl)<button type="button" class="md-chip th-md" aria-expanded="false" aria-label="{{ __('How to measure :name', ['name' => __($col['label'])]) }}">{{ $mdl }}</button>@endif</th>
       @endif
     @endforeach
   </tr></thead>
