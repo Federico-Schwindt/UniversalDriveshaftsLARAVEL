@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Support\BuildConfig;
 use App\Support\OrderEvents;
-use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -15,12 +14,13 @@ use Illuminate\Support\Str;
  * pickup), the build goes to the station as a work order whose job number is the order number. One work order per
  * builder line; an order with two shafts gets UDS-…-1 and UDS-…-2.
  *
- * The station has no API, so the rows are written straight into its Postgres (connection `checkin`,
- * CHECKIN_DATABASE_URL) exactly as its own check-in form writes them: customer, entry, parts line, first status row
- * and the activity log line. Its notifications are never triggered from here, and the customer row carries no e-mail
- * and no SMS consent, so the shop's status changes stay internal: the store already confirms, ships and tracks web
- * orders, and the station's "complete and ready for pickup" text would be wrong for a shaft that ships. follow()
- * reads the job status back and tells the customer in the store's own words.
+ * Owner, 2026-11-11 (option 1): the work orders go through the station's own signed integration API (CheckinApi →
+ * uds-checkin src/lib/integration.ts). The store holds a shared secret only, never the station's database credentials,
+ * and the station writes the customer, entry, parts, first status row and audit line itself, in one transaction, with
+ * its own validation. Web customers stay silent there (no e-mail, no SMS consent, enforced by the station), so the
+ * shop's status changes never text them: the store already confirms, ships and tracks web orders, and the station's
+ * "complete and ready for pickup" would be wrong for a shaft that ships. follow() reads the job status back and tells
+ * the customer in the store's own words.
  *
  * Owner, 2026-11-11: the station is for custom driveshafts only — the online builder's shafts, never component or
  * catalog orders — and each work order carries everything the builder knows about the shaft (the answers, series,
@@ -31,13 +31,10 @@ class CheckinBridge
 {
     /** Only online-builder custom shafts go to the station (owner, 2026-11-11: "solo para custom driveshafts"). */
     public const TYPES = ['custom_build'];
-    public const ACTOR = 'Online store';
-    /** First words of the line sync() puts on top of a cancelled order's notes (also how it knows it is done). */
-    public const CANCEL_MARK = '*** CANCELLED ONLINE — DO NOT BUILD ***';
 
     public static function enabled(): bool
     {
-        return (bool) config('database.connections.checkin.url');
+        return CheckinApi::configured();
     }
 
     /** Builder lines of an order (the products the station builds). */
@@ -47,9 +44,9 @@ class CheckinBridge
     }
 
     /**
-     * Called when the order is committed (PayLink::placedNotices). The send runs after the response: the station's
-     * database can take a few seconds to wake up, and the checkout or the Stripe webhook must never wait on it or
-     * fail because of it. A send that does not get through is retried by checkin:push.
+     * Called when the order is committed (PayLink::placedNotices). The send runs after the response: the station can
+     * take a few seconds to wake up, and the checkout or the Stripe webhook must never wait on it or fail because of
+     * it. A send that does not get through is retried by checkin:push.
      */
     public static function queue(object $order): void
     {
@@ -73,22 +70,22 @@ class CheckinBridge
     }
 
     /**
-     * Create the work order(s) for one order. Safe to repeat: a job number already on the station is reused, never
-     * created twice. Returns job number => check-in entry id.
+     * Create the work order(s) for one order. Safe to repeat: the station creates a job number once and answers a
+     * repeat with the existing work order. Returns job number => check-in entry id.
      */
     public static function send(int $orderId): array
     {
         $order = DB::table('orders')->find($orderId);
         $lines = $order ? self::lines($orderId) : collect();
         if ($lines->isEmpty()) return [];
-        $ck = DB::connection('checkin');
-        $out = [];
+        $out = []; $gone = [];
         foreach ($lines->values() as $i => $item) {
             $job = $lines->count() > 1 ? $order->order_number . '-' . ($i + 1) : $order->order_number;
-            $have = $ck->table('entries')->where('job_number', $job)->whereNull('deleted_at')->value('id');
-            $out[$job] = (int) ($have ?: $ck->transaction(fn () => self::create($ck, $order, $item, $job, $i + 1, $lines->count())));
+            $res = CheckinApi::put($job, self::payload($order, $item, $i + 1, $lines->count()));
+            $out[$job] = (int) $res['id'];
+            if (!empty($res['deleted'])) $gone[] = $job;   // the shop deleted it on purpose: never recreated
         }
-        $detail = implode(' · ', array_map(fn ($job, $id) => "Job {$job} = check-in #{$id}", array_keys($out), $out));
+        $detail = implode(' · ', array_map(fn ($job, $id) => "Job {$job} = check-in #{$id}" . (in_array($job, $gone, true) ? ' (deleted at the shop)' : ''), array_keys($out), $out));
         OrderEvents::record($order, 'checkin:sent', 'Work order sent to the shop station', $detail, true);
         return $out;
     }
@@ -119,7 +116,7 @@ class CheckinBridge
             ->select('o.*')->get();
         if ($orders->isEmpty()) return [0, 0];
         $jobs = self::jobs($orders);
-        $status = DB::connection('checkin')->table('entries')->whereIn('job_number', array_keys($jobs))->whereNull('deleted_at')->pluck('job_status', 'job_number')->all();
+        $status = array_map(fn ($e) => empty($e['deleted']) ? (string) $e['status'] : null, CheckinApi::statuses(array_keys($jobs)));
         $started = $built = 0;
         foreach ($orders as $o) {
             $mine = array_map(fn ($job) => $status[$job] ?? null, array_keys($jobs, (int) $o->id, true));
@@ -131,14 +128,11 @@ class CheckinBridge
     }
 
     /**
-     * Keeps each work order in step with its order after the send (checkin:push, every 10 min), written the way the
-     * station records its own edits (activity_log "entry.update", status_history for a status move, no customer message):
-     *   - paid later (pay at pickup, an invoice, a card that cleared) → Payment "Paid";
-     *   - cancelled or refunded here → "On hold" with a DO NOT BUILD line on top of the notes. Never deleted: the shop
-     *     may have started, and a shaft already Completed only gets the line;
-     *   - shipped or completed here → "Completed", if the shop had not marked it.
-     * Each change is decided against the station's current row, so a repeated run changes nothing. Returns how many
-     * work orders changed.
+     * Keeps each work order in step with its order after the send (checkin:push, every 10 min): paid later → Paid;
+     * cancelled or refunded here → On hold with a DO NOT BUILD line (never deleted: the shop may have started; a
+     * shaft already Completed only gets the line); shipped or completed here → Completed. The station applies each
+     * change against its current row, writes its status history and audit trail and sends nobody a message; this
+     * only asks when the station's answer shows something to change. Returns how many work orders changed.
      */
     public static function sync(int $days = 90): int
     {
@@ -147,42 +141,26 @@ class CheckinBridge
             ->select('o.*')->get();
         if ($orders->isEmpty()) return 0;
         $jobs = self::jobs($orders);
-        $ck = DB::connection('checkin');
-        $entries = $ck->table('entries')->whereIn('job_number', array_keys($jobs))->whereNull('deleted_at')
-            ->get(['id', 'job_number', 'job_status', 'payment', 'notes', 'on_hold_reason'])->keyBy('job_number');
+        $now = CheckinApi::statuses(array_keys($jobs));
         $changed = 0;
         foreach ($orders as $o) {
             $stop = in_array($o->status, ['cancelled', 'refunded'], true) || $o->payment_status === 'refunded';
             $paid = in_array($o->payment_status, ['paid', 'partially_refunded'], true);
             $done = !$stop && ($o->shipped_at || $o->status === 'completed');
             foreach (array_keys($jobs, (int) $o->id, true) as $job) {
-                $e = $entries[$job] ?? null;
-                if (!$e) continue;   // deleted on the station: the shop handles it by hand
-                $patch = []; $to = null; $why = '';
-                if ($paid && !$stop && $e->payment !== 'Paid') $patch['payment'] = 'Paid';
-                if ($stop && !str_contains((string) $e->notes, self::CANCEL_MARK)) {
-                    $what = $o->status === 'cancelled' ? 'cancelled' : 'refunded';
-                    $patch['notes'] = self::CANCEL_MARK . "\nOrder {$o->order_number} was {$what} online on " . now('America/New_York')->format('M j, Y g:i A')
-                        . " EST. If work already started, call the store before going on.\n\n" . $e->notes;
-                    if ($e->job_status !== 'Completed') { $to = 'On hold'; $patch['on_hold_reason'] = 'Order ' . $what . ' online'; $why = 'Order ' . $what . ' in the online store'; }
-                }
-                if ($done && $e->job_status !== 'Completed') {
-                    $to = 'Completed';
-                    $why = $o->shipped_at ? 'Shipped from the online store' . ($o->tracking_number ? ' (' . trim($o->tracking_carrier . ' ' . $o->tracking_number) . ')' : '') : 'Order completed in the online store';
-                }
-                if (!$patch && !$to) continue;
-                // the change record in the station's own shape (camelCase field names, from / to)
-                $names = ['payment' => 'payment', 'notes' => 'notes', 'on_hold_reason' => 'onHoldReason'];
-                $diff = [];
-                foreach ($patch as $k => $v) $diff[$names[$k]] = ['from' => (string) ($e->{$k} ?? ''), 'to' => $k === 'notes' ? Str::limit($v, 160) : $v];
-                if ($to) $patch['job_status'] = $to;
-                $ck->table('entries')->where('id', $e->id)->update($patch + ['updated_at' => now('UTC')->toDateTimeString()]);
-                if ($to) $ck->table('status_history')->insert(['entry_id' => $e->id, 'from_status' => (string) $e->job_status, 'to_status' => $to, 'note' => $why, 'changed_by' => self::ACTOR]);
-                if ($diff) $ck->table('activity_log')->insert(['action' => 'entry.update', 'entity' => 'entry', 'entity_id' => $e->id,
-                    'summary' => "Edited entry #{$e->id} (" . implode(', ', array_keys($diff)) . ') · online order ' . $o->order_number,
-                    'details' => json_encode($diff, JSON_UNESCAPED_UNICODE), 'actor' => self::ACTOR, 'ip' => '']);
-                $said = array_filter([isset($patch['payment']) ? 'payment Paid' : null, $to ? "status {$to}" : null, isset($patch['notes']) ? 'cancel note added' : null]);
-                OrderEvents::record($o, 'checkin:updated', 'Shop work order updated', "Job {$job}: " . implode(', ', $said));
+                $e = $now[$job] ?? null;
+                if (!$e || !empty($e['deleted'])) continue;   // deleted on the station: the shop handles it by hand
+                $update = array_filter([
+                    'payment' => $paid && !$stop && ($e['payment'] ?? '') !== 'Paid' ? 'Paid' : null,
+                    'cancel' => $stop && empty($e['cancelled']) ? ['reason' => $o->status === 'cancelled' ? 'cancelled' : 'refunded'] : null,
+                    'complete' => $done && ($e['status'] ?? '') !== 'Completed' && empty($e['cancelled'])
+                        ? ['note' => $o->shipped_at ? 'Shipped from the online store' . ($o->tracking_number ? ' (' . trim($o->tracking_carrier . ' ' . $o->tracking_number) . ')' : '') : 'Order completed in the online store']
+                        : null,
+                ]);
+                if (!$update) continue;
+                $res = CheckinApi::patch($job, ['order' => $o->order_number] + $update);
+                if (empty($res['changed'])) continue;
+                OrderEvents::record($o, 'checkin:updated', 'Shop work order updated', "Job {$job}: " . implode(', ', (array) $res['changed']) . ' → ' . ($res['status'] ?? ''));
                 $changed++;
             }
         }
@@ -216,70 +194,40 @@ class CheckinBridge
         }
     }
 
-    private static function create(Connection $ck, object $o, object $item, string $job, int $k, int $n): int
+    /** What the station gets for one builder line (it validates and stores it, see uds-checkin src/lib/integration.ts). */
+    private static function payload(object $o, object $item, int $k, int $n): array
     {
         $meta = json_decode((string) $item->meta, true) ?: [];
         $c = (array) ($meta['config'] ?? []);
-        $premade = $item->type === 'premade_build';
         $two = ($c['pieces'] ?? 'one') === 'two';
-        $lineTotal = round((float) ($item->line_total ?? $item->price * $item->qty), 2);
-        $name = trim($o->billing_first_name . ' ' . $o->billing_last_name);
-        $customerId = self::customer($ck, $o);
-
-        $entryId = $ck->table('entries')->insertGetId([
-            'location_id' => $ck->table('locations')->orderBy('id')->value('id'),   // the station's own default
-            'customer_id' => $customerId,
-            'notes' => self::sheet($o, $item, $c, $k, $n),
-            'labor_request' => $premade ? 'New Driveshaft' : 'Custom Made Driveshaft',
-            'driveshaft_pieces' => $two ? '2 Pieces' : '1 Piece',
-            'driveshaft_material' => $premade ? '' : ucfirst((string) ($c['material'] ?? '')),
-            'designer_type' => $two ? 'Two Piece' : 'One Piece',
-            'measurement_a' => self::inches($premade ? ($c['premade_a'] ?? '') : ($c['a1'] ?? '')),
-            'measurement_b' => self::inches($premade ? ($c['premade_b'] ?? '') : ($c['b1'] ?? '')),
-            'measurement_c' => $premade ? '' : self::inches($c['c1'] ?? ''),
-            // the builder's drawing with the customer's dimensions, shown on the work order as its product image
-            'product_image' => \App\Support\BuildDrawing::url($c) ?? '',
-            'total' => number_format($lineTotal, 2, '.', ''),
-            'job_number' => $job,
-            'job_status' => 'New',
-            'payment' => in_array($o->payment_status, ['paid', 'partially_refunded'], true) ? 'Paid' : 'Unpaid',
-            'custom' => json_encode(self::info($o, $item, $k, $n), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
-            'created_by_name' => self::ACTOR,
-        ]);
-        foreach (self::parts($item, $c, (array) ($meta['price'] ?? [])) as $part) $ck->table('parts')->insert(['entry_id' => $entryId] + $part);
-        $ck->table('status_history')->insert(['entry_id' => $entryId, 'from_status' => '', 'to_status' => 'New', 'changed_by' => self::ACTOR]);
-        $ck->table('activity_log')->insert([
-            'action' => 'entry.create', 'entity' => 'entry', 'entity_id' => $entryId,
-            'summary' => "New check-in #{$entryId} — {$name} (Job {$job}) · online order",
-            'details' => json_encode(['source' => 'online store', 'order' => $o->order_number, 'jobStatus' => 'New', 'createdBy' => self::ACTOR]),
-            'actor' => self::ACTOR, 'ip' => '',
-        ]);
-        return (int) $entryId;
-    }
-
-    /**
-     * The station's customer row, kept silent (no e-mail, no SMS consent). A returning web customer reuses their row;
-     * a walk-in customer's row is never borrowed, or the shop's status changes could text them about this shaft.
-     */
-    private static function customer(Connection $ck, object $o): int
-    {
         $ship = $o->ship_to_different && $o->shipping_address_1;
         $p = $ship ? 'shipping_' : 'billing_';
-        $row = [
-            'first_name' => trim((string) $o->billing_first_name), 'last_name' => trim((string) $o->billing_last_name),
-            'phone' => substr(preg_replace('/\D/', '', (string) $o->phone), -10),
-            'company_name' => trim((string) $o->billing_company),
-            'street' => (string) $o->{$p . 'address_1'}, 'address2' => (string) $o->{$p . 'address_2'},
-            'city' => (string) $o->{$p . 'city'}, 'state' => (string) $o->{$p . 'state'}, 'zip' => (string) $o->{$p . 'postcode'},
-            'country' => self::country((string) $o->{$p . 'country'}),
+        return [
+            'order' => (string) $o->order_number,
+            // the station keeps web customers silent whatever is sent; no e-mail goes over
+            'customer' => [
+                'firstName' => trim((string) $o->billing_first_name) ?: 'Web', 'lastName' => trim((string) $o->billing_last_name) ?: 'customer',
+                'phone' => substr(preg_replace('/\D/', '', (string) $o->phone), -10), 'companyName' => Str::limit(trim((string) $o->billing_company), 120, ''),
+                'street' => (string) $o->{$p . 'address_1'}, 'address2' => (string) $o->{$p . 'address_2'}, 'city' => (string) $o->{$p . 'city'},
+                'state' => (string) $o->{$p . 'state'}, 'zip' => (string) $o->{$p . 'postcode'}, 'country' => self::country((string) $o->{$p . 'country'}),
+            ],
+            'entry' => [
+                'notes' => self::sheet($o, $item, $c, $k, $n),
+                'laborRequest' => 'Custom Made Driveshaft',
+                'driveshaftPieces' => $two ? '2 Pieces' : '1 Piece',
+                'driveshaftMaterial' => ucfirst((string) ($c['material'] ?? '')),
+                'designerType' => $two ? 'Two Piece' : 'One Piece',
+                'measurementA' => self::inches($c['a1'] ?? ''),
+                'measurementB' => self::inches($c['b1'] ?? ''),
+                'measurementC' => self::inches($c['c1'] ?? ''),
+                'total' => round((float) ($item->line_total ?? $item->price * $item->qty), 2),
+                'payment' => in_array($o->payment_status, ['paid', 'partially_refunded'], true) ? 'Paid' : 'Unpaid',
+                // the builder's drawing with the customer's dimensions, shown on the work order as its product image
+                'productImage' => (string) (\App\Support\BuildDrawing::url($c) ?? ''),
+                'custom' => self::info($o, $item, $k, $n),
+            ],
+            'parts' => self::parts($item, $c, (array) ($meta['price'] ?? [])),
         ];
-        $id = $ck->table('customers')->where('phone', $row['phone'])->where('first_name', $row['first_name'])->where('last_name', $row['last_name'])
-            ->where('email', '')->where('sms_consent', false)->value('id');
-        if ($id) {
-            $ck->table('customers')->where('id', $id)->update($row + ['updated_at' => now('UTC')->toDateTimeString()]);
-            return (int) $id;
-        }
-        return (int) $ck->table('customers')->insertGetId($row + ['email' => '', 'sms_consent' => false]);
     }
 
     /** The build sheet in the work order's "Notes" box: what to build, line by line. */
@@ -340,7 +288,7 @@ class CheckinBridge
     {
         $qty = max(1, (int) $item->qty);
         $cat = app(DsbCatalog::class);
-        $line = fn (string $sku, string $name, float $each) => ['sku' => $sku, 'name' => Str::limit($name, 250, ''), 'qty' => $qty, 'price' => number_format($each, 2, '.', '')];
+        $line = fn (string $sku, string $name, float $each) => ['sku' => Str::limit($sku, 80, ''), 'name' => Str::limit($name, 250, ''), 'qty' => $qty, 'price' => round($each, 2)];
         $extra = [];
         foreach (['front_yoke' => ['Front yoke', 'front_addon'], 'rear_yoke' => ['Rear yoke', 'rear_addon'], 'hardware' => ['U-joint kit', 'hardware_addon']] as $key => [$label, $addon]) {
             $y = (array) ($c[$key] ?? []); $kind = (string) ($y['kind'] ?? 'none'); $pid = (int) ($y['product_id'] ?? 0);
