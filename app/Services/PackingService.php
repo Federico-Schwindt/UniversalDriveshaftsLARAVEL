@@ -274,10 +274,15 @@ class PackingService
 
             if (in_array($type, ['custom_build', 'premade_build', 'driveshaft'], true)) {
                 // a driveshaft (builder, premade build or vehicle-finder shaft): one box each, always.
-                // A builder shaft is no product: it is weighed and boxed from its own build (length, tube, ends).
+                // A builder shaft is no product: it is weighed and boxed from its own build (length, tube, ends). A finder shaft
+                // takes PTI's weight and carton, with the ones PTI left blank estimated from shafts like it.
                 $est = !$pid && is_array($meta['config'] ?? null) ? \App\Support\ShaftWeight::estimate($meta['config']) : null;
+                $sku = (string) (is_array($it) ? ($it['sku'] ?? '') : ($it->sku ?? ''));
+                if (!$est && !$pid && ($pn = (string) ($meta['part_number'] ?? '') ?: \App\Services\DriveshaftFinder::pn($sku)) !== '') {
+                    $est = \App\Support\ShaftWeight::finderPart($pn);
+                }
                 $w = (float) ($meta['weight_lb'] ?? 0) ?: ($pid ? $products->weight($pid) : 0.0) ?: ($est['weight'] ?? 0.0) ?: self::DEFAULT_UNIT_LB;
-                $dims = $est['dims'] ?? $this->dimsFor($pid, $it, 'driveshaft');
+                $dims = ($est['dims'] ?? null) ?: $this->dimsFor($pid, $it, 'driveshaft');
                 for ($i = 0; $i < $qty; $i++) $boxes[] = ['kind' => 'driveshaft', 'weight' => $w, 'dims' => $dims];
                 $driveshaftUnits += $qty; $totalWeight += $w * $qty;
                 $excludedValue += (float) (is_array($it) ? ($it['price'] ?? 0) : ($it->price ?? 0)) * $qty;
