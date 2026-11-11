@@ -19,11 +19,13 @@ class JsStrings
         'We could not get UPS or FedEx rates for that address. Check the ZIP code and state, or call (813) 524-6491.',
         'Freight rates from FedEx Freight, shipping from Florida. Delivery dates are estimates.',
         'Rates shown ship from Florida. Delivery dates are estimates.', 'Could not load rates. Call (813) 524-6491.',
-        'Pick up at', 'Shipping From', 'Pickup hours', 'Est. Ship Date', 'Other times: call :phone first', 'Orders before 2pm ET ship same day',
+        'Pick up at', 'Shipping From', 'Pickup hours', 'Est. Ship Date', 'Other times: call :phone first', 'Orders before 2pm EST ship same day',
         'Please choose a shipping method.', 'Placing order…', 'Please check your payment details.', 'Place Order', 'Place order',
         'Network error. Please try again.',
         // cart
         ':amount more for free US ground shipping.',
+        // home vehicle finder, sidebar
+        'Pick a make first', 'Pick a year first', 'Choose a make', 'See driveshafts for :vehicle', 'See :make driveshafts', 'Expand menu', 'Collapse menu', 'Part not found.', 'Yes', 'No',
         // search overlay
         'Call for price', 'Part number, name or series — 5-1310X, flange yoke, U2594-173', 'Search parts', 'Clear search', 'Close search', 'Close',
         'Recent', 'Clear', 'Popular',

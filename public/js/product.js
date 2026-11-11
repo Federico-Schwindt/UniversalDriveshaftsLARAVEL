@@ -99,31 +99,6 @@
   }
   buttons.forEach(wireAddButton);
 
-  /* ---- wishlist toggle: there was no way to add anything to the wishlist
-     anywhere on the site before this button existed. ---- */
-  var wish = document.getElementById('pdp-wish');
-  if (wish) {
-    wish.addEventListener('click', function () {
-      if (wish.classList.contains('is-busy')) return;
-      var on = wish.classList.contains('is-on');
-      wish.classList.add('is-busy');
-      fetch(on ? '/wishlist/remove' : '/wishlist/add', {
-        method: 'POST',
-        headers: { 'X-CSRF-TOKEN': csrf, 'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ product_id: wish.dataset.wish })
-      }).then(function (r) { return r.ok ? r.json() : { success: false }; }).then(function (d) {
-        wish.classList.remove('is-busy');
-        if (!d.success) return;
-        wish.classList.toggle('is-on', !on);
-        wish.setAttribute('aria-pressed', (!on) ? 'true' : 'false');
-        wish.setAttribute('aria-label', (!on) ? T('Remove from wishlist') : T('Add to wishlist'));
-        wish.title = wish.getAttribute('aria-label');
-        var b = document.querySelector('[data-wish-count]');
-        if (b) { b.textContent = d.count; b.hidden = d.count === 0; }
-      }).catch(function () { wish.classList.remove('is-busy'); });
-    });
-  }
-
   /* ---- sticky buy bar: shown once the main buy box scrolls out of view ---- */
   var sticky = document.getElementById('pdp-sticky');
   if (sticky && add) {

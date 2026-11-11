@@ -1,28 +1,28 @@
 @extends('layouts.app')
 @section('title', __('Wholesale and trade accounts | Universal Driveshafts'))
 @section('desc', __('Apply for a Universal Driveshafts wholesale account: trade pricing on u-joints, yokes and driveshafts for repair shops, resellers and fleets, applied at checkout.'))
+@section('bodyclass','pg')
 @section('content')
-<section class="phero"><div class="wrap"><div class="crumb"><a href="/">{{ __('Home') }}</a><span class="sep">/</span><span>{{ __('Wholesale') }}</span></div><div class="accentline"></div>
-<h1>{{ __('Wholesale and trade accounts') }}</h1>
-<p class="lead">{{ __('Shops, drivelines, resellers and fleets get standing trade pricing on driveshafts, yokes and parts.') }}</p></div></section>
+<div class="wrap pagehead">
+  <nav class="ucrumb" aria-label="{{ __('Breadcrumb') }}"><a href="/">{{ __('Home') }}</a><x-icon name="caret-right"/><span aria-current="page">{{ __('Wholesale') }}</span></nav>
+  <div class="pagehead__row">
+    <h1>{{ __('Wholesale and trade accounts') }}</h1>
+    <div class="btn-row"><a class="btn btn-ghost btn-sm" href="tel:+18135246491"><x-icon name="phone"/> (813) 524-6491</a></div>
+  </div>
+  <p class="pagehead__sub">{{ __('Shops, drivelines, resellers and fleets get standing trade pricing on driveshafts, yokes and parts.') }} {{ __('Approved accounts get a standing discount off catalog pricing, applied automatically at checkout.') }}</p>
+</div>
 
-<section class="section"><div class="wrap"><div class="shopwrap">
-  <div class="gmain">
-    <div class="why-grid" style="margin-bottom:22px">
-      <div class="why-card"><h2><x-icon name="certificate"/> {{ __('Trade pricing') }}</h2><p>{{ __('Approved accounts get a standing discount off catalog pricing, applied automatically at checkout.') }}</p></div>
-      <div class="why-card"><h2><x-icon name="gauge"/> {{ __('Fast reorders') }}</h2><p>{{ __('Quick-order by part number and saved builds make repeat orders effortless.') }}</p></div>
-      <div class="why-card"><h2><x-icon name="certificate"/> {{ __('Dedicated Support') }}</h2><p>{{ __('Priority help from our team on fitment, custom builds and fulfillment.') }}</p></div>
-    </div>
-
+<section class="catsec catsec--end"><div class="wrap"><div class="pg-cols">
+  <div>
     @auth
-      @if(session('acct_ok'))<p role="status" style="margin:0 0 14px;padding:10px 14px;border-radius:10px;background:var(--ok-bg);color:var(--ok);font-weight:600">{{ session('acct_ok') }}</p>@endif
-      @if(session('acct_err'))<p role="alert" style="margin:0 0 14px;padding:10px 14px;border-radius:10px;background:var(--err-bg);color:var(--err);font-weight:600">{{ session('acct_err') }}</p>@endif
+      @if(session('acct_ok'))<p role="status" class="pg-msg ok">{{ session('acct_ok') }}</p>@endif
+      @if(session('acct_err'))<p role="alert" class="pg-msg bad">{{ session('acct_err') }}</p>@endif
       @if(($authUser->wholesale_status ?? 'none') === 'approved')
-        <div class="fit-thanks"><h3>@php $wTier = \App\Services\B2bAccounts::tierOf($authUser); $wPct = rtrim(rtrim(number_format(\App\Services\B2bAccounts::tiers()[$wTier]['pct'], 2), '0'), '.'); @endphp{{ __("You're a :group wholesale account", ['group' => \App\Services\B2bAccounts::tiers()[$wTier]['name']]) }} <x-icon name="check"/></h3><p>{{ __('Your :pct% trade discount is applied automatically. Happy ordering!', ['pct' => $wPct]) }}</p></div>
+        <div class="pg-form"><div class="fit-thanks"><h3>@php $wTier = \App\Services\B2bAccounts::tierOf($authUser); $wPct = rtrim(rtrim(number_format(\App\Services\B2bAccounts::tiers()[$wTier]['pct'], 2), '0'), '.'); @endphp{{ __("You're a :group wholesale account", ['group' => \App\Services\B2bAccounts::tiers()[$wTier]['name']]) }} <x-icon name="check"/></h3><p>{{ __('Your :pct% trade discount is applied automatically. Happy ordering!', ['pct' => $wPct]) }}</p></div></div>
       @elseif(($authUser->wholesale_status ?? 'none') === 'pending')
-        <div class="fit-thanks" style="background:#eef4ff;border-color:#c4d4f5;color:#1c3d7a"><h3 style="color:#1c3d7a">{{ __('Application received') }}</h3><p>{{ __("Our team is reviewing your wholesale application. We'll email you once it's approved.") }}</p></div>
+        <div class="pg-form"><div class="fit-thanks" style="background:#eef4ff;border-color:#c4d4f5;color:#1c3d7a"><h3 style="color:#1c3d7a">{{ __('Application received') }}</h3><p>{{ __("Our team is reviewing your wholesale application. We'll email you once it's approved.") }}</p></div></div>
       @else
-        <div class="fitform-wrap"><h2>{{ __('Apply for a Wholesale Account') }}</h2>
+        <div class="pg-form"><h2>{{ __('Apply for a Wholesale Account') }}</h2>
           <p class="sub">{{ __("Tell us about your business and we'll set up trade pricing.") }}</p>
           <form class="fitform" method="POST" action="/wholesale">@csrf
             <div><label>{{ __('Business Name') }}</label><input type="text" name="business_name" required></div>
@@ -35,19 +35,31 @@
         </div>
       @endif
     @else
-      <div class="fitform-wrap" style="text-align:center">
+      <div class="pg-form is-center">
         <h2>{{ __('Sign in to apply') }}</h2>
         <p class="sub">{{ __('Wholesale pricing is tied to your account. Sign in or create one to apply.') }}</p>
         <a href="/login?redirect=/wholesale" class="btn btn-primary">{{ __('Sign In') }}</a>
-        <a href="/register?redirect=/wholesale" class="btn btn-ghost u-ml">{{ __('Create Account') }}</a>
+        <a href="/register?redirect=/wholesale" class="btn btn-ghost">{{ __('Create Account') }}</a>
       </div>
     @endauth
   </div>
-  <aside class="totbox">
-    <h2 style="font-size:1.35rem">{{ __('Questions?') }}</h2>
-    <p style="color:var(--ink-soft);font-size:.9rem;line-height:1.6">{{ __('Call our team about wholesale terms:') }}</p>
-    <p style="margin:10px 0"><a href="tel:+18135246491" style="color:var(--blue);font-weight:700;font-size:1.1rem">(813) 524-6491</a></p>
-    <p style="color:var(--ink-soft);font-size:.85rem">{{ __('OEM & Parts') }}<br>inquiry@universaldriveshafts.com</p>
+  <aside class="pg-side">
+    <div class="pg-card">
+      <h2>{{ __('What an account gets you') }}</h2>
+      <ul class="pg-checks">
+        <li>{{ __('Trade pricing') }}: {{ __('a standing discount, applied automatically at checkout') }}</li>
+        <li>{{ __('Fast reorders') }}: <a href="/quick-order">{{ __('quick order by part number') }}</a> {{ __('and saved builds') }}</li>
+        <li>{{ __('Priority help from our team on fitment, custom builds and fulfillment.') }}</li>
+      </ul>
+    </div>
+    <div class="pg-card">
+      <h2>{{ __('Questions?') }}</h2>
+      <p>{{ __('Call our team about wholesale terms:') }}</p>
+      <div class="pg-rows">
+        <a href="tel:+18135246491"><x-icon name="phone"/><span class="pg-tel">(813) 524-6491</span></a>
+        <a href="mailto:inquiry@universaldriveshafts.com"><x-icon name="mail"/>inquiry@universaldriveshafts.com</a>
+      </div>
+    </div>
   </aside>
 </div></div></section>
 @endsection

@@ -292,7 +292,7 @@ class PackingService
                 for ($i = 0; $i < $qty; $i++) $boxes[] = ['kind' => 'driveshaft', 'weight' => $w, 'dims' => $dims];
                 $driveshaftUnits += $qty; $totalWeight += $w * $qty;
                 $excludedValue += (float) (is_array($it) ? ($it['price'] ?? 0) : ($it->price ?? 0)) * $qty;
-            } elseif ($slug === 'custom-cut-tubing') {         // every tube ships alone
+            } elseif ($slug === 'driveshaft-tubing') {         // every tube ships alone
                 $w = $unitWeight ?: self::DEFAULT_UNIT_LB;
                 $dims = $this->dimsFor($pid, $it, 'tube');
                 if ($pid && app(ProductService::class)->soldByFoot($pid)) {

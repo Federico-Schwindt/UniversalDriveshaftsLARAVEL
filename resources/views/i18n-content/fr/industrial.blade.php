@@ -1,49 +1,39 @@
-<section class="phero phero--rich"><div class="wrap">
+<div class="wrap pagehead">
   <nav class="ucrumb" aria-label="Fil d'Ariane"><a href="/">Accueil</a><x-icon name="caret-right"/><a href="/online-builder">Arbres de transmission</a><x-icon name="caret-right"/><span aria-current="page">Industriels</span></nav>
-  <div class="phero__grid">
+  <div class="pagehead__row">
+    <h1>Arbres de transmission industriels fabriqués à la bride et à la longueur de votre choix</h1>
+    <div class="btn-row"><a href="/contact" class="btn btn-primary btn-sm">Demander un devis <x-icon name="arrow-right"/></a><a href="/driveshaft-designer" class="btn btn-ghost btn-sm">Dessiner l'arbre dans le concepteur</a></div>
+  </div>
+  <p class="pagehead__sub">Pompes, compresseurs, convoyeurs, broyeurs, génératrices et bancs d'essai. Motifs de brides d'accouplement, joints homocinétiques et Rzeppa, croisillons des séries 1310 à 1810 selon le couple, soudés, usinés et équilibrés dans notre atelier à la vitesse à laquelle vous travaillez. La plupart des demandes de devis industrielles reçoivent une réponse le jour ouvré même.</p>
+</div>
+
+<section class="catsec"><div class="wrap">
+  <div class="pg-split">
     <div>
-      <span class="kicker">Pompes, compresseurs, transmissions</span>
-      <h1>Arbres de transmission industriels fabriqués selon votre bride et votre longueur</h1>
-      <p class="lead">Les installations fixes ne pardonnent pas un arbre de transmission défectueux : le désalignement et le déséquilibrage se répercutent directement sur les roulements et les joints. Nous fabriquons des arbres de transmission industriels selon le modèle de bride, la longueur et la vitesse que vous spécifiez, et nous les équilibrons avant leur expédition.</p>
-      <div class="phero__cta">
-        <a href="/contact" class="btn btn-primary btn-lg">Demander un devis <x-icon name="arrow-right"/></a>
-        <a href="/driveshaft-designer" class="btn btn-ghost btn-lg">Dessinez l'arbre de transmission dans le configurateur</a>
-      </div>
-      <ul class="phero__facts">
-        <li><b class="u-mono">Bride</b><span>modèles pour compagnon, CV et Rzeppa</span></li>
-        <li><b class="u-mono">1310 à 1810</b><span>séries de croisillons selon le couple</span></li>
-        <li><b class="u-mono">En interne</b><span>soudage, usinage, équilibrage</span></li>
+      <div class="pg-prose"><h2>Ce dont nous avons besoin de votre part : un plan, ou cinq informations</h2></div>
+      <ul class="pg-checks" style="margin-top:.6rem"><li>Motif de bride à chaque extrémité : cercle de boulons, diamètre du centrage et nombre de boulons</li><li>Longueur entre centres ou entre faces, comprimé et étendu s'il est coulissant</li><li>Vitesse de fonctionnement et puissance (HP) ou couple</li><li>Angle de fonctionnement et éventuel décalage</li><li>Environnement : extérieur, nettoyage haute pression, haute température</li></ul>
+      <p class="pg-note">Envoyez-nous un plan si vous en avez un. Sinon, le <a href="/driveshaft-designer">concepteur d'arbres de transmission</a> vous permet de choisir les types d'extrémité, de renseigner les mesures et d'imprimer la fiche à notre intention.</p>
+      <ul class="pg-facts" style="margin-top:1rem">
+        <li><b>Pompes et compresseurs</b><span>Du moteur à la pompe, avec décalage ou angle. Arbres de transmission courts et de bride à bride, souvent dotés d'une section coulissante pour la dilatation thermique.</span></li>
+        <li><b>Convoyeurs et broyeurs</b><span>Du réducteur à la poulie motrice ou à l'entraînement de rouleaux. Croisillons de série lourde, tube long, équilibrés pour un service continu.</span></li>
+        <li><b>Génératrices et bancs d'essai</b><span>Accouplements de dynamomètre et de génératrice, où la vitesse et l'équilibrage comptent avant tout. Nous équilibrons au régime (tr/min) auquel vous travaillez.</span></li>
       </ul>
+      <div class="pg-call" style="margin-top:1rem">
+        <p><b>Envoyez votre cahier des charges</b> et recevez un prix et un délai de livraison.</p>
+        <a class="pg-tel" href="tel:+18135246491"><x-icon name="phone"/> (813) 524-6491</a>
+        <a class="btn btn-ghost btn-sm" href="mailto:inquiry@universaldriveshafts.com"><x-icon name="mail"/> inquiry@universaldriveshafts.com</a>
+      </div>
     </div>
-    <div class="phero__media phero__media--photo"><picture><source srcset="{{ asset('img/photos/tile-steel-tube.webp') }}" type="image/webp"><img src="{{ asset('img/photos/tile-steel-tube.jpg') }}" width="1000" height="750" alt="Stock de tubes en acier pour arbres de transmission dans l'atelier"></picture></div>
+    <div class="pg-split__media"><picture><source srcset="{{ asset('img/photos/tile-steel-tube.webp') }}" type="image/webp"><img src="{{ asset('img/photos/tile-steel-tube.jpg') }}" width="1000" height="750" alt="Stock de tube en acier pour arbres de transmission à l'atelier"></picture></div>
   </div>
 </div></section>
 
-<section class="section"><div class="wrap">
-  <div class="s-head"><h2>Où ils sont utilisés</h2><p>Dans tout équipement transmettant de la puissance entre deux centres fixes qui ne sont pas parfaitement alignés.</p></div>
-  <div class="why-grid">
-    <div class="why-card"><h3>Pompes et compresseurs</h3><p>Du moteur à la pompe, avec décalage ou angle. Arbres de transmission courts et de bride à bride, souvent dotés d'une section coulissante pour la dilatation thermique.</p></div>
-    <div class="why-card"><h3>Convoyeurs et broyeurs</h3><p>Du réducteur à la poulie motrice ou à l'entraînement à rouleaux. Croisillons de série lourde, tube long, équilibrés pour un service continu.</p></div>
-    <div class="why-card"><h3>Générateurs et bancs d'essai</h3><p>Accouplements de dynamomètre et de générateur, où la vitesse et l'équilibrage priment sur tout le reste. Nous équilibrons au régime (tr/min) auquel vous travaillez.</p></div>
-  </div>
-</div></section>
-
-<section class="section section--tint"><div class="wrap">
-  <div class="split">
-    <div>
-      <span class="kicker">Ce dont nous avons besoin de votre part</span>
-      <h2>Le plan, ou les cinq données</h2>
-      <p>Envoyez-nous un plan si vous en avez un. Sinon, le configurateur d'arbres de transmission vous permet de choisir les types d'extrémités et de renseigner les dimensions, puis d'imprimer la fiche pour nous.</p>
-      <ul class="checks"><li>Modèle de bride à chaque extrémité : cercle de perçage, diamètre du centreur et nombre de boulons</li><li>Longueur de centre à centre ou de face à face, comprimée et étendue si l'arbre est coulissant</li><li>Vitesse de travail et puissance (ch) ou couple</li><li>Angle de travail et tout désalignement éventuel</li><li>Environnement : extérieur, lavage sous pression, haute température</li></ul>
-      <div class="phero__cta"><a href="/driveshaft-designer" class="btn btn-primary">Ouvrir le configurateur</a><a href="/contact" class="btn btn-ghost">Envoyer un plan</a></div>
-    </div>
-    <div><picture><source srcset="{{ asset('img/photos/band-fabrication.webp') }}" type="image/webp"><img src="{{ asset('img/photos/band-fabrication.jpg') }}" width="1800" height="1000" alt="Fabrication d'un arbre de transmission dans l'atelier" loading="lazy"></picture></div>
-  </div>
-</div></section>
-
-<section class="section"><div class="wrap">
-  <div class="ctaband">
-    <div><span class="kicker">Devis</span><h2>Envoyez la spécification et recevez un prix ainsi qu'un délai de livraison.</h2><p>La plupart des devis industriels font l'objet d'une réponse le jour ouvrable même.</p></div>
-    <div class="phero__cta"><a href="/contact" class="btn btn-primary btn-lg">Demander un devis <x-icon name="arrow-right"/></a><a href="mailto:inquiry@universaldriveshafts.com" class="btn btn-ghost btn-lg"><x-icon name="mail"/> inquiry@universaldriveshafts.com</a></div>
-  </div>
+<section class="catsec catsec--end"><div class="wrap">
+  <div class="catsec__head"><h2>Pièces industrielles en stock</h2><a class="textlink" href="/shop">Catalogue complet <x-icon name="arrow-right"/></a></div>
+  <ul class="hm-ways">
+    <li><a href="/shop/driveshaft-components/companion-flanges"><x-icon name="sliders"/><b>Brides d'accouplement</b><span>Par cercle de boulons et centrage</span></a></li>
+    <li><a href="/shop/driveshaft-components/flange-yokes"><x-icon name="package"/><b>Fourches à bride</b><span>Séries 1310 à 1810</span></a></li>
+    <li><a href="/shop/complete-driveshafts/short-couple-driveshafts"><x-icon name="cube"/><b>Arbres de transmission courts</b><span>De bride à bride, en stock</span></a></li>
+    <li><a href="/shop/driveshaft-tubing"><x-icon name="ruler"/><b>Tube pour arbre de transmission</b><span>Acier DOM, coupé sur mesure</span></a></li>
+  </ul>
 </div></section>

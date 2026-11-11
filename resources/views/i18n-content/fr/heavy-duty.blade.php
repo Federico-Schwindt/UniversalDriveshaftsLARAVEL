@@ -1,49 +1,37 @@
-<section class="phero phero--rich"><div class="wrap">
+<div class="wrap pagehead">
   <nav class="ucrumb" aria-label="Fil d'Ariane"><a href="/">Accueil</a><x-icon name="caret-right"/><a href="/online-builder">Arbres de transmission</a><x-icon name="caret-right"/><span aria-current="page">Usage intensif</span></nav>
-  <div class="phero__grid">
+  <div class="pagehead__row">
+    <h1>Arbres de transmission pour usage intensif, pour camions de classe 6 à 8</h1>
+    <div class="btn-row"><a href="/online-builder" class="btn btn-primary btn-sm"><x-icon name="wrench"/> Configurer un arbre usage intensif</a><a href="/shop/complete-driveshafts/certifed-driveshafts" class="btn btn-ghost btn-sm">Arbres de dépose certifiés en stock</a></div>
+  </div>
+  <p class="pagehead__sub">Benne, collecte des déchets, bétonnière, tracteur routier : séries 1550 à 1810 et SPL 170 / 250, fabriqués et équilibrés dans notre atelier. Douze séries dans le configurateur d'arbres de transmission pour usage intensif ; les commandes de pièces en stock passées avant 14 h (EST) sont expédiées le jour même.</p>
+</div>
+
+<section class="catsec"><div class="wrap">
+  <div class="pg-split">
     <div>
-      <span class="kicker">Classe 6 à 8, vocationnels et commerciaux</span>
-      <h1>Arbres de transmission d'usage intensif qui maintiennent votre camion sur la route</h1>
-      <p class="lead">Camion benne, camion à ordures, malaxeur, tracteur routier : lorsqu'un arbre de transmission fait défaut, le camion reste immobilisé et la journée est perdue. Nous fabriquons et équilibrons des arbres de transmission d'usage intensif dans notre atelier, disposons de pièces d'occasion certifiées des séries les plus courantes et expédions le jour même les articles en stock.</p>
-      <div class="phero__cta">
-        <a href="/online-builder" class="btn btn-primary btn-lg">Configurer un arbre de transmission d'usage intensif <x-icon name="arrow-right"/></a>
-        <a href="/shop/complete-driveshafts/certifed-driveshafts" class="btn btn-ghost btn-lg">Pièces d'occasion certifiées en stock</a>
-      </div>
-      <ul class="phero__facts">
-        <li><b class="u-mono">1550 à 1810</b><span>et séries SPL 170 / 250</span></li>
-        <li><b class="u-mono">12</b><span>séries dans « Configurez votre arbre de transmission » (usage intensif)</span></li>
-        <li><b class="u-mono">Le jour même</b><span>expédition du stock avant 14 h HE</span></li>
+      <ul class="pg-facts">
+        <li><b>Série adaptée au couple</b><span>1610 et 1710 pour la plupart des applications de classe 7 et 8 ; 1810 et SPL 250 lorsque le couple et le poids l'exigent. Nous confirmons la série à partir des fourches que vous utilisez déjà.</span></li>
+        <li><b>Tube dimensionné selon la longueur</b><span>Les arbres de transmission plus longs exigent un tube plus gros et plus épais pour rester au-dessus de la vitesse critique. Le configurateur vérifie le diamètre extérieur du tube en fonction de votre longueur et de votre matériau avant d'afficher le prix.</span></li>
+        <li><b>Équilibrés dans notre atelier</b><span>Chaque arbre de transmission, neuf ou certifié issu de dépose, est équilibré sur notre machine avant de rejoindre le rayonnage ou un carton d'expédition.</span></li>
+        <li><b>Arbres de transmission certifiés issus de dépose</b><span>Arbres de transmission déposés de camions à faible kilométrage, inspectés croisillon par croisillon, rééquilibrés et étiquetés avec la série et la longueur. SPL 170, SPL 250, 1710 et 1810. Ils coûtent moins cher qu'un arbre neuf et partent le jour même de votre commande ; la plupart peuvent être raccourcis ou équipés d'autres fourches. <a href="/shop/complete-driveshafts/certifed-driveshafts">Voir les arbres de transmission certifiés</a></span></li>
       </ul>
+      <div class="pg-call" style="margin-top:1rem">
+        <p><b>Vous avez plus d'un camion ?</b> Tarifs de gros, paiement sur bon de commande et expédition directe vers vos dépôts.</p>
+        <a class="pg-tel" href="tel:+18135246491"><x-icon name="phone"/> (813) 524-6491</a>
+        <a class="btn btn-ghost btn-sm" href="/wholesale">Demander un compte grossiste</a>
+      </div>
     </div>
-    <div class="phero__media ph-hero__media--photo"><picture><source srcset="{{ asset('img/photos/hero-weld.webp') }}" type="image/webp"><img src="{{ asset('img/photos/hero-weld.jpg') }}" width="2000" height="1000" alt="Soudage du tube d'un arbre de transmission lourd dans notre atelier"></picture></div>
+    <div class="pg-split__media"><picture><source srcset="{{ asset('img/photos/hero-weld.webp') }}" type="image/webp"><img src="{{ asset('img/photos/hero-weld.jpg') }}" width="2000" height="1000" alt="Soudure du tube d'un arbre de transmission pour usage intensif dans notre atelier"></picture></div>
   </div>
 </div></section>
 
-<section class="section"><div class="wrap">
-  <div class="s-head"><h2>Conçus pour le cycle de travail, pas pour la fiche technique</h2><p>Usage intensif rime avec couple, heures et traitement rude. Chaque arbre de transmission que nous fabriquons pour un camion est dimensionné pour répondre à ces trois exigences.</p></div>
-  <div class="why-grid">
-    <div class="why-card"><h3>Série adaptée au couple</h3><p>1610 et 1710 pour la plupart des applications de classe 7 et 8 ; 1810 et SPL 250 là où le couple et le poids l'exigent. Nous confirmons la série à partir des fourches que vous utilisez déjà.</p></div>
-    <div class="why-card"><h3>Tube dimensionné selon la longueur</h3><p>Les arbres de transmission plus longs nécessitent un tube plus grand et plus épais pour rester au-dessus de la vitesse critique. « Configurez votre arbre de transmission » vérifie le diamètre du tube en fonction de votre longueur et de votre matériau avant de communiquer le prix.</p></div>
-    <div class="why-card"><h3>Équilibrés dans notre atelier</h3><p>Chaque arbre de transmission, neuf ou d'occasion certifié, est équilibré sur notre machine avant d'être mis en rayon ou emballé.</p></div>
-  </div>
-</div></section>
-
-<section class="section section--tint"><div class="wrap">
-  <div class="split">
-    <div>
-      <span class="kicker">Occasions certifiées</span>
-      <h2>Inspectés, équilibrés et prêts dès aujourd'hui</h2>
-      <p>Arbres de transmission démontés de camions à faible kilométrage, inspectés croisillon par croisillon, rééquilibrés et étiquetés avec la série et la longueur. Ils coûtent moins cher qu'un modèle neuf et quittent l'atelier le jour de votre commande. La plupart peuvent être raccourcis ou modifiés au niveau des fourches selon vos mesures.</p>
-      <ul class="checks"><li>Séries SPL 170, SPL 250, 1710 et 1810</li><li>Inspectés et rééquilibrés avant d'entrer en stock</li><li>Modification à vos mesures disponible</li></ul>
-      <div class="phero__cta"><a href="/shop/complete-driveshafts/certifed-driveshafts" class="btn btn-primary">Voir les arbres de transmission certifiés</a></div>
-    </div>
-    <div><picture><source srcset="{{ asset('img/photos/tile-complete-driveshafts.webp') }}" type="image/webp"><img src="{{ asset('img/photos/tile-complete-driveshafts.webp') }}" width="1000" height="750" alt="Arbres de transmission d'usage intensif sur l'établi" loading="lazy"></picture></div>
-  </div>
-</div></section>
-
-<section class="section"><div class="wrap">
-  <div class="ctaband">
-    <div><span class="kicker">Comptes pour flottes et ateliers</span><h2>Vous possédez plus d'un camion ?</h2><p>Tarifs de gros, paiement par bon de commande et expédition directe dans vos parcs. Discutez de l'ouverture d'un compte avec notre atelier.</p></div>
-    <div class="phero__cta"><a href="/wholesale" class="btn btn-primary btn-lg">Demander un compte professionnel <x-icon name="arrow-right"/></a><a href="tel:+18135246491" class="btn btn-ghost btn-lg"><x-icon name="phone"/> (813) 524-6491</a></div>
-  </div>
+<section class="catsec catsec--end"><div class="wrap">
+  <div class="catsec__head"><h2>Pièces pour usage intensif en stock</h2><a class="textlink" href="/shop">Catalogue complet <x-icon name="arrow-right"/></a></div>
+  <ul class="hm-ways">
+    <li><a href="/shop/driveshaft-components/u-joints"><x-icon name="package"/><b>Croisillons</b><span>Séries 1550 à 1810 et SPL</span></a></li>
+    <li><a href="/shop/driveshaft-components/center-support-bearing"><x-icon name="gauge"/><b>Paliers centraux</b><span>Selon le diamètre du tourillon et du support</span></a></li>
+    <li><a href="/shop/driveshaft-components/flange-yokes"><x-icon name="sliders"/><b>Fourches à bride</b><span>Appariées selon le cercle de perçage et le centrage</span></a></li>
+    <li><a href="/shop/driveshaft-tubing"><x-icon name="ruler"/><b>Tube pour arbre de transmission</b><span>Acier DOM, coupé sur mesure</span></a></li>
+  </ul>
 </div></section>

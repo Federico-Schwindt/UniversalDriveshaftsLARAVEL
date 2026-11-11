@@ -81,6 +81,7 @@ return array (
   'Certifed Driveshafts' => '认证传动轴',
   'Driveshaft Components' => '传动轴部件',
   'Custom Cut Tubing' => '定制切割传动轴管',
+  'Driveshaft Tubing' => '传动轴管',
   'Small Parts' => '小零件',
   'Driveshafts' => '传动轴',
   'Driveshaft' => '传动轴',

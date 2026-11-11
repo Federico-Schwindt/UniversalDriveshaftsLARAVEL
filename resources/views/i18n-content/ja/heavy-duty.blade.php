@@ -1,49 +1,37 @@
-<section class="phero phero--rich"><div class="wrap">
-  <nav class="ucrumb" aria-label="パンくずリスト"><a href="/">ホーム</a><x-icon name="caret-right"/><a href="/online-builder">プロペラシャフト</a><x-icon name="caret-right"/><span aria-current="page">ヘビーデューティー（大型車用）</span></nav>
-  <div class="phero__grid">
+<div class="wrap pagehead">
+  <nav class="ucrumb" aria-label="ナビゲーション"><a href="/">ホーム</a><x-icon name="caret-right"/><a href="/online-builder">プロペラシャフト</a><x-icon name="caret-right"/><span aria-current="page">大型用</span></nav>
+  <div class="pagehead__row">
+    <h1>クラス6〜8トラック向け大型プロペラシャフト</h1>
+    <div class="btn-row"><a href="/online-builder" class="btn btn-primary btn-sm"><x-icon name="wrench"/> 大型プロペラシャフトを組み立てる</a><a href="/shop/complete-driveshafts/certifed-driveshafts" class="btn btn-ghost btn-sm">在庫の認定リビルト品</a></div>
+  </div>
+  <p class="pagehead__sub">ダンプ、ごみ収集車、ミキサー車、トラクター:シリーズ1550〜1810およびSPL 170 / 250を、自社工場で製作・バランス調整しています。大型用の「プロペラシャフトを組み立てる」では12シリーズに対応しており、在庫品は午後2時(EST)までのご注文で当日出荷します。</p>
+</div>
+
+<section class="catsec"><div class="wrap">
+  <div class="pg-split">
     <div>
-      <span class="kicker">クラス6〜8、特殊車両・商用車</span>
-      <h1>トラックの稼働を支える大型プロペラシャフト</h1>
-      <p class="lead">ダンプ、ゴミ収集車、ミキサー車、トラクタートラック：プロペラシャフトが故障するとトラックが動かなくなり、一日の仕事が台無しになります。当店では、自社工場での大型プロペラシャフトの製造・バランス調整、一般的に使用されるシリーズの認定中古品の取り扱いを行っており、在庫品は当日出荷いたします。</p>
-      <div class="phero__cta">
-        <a href="/online-builder" class="btn btn-primary btn-lg">大型プロペラシャフトをカスタムする <x-icon name="arrow-right"/></a>
-        <a href="/shop/complete-driveshafts/certifed-driveshafts" class="btn btn-ghost btn-lg">在庫中の認定中古品</a>
-      </div>
-      <ul class="phero__facts">
-        <li><b class="u-mono">1550 〜 1810</b><span>および SPL 170 / 250 シリーズ</span></li>
-        <li><b class="u-mono">12</b><span>大型「プロペラシャフトをカスタムする」のシリーズ</span></li>
-        <li><b class="u-mono">当日</b><span>東部時間（ET）午後2時までの在庫注文は当日出荷</span></li>
+      <ul class="pg-facts">
+        <li><b>トルクに合ったシリーズ</b><span>クラス7・8のほとんどの用途には1610と1710を、トルクや重量が求められる場合は1810とSPL 250をお選びください。現在お使いのヨークからシリーズを確認いたします。</span></li>
+        <li><b>長さに合わせたチューブ寸法</b><span>長いプロペラシャフトには、危険速度を上回って使用するために、より大きく厚いチューブが必要です。「プロペラシャフトを組み立てる」では、価格をご案内する前に、長さと材質に応じたチューブ外径を確認します。</span></li>
+        <li><b>自社工場でバランス調整</b><span>新品でも認定リビルト品でも、すべてのプロペラシャフトは、棚に並べる前、または梱包前に自社の機械でバランス調整を行います。</span></li>
+        <li><b>認定リビルト品</b><span>走行距離の少ないトラックから取り外したプロペラシャフトを、ユニバーサルジョイントごとに点検し、再バランス調整を行い、シリーズと長さを記したラベルを貼付しています。SPL 170、SPL 250、1710、1810をご用意しています。新品より価格が抑えられ、ご注文当日に出荷でき、ほとんどの場合は短縮やヨークの交換も可能です。<a href="/shop/complete-driveshafts/certifed-driveshafts">認定リビルト品を見る</a></span></li>
       </ul>
+      <div class="pg-call" style="margin-top:1rem">
+        <p><b>複数台のトラックをお持ちですか?</b> 卸売価格、発注書での支払い、貴社の車両基地への直送に対応しています。</p>
+        <a class="pg-tel" href="tel:+18135246491"><x-icon name="phone"/> (813) 524-6491</a>
+        <a class="btn btn-ghost btn-sm" href="/wholesale">卸売アカウントを申し込む</a>
+      </div>
     </div>
-    <div class="phero__media phero__media--photo"><picture><source srcset="{{ asset('img/photos/hero-weld.webp') }}" type="image/webp"><img src="{{ asset('img/photos/hero-weld.jpg') }}" width="2000" height="1000" alt="自社工場での大型プロペラシャフトのチューブ溶接作業"></picture></div>
+    <div class="pg-split__media"><picture><source srcset="{{ asset('img/photos/hero-weld.webp') }}" type="image/webp"><img src="{{ asset('img/photos/hero-weld.jpg') }}" width="2000" height="1000" alt="自社工場での大型プロペラシャフトのチューブ溶接"></picture></div>
   </div>
 </div></section>
 
-<section class="section"><div class="wrap">
-  <div class="s-head"><h2>スペック表のためではなく、過酷な使用環境のために作られています</h2><p>大型車用とは、高いトルク、長時間の稼働、そして過酷な使用を意味します。当社がトラック用に製造するすべてのプロペラシャフトは、そのすべてに耐えられるよう設計されています。</p></div>
-  <div class="why-grid">
-    <div class="why-card"><h3>トルクに適合したシリーズ</h3><p>大半のクラス7および8の用途には1610および1710を、トルクと重量が要求される場所には1810およびSPL 250を採用しています。現在ご使用中のヨークからシリーズを確認いたします。</p></div>
-    <div class="why-card"><h3>全長に合わせたチューブ設計</h3><p>より長いプロペラシャフトには、危険速度を超えて維持するために、より太く厚いチューブが必要です。「プロペラシャフトをカスタムする」では、価格を提示する前に、お客様の全長と材質に合わせてチューブの直径を検証します。</p></div>
-    <div class="why-card"><h3>自社工場でのバランス調整</h3><p>新品であれ認定中古品であれ、すべてのプロペラシャフトは、棚に並べたり梱包したりする前に、当社の専用マシンでバランス調整を行っています。</p></div>
-  </div>
-</div></section>
-
-<section class="section section--tint"><div class="wrap">
-  <div class="split">
-    <div>
-      <span class="kicker">認定中古品</span>
-      <h2>検査・バランス調整済みで、すぐにご使用いただけます</h2>
-      <p>低走行距離のトラックから取り外し、クロス（ユニバーサルジョイント）一つひとつまで点検を行い、再バランス調整とシリーズ・長さのタグ付けを行ったプロペラシャフトです。新品よりも費用を抑えられ、ご注文いただいた当日にショップから発送いたします。ほとんどの製品は、お客様の寸法に合わせて短縮したり、ヨークを変更したりすることが可能です。</p>
-      <ul class="checks"><li>SPL 170、SPL 250、1710、1810 シリーズ</li><li>在庫組み入れ前の検査および再バランス調整済み</li><li>お客様の寸法に合わせた加工も対応可能</li></ul>
-      <div class="phero__cta"><a href="/shop/complete-driveshafts/certifed-driveshafts" class="btn btn-primary">認定プロペラシャフトを見る</a></div>
-    </div>
-    <div><picture><source srcset="{{ asset('img/photos/tile-complete-driveshafts.webp') }}" type="image/webp"><img src="{{ asset('img/photos/tile-complete-driveshafts.webp') }}" width="1000" height="750" alt="作業台の上の大型プロペラシャフト" loading="lazy"></picture></div>
-  </div>
-</div></section>
-
-<section class="section"><div class="wrap">
-  <div class="ctaband">
-    <div><span class="kicker">フリートおよび修理工場向け口座</span><h2>複数のトラックを所有していませんか？</h2><p>卸売価格、購入発注書（PO）によるお支払い、お客様の拠点への直送サービスをご利用いただけます。口座開設についてはスタッフまでお気軽にお問い合わせください。</p></div>
-    <div class="phero__cta"><a href="/wholesale" class="btn btn-primary btn-lg">卸売口座のお申し込み <x-icon name="arrow-right"/></a><a href="tel:+18135246491" class="btn btn-ghost btn-lg"><x-icon name="phone"/> (813) 524-6491</a></div>
-  </div>
+<section class="catsec catsec--end"><div class="wrap">
+  <div class="catsec__head"><h2>在庫の大型用部品</h2><a class="textlink" href="/shop">カタログ一覧 <x-icon name="arrow-right"/></a></div>
+  <ul class="hm-ways">
+    <li><a href="/shop/driveshaft-components/u-joints"><x-icon name="package"/><b>ユニバーサルジョイント</b><span>シリーズ1550〜1810およびSPL</span></a></li>
+    <li><a href="/shop/driveshaft-components/center-support-bearing"><x-icon name="gauge"/><b>センターサポートベアリング</b><span>シャフト径とブラケット別</span></a></li>
+    <li><a href="/shop/driveshaft-components/flange-yokes"><x-icon name="sliders"/><b>フランジヨーク</b><span>ボルトサークルとパイロット径で適合</span></a></li>
+    <li><a href="/shop/driveshaft-tubing"><x-icon name="ruler"/><b>プロペラシャフト用チューブ</b><span>DOM鋼、指定寸法にカット</span></a></li>
+  </ul>
 </div></section>

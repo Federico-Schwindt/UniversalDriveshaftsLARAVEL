@@ -93,6 +93,5 @@
   <a class="alink" href="/online-builder"><x-icon name="wrench"/> {{ __('Online builder') }}</a>
   <a class="alink" href="/quick-order"><x-icon name="gauge"/> {{ __('Quick Order by SKU') }}</a>
   <a class="alink" href="/account/requests"><x-icon name="mail"/> {{ __('Custom requests') }}@if($requests->count()) <span class="pill pill-new" style="margin-left:auto">{{ $requests->count() }}</span>@endif</a>
-  <a class="alink" href="/wishlist"><x-icon name="heart"/> {{ __('Wishlist') }}@if($wishCount) <span class="pill pill-shipped" style="margin-left:auto">{{ $wishCount }}</span>@endif</a>
 </div>
 @endsection

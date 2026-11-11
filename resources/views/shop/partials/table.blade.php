@@ -43,7 +43,7 @@
     <tr>
       <td data-label="{{ __('Add') }}" data-col="add"><span class="p-add">
         @if($p['price'] > 0)
-        <button class="p-plus" data-add="{{ $p['id'] }}"@if(!empty($p['has_alt'])) data-has-alt @endif data-stock="{{ ($p['stock'] ?? 0) > 0 ? $p['stock'] : '' }}" data-status="{{ $p['stock_status'] }}" data-source="{{ $p['stock_source'] ?? '' }}" aria-label="{{ __('Add :sku to cart', ['sku' => $p['sku']]) }}" title="{{ __('Add to cart') }}"><x-icon name="cart"/><span class="p-plus__t">{{ __('Add') }}</span></button>
+        <button class="p-plus" data-add="{{ $p['id'] }}"@if(!empty($p['has_alt'])) data-has-alt @endif data-stock="{{ ($p['stock'] ?? 0) > 0 ? stock_label($p['stock']) : '' }}" data-status="{{ $p['stock_status'] }}" data-source="{{ $p['stock_source'] ?? '' }}" aria-label="{{ __('Add :sku to cart', ['sku' => $p['sku']]) }}" title="{{ __('Add to cart') }}"><x-icon name="cart"/><span class="p-plus__t">{{ __('Add') }}</span></button>
         @else
         {{-- $0.00 in the catalog = call for price: a quote request instead of a free add --}}
         <button type="button" class="p-call" data-quote="{{ $p['sku'] }}" data-pn="{{ $p['sku'] }}">{{ __('Get a quote') }}</button>

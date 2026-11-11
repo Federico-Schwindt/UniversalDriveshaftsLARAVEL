@@ -147,7 +147,7 @@ class AppointmentController extends Controller
 
         return response()->json(['success' => true, 'data' => [
             'ref' => $ref,
-            'when' => $start->copy()->setTimezone(self::TZ)->format('l, F j, Y \a\t g:i A') . ' ET',
+            'when' => $start->copy()->setTimezone(self::TZ)->format('l, F j, Y \a\t g:i A') . ' EST',
             'service' => $data['service'],
         ]]);
     }
@@ -229,7 +229,7 @@ class AppointmentController extends Controller
         $this->sendConfirmation($a, true);
         $this->notifyShop($a, true);
         return response()->json(['success' => true, 'data' => ['ref' => $a->ref,
-            'when' => Carbon::parse($a->starts_at)->setTimezone(self::TZ)->format('l, F j, Y \a\t g:i A') . ' ET']]);
+            'when' => Carbon::parse($a->starts_at)->setTimezone(self::TZ)->format('l, F j, Y \a\t g:i A') . ' EST']]);
     }
 
     // ---- Emails -------------------------------------------------------
@@ -241,7 +241,7 @@ class AppointmentController extends Controller
 
     private function sendConfirmation(object $a, bool $rescheduled = false): void
     {
-        $when = Carbon::parse($a->starts_at)->setTimezone(self::TZ)->format('l, F j, Y \a\t g:i A') . ' ET';
+        $when = Carbon::parse($a->starts_at)->setTimezone(self::TZ)->format('l, F j, Y \a\t g:i A') . ' EST';
         $base = $this->manageBase($a);
         $links = "Add to calendar: {$base}.ics?token={$a->manage_token}\n"
             . "Reschedule: {$base}/reschedule?token={$a->manage_token}\n"
@@ -263,7 +263,7 @@ class AppointmentController extends Controller
 
     private function sendCancellation(object $a): void
     {
-        $when = Carbon::parse($a->starts_at)->setTimezone(self::TZ)->format('l, F j, Y \a\t g:i A') . ' ET';
+        $when = Carbon::parse($a->starts_at)->setTimezone(self::TZ)->format('l, F j, Y \a\t g:i A') . ' EST';
         try {
             Mail::raw("Hi {$a->name},\n\nYour appointment ({$a->ref}) for {$a->service} on {$when} has been cancelled.\n\n"
                 . "Want to book again? Visit " . url('/make-an-appointment') . " or call (813) 524-6491.\n\n— Universal Driveshafts LLC",
@@ -275,7 +275,7 @@ class AppointmentController extends Controller
 
     private function notifyShop(object $a, bool $rescheduled = false): void
     {
-        $when = Carbon::parse($a->starts_at)->setTimezone(self::TZ)->format('l, F j, Y \a\t g:i A') . ' ET';
+        $when = Carbon::parse($a->starts_at)->setTimezone(self::TZ)->format('l, F j, Y \a\t g:i A') . ' EST';
         $tag = $rescheduled ? 'Rescheduled' : 'New Appointment';
         try {
             Mail::raw("{$tag}.\n\nRef: {$a->ref}\nService: {$a->service}\nWhen: {$when}\n"

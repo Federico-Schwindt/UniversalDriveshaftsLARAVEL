@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AccountController extends Controller
 {
-    /** Shared account data (orders, designs, appts, requests, wishlist count). */
+    /** Shared account data (orders, designs, appts, requests). */
     private function data($u): array
     {
         $email = strtolower($u->email);
@@ -26,7 +26,6 @@ class AccountController extends Controller
             'designs' => DB::table('saved_designs')->where('user_id', $u->id)->orderByDesc('id')->limit(100)->get(),
             'requests' => DB::table('leads')->when($ver, fn ($q) => $q->whereRaw('LOWER(email) = ?', [$email]), fn ($q) => $q->whereRaw('1 = 0'))
                 ->where('source', 'like', '%custom-driveshaft%')->orderByDesc('id')->limit(100)->get(),
-            'wishCount' => DB::table('wishlists')->where('user_id', $u->id)->count(),
             'defaultAddress' => DB::table('dropship_addresses')->where('user_id', $u->id)->orderByDesc('is_default')->orderByDesc('id')->first(),
             'addressCount' => DB::table('dropship_addresses')->where('user_id', $u->id)->count(),
         ];
@@ -72,7 +71,9 @@ class AccountController extends Controller
         }
         $orders = $query->orderByDesc('id')->paginate(25)->withQueryString();
         $lines = DB::table('order_items')->whereIn('order_id', $orders->pluck('id'))->orderBy('id')->get(['order_id', 'sku', 'name', 'qty'])->groupBy('order_id');
-        return view('account.orders', ['user' => $u, 'orders' => $orders, 'lines' => $lines, 'q' => $q]);
+        // return / exchange / cancellation requests per order, so the list shows where each one stands
+        $rmas = DB::table('rma_requests')->whereIn('order_id', $orders->pluck('id'))->orderByDesc('id')->get()->groupBy('order_id');
+        return view('account.orders', ['user' => $u, 'orders' => $orders, 'lines' => $lines, 'q' => $q, 'rmas' => $rmas]);
     }
 
     public function designsPage()

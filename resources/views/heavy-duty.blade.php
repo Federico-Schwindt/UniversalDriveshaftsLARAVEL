@@ -1,58 +1,47 @@
 @extends('layouts.app')
 @section('title', __('Heavy duty driveshafts | Universal Driveshafts'))
 @section('desc', __('Heavy duty driveshafts for class 6 to 8 trucks and vocational equipment. 1550 to 1810 series and SPL, balanced in Florida. Certified take-offs in stock.'))
+@section('bodyclass','pg')
 @section('content')
 @if(i18n_view('heavy-duty'))
 @include(i18n_view('heavy-duty'))
 @else
-<section class="phero phero--rich"><div class="wrap">
+<div class="wrap pagehead">
   <nav class="ucrumb" aria-label="Breadcrumb"><a href="/">Home</a><x-icon name="caret-right"/><a href="/online-builder">Driveshafts</a><x-icon name="caret-right"/><span aria-current="page">Heavy duty</span></nav>
-  <div class="phero__grid">
+  <div class="pagehead__row">
+    <h1>Heavy duty driveshafts for class 6 to 8 trucks</h1>
+    <div class="btn-row"><a href="/online-builder" class="btn btn-primary btn-sm"><x-icon name="wrench"/> Build a heavy duty shaft</a><a href="/shop/complete-driveshafts/certifed-driveshafts" class="btn btn-ghost btn-sm">Certified take-offs in stock</a></div>
+  </div>
+  <p class="pagehead__sub">Dump, refuse, mixer, tractor: 1550 to 1810 and SPL 170 / 250 series, built and balanced in house. Twelve series in the heavy duty builder; stock orders placed before 2pm EST ship the same day.</p>
+</div>
+
+<section class="catsec"><div class="wrap">
+  <div class="pg-split">
     <div>
-      <span class="kicker">Class 6 to 8, vocational, commercial</span>
-      <h1>Heavy duty driveshafts that keep the truck working</h1>
-      <p class="lead">Dump, refuse, mixer, tractor: when a shaft fails the truck is parked and the day is lost. We build and balance heavy duty shafts in house, stock certified take-offs for the common series, and ship the same day on stock.</p>
-      <div class="phero__cta">
-        <a href="/online-builder" class="btn btn-primary btn-lg">Build a heavy duty shaft <x-icon name="arrow-right"/></a>
-        <a href="/shop/complete-driveshafts/certifed-driveshafts" class="btn btn-ghost btn-lg">Certified take-offs in stock</a>
-      </div>
-      <ul class="phero__facts">
-        <li><b class="u-mono">1550 to 1810</b><span>and SPL 170 / 250 series</span></li>
-        <li><b class="u-mono">12</b><span>series in the heavy duty builder</span></li>
-        <li><b class="u-mono">Same day</b><span>dispatch on stock before 2pm ET</span></li>
+      <ul class="pg-facts">
+        <li><b>Series matched to torque</b><span>1610 and 1710 for most class 7 and 8 applications, 1810 and SPL 250 where the torque and the weight demand it. We confirm the series from the yokes you already run.</span></li>
+        <li><b>Tube sized for the length</b><span>Longer shafts need larger, thicker tube to stay above critical speed. The builder checks tube OD against your length and material before it prices.</span></li>
+        <li><b>Balanced in house</b><span>Every shaft, new or certified take-off, is balanced on our machine before it goes on the shelf or into a box.</span></li>
+        <li><b>Certified take-offs</b><span>Shafts from low-mileage trucks, inspected joint by joint, rebalanced and tagged with series and length. SPL 170, SPL 250, 1710 and 1810. They cost less than new and ship the day you order; most can be shortened or re-yoked. <a href="/shop/complete-driveshafts/certifed-driveshafts">Shop certified driveshafts</a></span></li>
       </ul>
+      <div class="pg-call" style="margin-top:1rem">
+        <p><b>Running more than one truck?</b> Wholesale pricing, PO terms and dropship to your yards.</p>
+        <a class="pg-tel" href="tel:+18135246491"><x-icon name="phone"/> (813) 524-6491</a>
+        <a class="btn btn-ghost btn-sm" href="/wholesale">Apply for wholesale</a>
+      </div>
     </div>
-    <div class="phero__media phero__media--photo"><picture><source srcset="{{ asset('img/photos/hero-weld.webp') }}" type="image/webp"><img src="{{ asset('img/photos/hero-weld.jpg') }}" width="2000" height="1000" alt="Welding a heavy driveshaft tube in our shop"></picture></div>
+    <div class="pg-split__media"><picture><source srcset="{{ asset('img/photos/hero-weld.webp') }}" type="image/webp"><img src="{{ asset('img/photos/hero-weld.jpg') }}" width="2000" height="1000" alt="Welding a heavy driveshaft tube in our shop"></picture></div>
   </div>
 </div></section>
 
-<section class="section"><div class="wrap">
-  <div class="s-head"><h2>Built for the duty cycle, not the spec sheet</h2><p>Heavy duty is about torque, hours and abuse. Every shaft we build for a truck is sized for all three.</p></div>
-  <div class="why-grid">
-    <div class="why-card"><h3>Series matched to torque</h3><p>1610 and 1710 for most class 7 and 8 applications, 1810 and SPL 250 where the torque and the weight demand it. We confirm the series from the yokes you already run.</p></div>
-    <div class="why-card"><h3>Tube sized for the length</h3><p>Longer shafts need larger, thicker tube to stay above critical speed. The builder checks tube OD against your length and material before it prices.</p></div>
-    <div class="why-card"><h3>Balanced in house</h3><p>Every shaft, new or certified take-off, is balanced on our machine before it goes on the shelf or into a box.</p></div>
-  </div>
-</div></section>
-
-<section class="section section--tint"><div class="wrap">
-  <div class="split">
-    <div>
-      <span class="kicker">Certified take-offs</span>
-      <h2>Inspected, balanced, ready today</h2>
-      <p>Take-off shafts from low-mileage trucks, inspected joint by joint, rebalanced and tagged with the series and length. They cost less than new and leave the shop the day you order. Most can be shortened or re-yoked to your measurements.</p>
-      <ul class="checks"><li>SPL 170, SPL 250, 1710 and 1810 series</li><li>Inspected and rebalanced before stocking</li><li>Modification to your measurements available</li></ul>
-      <div class="phero__cta"><a href="/shop/complete-driveshafts/certifed-driveshafts" class="btn btn-primary">Shop certified driveshafts</a></div>
-    </div>
-    <div><picture><source srcset="{{ asset('img/photos/tile-complete-driveshafts.webp') }}" type="image/webp"><img src="{{ asset('img/photos/tile-complete-driveshafts.webp') }}" width="1000" height="750" alt="Heavy duty driveshafts on the bench" loading="lazy"></picture></div>
-  </div>
-</div></section>
-
-<section class="section"><div class="wrap">
-  <div class="ctaband">
-    <div><span class="kicker">Fleet and shop accounts</span><h2>Running more than one truck?</h2><p>Wholesale pricing, PO terms and dropship to your yards. Talk to the shop about an account.</p></div>
-    <div class="phero__cta"><a href="/wholesale" class="btn btn-primary btn-lg">Apply for wholesale <x-icon name="arrow-right"/></a><a href="tel:+18135246491" class="btn btn-ghost btn-lg"><x-icon name="phone"/> (813) 524-6491</a></div>
-  </div>
+<section class="catsec catsec--end"><div class="wrap">
+  <div class="catsec__head"><h2>Heavy duty parts in stock</h2><a class="textlink" href="/shop">Full catalog <x-icon name="arrow-right"/></a></div>
+  <ul class="hm-ways">
+    <li><a href="/shop/driveshaft-components/u-joints"><x-icon name="package"/><b>Universal joints</b><span>1550 to 1810 and SPL series</span></a></li>
+    <li><a href="/shop/driveshaft-components/center-support-bearing"><x-icon name="gauge"/><b>Center support bearings</b><span>By stub diameter and bracket</span></a></li>
+    <li><a href="/shop/driveshaft-components/flange-yokes"><x-icon name="sliders"/><b>Flange yokes</b><span>Matched by bolt circle and pilot</span></a></li>
+    <li><a href="/shop/driveshaft-tubing"><x-icon name="ruler"/><b>Driveshaft tubing</b><span>DOM steel, cut to length</span></a></li>
+  </ul>
 </div></section>
 @endif
 @endsection

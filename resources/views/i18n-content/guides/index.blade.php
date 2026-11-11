@@ -46,7 +46,7 @@
     <a class="uhubcard" href="/catalog/driveshafts"><span class="uhubcard__media"><img src="{{ asset('img/photos/hero-overland-sm.webp') }}" alt="" loading="lazy" width="1000" height="750"></span><span class="uhubcard__body"><b>Buscar por vehículo</b><span>Año, marca y modelo</span></span></a>
     <a class="uhubcard" href="/shop/driveshaft-components/u-joints"><span class="uhubcard__media uhubcard__media--part"><img src="{{ media_url($catImg['u-joints'][3] ?? null, 320) }}" alt="" loading="lazy" width="320" height="320"></span><span class="uhubcard__body"><b>Crucetas</b><span>179 piezas por serie</span></span></a>
     <a class="uhubcard" href="/shop/driveshaft-components/center-support-bearing"><span class="uhubcard__media uhubcard__media--part"><img src="{{ media_url($catImg['center-support-bearing'][3] ?? null, 320) }}" alt="" loading="lazy" width="320" height="320"></span><span class="uhubcard__body"><b>Soportes centrales</b><span>324 piezas</span></span></a>
-    <a class="uhubcard" href="/shop/custom-cut-tubing/tubing"><span class="uhubcard__media"><img src="{{ asset('img/photos/tile-steel-tube.webp') }}" alt="" loading="lazy" width="1000" height="750"></span><span class="uhubcard__body"><b>Tubo cortado a medida</b><span>Acero DOM, se vende por pie</span></span></a>
+    <a class="uhubcard" href="/shop/driveshaft-tubing/tubing"><span class="uhubcard__media"><img src="{{ asset('img/photos/tile-steel-tube.webp') }}" alt="" loading="lazy" width="1000" height="750"></span><span class="uhubcard__body"><b>Tubo cortado a medida</b><span>Acero DOM, se vende por pie</span></span></a>
   </div>
 </div></section>
 

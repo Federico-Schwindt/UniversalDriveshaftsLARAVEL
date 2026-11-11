@@ -19,34 +19,22 @@
 
 @section('content')
 @include('shop.partials.style')
-<div class="wrap">
+<div class="wrap pagehead">
   <nav class="ucrumb" aria-label="{{ __('Breadcrumb') }}">
     <a href="/">{{ __('Home') }}</a><x-icon name="caret-right"/>
     <a href="/shop">{{ __('Catalog') }}</a><x-icon name="caret-right"/>
     <span aria-current="page">{{ __($group['label']) }}</span>
   </nav>
-</div>
-<section class="section" style="padding-top:1rem">
-  <div class="wrap">
-    <div class="s-head">
-      <h1>{{ __($group['label']) }}</h1>
-      @if(!empty($group['blurb']) && !config('seo-copy.groups.' . $group['slug']))<p>{{ __($group['blurb']) }}</p>@endif
-      @if(config('seo-copy.groups.' . $group['slug']))<p style="color:var(--ink-2);max-width:72ch">{{ config('seo-copy.groups.' . $group['slug']) }} {{ number_format($gCount) }} {{ __('parts across') }} {{ $gCats }} {{ __('categories.') }}</p>@endif
-      @if($group['slug'] === 'complete-driveshafts')
-        <div class="btn-row"><a class="btn btn-primary" href="/catalog/driveshafts"><x-icon name="crosshair"/> {{ __('Find by vehicle') }}</a><a class="btn btn-ghost" href="/online-builder">{{ __('Build one to spec') }}</a></div>
-      @endif
-    </div>
-    <div class="uhub">
-      @foreach($group['subcategories'] as $s)
-        <a class="uhubcard" href="/shop/{{ $group['slug'] }}/{{ $s['slug'] }}">
-          <span class="uhubcard__media">
-            @if($s['image'])<img src="{{ $s['image'] }}" alt="{{ \App\Support\PartGlossary::t($s['name']) }}" width="400" height="300" loading="lazy">
-            @else<x-icon name="package"/>@endif
-          </span>
-          <span class="uhubcard__body"><b>{{ \App\Support\PartGlossary::t($s['name']) }}</b><span>{{ number_format($s['count']) }} {{ __('parts') }}{{ ($t = config("seo-copy.categories.{$s['slug']}.intro")) ? ' · ' . \Illuminate\Support\Str::limit(preg_split('/(?<=[.!?])\s+/', $t)[0], 90) : '' }}</span></span>
-        </a>
-      @endforeach
-    </div>
+  <div class="pagehead__row">
+    <h1>{{ __($group['label']) }}</h1>
+    @if($group['slug'] === 'complete-driveshafts')
+      <div class="btn-row"><a class="btn btn-primary btn-sm" href="/catalog/driveshafts"><x-icon name="car"/> {{ __('Find by vehicle') }}</a><a class="btn btn-ghost btn-sm" href="/online-builder"><x-icon name="wrench"/> {{ __('Build one to spec') }}</a></div>
+    @endif
   </div>
-</section>
+  @php $gAbout = config('seo-copy.groups.' . $group['slug']) ?: $group['blurb']; @endphp
+  <p class="pagehead__sub">{{ __(':n parts in :c categories.', ['n' => number_format($gCount), 'c' => $gCats]) }}@if($gAbout) <span class="cinfo"><button type="button" class="cinfo__btn"><x-icon name="info"/>{{ __('About these parts') }}</button><span class="cinfo__pop" role="tooltip">{{ __((string) $gAbout) }}</span></span>@endif</p>
+</div>
+<section class="catsec"><div class="wrap">
+  @include('shop.partials.cat-tiles', ['group' => $group['slug'], 'subs' => $group['subcategories']])
+</div></section>
 @endsection

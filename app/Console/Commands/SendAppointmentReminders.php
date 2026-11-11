@@ -23,7 +23,7 @@ class SendAppointmentReminders extends Command
             ->get();
 
         foreach ($due as $a) {
-            $when = Carbon::parse($a->starts_at)->setTimezone('America/New_York')->format('l, F j, Y \a\t g:i A') . ' ET';
+            $when = Carbon::parse($a->starts_at)->setTimezone('America/New_York')->format('l, F j, Y \a\t g:i A') . ' EST';
             $base = url('/appointment/' . $a->ref);
             try {
                 Mail::raw(

@@ -15,7 +15,12 @@
   }
 
   var lit = null, litKey = null;
+  // phones send fake mouse events right after a tap; on the product drawing those would undo what the tap chose
+  // and once a letter is chosen by tap or keyboard, hovering changes nothing until the next tap or click
+  var pdpTouch = 0, pdpPinned = false;
+  function fromTap(t) { return pdpPinned || (Date.now() - pdpTouch < 900 && t && t.closest && t.closest('.pdp-md')); }
   function track(t) {
+    if (fromTap(t)) return;
     var scope = t && t.closest ? t.closest('[data-md-scope]') : null;
     var el = scope ? t.closest('[data-md], .md-dim') : null;
     var key = el ? (el.getAttribute('data-md') || el.getAttribute('data-dim')) : null;
@@ -25,6 +30,81 @@
   }
   document.addEventListener('mouseover', function (e) { track(e.target); });
   document.addEventListener('focusin', function (e) { track(e.target); });
+
+  /* product page: the drawing shows only the letters; the caption corner reads out the dimension under the pointer
+     with this part's value ("E · CJ to flat · 2.205"). The spec list stays still (owner, 2026-11) */
+  document.querySelectorAll('.pdp-md').forEach(function (fig) {
+    var scope = fig.closest('[data-md-scope]'), svg = fig.querySelector('.md-svg'), read = fig.querySelector('.pdp-md__read');
+    if (!scope || !svg) return;
+    var info = {}, T = window.udsT || String;
+    function yn(v) { return v === 'Y' ? T('Yes') : v === 'N' ? T('No') : v; }
+    scope.querySelectorAll('[data-md]').forEach(function (row) {
+      var dt = row.querySelector('dt'), dd = row.querySelector('dd'), chip = row.querySelector('.md-chip');
+      if (!dt || !dd) return;
+      info[row.getAttribute('data-md')] = {
+        letter: chip ? chip.textContent.trim() : '',
+        label: dt.textContent.replace(chip ? chip.textContent : '', '').trim(),
+        value: yn(dd.textContent.trim())
+      };
+    });
+    if (!read) return;
+    var idle = read.textContent;
+    function say(key) {
+      var d = key && info[key];
+      read.textContent = d ? [d.letter, d.label, d.value].filter(Boolean).join('  ·  ') : idle;
+      fig.classList.toggle('is-reading', !!d);
+    }
+    scope.addEventListener('mouseover', function (e) { if (fromTap(e.target)) return; var el = e.target.closest('[data-md], .md-dim'); say(el ? (el.getAttribute('data-md') || el.getAttribute('data-dim')) : null); });
+    scope.addEventListener('mouseleave', function () { if (pdpPinned || Date.now() - pdpTouch < 900) return; say(null); });
+    scope.addEventListener('focusin', function (e) { var el = e.target.closest('[data-md], .md-dim'); say(el ? (el.getAttribute('data-md') || el.getAttribute('data-dim')) : null); });
+
+    /* touch: a tap picks the nearest letter within a finger's reach (the badges are ~20px, a fingertip ~40px) and it
+       stays chosen until another letter, the same one again, or blank space is tapped. Phones never send hover for
+       an SVG, so the letters only answered when a tap happened to make a fake mouseover (owner, 2026-11-11). */
+    var dims = Array.prototype.slice.call(svg.querySelectorAll('.md-dim')), pinned = null, down = null;
+    dims.forEach(function (g) {
+      var d = info[g.getAttribute('data-dim')];
+      g.setAttribute('tabindex', '0'); g.setAttribute('role', 'button'); g.setAttribute('aria-pressed', 'false');
+      if (d) g.setAttribute('aria-label', [d.letter, d.label, d.value].filter(Boolean).join(', '));
+    });
+    function pin(key) {
+      pinned = key || null; pdpPinned = !!pinned;
+      say(pinned); light(scope, pinned); lit = pinned ? scope : null; litKey = pinned;
+      dims.forEach(function (g) { g.setAttribute('aria-pressed', g.getAttribute('data-dim') === pinned ? 'true' : 'false'); });
+    }
+    // the nearest letter badge wins (dimension lines cross other letters' badges); a line far from any badge picks its own letter
+    function keyAt(e) {
+      var best = null, bd = Infinity;
+      dims.forEach(function (d) {
+        var r = (d.querySelector('.md-badge') || d).getBoundingClientRect();
+        var dist = Math.hypot(e.clientX - (r.left + r.width / 2), e.clientY - (r.top + r.height / 2));
+        if (dist < bd) { bd = dist; best = d; }
+      });
+      if (best && bd <= 36) return best.getAttribute('data-dim');
+      var g = e.target.closest ? e.target.closest('.md-dim') : null;
+      return g ? g.getAttribute('data-dim') : null;
+    }
+    // a tap anywhere outside the drawing lets go of the chosen letter (else the next tap on it would toggle it off)
+    document.addEventListener('pointerdown', function (e) { if (pinned && !fig.contains(e.target)) pin(null); });
+    fig.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse') return;
+      pdpTouch = Date.now(); down = { x: e.clientX, y: e.clientY, t: pdpTouch };
+    });
+    fig.addEventListener('pointerup', function (e) {
+      if (e.pointerType === 'mouse' || !down) return;
+      var d = down; down = null; pdpTouch = Date.now();
+      if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 12 || Date.now() - d.t > 700) return;   // a scroll or a long press, not a tap
+      var key = svg.contains(e.target) || e.target === svg ? keyAt(e) : null;
+      pin(key && key !== pinned ? key : null);
+    });
+    fig.addEventListener('pointercancel', function () { down = null; });
+    // keyboard: Enter or Space on a focused letter keeps it chosen, like a tap
+    svg.addEventListener('keydown', function (e) {
+      var g = e.target.closest ? e.target.closest('.md-dim') : null;
+      if (!g || (e.key !== 'Enter' && e.key !== ' ')) return;
+      e.preventDefault(); var k = g.getAttribute('data-dim'); pin(k !== pinned ? k : null);
+    });
+  });
 
   var pop = document.getElementById('md-pop');
   if (!pop) return;

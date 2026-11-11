@@ -36,7 +36,7 @@ $faqs = [
 <tr><td>Minor runout, straight tube otherwise</td><td>Straighten and balance</td><td>Shop labor</td><td>Up to a few hundredths; more means re-tube</td></tr>
 <tr><td>Out of phase (two-piece reassembled wrong)</td><td>Re-index at the slip joint</td><td>None</td><td>Free, and it is the first thing to check after any work</td></tr>
 <tr><td>Worn weld yoke ears, tube good</td><td>Replace weld yoke</td><td><a href="/shop/driveshaft-components/weld-yoke">Weld yoke</a>, $11 to $40, plus labor</td><td>Shop job: press out, weld in, straighten, balance</td></tr>
-<tr><td>Dented or rusted tube, yokes good</td><td>Re-tube</td><td><a href="/shop/custom-cut-tubing/tubing">DOM tube</a> by the foot, plus labor</td><td>Also how a shaft is shortened or lengthened</td></tr>
+<tr><td>Dented or rusted tube, yokes good</td><td>Re-tube</td><td><a href="/shop/driveshaft-tubing/tubing">DOM tube</a> by the foot, plus labor</td><td>Also how a shaft is shortened or lengthened</td></tr>
 </tbody></table></div>
 <p>Joints and bearings are owner-level jobs with a press or a large vise and the right sockets. Anything that involves welding or balancing is a shop job, and a shop that does driveshafts daily does it faster and straighter than a general repair shop with a hammer.</p>
 

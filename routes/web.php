@@ -93,7 +93,7 @@ Route::view('/heavy-duty-driveshafts','heavy-duty');
 Route::view('/industrial-driveshafts','industrial');
 Route::view('/custom-off-road-driveshafts','offroad');
 Route::get('/premade-driveshafts', function (\App\Services\CatalogService $catalog) {
-    $data = $catalog->products('premade-driveshafts', [], 1, 8, 'price_asc');
+    $data = $catalog->products('premade-driveshafts', [], 1, 6, 'price_asc');   // one row of cards; the category page has the rest
     return view('premade', ['products' => $data['items'], 'total' => $data['total'],
         'certified' => $catalog->term('certifed-driveshafts')->count ?? 0, 'shortCouple' => $catalog->term('short-couple-driveshafts')->count ?? 0]);
 });
@@ -109,7 +109,7 @@ Route::redirect('/custom-driveshaft', '/online-builder', 301);
 Route::redirect('/custom-driveshaft-form', '/online-builder', 301);
 Route::redirect('/measuring-your-custom-driveshaft', '/online-builder', 301);
 Route::redirect('/one-piece-driveshaft', '/online-builder', 301);
-Route::redirect('/two-piece-driveshaft', '/online-builder/two-piece', 301);
+Route::redirect('/two-piece-driveshaft', '/online-builder', 301);
 Route::redirect('/common-terms', '/shop', 301);
 Route::redirect('/troubleshooting-guide', '/shop', 301);
 Route::redirect('/resources', '/shop', 301);
@@ -123,12 +123,13 @@ Route::get('/appointments/{any}', fn () => redirect('/contact', 301))->where('an
    Canonical URL is /online-builder. Every historic path 301s here so no
    existing link, bookmark or button can break. ------------------------------ */
 Route::get('/online-builder', [\App\Http\Controllers\DsbController::class, 'builder'])->defaults('pieces','one');
-Route::get('/online-builder/two-piece', [\App\Http\Controllers\DsbController::class, 'builder'])->defaults('pieces','two');
+// the two-piece builder was removed (owner, 2026-11-10): two-piece shafts are quoted by phone
+Route::redirect('/online-builder/two-piece', '/online-builder', 301);
 Route::redirect('/driveshaft-builder', '/online-builder', 301);
 Route::redirect('/one-piece-designer', '/online-builder', 301);
-Route::redirect('/two-piece-designer', '/online-builder/two-piece', 301);
+Route::redirect('/two-piece-designer', '/online-builder', 301);
 Route::get('/dsb/yokes', [\App\Http\Controllers\DsbController::class, 'yokes']);
-Route::get('/dsb/premades', [\App\Http\Controllers\DsbController::class, 'premades']);
+// /dsb/premades retired (builder is custom-only, Nov 2026)
 Route::post('/dsb/quote', [\App\Http\Controllers\DsbController::class, 'quote']);
 Route::post('/dsb/save-design', [\App\Http\Controllers\DsbController::class, 'saveDesign']);
 Route::post('/dsb/submit', [\App\Http\Controllers\DsbController::class, 'submit']);
@@ -150,6 +151,8 @@ Route::get('/shop/quick-view/{id}', [\App\Http\Controllers\CatalogController::cl
 Route::get('/shop/alternates/{id}', [\App\Http\Controllers\CatalogController::class, 'alternates'])->whereNumber('id');
 Route::post('/shop/catalog/add', [\App\Http\Controllers\CatalogController::class, 'add'])->middleware('throttle:30,1');
 Route::get('/parts/{sku}', [\App\Http\Controllers\CatalogController::class, 'detail']);
+// Custom Cut Tubing became Driveshaft Tubing (owner, 2026-11): the old group URLs keep their rankings through a 301
+Route::get('/shop/custom-cut-tubing/{cat?}', fn (?string $cat = null) => redirect('/shop/driveshaft-tubing/' . ($cat ?? 'tubing'), 301));
 Route::get('/shop/{group}', [\App\Http\Controllers\CatalogController::class, 'group']);
 Route::get('/shop/{group}/{cat}', [\App\Http\Controllers\CatalogController::class, 'category']);
 // Legacy WooCommerce category URLs -> real shop table (fixed 2026-09-05; was a 'coming soon' placeholder)
@@ -188,10 +191,10 @@ Route::get('/product/{slug}', [\App\Http\Controllers\CatalogController::class, '
         'companion-yoke' => $dc.'companion-flanges',
         'mercedes-center-support-bearings' => $dc.'center-support-bearing', 'bmw-center-support-bearings' => $dc.'center-support-bearing', 'toyota-center-support-bearings' => $dc.'center-support-bearing',
         'gm-center-support-bearings' => $dc.'center-support-bearing', 'subaru-center-support-bearings' => $dc.'center-support-bearing', 'center-support-bearing-size-chart' => $dc.'center-support-bearing',
-        'steel-driveshaft-tubing' => '/shop/custom-cut-tubing', 'aluminum-driveshaft-tubing' => '/shop/custom-cut-tubing', 'pto-steel-driveshaft-tubing' => '/shop/custom-cut-tubing',
+        'steel-driveshaft-tubing' => '/shop/driveshaft-tubing/tubing', 'aluminum-driveshaft-tubing' => '/shop/driveshaft-tubing/tubing', 'pto-steel-driveshaft-tubing' => '/shop/driveshaft-tubing/tubing',
         'small-parts' => '/shop/small-parts', 'parts-catalog' => '/shop', 'compare' => '/shop',
-        'two-piece-driveshaft-flange-measuring-guideline' => '/online-builder/two-piece', 'two-piece-driveshaft-measuring-seal' => '/online-builder/two-piece',
-        'two-piece-driveshaft-end-yoke' => '/online-builder/two-piece', 'two-piece-driveshaft-rubber-bot-extension' => '/online-builder/two-piece',
+        'two-piece-driveshaft-flange-measuring-guideline' => '/online-builder', 'two-piece-driveshaft-measuring-seal' => '/online-builder',
+        'two-piece-driveshaft-end-yoke' => '/online-builder', 'two-piece-driveshaft-rubber-bot-extension' => '/online-builder',
         'customized-driveshaft-online' => '/online-builder', 'driveshaft-designer-choose-type' => '/online-builder', 'driveshaft-home' => '/',
         'my-account' => '/account', 'sitemap' => '/sitemap.xml', 'lets-keep-in-touch' => '/contact', 'thank-you-form-details-received' => '/contact', 'elementor-69216' => '/',
         'universal-driveshafts-inc-return-and-refund-policy' => '/return-policy',
@@ -320,9 +323,8 @@ Route::get('/api/search', [\App\Http\Controllers\SearchController::class, 'api']
 Route::get('/quick-order', [\App\Http\Controllers\ProductController::class, 'quickOrderPage']);
 Route::post('/quick-order/resolve', [\App\Http\Controllers\ProductController::class, 'quickResolve']);
 Route::post('/quick-order/add', [\App\Http\Controllers\ProductController::class, 'quickAdd'])->middleware('throttle:30,1');
-Route::get('/wishlist', [\App\Http\Controllers\ProductController::class, 'wishlist']);
-Route::post('/wishlist/add', [\App\Http\Controllers\ProductController::class, 'wishAdd']);
-Route::post('/wishlist/remove', [\App\Http\Controllers\ProductController::class, 'wishRemove']);
+// the wishlist was removed (owner, 2026-11): old links go to the catalog
+Route::redirect('/wishlist', '/shop', 301);
 Route::get('/return-request-form', [\App\Http\Controllers\RmaController::class, 'page'])->defaults('type','return');
 Route::get('/exchange-request-form', [\App\Http\Controllers\RmaController::class, 'page'])->defaults('type','exchange');
 Route::get('/product-cancel-request-form', [\App\Http\Controllers\RmaController::class, 'page'])->defaults('type','cancel');
@@ -371,3 +373,6 @@ require __DIR__ . '/xref.php';
 require __DIR__ . '/tracking.php';
 require __DIR__ . '/commerce.php';
 require __DIR__ . '/recovery.php';
+
+// the builder's per-product pages were removed before launch (owner, 2026-11-10): any old link opens the builder
+Route::redirect('/online-builder/p/{slug}', '/online-builder', 301)->where('slug', '[a-z0-9-]+');

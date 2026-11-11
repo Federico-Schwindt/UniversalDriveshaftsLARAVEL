@@ -2,6 +2,7 @@
 @section('title', __('Driveshaft Repair & Balancing in Odessa, FL (Tampa Bay) | UDS'))
 @section('desc', __('Driveshaft shop in Odessa, FL, serving Tampa Bay: repair and rebuild, balancing, custom driveshafts, u-joint and center bearing replacement. (813) 524-6491.'))
 @section('canonical','/services')
+@section('bodyclass','pg')
 
 @php
   $base = rtrim(config('app.url'), '/');
@@ -67,87 +68,51 @@
 @if(i18n_view('services'))
 @include(i18n_view('services'))
 @else
-<section class="phero phero--rich"><div class="wrap">
+<div class="wrap pagehead">
   <nav class="ucrumb" aria-label="Breadcrumb"><a href="/">Home</a><x-icon name="caret-right"/><span aria-current="page">Services</span></nav>
-  <div class="phero__grid">
-    <div>
-      <span class="kicker">Driveshaft shop · Odessa, FL · Tampa Bay</span>
-      <h1>Driveshaft services: custom builds, repair, balancing and conversions</h1>
-      <p class="lead">Universal Driveshafts builds, repairs and balances driveshafts in our own shop in Florida, next to the parts inventory. Machining, welding, assembly and balancing happen in house, which is why a rebuild leaves the same week and a custom shaft is priced before you order.</p>
-      <div class="phero__cta">
-        <a href="/online-builder" class="btn btn-primary btn-lg"><x-icon name="wrench"/> Price a custom driveshaft</a>
-        <a href="tel:+18135246491" class="btn btn-ghost btn-lg"><x-icon name="phone"/> (813) 524-6491</a>
-      </div>
-      <ul class="phero__facts">
-        <li><b class="u-mono">8</b><span>in-house services</span></li>
-        <li><b class="u-mono">{{ number_format($udsCatalog['parts'] ?? 2600) }}</b><span>parts on the shelf next to the shop</span></li>
-        <li><b class="u-mono">2018</b><span>serving OEMs, fleets and owners since</span></li>
-      </ul>
-    </div>
-    <div class="phero__media phero__media--photo"><picture><source srcset="{{ asset('img/photos/band-fabrication.webp') }}" type="image/webp"><img src="{{ asset('img/photos/band-fabrication.jpg') }}" alt="Driveshaft fabrication at the Universal Driveshafts shop in Florida" width="1200" height="900" loading="eager" fetchpriority="high"></picture></div>
+  <div class="pagehead__row">
+    <h1>Driveshaft services: custom builds, repair, balancing and conversions</h1>
+    <div class="btn-row"><a href="/online-builder" class="btn btn-primary btn-sm"><x-icon name="wrench"/> Price a custom driveshaft</a><a href="tel:+18135246491" class="btn btn-ghost btn-sm"><x-icon name="phone"/> (813) 524-6491</a></div>
   </div>
-</div></section>
+  <p class="pagehead__sub">Built, repaired and balanced in our own shop in Odessa, FL (Tampa Bay), next to the parts inventory. Ship the shaft to us or bring it in; a rebuild usually leaves the same week.</p>
+</div>
 
-<section class="section"><div class="wrap">
-  <div class="s-head"><h2>What we do, in house</h2><p>Eight services, one shop. Every shaft that leaves is straightened and balanced, whether we built it or rebuilt it.</p></div>
-  <div class="svcs">
+<section class="catsec"><div class="wrap">
+  <ul class="pg-svcs">
     @foreach($services as $s)
-    <div class="svc" id="{{ $s[0] }}"><div class="ic"><x-icon :name="$s[1]"/></div><h3>{{ $s[2] }}</h3><p>{{ $s[3] }}</p><a href="{{ $s[4] }}" class="go">{{ $s[5] }} <x-icon name="arrow-right"/></a></div>
+    <li class="pg-svc" id="{{ $s[0] }}"><h3><x-icon :name="$s[1]"/>{{ $s[2] }}</h3><p>{{ $s[3] }}</p><a href="{{ $s[4] }}">{{ $s[5] }} <x-icon name="arrow-right"/></a></li>
     @endforeach
-  </div>
-</div></section>
-
-<section class="section section--tint"><div class="wrap">
-  <div class="s-head"><h2>Each service in detail</h2><p>What happens to your shaft, what we check before we start, and what you get back.</p></div>
-  <div class="vs2 svc-detail">
-    @foreach($services as $s)
-    <div class="vs2__col">
-      <span class="kicker u-mono">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
+  </ul>
+  <details class="morecopy">
+    <summary>More about each service: what we check, what you get back</summary>
+    <div class="morecopy__body">
+      @foreach($services as $s)
       <h3>{{ $s[2] }}</h3>
-      <p style="margin:0;color:var(--ink-2);line-height:1.6">{{ $s[6] }}</p>
-      <ul class="checks">@foreach($s[7] as $c)<li>{{ $c }}</li>@endforeach</ul>
+      <p>{{ $s[6] }}</p>
+      @endforeach
     </div>
-    @endforeach
-  </div>
+  </details>
 </div></section>
 
-<section class="section"><div class="wrap">
-  <div class="s-head"><h2>How a shop job works</h2><p>Whether you ship it, bring it or build it online, the shaft goes through the same three stages.</p></div>
-  <ol class="steps3">
-    <li><span class="steps3__n u-mono">1</span><b>Measure and identify</b><p>Use the measuring guide or <a href="/driveshaft-designer">designer</a>, or let us measure the shaft or the vehicle at the shop. We confirm the series, yokes and length before any cutting.</p></li>
-    <li><span class="steps3__n u-mono">2</span><b>Build or rebuild</b><p>Tube cut and yokes welded in a fixture, or worn joints, bearings and yokes replaced. Straightened to under 0.010 inch runout.</p></li>
-    <li><span class="steps3__n u-mono">3</span><b>Balance, paint, ship</b><p>Balanced at speed with welded weights, painted, and shipped nationwide from Florida or ready for pickup Monday to Friday.</p></li>
-  </ol>
-</div></section>
-
-<section class="section section--tint"><div class="wrap">
-  <div class="s-head"><h2>Call the shop or ship the shaft to us</h2><p>Free local pickup (choose it at checkout); rebuilds and balancing by freight from anywhere in the U.S.</p></div>
-  <div class="vs2">
-    <div class="vs2__col">
-      <span class="kicker">Talk to the shop</span>
-      <h3>Universal Driveshafts, Odessa FL</h3>
-      <p style="margin:0 0 .4rem;color:var(--ink-2);line-height:1.7"><a href="{{ config('uds.pickup.maps') }}" target="_blank" rel="noopener">11611 Prospect Drive STE 4, Odessa, FL 33556</a> · serving Tampa Bay</p>
-      <p style="margin:0;color:var(--ink-2);line-height:1.7">Parts and service: <a href="tel:+18135246491">(813) 524-6491</a><br>OEM and fleet: <a href="tel:+18136445707">(813) 644-5707</a><br>Monday to Friday 8:00 am to 5:00 pm, Saturday 9:00 am to 2:00 pm<br>Local pickup Monday to Friday 3:00 to 5:00 pm</p>
-      <a href="/contact" class="btn btn-ghost">Contact the shop</a>
+<section class="catsec"><div class="wrap">
+  <div class="catsec__head"><h2>Bring it in or ship it to us</h2></div>
+  <div class="pg-shop">
+    <div class="pg-card">
+      <h2>Universal Driveshafts, Odessa FL</h2>
+      <p><a href="{{ config('uds.pickup.maps') }}" target="_blank" rel="noopener">11611 Prospect Drive STE 4, Odessa, FL 33556</a>, serving Tampa Bay.<br>Parts and service: <a class="pg-tel" href="tel:+18135246491">(813) 524-6491</a><br>OEM and fleet: <a class="pg-tel" href="tel:+18136445707">(813) 644-5707</a><br>Monday to Friday 8:00 am to 5:00 pm, Saturday 9:00 am to 2:00 pm. Local pickup Monday to Friday 3:00 to 5:00 pm.</p>
+      <a href="/contact" class="btn btn-ghost btn-sm">Contact the shop</a>
     </div>
-    <div class="vs2__col">
-      <span class="kicker">Ship it to us</span>
-      <h3>Nationwide rebuilds and balancing</h3>
-      <ul class="checks"><li>Mark the phase on two-piece shafts before taking them apart</li><li>Pack so the yokes cannot dent the tube; cap the slip yoke</li><li>Include your name, phone and what you want done</li><li>We call with a quote before work starts</li><li>Free ground shipping on parts orders over ${{ number_format(config('uds.free_shipping_min')) }} (shafts and tubing excluded)</li></ul>
-      <a href="/contact" class="btn btn-primary">Contact the shop <x-icon name="arrow-right"/></a>
+    <div class="pg-card">
+      <h2>Shipping a shaft for a rebuild or balance</h2>
+      <ul class="pg-checks"><li>Mark the phase on two-piece shafts before taking them apart</li><li>Pack so the yokes cannot dent the tube; cap the slip yoke</li><li>Include your name, phone and what you want done</li><li>We call with a quote before work starts</li><li>Free ground shipping on parts orders over ${{ number_format(config('uds.free_shipping_min')) }} (shafts and tubing excluded)</li></ul>
+      <a href="/contact" class="btn btn-primary btn-sm">Contact the shop <x-icon name="arrow-right"/></a>
     </div>
   </div>
 </div></section>
 
-<section class="section"><div class="wrap wrap--narrow">
-  <div class="s-head"><h2>Frequently asked questions</h2></div>
-  @include('partials.faq', ['faqs' => $faqs])
+<section class="catsec catsec--end"><div class="wrap">
+  <div class="catsec__head"><h2>Frequently asked questions</h2></div>
+  <div class="pg-faq">@include('partials.faq', ['faqs' => $faqs])</div>
 </div></section>
-
-<section class="section section--tint"><div class="wrap"><div class="ctaband">
-  <h2>Bring it in or ship it to us</h2>
-  <p>Send us the shaft for measuring, balancing or a rebuild, or spec a new one online and see the price before you commit. Odessa, FL (Tampa Bay), (813) 524-6491.</p>
-  <div class="cta"><a href="/online-builder" class="btn btn-primary">Open the online builder <x-icon name="arrow-right"/></a><a href="/contact" class="btn btn-ghost">Talk to a tech</a></div>
-</div></div></section>
 @endif
 @endsection

@@ -1,49 +1,39 @@
-<section class="phero phero--rich"><div class="wrap">
+<div class="wrap pagehead">
   <nav class="ucrumb" aria-label="パンくずリスト"><a href="/">ホーム</a><x-icon name="caret-right"/><a href="/online-builder">プロペラシャフト</a><x-icon name="caret-right"/><span aria-current="page">産業用</span></nav>
-  <div class="phero__grid">
+  <div class="pagehead__row">
+    <h1>お客様のフランジと長さに合わせて製作する産業用プロペラシャフト</h1>
+    <div class="btn-row"><a href="/contact" class="btn btn-primary btn-sm">お見積もりを依頼する <x-icon name="arrow-right"/></a><a href="/driveshaft-designer" class="btn btn-ghost btn-sm">デザイナーでプロペラシャフトを設計する</a></div>
+  </div>
+  <p class="pagehead__sub">ポンプ、コンプレッサー、コンベヤー、ミル、発電機、テストベンチ向けです。相手側フランジのパターン、CV型およびRzeppa型、トルクに応じた1310から1810までのユニバーサルジョイントシリーズに対応し、当社工場で溶接、機械加工を行い、お客様の使用回転数でバランス取りを行います。産業用のお見積もりの多くは、営業日当日中にご回答しています。</p>
+</div>
+
+<section class="catsec"><div class="wrap">
+  <div class="pg-split">
     <div>
-      <span class="kicker">ポンプ、コンプレッサー、トランスミッション</span>
-      <h1>お客様のフランジとお客様の長さに合わせて製作する産業用プロペラシャフト</h1>
-      <p class="lead">定置設備では、不具合のあるプロペラシャフトは許されません。ミスアライメントやアンバランスは、そのままベアリングやシールの損傷につながります。当社では、ご指定のフランジパターン、長さ、回転数に合わせて産業用プロペラシャフトを製作し、出荷前にバランス調整を行います。</p>
-      <div class="phero__cta">
-        <a href="/contact" class="btn btn-primary btn-lg">お見積りを依頼する <x-icon name="arrow-right"/></a>
-        <a href="/driveshaft-designer" class="btn btn-ghost btn-lg">デザイナーでプロペラシャフトを設計する</a>
-      </div>
-      <ul class="phero__facts">
-        <li><b class="u-mono">フランジ</b><span>マッチングフランジ、CV、Rzeppaの各パターン</span></li>
-        <li><b class="u-mono">1310 a 1810</b><span>トルクに応じたユニバーサルジョイントのシリーズ</span></li>
-        <li><b class="u-mono">自社内</b><span>溶接、機械加工、バランス調整</span></li>
+      <div class="pg-prose"><h2>ご用意いただくもの:図面、または5つの情報</h2></div>
+      <ul class="pg-checks" style="margin-top:.6rem"><li>両端のフランジパターン:ボルトサークル、センタリング径、ボルト本数</li><li>センター間または面間の長さ(スライド式の場合は、縮めた状態と伸ばした状態)</li><li>使用回転数と出力(HP)またはトルク</li><li>使用角度とオフセットの有無</li><li>使用環境:屋外、高圧洗浄、高温</li></ul>
+      <p class="pg-note">図面がありましたらお送りください。ない場合は、<a href="/driveshaft-designer">プロペラシャフトデザイナー</a>で端部のタイプを選び、寸法を入力して、当社宛ての仕様シートを印刷していただけます。</p>
+      <ul class="pg-facts" style="margin-top:1rem">
+        <li><b>ポンプとコンプレッサー</b><span>モーターからポンプまで、オフセットや角度がある場合にも対応します。短尺のフランジ間タイプで、熱膨張に備えてスライド部を設けることも多くあります。</span></li>
+        <li><b>コンベヤーとミル</b><span>減速機から駆動プーリーやローラー駆動部まで。ヘビーデューティーシリーズのユニバーサルジョイント、長尺チューブ、連続運転向けのバランス取りを行います。</span></li>
+        <li><b>発電機とテストベンチ</b><span>回転数とバランスが何より重要となる、ダイナモメーターや発電機のカップリング用です。お客様の使用回転数(RPM)でバランス取りを行います。</span></li>
       </ul>
+      <div class="pg-call" style="margin-top:1rem">
+        <p><b>仕様をお送りください。</b>価格と納期をご案内します。</p>
+        <a class="pg-tel" href="tel:+18135246491"><x-icon name="phone"/> (813) 524-6491</a>
+        <a class="btn btn-ghost btn-sm" href="mailto:inquiry@universaldriveshafts.com"><x-icon name="mail"/> inquiry@universaldriveshafts.com</a>
+      </div>
     </div>
-    <div class="phero__media phero__media--photo"><picture><source srcset="{{ asset('img/photos/tile-steel-tube.webp') }}" type="image/webp"><img src="{{ asset('img/photos/tile-steel-tube.jpg') }}" width="1000" height="750" alt="工場に在庫しているプロペラシャフト用スチールチューブ"></picture></div>
+    <div class="pg-split__media"><picture><source srcset="{{ asset('img/photos/tile-steel-tube.webp') }}" type="image/webp"><img src="{{ asset('img/photos/tile-steel-tube.jpg') }}" width="1000" height="750" alt="工場にあるプロペラシャフト用スチールチューブの在庫"></picture></div>
   </div>
 </div></section>
 
-<section class="section"><div class="wrap">
-  <div class="s-head"><h2>主な用途</h2><p>完全には軸心が合っていない固定された2つの中心間で動力を伝えるあらゆる機器で使われます。</p></div>
-  <div class="why-grid">
-    <div class="why-card"><h3>ポンプとコンプレッサー</h3><p>モーターからポンプまで、オフセットや角度がある場合にも対応します。短尺のフランジ間タイプが中心で、熱膨張に対応するスライド部を備えることも多くあります。</p></div>
-    <div class="why-card"><h3>コンベアとミル</h3><p>減速機から駆動プーリーやローラー駆動部まで。重負荷シリーズのユニバーサルジョイントと長尺チューブを使用し、連続運転向けにバランス調整を行います。</p></div>
-    <div class="why-card"><h3>発電機と試験台</h3><p>回転数とバランスが何より重要となる、ダイナモメーターや発電機のカップリング。実際に運転される回転数でバランス調整を行います。</p></div>
-  </div>
-</div></section>
-
-<section class="section section--tint"><div class="wrap">
-  <div class="split">
-    <div>
-      <span class="kicker">お客様にご用意いただく情報</span>
-      <h2>図面、または5つのデータ</h2>
-      <p>図面がございましたらお送りください。お手元になければ、プロペラシャフトデザイナーでエンドの種類を選び、寸法を入力したうえで、シートを印刷して当社にお送りいただけます。</p>
-      <ul class="checks"><li>両端のフランジパターン：ボルトサークル、センタリング径、ボルト本数</li><li>センター間または面間の長さ。スライド式の場合は縮めた状態と伸ばした状態の両方</li><li>運転回転数と出力（HP）またはトルク</li><li>運転角度とオフセットの有無</li><li>使用環境：屋外、高圧洗浄、高温</li></ul>
-      <div class="phero__cta"><a href="/driveshaft-designer" class="btn btn-primary">デザイナーを開く</a><a href="/contact" class="btn btn-ghost">図面を送る</a></div>
-    </div>
-    <div><picture><source srcset="{{ asset('img/photos/band-fabrication.webp') }}" type="image/webp"><img src="{{ asset('img/photos/band-fabrication.jpg') }}" width="1800" height="1000" alt="工場でのプロペラシャフトの製作風景" loading="lazy"></picture></div>
-  </div>
-</div></section>
-
-<section class="section"><div class="wrap">
-  <div class="ctaband">
-    <div><span class="kicker">お見積り</span><h2>仕様をお送りください。価格と納期をご案内します。</h2><p>産業用のお見積りの多くは、営業日当日中にご回答しています。</p></div>
-    <div class="phero__cta"><a href="/contact" class="btn btn-primary btn-lg">お見積りを依頼する <x-icon name="arrow-right"/></a><a href="mailto:inquiry@universaldriveshafts.com" class="btn btn-ghost btn-lg"><x-icon name="mail"/> inquiry@universaldriveshafts.com</a></div>
-  </div>
+<section class="catsec catsec--end"><div class="wrap">
+  <div class="catsec__head"><h2>在庫のある産業用パーツ</h2><a class="textlink" href="/shop">カタログ全体を見る <x-icon name="arrow-right"/></a></div>
+  <ul class="hm-ways">
+    <li><a href="/shop/driveshaft-components/companion-flanges"><x-icon name="sliders"/><b>コンパニオンフランジ</b><span>ボルトサークルとセンタリング径で探す</span></a></li>
+    <li><a href="/shop/driveshaft-components/flange-yokes"><x-icon name="package"/><b>フランジヨーク</b><span>1310から1810シリーズ</span></a></li>
+    <li><a href="/shop/complete-driveshafts/short-couple-driveshafts"><x-icon name="cube"/><b>ショートカップルプロペラシャフト</b><span>フランジ間タイプ、在庫あり</span></a></li>
+    <li><a href="/shop/driveshaft-tubing"><x-icon name="ruler"/><b>プロペラシャフト用チューブ</b><span>DOM鋼管、寸法カット対応</span></a></li>
+  </ul>
 </div></section>

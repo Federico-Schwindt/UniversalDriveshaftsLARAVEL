@@ -88,7 +88,7 @@ class GuideController extends Controller
                 'card'  => 'DOM vs aluminum, diameter and wall, and the critical speed formula with a worked example.',
                 'toc'   => [['materials','DOM steel vs aluminum'],['critical','Critical speed: the formula'],['example','A worked example'],['sizes','Common sizes and what they fit'],['yokes','Matching tube to weld yokes'],['cut','Ordering cut tubing']],
                 'related' => ['one-piece-vs-two-piece-driveshaft','slip-yoke-vs-weld-yoke-vs-flange-yoke','custom-driveshaft-cost-and-lead-time'],
-                'parts' => ['cat' => 'tubing', 'q' => '', 'label' => 'DOM tubing, sold by the foot', 'href' => '/shop/custom-cut-tubing/tubing'],
+                'parts' => ['cat' => 'tubing', 'q' => '', 'label' => 'DOM tubing, sold by the foot', 'href' => '/shop/driveshaft-tubing/tubing'],
             ],
             'custom-driveshaft-cost-and-lead-time' => [
                 'title' => 'Custom Driveshaft Cost & Lead Time (2026) | UDS',

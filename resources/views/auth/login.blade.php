@@ -43,7 +43,7 @@
         <li><span class="bi"><x-icon name="package"/></span><div><b>{{ __('Track every order') }}</b><span>{{ __('Live UPS/FedEx tracking, invoices and history in one place.') }}</span></div></li>
         <li><span class="bi"><x-icon name="wrench"/></span><div><b>{{ __('Save your driveshaft builds') }}</b><span>{{ __('Design it once, reopen it in the builder anytime to order.') }}</span></div></li>
         <li><span class="bi"><x-icon name="truck"/></span><div><b>{{ __('Dropship addresses') }}</b><span>{{ __('Save the shops and yards you ship to and reuse them at checkout.') }}</span></div></li>
-        <li><span class="bi"><x-icon name="heart"/></span><div><b>{{ __('Wishlist & faster checkout') }}</b><span>{{ __('Save parts for later and check out in seconds.') }}</span></div></li>
+        <li><span class="bi"><x-icon name="heart"/></span><div><b>{{ __('Faster checkout') }}</b><span>{{ __('Save parts for later and check out in seconds.') }}</span></div></li>
         <li><span class="bi"><x-icon name="certificate"/></span><div><b>{{ __('Wholesale pricing') }}</b><span>{{ __('Shops & resellers can apply for B2B account pricing.') }}</span></div></li>
       </ul>
     </div>

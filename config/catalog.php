@@ -32,8 +32,8 @@ return [
                 'h-yokes', 'cv-link-yoks', 'yoke-shafts', 'center-support-bearing',
             ],
         ],
-        'custom-cut-tubing' => [
-            'label' => 'Custom Cut Tubing',
+        'driveshaft-tubing' => [            // was custom-cut-tubing (renamed 2026-11, old URLs 301 in routes/web.php)
+            'label' => 'Driveshaft Tubing',
             'blurb' => 'Steel and aluminum driveshaft tubing, cut to your length.',
             'categories' => ['tubing'],
         ],

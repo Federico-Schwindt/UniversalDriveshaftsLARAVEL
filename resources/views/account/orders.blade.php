@@ -16,7 +16,7 @@
   <div class="apanel-b">
     @if($orders->count())
       <div class="ohead" aria-hidden="true"><span>{{ __('Order #') }}</span><span>{{ __('PO') }}</span><span>{{ __('Date') }}</span><span>{{ __('Status') }}</span><span>{{ __('Tracking') }}</span><span>{{ __('Total') }}</span></div>
-      <div class="olist">@foreach($orders as $o) @include('account.partials.order-row', ['o' => $o, 'parts' => $lines[$o->id] ?? collect(), 'q' => $q]) @endforeach</div>
+      <div class="olist">@foreach($orders as $o) @include('account.partials.order-row', ['o' => $o, 'parts' => $lines[$o->id] ?? collect(), 'q' => $q, 'rma' => ($rmas[$o->id] ?? collect())->first()]) @endforeach</div>
       @if($orders->hasPages())
         <nav class="opager" aria-label="{{ __('Order pages') }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;font-size:.9rem;color:var(--ink-3)">
           @if($orders->onFirstPage())<span></span>@else<a class="btn btn-ghost btn-sm" href="{{ $orders->previousPageUrl() }}" rel="prev">{{ __('Newer orders') }}</a>@endif

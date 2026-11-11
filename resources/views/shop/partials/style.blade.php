@@ -4,15 +4,37 @@
 @once
 <style>
 @media (max-width:760px){
-  .ptbl tbody td[data-col="add"],.ptbl tbody td[data-col="pic"]{display:flex;align-items:center;border-bottom:0!important;padding:0 0 .75rem}
-  .ptbl tbody td[data-col="add"]{grid-column:1;justify-content:flex-start}
-  .ptbl tbody td[data-col="pic"]{grid-column:2;justify-content:flex-end}
-  .ptbl tbody td[data-col="add"]::before,.ptbl tbody td[data-col="pic"]::before{display:none}
-  .ptbl tbody td[data-col="pic"] .p-pic,.ptbl tbody td[data-col="pic"] .p-pic-ph{width:104px;height:104px;min-width:104px}
-  .ptbl tbody td[data-col="part"]{border-top:1px solid var(--line-2)!important;padding-top:.7rem;grid-template-columns:auto minmax(0,1fr)}
-  .ptbl tbody td[data-col="part"] .p-pn{white-space:normal;word-break:break-all;font-size:1rem;display:inline-flex;justify-content:flex-end;grid-column:2;justify-self:end}
-  .ptbl tbody td[data-col="part"] .p-alt{grid-column:2;justify-self:end;margin:6px 0 0}
-  .ptbl tbody td[data-col="price"] .p-price{justify-content:flex-end;white-space:normal}
+  .ptbl tbody td[data-col="pic"]{grid-column:1;grid-row:1/3;padding:0}
+  .ptbl tbody td[data-col="part"]{grid-column:2;grid-row:1;align-self:end;padding:0}
+  .ptbl tbody td[data-col="price"]{grid-column:2;grid-row:2;align-self:start;padding:.15rem 0 .35rem}
+  .ptbl tbody td[data-col="notes"]{grid-column:1/-1}
+  /* long text (description, vehicles it fits) takes the whole card width; it kept a 220px minimum and ran into the next column */
+  .ptbl tbody td.l{min-width:0}
+  .ptbl tbody td:is([data-col="desc"],[data-col="fits"]){grid-column:1/-1}
+  .ptbl tbody td[data-col="add"]{grid-column:1/-1;order:99;padding-top:.75rem}
+  .ptbl tbody td:is([data-col="pic"],[data-col="part"],[data-col="price"],[data-col="add"])::before{display:none}
+  .ptbl tbody td[data-col="pic"] .p-pic,.ptbl tbody td[data-col="pic"] .p-pic-ph{width:96px;height:96px;min-width:96px}
+  .ptbl tbody td[data-col="part"] .p-pn{font-size:1rem;word-break:break-all}
+  .ptbl tbody td[data-col="price"] .p-price{justify-content:flex-start;white-space:normal}
+  .ptbl tbody td[data-col="price"] .now{font-size:1.05rem}
+  .ptbl tbody td[data-col="add"] .p-add{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem}
+  .ptbl tbody td[data-col="add"] .p-plus,.ptbl tbody td[data-col="add"] .p-call{flex:1;justify-content:center;height:42px;min-height:42px}
+  .ptbl tbody td[data-col="add"] .p-plus{width:auto;padding:0 .8rem;gap:.4rem;font:600 .88rem/1 var(--font-b)}
+  .ptbl tbody td[data-col="add"] .p-plus .p-plus__t{display:inline}
+}
+@media (min-width:761px){
+  .ptfit.is-cards .ptbl tbody td[data-col="pic"]{grid-column:1;grid-row:1/3;padding:0}
+  .ptfit.is-cards .ptbl tbody td[data-col="part"]{grid-column:2;grid-row:1;align-self:end;padding:0}
+  .ptfit.is-cards .ptbl tbody td[data-col="price"]{grid-column:2;grid-row:2;align-self:start;padding:.15rem 0 .35rem}
+  .ptfit.is-cards .ptbl tbody td[data-col="notes"]{grid-column:1/-1}
+  .ptfit.is-cards .ptbl tbody td.l{min-width:0}
+  .ptfit.is-cards .ptbl tbody td:is([data-col="desc"],[data-col="fits"]){grid-column:1/-1}
+  .ptfit.is-cards .ptbl tbody td[data-col="add"]{grid-column:1/-1;order:99;padding-top:.75rem}
+  .ptfit.is-cards .ptbl tbody td:is([data-col="pic"],[data-col="part"],[data-col="price"],[data-col="add"])::before{display:none}
+  .ptfit.is-cards .p-pic,.ptfit.is-cards .p-pic-ph{width:96px;height:96px;min-width:96px}
+  .ptfit.is-cards .ptbl tbody td[data-col="part"] .p-pn{font-size:1rem;word-break:break-all}
+  .ptfit.is-cards .ptbl tbody td[data-col="add"] .p-add{display:flex;gap:.5rem}
+  .ptfit.is-cards .ptbl tbody td[data-col="add"] .p-plus{flex:1;justify-content:center;height:40px}
 }
 /* primary add: cart glyph + "Add" on wide screens; every action ≥ 40px; alternates as a small text link */
 .p-add .p-plus .p-plus__t{display:none}

@@ -231,7 +231,7 @@ class CartService
     }
 
     /**
-     * When it ships: today if the order is in before 2 pm ET on a weekday (the promise the
+     * When it ships: today if the order is in before 2 pm EST on a weekday (the promise the
      * product pages make), otherwise the next weekday; a longer handling time from Settings
      * pushes it out. Holidays are not modelled, which is why the date is shown as an estimate.
      */

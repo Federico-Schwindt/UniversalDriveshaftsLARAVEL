@@ -243,7 +243,7 @@ class CheckinBridge
         };
         return array_filter([
             'Online order' => $o->order_number . ($n > 1 ? " · shaft {$k} of {$n}" : ''),
-            'Ordered' => \Carbon\Carbon::parse($o->created_at, 'UTC')->timezone('America/New_York')->format('M j, Y g:i A') . ' ET',
+            'Ordered' => \Carbon\Carbon::parse($o->created_at, 'UTC')->timezone('America/New_York')->format('M j, Y g:i A') . ' EST',
             'Quantity' => (string) (int) $item->qty,
             'Customer e-mail' => (string) $o->email,
             'Payment' => $pay,

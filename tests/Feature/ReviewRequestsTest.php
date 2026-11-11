@@ -71,12 +71,17 @@ class ReviewRequestsTest extends TestCase
     public function test_rating_badge_uses_the_figures_from_settings_and_can_be_hidden(): void
     {
         Settings::set('reviews.badge_enabled', true); Settings::set('reviews.google_rating', 4.8); Settings::set('reviews.google_count', 215);
-        $html = $this->get('/')->assertOk()->getContent();
+        // the badge sits on product pages (the owner took it off the home page, 2026-11)
+        $sku = \DB::connection('wp')->table('wp_posts as p')->join('wp_postmeta as m', fn ($j) => $j->on('m.post_id', '=', 'p.ID')->where('m.meta_key', '_sku'))
+            ->where('p.post_type', 'product')->where('p.post_status', 'publish')->where('m.meta_value', 'like', '3-94-%')->value('m.meta_value');
+        $page = '/parts/' . rawurlencode($sku);
+        $this->get('/')->assertOk()->assertDontSee('Google reviews');
+        $html = $this->get($page)->assertOk()->getContent();
         $this->assertStringContainsString('215+ Google reviews', $html);
         $this->assertStringContainsString('--g-fill: 96%', $html);
         $this->assertStringNotContainsString('aggregateRating', $html);   // a badge, never self-serving review markup
         Settings::set('reviews.badge_enabled', false);
-        $this->get('/')->assertOk()->assertDontSee('Google reviews');
+        $this->get($page)->assertOk()->assertDontSee('Google reviews');
         Settings::set('reviews.badge_enabled', true);
         \Cache::forget('seo:llms');
         $this->get('/llms.txt')->assertOk()->assertSee('Rated 4.8 out of 5 on Google from 215+ reviews');

@@ -5,6 +5,28 @@
 
 @push('scripts')
 <script src="{{ asset('js/cart.js') }}?v={{ @filemtime(public_path('js/cart.js')) }}" defer></script>
+@include('shop.partials.js-i18n')
+<script src="{{ asset('js/catalog.js') }}?v={{ @filemtime(public_path('js/catalog.js')) }}" defer></script>
+<script>
+(function(){
+  var f=document.getElementById('cart-quickadd'); if(!f) return;
+  var sku=f.querySelector('#qa-sku'), qty=f.querySelector('#qa-qty'), btn=f.querySelector('button'), msg=f.querySelector('.cartadd__msg');
+  var csrf=(document.querySelector('meta[name="csrf-token"]')||{}).content||'';
+  function say(t,bad){msg.textContent=t;msg.hidden=!t;msg.classList.toggle('is-bad',!!bad);}
+  f.addEventListener('submit',function(e){
+    e.preventDefault();
+    var v=sku.value.trim(); if(!v){sku.focus();return;}
+    btn.disabled=true; say('');
+    fetch('/quick-order/add',{method:'POST',headers:{'X-CSRF-TOKEN':csrf,'X-Requested-With':'XMLHttpRequest','Content-Type':'application/x-www-form-urlencoded'},
+      body:new URLSearchParams({lines:JSON.stringify([{sku:v,qty:Math.max(1,parseInt(qty.value,10)||1)}])})})
+      .then(function(r){return r.json().catch(function(){return {success:false};});})
+      .then(function(d){
+        if(d.success){location.reload();return;}
+        btn.disabled=false; say(d.error||udsT('Part not found.'),true); sku.select();
+      }).catch(function(){btn.disabled=false;say(udsT('Network error. Please try again.'),true);});
+  });
+})();
+</script>
 @endpush
 
 @section('content')
@@ -16,7 +38,17 @@
 
 <section class="section" style="padding-top:1rem">
   <div class="wrap">
-    <div class="s-head" style="margin-bottom:1.75rem"><h1>{!! __('Your cart') !!}</h1></div>
+    <div class="s-head" style="margin-bottom:1.25rem"><h1>{!! __('Your cart') !!}</h1></div>
+
+    {{-- quick add by part number, like a parts counter (PTI's cart): type the number, the quantity, Add item --}}
+    <form class="cartadd" id="cart-quickadd" autocomplete="off" novalidate>
+      <label class="cartadd__lbl" for="qa-sku">{!! __('Add by part number') !!}</label>
+      <input class="cartadd__sku" id="qa-sku" name="sku" type="text" placeholder="{!! __('Part number, e.g. 5-1310XU') !!}" spellcheck="false" required>
+      <input class="cartadd__qty" id="qa-qty" name="qty" type="number" min="1" max="999" value="1" inputmode="numeric" aria-label="{!! __('Quantity') !!}">
+      <button type="submit" class="btn btn-primary">{!! __('Add item') !!}</button>
+      <a class="cartadd__more" href="/quick-order">{!! __('Add many at once') !!}</a>
+      <p class="cartadd__msg" role="status" hidden></p>
+    </form>
 
     @if(empty($items))
       <div class="cartempty">
@@ -33,16 +65,26 @@
       <div class="cartpage" data-cart>
         <div class="cartlist">
           @foreach($items as $i)
+            @php
+              // the part's own page: catalog parts and vehicle driveshafts have one, a custom build does not
+              $lineUrl = !$i['sku'] ? null : match ($i['type'] ?? 'product') {
+                'product' => '/parts/' . rawurlencode($i['sku']),
+                'driveshaft' => '/catalog/driveshafts/part/' . rawurlencode($i['sku']),
+                default => null,
+              };
+              // hover shows the whole photo, larger (the media cache serves the same picture at 640px)
+              $zoom = !empty($i['image']) ? preg_replace('#/media/\d+/#', '/media/640/', $i['image']) : '';
+            @endphp
             <article class="cartline" data-key="{{ $i['key'] }}" data-price="{{ $i['price'] }}">
               <span class="cartline__media">
-                @if(!empty($i['image']))<img src="{{ $i['image'] }}" alt="" loading="lazy">@else<x-icon name="package"/>@endif
+                @if(!empty($i['image']))<img class="p-pic" src="{{ $i['image'] }}" data-zoom="{{ $zoom }}" alt="{{ $i['sku'] }}" loading="lazy">@else<x-icon name="package"/>@endif
               </span>
               <div class="cartline__info">
                 @if($i['sku'])<span class="cartline__sku">{{ $i['sku'] }}</span>@endif
-                <p class="cartline__name">{{ \Illuminate\Support\Str::limit($i['name'],90) }}</p>
+                <p class="cartline__name">@if($lineUrl)<a href="{{ $lineUrl }}">{{ \Illuminate\Support\Str::limit($i['name'],90) }}</a>@else{{ \Illuminate\Support\Str::limit($i['name'],90) }}@endif</p>
                 @if(!empty($i['meta']['summary']))<p class="cartline__cfg">{{ $i['meta']['summary'] }}</p>@endif
                 <span class="cartline__unit">${{ number_format($i['price'],2) }} each</span>
-                @if(!empty($i['meta']['config']))@include('partials.build-config', ['config' => $i['meta']['config']])@endif
+                @if(!empty($i['meta']['config']))@include('partials.build-config', ['config' => $i['meta']['config'], 'popup' => true])@endif
               </div>
               <div class="cartline__right">
                 <span class="cartline__total" data-line-total>${{ number_format($i['price']*$i['qty'],2) }}</span>
@@ -80,4 +122,5 @@
     @endif
   </div>
 </section>
+<div class="img-pop" id="img-pop" aria-hidden="true"><img alt=""></div>
 @endsection

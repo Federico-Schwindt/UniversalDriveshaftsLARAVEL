@@ -147,7 +147,7 @@
 
         <div class="ship-meta">
           <div class="m"><i><x-icon name="factory"/></i><div><label id="meta-from-l">{!! __('Shipping From') !!}</label><b>{!! __('Florida') !!}</b><span class="muted">{!! __('') !!}</span></div></div>
-          <div class="m"><i><x-icon name="package"/></i><div><label id="meta-date-l">{!! __('Est. Ship Date') !!}</label><b id="meta-date-v">{{ \App\Services\CartService::shipDate()->format('D M j') }}</b><span class="muted" id="meta-date-s">{{ __('Orders before :time ET ship same day', ['time' => \App\Services\CartService::cutoffLabel()]) }}</span></div></div>
+          <div class="m"><i><x-icon name="package"/></i><div><label id="meta-date-l">{!! __('Est. Ship Date') !!}</label><b id="meta-date-v">{{ \App\Services\CartService::shipDate()->format('D M j') }}</b><span class="muted" id="meta-date-s">{{ __('Orders before :time EST ship same day', ['time' => \App\Services\CartService::cutoffLabel()]) }}</span></div></div>
         </div>
       </div>
     </div>
@@ -588,7 +588,7 @@
     document.getElementById('meta-from-l').textContent=on?udsT('Pick up at'):udsT('Shipping From');
     document.getElementById('meta-date-l').textContent=on?udsT('Pickup hours'):udsT('Est. Ship Date');
     document.getElementById('meta-date-v').textContent=on?PICKUP_HOURS:SHIP_DATE;
-    document.getElementById('meta-date-s').textContent=on?udsT('Other times: call :phone first',{phone:PICKUP_PHONE}):@json(__('Orders before :time ET ship same day', ['time' => \App\Services\CartService::cutoffLabel()]));
+    document.getElementById('meta-date-s').textContent=on?udsT('Other times: call :phone first',{phone:PICKUP_PHONE}):@json(__('Orders before :time EST ship same day', ['time' => \App\Services\CartService::cutoffLabel()]));
   }
   ['billing_country','billing_state','shipping_country','shipping_state'].forEach(id=>{
     const el=document.getElementById(id); if(el)el.addEventListener('change',loadShipping);

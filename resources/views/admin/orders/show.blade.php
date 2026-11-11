@@ -27,6 +27,9 @@
   </div>
 @endsection
 @section('body')
+@foreach($rmas ?? [] as $rq)
+  <div class="flash {{ in_array($rq->status, \App\Support\Rma::OPEN, true) ? 'flash--warn' : 'flash--info' }}">{!! ic('undo') !!}<div><b>{{ \App\Support\Rma::typeLabel($rq->type) }} request <a href="/admin/rma/{{ $rq->id }}" class="mono">{{ $rq->ref }}</a></b> · <span class="{{ \App\Support\Rma::badge($rq->status) }}">{{ \App\Support\Rma::label($rq->status) }}</span> · filed {{ \Carbon\Carbon::parse($rq->created_at)->format('M j') }}@if($rq->reason) · {{ $rq->reason }}@endif <a href="/admin/rma/{{ $rq->id }}">Open the request</a></div></div>
+@endforeach
 @if($isPickup)<div class="flash flash--warn">{!! ic('alert') !!}<div><b>Local pickup — do not ship.</b> Customer collects at Odessa, {{ config('uds.pickup.hours') }}. @if($order->payment_method==='pay_at_pickup') <b style="color:var(--err)">Pay at pickup: collect {{ money($order->total) }} before releasing the parts.</b>@endif</div></div>@endif
 @if($order->customer_note)<div class="flash flash--info">{!! ic('info') !!}<div><b>Customer note:</b> {{ $order->customer_note }}</div></div>@endif
 @if($order->ship_instructions || $order->signature_required)<div class="flash flash--info">{!! ic('truck') !!}<div>@if($order->signature_required)<b>Signature required.</b> @endif{{ $order->ship_instructions }}</div></div>@endif
@@ -239,7 +242,7 @@
                 <div class="small muted">
                   {{ $fb->pallets }} pallet{{ $fb->pallets == 1 ? '' : 's' }} · {{ rtrim(rtrim(number_format((float) $fb->weight_lb, 1), '0'), '.') }} lb each
                   · {{ money((float) $fb->price) }}
-                  · pickup {{ $fb->pickup_date ? \Carbon\Carbon::parse($fb->pickup_date)->format('D M j') : '—' }} {{ $fb->pickup_ready }}–{{ $fb->pickup_close }} ET
+                  · pickup {{ $fb->pickup_date ? \Carbon\Carbon::parse($fb->pickup_date)->format('D M j') : '—' }} {{ $fb->pickup_ready }}–{{ $fb->pickup_close }} EST
                 </div>
                 @if($fb->status_checked_at)<div class="small muted">Checked {{ \Carbon\Carbon::parse($fb->status_checked_at)->diffForHumans() }}</div>@endif
               </div>
@@ -391,7 +394,7 @@
             <div class="field"><label>Pickup date</label><select class="select" name="pickup_date" data-fr-load>
               @foreach($freight['days'] as $i => $day)<option value="{{ $day->toDateString() }}" @selected($i===0)>{{ $day->format('D, M j') }}</option>@endforeach
             </select></div>
-            <div class="field"><label>Dock hours (ET)</label><div class="flex" style="gap:6px">
+            <div class="field"><label>Dock hours (EST)</label><div class="flex" style="gap:6px">
               <select class="select" name="pickup_ready">@foreach(['08:00','09:00','10:00','11:00','12:00','13:00'] as $t)<option @selected($t==='10:00')>{{ $t }}</option>@endforeach</select>
               <select class="select" name="pickup_close">@foreach(['13:00','14:00','15:00','16:00','17:00','18:00'] as $t)<option @selected($t==='17:00')>{{ $t }}</option>@endforeach</select>
             </div></div>

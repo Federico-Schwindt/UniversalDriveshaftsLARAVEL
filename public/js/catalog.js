@@ -37,7 +37,8 @@
   var sp=document.getElementById('stock-pop');
   function stockHtml(stock,status,source){
     // a count only when it is > 0 (never "0 available"); supplier-only stock says so instead of a Florida count
-    var cls='in',label=T('In Stock'),qty=(Number(stock)>0)?Number(stock):'';
+    // the page sends the real count up to 50 and "50+" above it
+    var cls='in',label=T('In Stock'),qty=(stock==='50+'||Number(stock)>0)?String(stock):'';
     if(status==='outofstock'){cls='out';label=T('Out of Stock');}
     else if(status==='onbackorder'){cls='bo';label=T('Backorder');}
     else if(source==='supplier'){label=T('Ships from our supplier');qty='';}
@@ -117,7 +118,9 @@
   document.addEventListener('click',function(e){
     var altBtn=e.target.closest('.p-alt[data-alt-for]');
     if(altBtn){ var pb=document.querySelector('.p-plus[data-add="'+altBtn.getAttribute('data-alt-for')+'"]'); if(pb){ clearTimeout(altHideT); showAltFor(pb); } return; }
-    var add=e.target.closest('.p-plus');
+    // catalog parts only: complete driveshafts carry data-ds-add and their own handler (partials/ds-add); without this both fired
+    // and this one posted an empty id ("Product not found")
+    var add=e.target.closest('.p-plus[data-add]');
     if(add){
       if(sp)sp.classList.remove('on');
       // phones/tablets have no hover: a part with alternates opens the chooser first, and nothing is added until a row's + is tapped

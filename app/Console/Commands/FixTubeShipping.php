@@ -34,7 +34,7 @@ class FixTubeShipping extends Command
 
         foreach ($ids as $id) {
             $group = $catalog->groupOfProduct((int) $id);
-            if (($group['slug'] ?? '') !== 'custom-cut-tubing') continue;
+            if (($group['slug'] ?? '') !== 'driveshaft-tubing') continue;
 
             $title = (string) DB::connection('wp')->table('wp_posts')->where('ID', $id)->value('post_title');
             $sku = (string) DB::connection('wp')->table('wp_postmeta')->where('post_id', $id)->where('meta_key', '_sku')->value('meta_value');

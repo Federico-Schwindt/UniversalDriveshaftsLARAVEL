@@ -1,67 +1,53 @@
 @extends('layouts.app')
 @section('title', __('Custom and off-road driveshafts | Universal Driveshafts'))
 @section('desc', __('Custom off-road driveshafts for lifted and swapped builds: high-angle u-joints, 1310 to 1480 series, steel or aluminum tube, built to your specs in Florida.'))
+@section('bodyclass','pg')
 @section('content')
 @if(i18n_view('offroad'))
 @include(i18n_view('offroad'))
 @else
-<section class="phero phero--rich"><div class="wrap">
+<div class="wrap pagehead">
   <nav class="ucrumb" aria-label="Breadcrumb"><a href="/">Home</a><x-icon name="caret-right"/><a href="/online-builder">Driveshafts</a><x-icon name="caret-right"/><span aria-current="page">Custom and off-road</span></nav>
-  <div class="phero__grid">
+  <div class="pagehead__row">
+    <h1>Custom driveshafts for off-road and performance builds</h1>
+    <div class="btn-row"><a href="/online-builder" class="btn btn-primary btn-sm"><x-icon name="wrench"/> Build it in the online builder</a><a href="/driveshaft-designer" class="btn btn-ghost btn-sm">Draw it in the designer</a></div>
+  </div>
+  <p class="pagehead__sub">When the lift changed the angle or the swap changed the length, a factory shaft no longer fits. We build the one that does from six measurements: your series, your yokes, balanced before it ships. Typical build time 2 to 5 days.</p>
+</div>
+
+<section class="catsec"><div class="wrap">
+  <div class="pg-split">
     <div>
-      <span class="kicker">Lifted, swapped, modified</span>
-      <h1>Custom driveshafts for off-road and performance builds</h1>
-      <p class="lead">When the lift changed the angle or the swap changed the length, a factory shaft no longer fits. We build the one that does: your series, your yokes, your measurements, balanced before it ships.</p>
-      <div class="phero__cta">
-        <a href="/online-builder" class="btn btn-primary btn-lg">Build it in the online builder <x-icon name="arrow-right"/></a>
-        <a href="/driveshaft-designer" class="btn btn-ghost btn-lg">Draw it in the designer</a>
-      </div>
-      <ul class="phero__facts">
-        <li><b class="u-mono">1310 to 1480</b><span>u-joint series for light and medium duty</span></li>
-        <li><b class="u-mono">2 to 5 days</b><span>typical build time</span></li>
-        <li><b class="u-mono">6</b><span>measurements is all we need</span></li>
+      <ul class="pg-facts">
+        <li><b>Operating angle</b><span>A lift raises the pinion angle; past about 3 degrees of difference the u-joints wear fast. We spec the series and, when needed, a double cardan (CV) head.</span></li>
+        <li><b>Length through travel</b><span>Slip yoke and spline engagement sized from your compressed and extended measurements, not a catalog guess.</span></li>
+        <li><b>Series and tube</b><span>1310 for stock-ish rigs, 1350 for big tires and torque, 1480 for the heavy stuff. Steel for strength, aluminum when weight and length matter.</span></li>
+        <li><b>Ends</b><span>One piece or two piece with center support bearing; slip yoke, flange or CV head on either end. Measurements and yoke choice are saved with the order.</span></li>
       </ul>
+      <div class="pg-call" style="margin-top:1rem">
+        <p><b>Not sure what you need?</b> Tell us the vehicle, the lift and the tires and we will spec the shaft with you.</p>
+        <a class="pg-tel" href="tel:+18135246491"><x-icon name="phone"/> (813) 524-6491</a>
+        <a class="btn btn-ghost btn-sm" href="/contact">Send photos and measurements</a>
+      </div>
     </div>
-    <div class="phero__media phero__media--photo"><picture><source srcset="{{ asset('img/photos/hero-overland.webp') }}" type="image/webp"><img src="{{ asset('img/photos/hero-overland.jpg') }}" width="2000" height="1000" alt="An overland truck running hard across desert terrain"></picture></div>
+    <div class="pg-split__media"><picture><source srcset="{{ asset('img/photos/hero-overland.webp') }}" type="image/webp"><img src="{{ asset('img/photos/hero-overland.jpg') }}" width="2000" height="1000" alt="An overland truck running hard across desert terrain"></picture></div>
   </div>
 </div></section>
 
-<section class="section"><div class="wrap">
-  <div class="s-head"><h2>What changes when the vehicle changes</h2><p>Three things decide whether a shaft lives or dies off-road: operating angle, length through travel, and the joint series. We size all three.</p></div>
-  <div class="why-grid">
-    <div class="why-card"><h3>Operating angle</h3><p>A lift raises the pinion angle. Past about 3 degrees of difference the u-joints cycle faster and wear out. We spec the joint series and, when needed, a double cardan (CV) head for high angles.</p></div>
-    <div class="why-card"><h3>Length through travel</h3><p>Long-travel suspension means the shaft has to grow and shrink. We size the slip yoke and spline engagement from your compressed and extended measurements, not a catalog guess.</p></div>
-    <div class="why-card"><h3>Joint series and tube</h3><p>1310 for stock-ish rigs, 1350 for big tires and torque, 1480 for the heavy stuff. Steel tube for strength, aluminum when weight and length matter.</p></div>
-  </div>
-</div></section>
-
-<section class="section section--tint"><div class="wrap">
-  <div class="split">
-    <div>
-      <span class="kicker">How it works</span>
-      <h2>Six measurements and your yoke style</h2>
-      <p>The online builder walks the duty class, series, material and yokes, then asks for the measurements off the vehicle. The price updates as you go, and the build sheet goes to the shop with your order. Not sure what to measure? The driveshaft designer lets you draw the shaft and print the dimension sheet.</p>
-      <ul class="checks"><li>One piece or two piece, with center support bearing</li><li>Slip yoke, flange, or CV head on either end</li><li>Balanced on our machine before it is boxed</li><li>Measurements and yoke choice saved with the order</li></ul>
-      <div class="phero__cta"><a href="/online-builder" class="btn btn-primary">Start the build</a><a href="/driveshaft-designer" class="btn btn-ghost">Open the designer</a></div>
+<section class="catsec catsec--end"><div class="wrap">
+  <div class="catsec__head"><h2>Parts for the shaft you already have</h2><a class="textlink" href="/shop/driveshaft-components">All components <x-icon name="arrow-right"/></a></div>
+  <ul class="hm-ways is-3">
+    <li><a href="/shop/driveshaft-components/u-joints"><x-icon name="package"/><b>Universal joints</b><span>1310, 1330, 1350, 1410, 1480 and conversion joints</span></a></li>
+    <li><a href="/shop/driveshaft-components/slip-yoke"><x-icon name="sliders"/><b>Slip yokes</b><span>By spline count and series</span></a></li>
+    <li><a href="/shop/driveshaft-components/cv-double-joints-heads"><x-icon name="crosshair"/><b>CV double cardan heads</b><span>High-angle front shafts on lifted 4x4s</span></a></li>
+  </ul>
+  <details class="morecopy">
+    <summary>More about sizing an off-road driveshaft</summary>
+    <div class="morecopy__body">
+      <p>Three things decide whether a shaft lives or dies off-road: operating angle, length through travel, and the joint series. A lift raises the pinion angle. Past about 3 degrees of difference the u-joints cycle faster and wear out, so we spec the joint series and, when needed, a double cardan (CV) head for high angles. Long-travel suspension means the shaft has to grow and shrink; we size the slip yoke and spline engagement from your compressed and extended measurements.</p>
+      <p>The <a href="/online-builder">online builder</a> walks the duty class, series, material and yokes, then asks for the measurements off the vehicle. The price updates as you go, and the build sheet goes to the shop with your order. Not sure what to measure? The <a href="/driveshaft-designer">driveshaft designer</a> lets you draw the shaft and print the dimension sheet. Every shaft is balanced on our machine before it is boxed.</p>
     </div>
-    <div><picture><source srcset="{{ asset('img/photos/panel-custom.webp') }}" type="image/webp"><img src="{{ asset('img/photos/panel-custom.jpg') }}" width="849" height="566" alt="A two-piece and a one-piece driveshaft side by side on the bench" loading="lazy"></picture></div>
-  </div>
-</div></section>
-
-<section class="section"><div class="wrap">
-  <div class="s-head"><h2>Parts for the shaft you already have</h2><p>If the tube is fine and only the joints or yokes are tired, we stock the components by series.</p></div>
-  <div class="why-grid">
-    <a class="why-card" href="/shop/driveshaft-components/u-joints"><h3>Universal joints</h3><p>1310, 1330, 1350, 1410, 1480 and conversion joints for mixed-series swaps.</p></a>
-    <a class="why-card" href="/shop/driveshaft-components/slip-yoke"><h3>Slip yokes</h3><p>Transmission and transfer case slip yokes by spline count and series.</p></a>
-    <a class="why-card" href="/shop/driveshaft-components/cv-double-joints-heads"><h3>CV double cardan heads</h3><p>For high-angle front shafts on lifted 4x4s.</p></a>
-  </div>
-</div></section>
-
-<section class="section section--tint"><div class="wrap">
-  <div class="ctaband">
-    <div><span class="kicker">Talk to a driveline tech</span><h2>Not sure what you need? Call the shop.</h2><p>Tell us the vehicle, the lift and the tires, and we will spec the shaft with you. No call center.</p></div>
-    <div class="phero__cta"><a href="tel:+18135246491" class="btn btn-primary btn-lg"><x-icon name="phone"/> (813) 524-6491</a><a href="/contact" class="btn btn-ghost btn-lg">Send photos and measurements</a></div>
-  </div>
+  </details>
 </div></section>
 @endif
 @endsection

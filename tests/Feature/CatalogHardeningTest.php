@@ -24,7 +24,7 @@ class CatalogHardeningTest extends TestCase
     {
         return $over + [
             'build_mode' => 'custom', 'pieces' => 'one', 'duty_key' => 'heavy', 'subcat_key' => 'hd_spl', 'series_key' => 'spl250',
-            'series_label' => 'SPL 250', 'price_tier' => 'new', 'material' => 'steel', 'front_app' => 'flange', 'rear_app' => 'flange', 'a1' => 50,
+            'series_label' => 'SPL 250', 'price_tier' => 'new', 'material' => 'steel', 'front_app' => 'flange', 'rear_app' => 'flange', 'a1' => 50, 'c1' => 40,
         ];
     }
 
@@ -108,7 +108,10 @@ class CatalogHardeningTest extends TestCase
         $this->get('/shop/small-parts/u-joints')->assertStatus(301)->assertRedirect('/shop/driveshaft-components/u-joints');
         $this->get('/shop/small-parts/u-joints?series=1310')->assertRedirect('/shop/driveshaft-components/u-joints?series=1310');
         $this->get('/shop/driveshaft-components/no-such-category')->assertNotFound();
-        $this->get('/shop/custom-cut-tubing')->assertStatus(301);
+        // Custom Cut Tubing became Driveshaft Tubing (2026-11): the old URLs keep working through a 301
+        $this->get('/shop/custom-cut-tubing')->assertStatus(301)->assertRedirect('/shop/driveshaft-tubing/tubing');
+        $this->get('/shop/custom-cut-tubing/tubing')->assertStatus(301)->assertRedirect('/shop/driveshaft-tubing/tubing');
+        $this->get('/shop/driveshaft-tubing')->assertStatus(301)->assertRedirect('/shop/driveshaft-tubing/tubing');
     }
 
     public function test_non_numeric_ids_404(): void

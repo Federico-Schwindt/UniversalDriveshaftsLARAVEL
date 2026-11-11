@@ -37,6 +37,8 @@
 .ost-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,.9fr);gap:clamp(1.25rem,1rem + 1.5vw,2.5rem);align-items:start;padding-block:clamp(1.6rem,1rem + 2.5vw,3rem)}
 .ost-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--sh-1);padding:clamp(1.1rem,.9rem + 1vw,1.75rem)}
 .ost-card + .ost-card{margin-top:1.25rem}
+.ost-rma + .ost-rma{margin-top:.9rem;padding-top:.9rem;border-top:1px solid var(--line)}
+.ost-rma p{margin:.35rem 0 0;color:var(--ink-2);font-size:.92rem}
 .ost-card h2{font-size:1.08rem;margin:0 0 1rem;display:flex;align-items:center;gap:.55rem}
 .ost-card h2 .i{color:var(--blue);font-size:1.15em}
 .ost-tl{list-style:none;margin:0;padding:0;display:grid;gap:0}
@@ -189,6 +191,16 @@
     </section>
 
 
+    @if(($rmas ?? collect())->count())
+    <section class="ost-card" aria-labelledby="rma-h">
+      <h2 id="rma-h"><x-icon name="returns"/>{{ __('Returns and exchanges') }}</h2>
+      @foreach($rmas as $rq)
+        @php [$rqState, $rqLine] = \App\Support\Rma::customerState($rq); @endphp
+        <div class="ost-rma"><b>{{ __(\App\Support\Rma::typeLabel($rq->type)) }} <span class="mono">{{ $rq->ref }}</span></b> <span class="pill">{{ $rqState }}</span>
+          <p>{{ $rqLine }} <span class="muted">{{ __('Filed :date', ['date' => \Carbon\Carbon::parse($rq->created_at)->isoFormat('ll')]) }}</span></p></div>
+      @endforeach
+    </section>
+    @endif
     <section class="ost-card" aria-labelledby="it-h">
       <h2 id="it-h"><x-icon name="package"/>{{ __('What you ordered') }}</h2>
       <ul class="ost-items">

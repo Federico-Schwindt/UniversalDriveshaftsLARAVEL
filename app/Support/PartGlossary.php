@@ -101,6 +101,7 @@ class PartGlossary
         'Certifed Driveshafts' => 'Cardanes certificados',
         'Driveshaft Components' => 'Componentes de cardán',
         'Custom Cut Tubing' => 'Tubo cortado a medida',
+        'Driveshaft Tubing' => 'Tubo para cardán',
         'Small Parts' => 'Piezas pequeñas',
         'Driveshafts' => 'Cardanes',
         'Driveshaft' => 'Cardán',

@@ -81,6 +81,7 @@ return array (
   'Certifed Driveshafts' => '認定プロペラシャフト',
   'Driveshaft Components' => 'プロペラシャフトコンポーネント',
   'Custom Cut Tubing' => 'カスタムカットチューブ',
+  'Driveshaft Tubing' => 'ドライブシャフトチューブ',
   'Small Parts' => '小部品',
   'Driveshafts' => 'プロペラシャフト',
   'Driveshaft' => 'プロペラシャフト',

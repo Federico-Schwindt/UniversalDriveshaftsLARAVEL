@@ -23,7 +23,7 @@
 <tr><td>Descentramiento leve, tubo recto por lo demás</td><td>Enderezar y balancear</td><td>Mano de obra de taller</td><td>Hasta unas pocas centésimas; más significa cambiar el tubo</td></tr>
 <tr><td>Fuera de fase (cardán de dos piezas mal rearmado)</td><td>Volver a indexar en la junta deslizante</td><td>Ninguna</td><td>Gratis, y es lo primero que hay que revisar después de cualquier trabajo</td></tr>
 <tr><td>Orejas del yugo para soldar gastadas, tubo en buen estado</td><td>Cambiar el yugo para soldar</td><td><a href="/shop/driveshaft-components/weld-yoke">Yugo para soldar</a>, de $11 a $40, más mano de obra</td><td>Trabajo de taller: sacar con prensa, soldar, enderezar, balancear</td></tr>
-<tr><td>Tubo abollado u oxidado, yugos en buen estado</td><td>Cambiar el tubo</td><td><a href="/shop/custom-cut-tubing/tubing">Tubo DOM</a> por pie, más mano de obra</td><td>También es la forma de acortar o alargar un cardán</td></tr>
+<tr><td>Tubo abollado u oxidado, yugos en buen estado</td><td>Cambiar el tubo</td><td><a href="/shop/driveshaft-tubing/tubing">Tubo DOM</a> por pie, más mano de obra</td><td>También es la forma de acortar o alargar un cardán</td></tr>
 </tbody></table></div>
 <p>Las crucetas y los rodamientos son trabajos que puede hacer el dueño con una prensa o una morsa grande y los dados correctos. Todo lo que implique soldar o balancear es trabajo de taller, y un taller que hace cardanes todos los días lo hace más rápido y más derecho que un taller mecánico general con un martillo.</p>
 

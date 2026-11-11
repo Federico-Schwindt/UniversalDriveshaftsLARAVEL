@@ -1,309 +1,249 @@
 @extends('layouts.app')
-@section('title', $pieces === 'two' ? __('Custom Two-Piece Driveshaft Online, Live Price | UDS') : __('Custom Driveshaft Online: Any Length, Live Price | UDS'))
-@section('desc', $pieces === 'two' ? __('Build a two-piece driveshaft online: center support bearing, series, yokes and your measurements priced live, built and balanced in Florida.') : __('Build a custom one-piece driveshaft online. Pick duty, series and yokes, enter six measurements and see the price before you order. Built in Florida.'))
+@section('title', __('Custom Driveshaft Online: Any Length, Live Price | UDS'))
+@section('desc', __('Build a custom one-piece driveshaft online. Tell us what the shaft connects to, pick the series and material, enter the length and see the price before you order. Built in Florida.'))
 @section('content')
 <link rel="stylesheet" href="/css/dsb.css?v={{ filemtime(public_path('css/dsb.css')) }}">
 <link rel="stylesheet" href="/css/dsb-plan.css?v={{ filemtime(public_path('css/dsb-plan.css')) }}">
 
-<div class="wrap">
+<div class="wrap pagehead bld-head">
   <nav class="ucrumb" aria-label="{{ __('Breadcrumb') }}">
     <a href="/">{{ __('Home') }}</a><x-icon name="caret-right"/>
-    <a href="/shop">{{ __('Resources') }}</a><x-icon name="caret-right"/>
+    <a href="/catalog/driveshafts">{{ __('Driveshafts') }}</a><x-icon name="caret-right"/>
     <span aria-current="page">{{ __('Online builder') }}</span>
   </nav>
-</div>
-
-<header class="bldhead">
-  <div class="wrap">
-    <h1>{{ __('Driveshaft online builder') }}</h1>
-    <p>{{ __('Pick duty, series and yokes, enter your measurements, and see the price of the exact assembly before you commit.') }} {{ $pieces === 'two' ? __('Two-piece build.') : __('One-piece build.') }}</p>
-    <div class="bldhead__switch" role="group" aria-label="{{ __('Driveshaft type') }}">
-      <a href="/online-builder" @class(['is-on' => $pieces !== 'two'])>{{ __('One piece') }}</a>
-      <a href="/online-builder/two-piece" @class(['is-on' => $pieces === 'two'])>{{ __('Two piece') }}</a>
-    </div>
+  <div class="pagehead__row">
+    <h1>{{ __('Build a custom driveshaft') }}</h1>
   </div>
-</header>
+  <p class="pagehead__sub">{{ __('Answer each question, enter your length and get the price. Built to order and balanced in our Florida shop.') }}</p>
+</div>
 
 <section class="section bldwrap"><div class="wrap">
 
 <div class="ubs-dsb-wrap" id="ubs-dsb">
-
   <div class="dsb-layout">
   <div class="dsb-main">
-  <nav class="dsb-crumbs" aria-label="{{ __('Builder steps') }}">
-    <button type="button" class="dsb-crumb" data-goto="16" data-field="build_mode"><span class="dsb-crumb-num">1</span><span><span class="dsb-crumb-label">{{ __('Build type') }}</span><span class="dsb-crumb-value">{{ __('Not selected') }}</span></span></button>
-    <button type="button" class="dsb-crumb" data-goto="1" data-field="duty"><span class="dsb-crumb-num">2</span><span><span class="dsb-crumb-label">{{ __('Duty rating') }}</span><span class="dsb-crumb-value">{{ __('Not selected') }}</span></span></button>
-    <button type="button" class="dsb-crumb" data-goto="2" data-field="series"><span class="dsb-crumb-num">3</span><span><span class="dsb-crumb-label">{{ __('Series') }}</span><span class="dsb-crumb-value">{{ __('Not selected') }}</span></span></button>
-    <button type="button" class="dsb-crumb" data-goto="4" data-field="measure"><span class="dsb-crumb-num">4</span><span><span class="dsb-crumb-label">{{ __('Measurements') }}</span><span class="dsb-crumb-value">{{ __('Not selected') }}</span></span></button>
-    <button type="button" class="dsb-crumb" data-goto="6" data-field="review"><span class="dsb-crumb-num"><x-icon name="check"/></span><span><span class="dsb-crumb-label">{{ __('Review') }}</span><span class="dsb-crumb-value">{{ __('Pending') }}</span></span></button>
-  </nav>
+
+  <div class="dsb-progress" aria-live="polite">
+    <button type="button" class="dsb-back" data-back aria-label="{{ __('Back') }}"><x-icon name="arrow-left"/><span>{{ __('Back') }}</span></button>
+    <div class="dsb-progress-text"><b data-progress-step>{{ __('Step 1') }}</b><span data-progress-name></span></div>
+    <div class="dsb-bar" aria-hidden="true"><i data-progress-bar></i></div>
+  </div>
 
   <div class="dsb-stage">
 
-    {{-- STEP 16 ,  Build Mode --}}
-    <section class="dsb-step dsb-step--active" data-step="16">
-      <div class="dsb-step-head"><div><h4 class="dsb-step-title">{{ __('How would you like to proceed?') }}</h4>
-      <p class="dsb-step-desc">{{ __('Open the online builder to your exact specifications, or browse our ready-to-ship stock.') }}</p></div></div>
-      <div class="dsb-mode-cards">
-        <button type="button" class="dsb-mode-card" data-mode="custom"><span class="dsb-mode-icon"><x-icon name="ruler"/></span><span class="dsb-mode-title">{{ __('Build a custom length driveshaft') }}</span><span class="dsb-mode-desc">{{ __('Specify your exact measurements and yoke style. We build it to your exact specs. Ideal when the vehicle is modified or you need a non-standard length.') }}</span><span class="dsb-mode-cta">{{ __('Start building') }} <x-icon name="arrow-right"/></span></button>
-        <button type="button" class="dsb-mode-card" data-mode="premade"><span class="dsb-mode-icon"><x-icon name="package"/></span><span class="dsb-mode-title">{{ __('Browse premade driveshafts') }}</span><span class="dsb-mode-desc">{{ __('Shop our driveshafts filtered for your selected series. Made for factory-length replacements, 1 to 2 business days to ship.') }}</span><span class="dsb-mode-cta">{{ __('Browse catalog') }} <x-icon name="arrow-right"/></span></button>
-      </div>
+    {{-- Question tree (output type, make, model, spline count…), rendered from storage/app/builder-tree.json --}}
+    <section class="dsb-step dsb-step--active" data-step="tree">
+      <div class="dsb-step-head"><h2 class="dsb-step-title" data-tree-title></h2><p class="dsb-step-desc" data-tree-help hidden></p></div>
+      <div class="dsb-guidebox" data-tree-guide hidden></div>
+      <div class="dsb-tree" data-tree-options></div>
     </section>
 
-    {{-- STEP 1 ,  Duty --}}
-    <section class="dsb-step" data-step="1">
-      <div class="dsb-step-head"><div><h4 class="dsb-step-title">{{ __('Select Duty rating') }}</h4>
-      <p class="dsb-step-desc">{{ __('Choose the duty class that matches your vehicle or application.') }}</p></div>
-      <button type="button" class="dsb-btn dsb-btn--secondary" data-back="16"><x-icon name="arrow-left"/> {{ __('Back') }}</button></div>
-      <div class="dsb-cards" id="dsb-duty-cards"></div>
-    </section>
-
-    {{-- STEP 13 ,  HD Subcategory --}}
-    <section class="dsb-step" data-step="13">
-      <div class="dsb-step-head"><div><h4 class="dsb-step-title">{{ __('Select Subcategory') }}</h4>
-      <p class="dsb-step-desc">{{ __('Choose the product family for your heavy-duty application.') }}</p></div>
-      <button type="button" class="dsb-btn dsb-btn--secondary" data-back="1"><x-icon name="arrow-left"/> {{ __('Back') }}</button></div>
-      <div class="dsb-cards" id="dsb-subcat-cards"></div>
-    </section>
-
-    {{-- STEP 2 ,  Series --}}
-    <section class="dsb-step" data-step="2">
-      <div class="dsb-step-head"><div><h4 class="dsb-step-title">{{ __('Select Series') }}</h4>
-      <p class="dsb-step-desc">{{ __('Pick the series that matches your driveshaft.') }}</p></div>
-      <button type="button" class="dsb-btn dsb-btn--secondary" data-back="1"><x-icon name="arrow-left"/> {{ __('Back') }}</button></div>
-      <div class="dsb-search"><input type="search" id="dsb-series-search" placeholder="{{ __('Search series (e.g. 1310, SPL, GM)') }}"><button type="button" class="dsb-search-clear" hidden><x-icon name="x"/></button></div>
-      <p class="dsb-count" data-count></p>
+    {{-- U-joint series --}}
+    <section class="dsb-step" data-step="series">
+      <div class="dsb-step-head"><h2 class="dsb-step-title">{{ __('Which u-joint series?') }}</h2>
+      <p class="dsb-step-desc">{{ __('Not sure? Measure a bearing cap with calipers: the cap diameter and the width across the joint tell the series apart.') }}</p></div>
       <div class="dsb-cards" id="dsb-series-cards"></div>
     </section>
 
-    {{-- STEP 19 ,  Material --}}
-    <section class="dsb-step" data-step="19">
-      <div class="dsb-step-head"><div><h4 class="dsb-step-title">{{ __('Select Driveshaft Material') }}</h4>
-      <p class="dsb-step-desc">{{ __('The material affects the maximum build length available for each tube OD. Aluminum supports longer builds; Steel is heavier-duty for standard applications.') }}</p></div>
-      <button type="button" class="dsb-btn dsb-btn--secondary" data-back-auto><x-icon name="arrow-left"/> {{ __('Back') }}</button></div>
-      <div class="dsb-mode-cards">
-        <button type="button" class="dsb-mode-card" data-material="steel"><span class="dsb-mode-icon"><x-icon name="sliders"/>️</span><span class="dsb-mode-title">{{ __('Steel') }}</span><span class="dsb-mode-desc">{{ __('Standard steel construction ,  heavier, strong, and cost-effective. Tube OD availability limits max build length depending on series.') }}</span><span class="dsb-mode-cta">{{ __('Select Steel') }} <x-icon name="arrow-right"/></span></button>
-        <button type="button" class="dsb-mode-card" data-material="aluminum"><span class="dsb-mode-icon"><x-icon name="gauge"/></span><span class="dsb-mode-title">{{ __('Aluminum') }}</span><span class="dsb-mode-desc">{{ __('Lightweight aluminum construction ,  allows longer builds on certain series. Ideal for high-speed and performance applications.') }}</span><span class="dsb-mode-cta">{{ __('Select Aluminum') }} <x-icon name="arrow-right"/></span></button>
-      </div>
+    {{-- Material --}}
+    <section class="dsb-step" data-step="material">
+      <div class="dsb-step-head"><h2 class="dsb-step-title">{{ __('Tube material') }}</h2>
+      <p class="dsb-step-desc">{{ __('The material sets how long we can build the shaft for each tube diameter.') }}</p></div>
+      <div class="dsb-cards dsb-cards--2" id="dsb-material-cards"></div>
     </section>
 
-    {{-- STEP 14 ,  Front App --}}
-    <section class="dsb-step" data-step="14">
-      <div class="dsb-step-head"><div><h4 class="dsb-step-title">{{ __('Select Your Front Application') }}</h4>
-      <p class="dsb-step-desc">{{ __('Choose the front yoke style for your driveshaft.') }}</p></div>
-      <button type="button" class="dsb-btn dsb-btn--secondary" data-back-auto><x-icon name="arrow-left"/> {{ __('Back') }}</button></div>
+    {{-- Front end (heavy-duty families only: the light-duty tree already decided it) --}}
+    <section class="dsb-step" data-step="front">
+      <div class="dsb-step-head"><h2 class="dsb-step-title">{{ __('Which end is at the transmission or transfer case?') }}</h2></div>
       <div class="dsb-app-cards" id="dsb-front-app-cards"></div>
     </section>
 
-    {{-- STEP 15 ,  Rear App --}}
-    <section class="dsb-step" data-step="15">
-      <div class="dsb-step-head"><div><h4 class="dsb-step-title">{{ __('Choose Your Rear End Application') }}</h4>
-      <p class="dsb-step-desc">{{ __('Select the rear yoke style based on your front selection.') }}</p></div>
-      <button type="button" class="dsb-btn dsb-btn--secondary" data-back="14"><x-icon name="arrow-left"/> {{ __('Back') }}</button></div>
+    {{-- Rear end --}}
+    <section class="dsb-step" data-step="rear">
+      <div class="dsb-step-head"><h2 class="dsb-step-title" id="dsb-rear-title">{{ __('What is on the differential end?') }}</h2></div>
       <div class="dsb-app-cards" id="dsb-rear-app-cards"></div>
     </section>
 
-    {{-- STEP 4 ,  Measurements --}}
-    <section class="dsb-step" data-step="4">
-      <div class="dsb-step-head"><div><h4 class="dsb-step-title">{{ __('Measurements') }}</h4>
-      <p class="dsb-step-desc">{{ __('Provide the dimensions so we can confirm the right driveshaft.') }}</p></div>
-      <button type="button" class="dsb-btn dsb-btn--secondary" data-back-auto><x-icon name="arrow-left"/> {{ __('Back') }}</button></div>
-      <div class="dsb-material-warning" id="dsb-material-warning" hidden><x-icon name="warning"/> {{ __('It is not safe to build a driveshaft with that length on this material due to the availability of tube OD. Please try with Aluminum.') }}</div>
-      <div class="dsb-info-banner" id="dsb-slip-note" hidden><span><x-icon name="info"/></span><span>{{ __('Measure the driveshaft length with the slip yoke fully collapsed (bottomed out), not in its installed or working position. This ensures the maximum compressed length is captured accurately. Do not measure with the slip yoke extended, as this can result in an incorrect overall length and improper fitment once installed.') }}</span></div>
+    {{-- Rear yoke: new / good used / reuse mine --}}
+    <section class="dsb-step" data-step="rear_yoke">
+      <div class="dsb-step-head"><h2 class="dsb-step-title">{{ __('Flange yoke for this end') }}</h2>
+      <p class="dsb-step-desc">{{ __('We balance the shaft with its yokes fitted, so tell us which one goes on.') }}</p></div>
+      <div class="dsb-cards dsb-cards--3" data-yoke-choices="rear"></div>
+    </section>
+
+    <section class="dsb-step" data-step="rear_pick">
+      <div class="dsb-step-head"><h2 class="dsb-step-title">{{ __('Pick the yoke') }}</h2><p class="dsb-step-desc" data-pick-desc="rear"></p></div>
+      <div class="dsb-catalog" data-catalog-section="rear">
+        <div class="dsb-catalog-filters" data-catalog-filters></div>
+        <div class="dsb-catalog-grid" data-catalog-grid></div>
+        <div class="dsb-pagination" data-catalog-pagination></div>
+      </div>
+    </section>
+
+    {{-- Rear u-joint hardware --}}
+    <section class="dsb-step" data-step="hardware">
+      <div class="dsb-step-head"><h2 class="dsb-step-title">{{ __('How does the rear u-joint attach to the pinion yoke?') }}</h2>
+      <p class="dsb-step-desc">{{ __('Strap kits and u-bolt kits are series specific; we send the one you pick with the shaft.') }}</p></div>
+      <div class="dsb-cards dsb-cards--3" data-hardware-choices></div>
+      <div class="dsb-hw-list" data-hardware-list hidden></div>
+    </section>
+
+    {{-- Measurements --}}
+    <section class="dsb-step" data-step="measure">
+      <div class="dsb-step-head"><h2 class="dsb-step-title">{{ __('Measurements') }}</h2>
+      <p class="dsb-step-desc">{{ __('In inches, with the vehicle at ride height. A1 and C1 are both required.') }}</p></div>
+      <div class="dsb-note" id="dsb-slip-note" hidden><x-icon name="info"/><span>{{ __('With a slip yoke, measure with the yoke pushed fully in (bottomed out), not in its installed position.') }}</span></div>
+      <p class="dsb-guide" id="dsb-measure-help" hidden></p>
       <div class="dsb-plan" id="dsb-plan" hidden>
-        <div class="dsb-plan-head"><span><x-icon name="ruler"/> {{ __('Click a dimension on the drawing and type it in inches. Enter moves to the next one.') }}</span><span class="dsb-plan-code" id="dsb-plan-code"></span></div>
+        <div class="dsb-plan-head"><span class="dsb-plan-code" id="dsb-plan-code"></span><span>{{ __('Tap a letter to type its value') }}</span></div>
         <div class="dsb-plan-svg" id="dsb-plan-svg"></div>
         <input class="dsb-plan-input" id="dsb-plan-input" type="text" inputmode="decimal" autocomplete="off" aria-label="{{ __('Measurement in inches') }}" hidden>
         <div class="dsb-plan-foot"><span>{{ __('Not to scale') }}</span><span>{{ __('Inches') }}</span></div>
       </div>
-      <div class="dsb-measure-diagram"><img id="dsb-diagram-img" src="/img/builder/diagram-measure-takeoff-drivesahfts.webp" width="1380" height="752" loading="lazy" alt="{{ __('How to measure your driveshaft') }}" crossorigin="anonymous"><canvas class="dsb-diagram-canvas" id="dsb-diagram-canvas"></canvas></div>
+      <div class="dsb-measure-diagram" hidden><img id="dsb-diagram-img" src="" width="1715" height="708" loading="lazy" alt="{{ __('How to measure your driveshaft') }}"></div>
       <div class="dsb-fields">
-        <div class="dsb-field" id="dsb-field-a1"><label>{{ __('Measurement A1 (inches)') }} <span class="dsb-req">*</span></label>
-          <input type="number" step="0.125" min="1" class="dsb-input" id="dsb-inp-a1" name="dsb_a1" placeholder="{{ __('e.g. 24.5') }}">
-          <div class="dsb-hint">{{ __('See diagram above for A1 measurement point.') }}</div></div>
-        <div class="dsb-field" id="dsb-field-c1"><label>{{ __('Measurement C1 (inches)') }} <span class="dsb-opt">{{ __('(optional)') }}</span></label>
-          <input type="number" step="0.125" min="1" class="dsb-input" id="dsb-inp-c1" name="dsb_c1" placeholder="{{ __('e.g. 12.0') }}">
-          <div class="dsb-hint">{{ __('See diagram above for C1 measurement point.') }}</div></div>
+        <div class="dsb-field" id="dsb-field-a1"><label for="dsb-inp-a1">{{ __('Length A1 (inches)') }} <span class="dsb-req">*</span></label>
+          <input type="number" step="0.125" min="1" class="dsb-input" id="dsb-inp-a1" name="dsb_a1" placeholder="{{ __('e.g. 52.25') }}" inputmode="decimal">
+          <div class="dsb-hint" data-hint="a1"></div></div>
+        <div class="dsb-field" id="dsb-field-c1"><label for="dsb-inp-c1">{{ __('C1 (inches)') }} <span class="dsb-req">*</span></label>
+          <input type="number" step="0.125" min="1" class="dsb-input" id="dsb-inp-c1" name="dsb_c1" placeholder="{{ __('e.g. 48.0') }}" inputmode="decimal">
+          <div class="dsb-hint" data-hint="c1"></div></div>
       </div>
+      <div class="dsb-length-check" id="dsb-length-check" hidden></div>
+      <p class="dsb-guide dsb-guide--muted" id="dsb-angle-note" hidden></p>
       <div class="dsb-step-foot"><button type="button" class="dsb-btn dsb-btn--primary" data-next="measure">{{ __('Continue') }} <x-icon name="arrow-right"/></button></div>
     </section>
 
-    {{-- STEP 7 ,  Front yoke ask --}}
-    <section class="dsb-step" data-step="7">
-      <div class="dsb-yoke-ask">
-        <span class="dsb-ask-icon"><x-icon name="info"/></span>
-        <h4 class="dsb-step-title" id="dsb-yoke7-title">{{ __('Do you need a Flange Yoke?') }}</h4>
-        <p class="dsb-step-desc" id="dsb-yoke7-desc">{{ __('A flange yoke connects the driveshaft to the differential. Choose to add one from our shop or catalog, or skip this step.') }}</p>
-        <div class="dsb-yoke-choice">
-          <button type="button" class="dsb-btn dsb-btn--primary dsb-btn--lg" data-yoke-answer="flange:yes" id="dsb-yoke7-add"><x-icon name="plus"/> {{ __('Add a Flange Yoke to the Order') }}</button>
-          <button type="button" class="dsb-btn dsb-btn--secondary dsb-btn--lg" data-yoke-answer="flange:no">{{ __('No, use one from the shop') }}</button>
-        </div>
+    {{-- Critical speed check (optional) --}}
+    <section class="dsb-step" data-step="speed">
+      <div class="dsb-step-head"><h2 class="dsb-step-title">{{ __('Speed check (optional)') }}</h2>
+      <p class="dsb-step-desc">{{ __('Every tube has a critical speed that depends on its diameter and length. Give us your top speed, axle ratio and tire diameter and we check the shaft RPM against it.') }}</p></div>
+      <div class="dsb-fields dsb-fields--3">
+        <div class="dsb-field"><label for="dsb-speed-mph">{{ __('Top speed (mph)') }}</label><input type="number" class="dsb-input" id="dsb-speed-mph" min="5" max="250" step="1" inputmode="numeric" placeholder="85"></div>
+        <div class="dsb-field"><label for="dsb-speed-ratio">{{ __('Axle ratio') }}</label><input type="number" class="dsb-input" id="dsb-speed-ratio" min="1.5" max="8" step="0.01" inputmode="decimal" placeholder="3.73"></div>
+        <div class="dsb-field"><label for="dsb-speed-tire">{{ __('Tire diameter (in)') }}</label><input type="number" class="dsb-input" id="dsb-speed-tire" min="15" max="60" step="0.1" inputmode="decimal" placeholder="31"></div>
+      </div>
+      <div class="dsb-speed-result" id="dsb-speed-result" hidden></div>
+      <div class="dsb-step-foot"><button type="button" class="dsb-btn dsb-btn--primary" data-next="speed">{{ __('Continue') }} <x-icon name="arrow-right"/></button><button type="button" class="dsb-btn dsb-btn--ghost" data-skip="speed">{{ __('Skip') }}</button></div>
+    </section>
+
+    {{-- Build options of a table-priced product (hardware kit, build options, length answer) --}}
+    <section class="dsb-step" data-step="options">
+      <div class="dsb-step-head"><h2 class="dsb-step-title">{{ __('Build options') }}</h2>
+      <p class="dsb-step-desc" data-options-product></p></div>
+      <div class="dsb-options" data-options></div>
+    </section>
+
+    {{-- Front yoke: new / good used / reuse mine --}}
+    <section class="dsb-step" data-step="front_yoke">
+      <div class="dsb-step-head"><h2 class="dsb-step-title" id="dsb-front-yoke-title">{{ __('Slip yoke for this shaft') }}</h2>
+      <p class="dsb-step-desc" id="dsb-front-yoke-desc"></p></div>
+      <div class="dsb-cards dsb-cards--3" data-yoke-choices="front"></div>
+      <div class="dsb-field dsb-field--inline" id="dsb-front-model-wrap">
+        <label for="dsb-front-model">{{ __('Transmission or transfer case model (optional)') }}</label>
+        <input type="text" class="dsb-input" id="dsb-front-model" maxlength="60" placeholder="{{ __('e.g. 4L60E, NP241') }}" autocomplete="off">
       </div>
     </section>
 
-    {{-- STEP 9 ,  Front yoke catalog --}}
-    <section class="dsb-step" data-step="9">
-      <div class="dsb-step-head"><div><h4 class="dsb-step-title">{{ __('Select a Yoke') }}</h4>
-      <p class="dsb-step-desc">{{ __('Browse and filter our catalog. Click a product to add it.') }}</p></div>
-      <button type="button" class="dsb-btn dsb-btn--secondary" data-back="4"><x-icon name="arrow-left"/> {{ __('Back') }}</button></div>
-      <div class="dsb-catalog" data-catalog-section="flange">
+    <section class="dsb-step" data-step="front_pick">
+      <div class="dsb-step-head"><h2 class="dsb-step-title">{{ __('Pick the yoke') }}</h2><p class="dsb-step-desc" data-pick-desc="front"></p></div>
+      <div class="dsb-catalog" data-catalog-section="front">
         <div class="dsb-catalog-filters" data-catalog-filters></div>
         <div class="dsb-catalog-grid" data-catalog-grid></div>
         <div class="dsb-pagination" data-catalog-pagination></div>
       </div>
     </section>
 
-    {{-- STEP 10 ,  Rear yoke ask --}}
-    <section class="dsb-step" data-step="10">
-      <div class="dsb-yoke-ask">
-        <span class="dsb-ask-icon"><x-icon name="info"/></span>
-        <h4 class="dsb-step-title" id="dsb-yoke10-title">{{ __('Do you need a Transmission Yoke?') }}</h4>
-        <p class="dsb-step-desc" id="dsb-yoke10-desc">{{ __('A transmission yoke connects the driveshaft to the transfer case or transmission. Choose to add one or skip.') }}</p>
-        <div class="dsb-yoke-choice">
-          <button type="button" class="dsb-btn dsb-btn--primary dsb-btn--lg" data-yoke-answer="trans:yes" id="dsb-yoke10-add"><x-icon name="plus"/> {{ __('Add a Transmission Yoke to the Order') }}</button>
-          <button type="button" class="dsb-btn dsb-btn--secondary dsb-btn--lg" data-yoke-answer="trans:no">{{ __('No, use one from the shop') }}</button>
+    {{-- Review: the configured shaft as a product --}}
+    <section class="dsb-step" data-step="review">
+      <article class="dsb-product">
+        <div class="dsb-product-media">
+          <figure class="dsb-product-photo" id="dsb-review-photo" hidden></figure>
+          <figure class="dsb-product-main"><div class="dsb-plan-svg dsb-review-plan" id="dsb-review-plan"></div><img id="dsb-review-diagram-img" hidden alt="{{ __('Configuration diagram') }}"></figure>
         </div>
-      </div>
-    </section>
-
-    {{-- STEP 12 ,  Rear yoke catalog --}}
-    <section class="dsb-step" data-step="12">
-      <div class="dsb-step-head"><div><h4 class="dsb-step-title">{{ __('Select a Yoke') }}</h4>
-      <p class="dsb-step-desc">{{ __('Browse and filter our catalog. Click a product to add it.') }}</p></div>
-      <button type="button" class="dsb-btn dsb-btn--secondary" data-back="4"><x-icon name="arrow-left"/> {{ __('Back') }}</button></div>
-      <div class="dsb-catalog" data-catalog-section="trans">
-        <div class="dsb-catalog-filters" data-catalog-filters></div>
-        <div class="dsb-catalog-grid" data-catalog-grid></div>
-        <div class="dsb-pagination" data-catalog-pagination></div>
-      </div>
-    </section>
-
-    {{-- STEP 17 ,  Premade catalog --}}
-    <section class="dsb-step" data-step="17">
-      <div class="dsb-step-head"><div><h4 class="dsb-step-title">{{ __('Select a Pre-Made Driveshaft') }}</h4>
-      <p class="dsb-step-desc" id="dsb-premade-desc">{{ __('Driveshafts matching your series selection. Select one to add to your order.') }}</p></div>
-      <button type="button" class="dsb-btn dsb-btn--secondary" data-back="2"><x-icon name="arrow-left"/> {{ __('Back') }}</button></div>
-      <div class="dsb-premade-toolbar"><label>{{ __('Filter by Overall Length:') }}</label>
-        <select id="dsb-premade-length-filter" class="dsb-input dsb-catalog-select"><option value="">{{ __('All Lengths') }}</option></select></div>
-      <div class="dsb-premade-grid" id="dsb-premade-grid"><div class="dsb-loading">{{ __('Loading…') }}</div></div>
-      <div class="dsb-pagination" id="dsb-premade-pagination"></div>
-    </section>
-
-    {{-- STEP 18 ,  Premade measurements --}}
-    <section class="dsb-step" data-step="18">
-      <div class="dsb-step-head"><div><h4 class="dsb-step-title">{{ __('Measurements') }}</h4>
-      <p class="dsb-step-desc">{{ __('Please provide your measurements for this driveshaft.') }}</p></div>
-      <button type="button" class="dsb-btn dsb-btn--secondary" data-back="17"><x-icon name="arrow-left"/> {{ __('Back') }}</button></div>
-      <div id="dsb-epo-fields-container"></div>
-      <div class="dsb-step-foot"><button type="button" class="dsb-btn dsb-btn--primary" data-next="epo">{{ __('Continue to Review') }} <x-icon name="arrow-right"/></button></div>
-    </section>
-
-    {{-- STEP 6 ,  Review --}}
-    <section class="dsb-step" data-step="6">
-      <div class="dsb-review">
-        <div class="dsb-review-badge"><x-icon name="check"/></div>
-        <h4 class="dsb-step-title">{{ __('Configuration Ready') }}</h4>
-        <p class="dsb-step-desc">{{ __('Your selection is attached to this item and will be saved with the order and confirmation email.') }}</p>
-        <dl class="dsb-review-list">
-          <div class="dsb-review-row"><dt>{{ __('Duty Type') }}</dt><dd data-field="duty-full">, </dd></div>
-          <div class="dsb-review-row"><dt>{{ __('Series') }}</dt><dd data-field="series-full">, </dd></div>
-          <div class="dsb-review-row"><dt>{{ __('Material') }}</dt><dd data-field="material-full">, </dd></div>
-          <div class="dsb-review-row"><dt>{{ __('Product') }}</dt><dd data-field="premade-name">, </dd></div>
-          <div class="dsb-review-row"><dt>{{ __('Measurements') }}</dt><dd data-field="premade-measure">, </dd></div>
-          <div class="dsb-review-row"><dt>{{ __('Front Application') }}</dt><dd data-field="front-app-full">, </dd></div>
-          <div class="dsb-review-row"><dt>{{ __('Rear Application') }}</dt><dd data-field="rear-app-full">, </dd></div>
-          <div class="dsb-review-row"><dt>{{ __('Specs') }}</dt><dd data-field="extras-full">, </dd></div>
-          <div class="dsb-review-row"><dt>{{ __('Front Yoke Add-on') }}</dt><dd data-field="flange-full">, </dd></div>
-          <div class="dsb-review-row"><dt>{{ __('Rear Yoke Add-on') }}</dt><dd data-field="trans-full">, </dd></div>
-        </dl>
-        <div class="dsb-review-diagram"><div class="dsb-plan-svg dsb-review-plan" id="dsb-review-plan" hidden></div><img id="dsb-review-diagram-img" hidden alt="{{ __('Configuration diagram') }}"><div class="dsb-diagram-badges" id="dsb-review-diagram-badges"></div></div>
-        <div class="dsb-tier-picker">
-          <p class="dsb-tier-title">{{ __('Choose Your Driveshaft') }}</p>
-          <div class="dsb-tier-cards">
-            <button type="button" class="dsb-tier-card dsb-tier-card--selected" data-select-tier="certified"><span class="dsb-tier-badge">{{ __('Certified') }}</span><span class="dsb-tier-label">{{ __('Certified Driveshaft') }}</span><span class="dsb-tier-desc">{{ __('Professionally inspected & refurbished') }}</span><span class="dsb-tier-price" data-tier-price="certified">$0.00</span></button>
-            <button type="button" class="dsb-tier-card" data-select-tier="new"><span class="dsb-tier-badge dsb-tier-badge--new">{{ __('Brand New') }}</span><span class="dsb-tier-label">{{ __('Brand New Driveshaft') }}</span><span class="dsb-tier-desc">{{ __('New components') }}</span><span class="dsb-tier-price" data-tier-price="new">$0.00</span></button>
+        <div class="dsb-product-info">
+          <h2 class="dsb-product-title" id="dsb-review-title">{{ __('Custom driveshaft') }}</h2>
+          <p class="dsb-product-sub" id="dsb-review-sub"></p>
+          <div class="dsb-product-price"><span id="dsb-review-price">$0.00</span><small>{{ __('Built to your measurements, balanced before it ships') }}</small></div>
+          <div class="dsb-tier" id="dsb-tier">
+            <button type="button" class="dsb-tier-opt dsb-tier-opt--on" data-select-tier="certified"><b>{{ __('Certified') }}</b><span>{{ __('Certified reconditioned components') }}</span><em data-tier-price="certified">$0.00</em></button>
+            <button type="button" class="dsb-tier-opt" data-select-tier="new"><b>{{ __('Brand new') }}</b><span>{{ __('All new components') }}</span><em data-tier-price="new">$0.00</em></button>
           </div>
+          <dl class="dsb-breakdown" id="dsb-breakdown"></dl>
+          <div class="dsb-buy">
+            <div class="dsb-qty"><label for="dsb-qty-review">{{ __('Qty') }}</label><button type="button" data-qty="-" aria-label="{{ __('Decrease quantity') }}"><x-icon name="minus"/></button><input type="number" class="dsb-qty-input" id="dsb-qty-review" value="1" min="1" step="1"><button type="button" data-qty="+" aria-label="{{ __('Increase quantity') }}"><x-icon name="plus"/></button></div>
+            <button type="button" class="dsb-btn dsb-btn--primary dsb-btn--lg" data-add-btn disabled><x-icon name="cart"/> {{ __('Add to cart') }}</button>
+            <button type="button" class="dsb-btn dsb-btn--ghost" data-save-btn><x-icon name="heart"/> {{ __('Save design') }}</button>
+          </div>
+          <div class="dsb-speed-result dsb-speed-result--review" id="dsb-review-speed" hidden></div>
+          <p class="dsb-guide dsb-guide--muted" id="dsb-review-angle" hidden></p>
+          <p class="dsb-own-note" id="dsb-own-note" hidden></p>
+          <div class="dsb-notes"><label for="dsb-notes">{{ __('Anything we should know? (optional)') }}</label>
+            <textarea rows="2" id="dsb-notes" name="dsb_notes" maxlength="2000" placeholder="{{ __('Lift, angles, horsepower, a part number you already have…') }}"></textarea></div>
+          <ul class="dsb-policy">
+            <li>{{ __('12-month limited warranty on UDS-brand products; custom shafts are warranted built to your specifications and balanced.') }}</li>
+            <li>{{ __('Custom builds are made to your measurements and cannot be returned once fabrication begins.') }}</li>
+            <li>{{ __('Lead time is confirmed with you after ordering.') }}</li>
+          </ul>
+          <p class="dsb-call">{{ __('Questions before you order?') }} <a href="{{ \App\Http\Controllers\DsbController::PHONE_HREF }}"><x-icon name="phone"/> {{ \App\Http\Controllers\DsbController::PHONE }}</a></p>
         </div>
-        <div class="dsb-notes"><label>{{ __('Additional Notes (optional)') }}</label>
-          <textarea rows="3" id="dsb-notes" name="dsb_notes" placeholder="{{ __('Any additional details about your application...') }}"></textarea></div>
-        <div class="dsb-share"><label>{{ __('Share link ,  contains all your measurements & selections') }}</label>
-          <div class="dsb-share-row"><input type="text" readonly data-share-url onclick="this.select()"><button type="button" class="dsb-btn dsb-btn--secondary" data-action="copy">{{ __('Copy') }}</button></div></div>
-        <div class="dsb-review-actions">
-          <button type="button" class="dsb-btn dsb-btn--secondary" data-back="1"><x-icon name="returns"/> {{ __('Start Over') }}</button>
-          <button type="button" class="dsb-btn dsb-btn--secondary" data-action="print">{{ __('Print') }}</button>
+        <div class="dsb-product-specs">
+          <h3>{{ __('Specifications') }}</h3>
+          <dl class="dsb-spec-list" id="dsb-review-specs"></dl>
+          <div class="dsb-share"><label for="dsb-share-url">{{ __('Share or save this build') }}</label>
+            <div class="dsb-share-row"><input type="text" id="dsb-share-url" readonly data-share-url onclick="this.select()"><button type="button" class="dsb-btn dsb-btn--ghost" data-action="copy">{{ __('Copy') }}</button></div></div>
         </div>
-      </div>
+      </article>
     </section>
 
     {{-- Confirmation (after add to cart) --}}
     <div class="dsb-confirm" id="dsb-confirm" hidden>
-      <div class="dsb-review-badge"><x-icon name="check"/></div>
-      <h4 class="dsb-step-title">{{ __('Added to cart!') }}</h4>
+      <div class="dsb-confirm-badge"><x-icon name="check"/></div>
+      <h2 class="dsb-step-title">{{ __('Added to cart') }}</h2>
       <p class="dsb-step-desc" id="dsb-confirm-summary"></p>
-      <p class="dsb-step-desc">{{ __('Total:') }} <b id="dsb-confirm-price" style="color:var(--dsb-primary)"></b></p>
-      <div class="dsb-review-actions" style="margin-top:14px">
-        <a href="/cart" class="dsb-btn dsb-btn--primary"><x-icon name="cart"/> {{ __('View Cart & Checkout') }}</a>
-        <a href="/online-builder" class="dsb-btn dsb-btn--secondary">{{ __('Build another') }}</a>
+      <p class="dsb-step-desc">{{ __('Total:') }} <b id="dsb-confirm-price"></b></p>
+      <div class="dsb-confirm-actions">
+        <a href="/cart" class="dsb-btn dsb-btn--primary"><x-icon name="cart"/> {{ __('View cart and check out') }}</a>
+        <a href="/online-builder" class="dsb-btn dsb-btn--ghost">{{ __('Build another') }}</a>
       </div>
     </div>
 
   </div>
   </div>{{-- /dsb-main --}}
 
-  <aside class="dsb-sheet" id="dsb-sheet" aria-label="{{ __('Your build') }}">
-    <div class="dsb-sheet-head">
-      <span class="dsb-sheet-kicker">{{ __('Build sheet') }}</span>
-      <span class="dsb-sheet-type">{{ $pieces === 'two' ? __('Two piece') : __('One piece') }} · {{ __('inches') }}</span>
-    </div>
+  <aside class="dsb-sheet" id="dsb-sheet" aria-label="{{ __('Your build') }}" hidden>
+    <div class="dsb-sheet-head"><b>{{ __('Your build') }}</b><span>{{ __('One piece') }} · {{ __('inches') }}</span></div>
+    <div class="dsb-sheet-photo" id="dsb-sheet-photo" hidden></div>
     <div class="dsb-sheet-draw" id="dsb-sheet-draw"></div>
+    <div class="dsb-sheet-badge" data-sheet-badge></div>
     <dl class="dsb-sheet-specs" id="dsb-sheet-specs"></dl>
     <div class="dsb-sheet-price">
-      <span class="dsb-hero-price-label">{{ __('Current price') }}</span>
-      <span class="dsb-hero-price-value">$0.00</span>
-      <small>{{ __('Built, straightened and balanced in our shop') }}</small>
+      <span class="dsb-sheet-price-label">{{ __('Price') }}</span>
+      <span class="dsb-sheet-price-value" data-sheet-price>{{ __('Price after measurements') }}</span>
+      <small data-sheet-price-note></small>
     </div>
     @include('partials.dsb-cart-footer')
   </aside>
   </div>{{-- /dsb-layout --}}
 
-  <div class="dsb-mbar">
-    <span><small>{{ __('Current price') }}</small><b data-mbar-price>$0.00</b></span>
-    <button type="button" class="dsb-btn dsb-btn--primary" data-mbar-go>{{ __('Your build') }} <x-icon name="caret-down"/></button>
+  {{-- the build so far and its price, always in view; no drawing preview (owner, 2026-11) --}}
+  <div class="dsb-mbar bld-dock" aria-live="polite">
+    <span class="bld-dock__sum" data-dock-sum>{{ __('Your answers appear here') }}</span>
+    <span class="bld-dock__price"><small>{{ __('Price') }}</small><b data-mbar-price>—</b></span>
   </div>
-
-  {{-- hidden fields (same names as the original plugin) --}}
-  <input type="hidden" name="dsb_duty_key"><input type="hidden" name="dsb_duty_label">
-  <input type="hidden" name="dsb_series_key"><input type="hidden" name="dsb_series_label">
-  <input type="hidden" name="dsb_material"><input type="hidden" name="dsb_front_app"><input type="hidden" name="dsb_rear_app">
-  <input type="hidden" name="dsb_final_price"><input type="hidden" name="dsb_price_tier" value="certified">
-  <input type="hidden" name="dsb_flange_addon_label"><input type="hidden" name="dsb_flange_addon_price" value="0">
-  <input type="hidden" name="dsb_trans_addon_label"><input type="hidden" name="dsb_trans_addon_price" value="0">
-  <input type="hidden" id="dsb-configured" name="dsb_configured" value="0">
-  <input type="hidden" name="dsb_premade_extras">
-
-
 </div>
 
-  <aside class="bldhelp">
-    <div>
-      <b>{{ __('Not sure what to measure?') }}</b>
-      <p>{{ __('Take the numbers off the shaft you already have. The guides walk each measurement with diagrams.') }}</p>
-      <a class="textlink" href="/driveshaft-designer">{{ __('Open the driveshaft designer') }} <x-icon name="arrow-right"/></a>
-    </div>
-    <div>
-      <b>{{ __('Rather talk it through?') }}</b>
-      <p>{{ __('Call the shop and a driveline tech will spec it with you. No call centre.') }}</p>
-      <a class="textlink" href="tel:18135246491"><x-icon name="phone"/> (813) 524-6491</a>
-    </div>
-    <div>
-      <b>{{ __('Want us to measure it?') }}</b>
-      <p>{{ __('Bring the shaft to our shop. We measure, build and balance it in house.') }}</p>
-      <a class="textlink" href="/contact">{{ __('Contact the shop') }} <x-icon name="arrow-right"/></a>
-    </div>
-  </aside>
-</div>
+  <p class="bld-help">{{ __('Not sure about a measurement or a part?') }} <a href="{{ \App\Http\Controllers\DsbController::PHONE_HREF }}"><x-icon name="phone"/> {{ \App\Http\Controllers\DsbController::PHONE }}</a> · <a href="https://wa.me/18136445707" target="_blank" rel="noopener">WhatsApp</a> · {{ __('or bring the shaft to the shop and we measure it.') }}</p>
 </div></section>
 <script>window.dsbConfig = @json($config);
 window.UDS_T = Object.assign(window.UDS_T || {}, @json(app()->getLocale() === 'en' ? (object) [] : \App\Http\Controllers\DsbController::jsStrings($config)));</script>
 <script src="/js/dsb.js?v={{ filemtime(public_path('js/dsb.js')) }}"></script>
+<script>
+(function(){
+  var specs=document.getElementById('dsb-sheet-specs'), sum=document.querySelector('[data-dock-sum]'); if(!specs||!sum) return;
+  var idle=sum.textContent;
+  function sync(){ var v=[].map.call(specs.querySelectorAll('dd'),function(d){return d.textContent.replace(/\s*Edit\s*$/,'').trim();}).filter(Boolean); sum.textContent=v.length?v.join('  ·  '):idle; }
+  new MutationObserver(sync).observe(specs,{childList:true,subtree:true,characterData:true}); sync();
+})();
+</script>
 @endsection

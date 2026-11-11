@@ -23,7 +23,7 @@
 <tr><td>Léger faux-rond, tube par ailleurs droit</td><td>Redresser et équilibrer</td><td>Main-d'œuvre d'atelier</td><td>Jusqu'à quelques centièmes ; au-delà, il faut changer le tube</td></tr>
 <tr><td>Hors phase (arbre de transmission en deux pièces mal réassemblé)</td><td>Réindexer sur le joint coulissant</td><td>Aucune</td><td>Gratuit, et c'est la première chose à vérifier après toute intervention</td></tr>
 <tr><td>Oreilles de fourche à souder usées, tube en bon état</td><td>Remplacer la fourche à souder</td><td><a href="/shop/driveshaft-components/weld-yoke">Fourche à souder</a>, de 11 $ à 40 $, plus main-d'œuvre</td><td>Travail d'atelier : extraction à la presse, soudure, redressement, équilibrage</td></tr>
-<tr><td>Tube bosselé ou rouillé, fourches en bon état</td><td>Remplacer le tube</td><td><a href="/shop/custom-cut-tubing/tubing">Tube DOM</a> au pied, plus main-d'œuvre</td><td>C'est également le moyen de raccourcir ou d'allonger un arbre de transmission</td></tr>
+<tr><td>Tube bosselé ou rouillé, fourches en bon état</td><td>Remplacer le tube</td><td><a href="/shop/driveshaft-tubing/tubing">Tube DOM</a> au pied, plus main-d'œuvre</td><td>C'est également le moyen de raccourcir ou d'allonger un arbre de transmission</td></tr>
 </tbody></table></div>
 <p>Les croisillons et les roulements sont des travaux réalisables par le propriétaire avec une presse ou un grand étau et les douilles appropriées. Tout ce qui implique de la soudure ou de l'équilibrage est un travail d'atelier, et un atelier qui répare des arbres de transmission tous les jours le fait plus rapidement et plus droit qu'un atelier de mécanique générale avec un marteau.</p>
 
