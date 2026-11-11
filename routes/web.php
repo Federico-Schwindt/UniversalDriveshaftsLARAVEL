@@ -123,6 +123,8 @@ Route::get('/appointments/{any}', fn () => redirect('/contact', 301))->where('an
    Canonical URL is /online-builder. Every historic path 301s here so no
    existing link, bookmark or button can break. ------------------------------ */
 Route::get('/online-builder', [\App\Http\Controllers\DsbController::class, 'builder'])->defaults('pieces','one');
+// a build's drawing (SVG, no extension in the path: nginx would serve *.svg as a static file); shown on the shop station's work order
+Route::get('/online-builder/drawing', [\App\Http\Controllers\DsbController::class, 'drawing'])->middleware('throttle:120,1');
 // the two-piece builder was removed (owner, 2026-11-10): two-piece shafts are quoted by phone
 Route::redirect('/online-builder/two-piece', '/online-builder', 301);
 Route::redirect('/driveshaft-builder', '/online-builder', 301);

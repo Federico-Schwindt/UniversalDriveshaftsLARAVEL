@@ -796,5 +796,16 @@
     "spline dia": "diamètre sur cannelures",
     "steel": "acier",
     "tube dia": "diamètre du tube",
-    "up to :max in": "jusqu'à :max in"
+    "up to :max in": "jusqu'à :max in",
+    "What make is the vehicle?": "De quelle marque est le véhicule ?",
+    "We show the flange yokes whose part data names that make. Not on the list, or not sure? See them all.": "Nous affichons les fourches à bride dont les données de pièce citent cette marque. Elle n’est pas dans la liste, ou vous hésitez ? Voyez-les toutes.",
+    "No :series flange yoke names a vehicle make yet.": "Aucune fourche à bride :series ne cite encore de marque de véhicule.",
+    "From your answers": "D’après vos réponses",
+    "1 yoke listed": "1 fourche au catalogue",
+    ":n yokes listed": ":n fourches au catalogue",
+    "Other make or not sure": "Autre marque ou je ne sais pas",
+    "See all :n flange yokes in :series": "Voir les :n fourches à bride :series",
+    "See every flange yoke in :series": "Voir toutes les fourches à bride :series",
+    "Listed for :make: :n of :total.": "Pour :make : :n sur :total.",
+    "Start over? Your answers will be cleared.": "Recommencer ? Vos réponses seront effacées."
 }

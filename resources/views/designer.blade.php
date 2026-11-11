@@ -26,6 +26,7 @@
   <div class="dsb-progress" aria-live="polite">
     <button type="button" class="dsb-back" data-back aria-label="{{ __('Back') }}"><x-icon name="arrow-left"/><span>{{ __('Back') }}</span></button>
     <div class="dsb-progress-text"><b data-progress-step>{{ __('Step 1') }}</b><span data-progress-name></span></div>
+    <button type="button" class="dsb-restart" data-restart hidden><x-icon name="refresh"/><span>{{ __('Start over') }}</span></button>
     <div class="dsb-bar" aria-hidden="true"><i data-progress-bar></i></div>
   </div>
 
@@ -71,6 +72,13 @@
       <div class="dsb-cards dsb-cards--3" data-yoke-choices="rear"></div>
     </section>
 
+    {{-- New flange yoke: the vehicle make first, then the yokes our catalog lists for it --}}
+    <section class="dsb-step" data-step="rear_brand">
+      <div class="dsb-step-head"><h2 class="dsb-step-title">{{ __('What make is the vehicle?') }}</h2>
+      <p class="dsb-step-desc">{{ __('We show the flange yokes whose part data names that make. Not on the list, or not sure? See them all.') }}</p></div>
+      <div class="dsb-cards dsb-cards--brands" data-brand-choices="rear"></div>
+    </section>
+
     <section class="dsb-step" data-step="rear_pick">
       <div class="dsb-step-head"><h2 class="dsb-step-title">{{ __('Pick the yoke') }}</h2><p class="dsb-step-desc" data-pick-desc="rear"></p></div>
       <div class="dsb-catalog" data-catalog-section="rear">
@@ -103,10 +111,10 @@
       <div class="dsb-measure-diagram" hidden><img id="dsb-diagram-img" src="" width="1715" height="708" loading="lazy" alt="{{ __('How to measure your driveshaft') }}"></div>
       <div class="dsb-fields">
         <div class="dsb-field" id="dsb-field-a1"><label for="dsb-inp-a1">{{ __('Length A1 (inches)') }} <span class="dsb-req">*</span></label>
-          <input type="number" step="0.125" min="1" class="dsb-input" id="dsb-inp-a1" name="dsb_a1" placeholder="{{ __('e.g. 52.25') }}" inputmode="decimal">
+          <input type="text" class="dsb-input" id="dsb-inp-a1" name="dsb_a1" placeholder="{{ __('e.g. 52.25') }}" inputmode="decimal" autocomplete="off" spellcheck="false">
           <div class="dsb-hint" data-hint="a1"></div></div>
         <div class="dsb-field" id="dsb-field-c1"><label for="dsb-inp-c1">{{ __('C1 (inches)') }} <span class="dsb-req">*</span></label>
-          <input type="number" step="0.125" min="1" class="dsb-input" id="dsb-inp-c1" name="dsb_c1" placeholder="{{ __('e.g. 48.0') }}" inputmode="decimal">
+          <input type="text" class="dsb-input" id="dsb-inp-c1" name="dsb_c1" placeholder="{{ __('e.g. 48.0') }}" inputmode="decimal" autocomplete="off" spellcheck="false">
           <div class="dsb-hint" data-hint="c1"></div></div>
       </div>
       <div class="dsb-length-check" id="dsb-length-check" hidden></div>
@@ -120,8 +128,8 @@
       <p class="dsb-step-desc">{{ __('Every tube has a critical speed that depends on its diameter and length. Give us your top speed, axle ratio and tire diameter and we check the shaft RPM against it.') }}</p></div>
       <div class="dsb-fields dsb-fields--3">
         <div class="dsb-field"><label for="dsb-speed-mph">{{ __('Top speed (mph)') }}</label><input type="number" class="dsb-input" id="dsb-speed-mph" min="5" max="250" step="1" inputmode="numeric" placeholder="85"></div>
-        <div class="dsb-field"><label for="dsb-speed-ratio">{{ __('Axle ratio') }}</label><input type="number" class="dsb-input" id="dsb-speed-ratio" min="1.5" max="8" step="0.01" inputmode="decimal" placeholder="3.73"></div>
-        <div class="dsb-field"><label for="dsb-speed-tire">{{ __('Tire diameter (in)') }}</label><input type="number" class="dsb-input" id="dsb-speed-tire" min="15" max="60" step="0.1" inputmode="decimal" placeholder="31"></div>
+        <div class="dsb-field"><label for="dsb-speed-ratio">{{ __('Axle ratio') }}</label><input type="text" class="dsb-input" id="dsb-speed-ratio" inputmode="decimal" autocomplete="off" placeholder="3.73"></div>
+        <div class="dsb-field"><label for="dsb-speed-tire">{{ __('Tire diameter (in)') }}</label><input type="text" class="dsb-input" id="dsb-speed-tire" inputmode="decimal" autocomplete="off" placeholder="31"></div>
       </div>
       <div class="dsb-speed-result" id="dsb-speed-result" hidden></div>
       <div class="dsb-step-foot"><button type="button" class="dsb-btn dsb-btn--primary" data-next="speed">{{ __('Continue') }} <x-icon name="arrow-right"/></button><button type="button" class="dsb-btn dsb-btn--ghost" data-skip="speed">{{ __('Skip') }}</button></div>
@@ -145,6 +153,12 @@
       </div>
     </section>
 
+    <section class="dsb-step" data-step="front_brand">
+      <div class="dsb-step-head"><h2 class="dsb-step-title">{{ __('What make is the vehicle?') }}</h2>
+      <p class="dsb-step-desc">{{ __('We show the flange yokes whose part data names that make. Not on the list, or not sure? See them all.') }}</p></div>
+      <div class="dsb-cards dsb-cards--brands" data-brand-choices="front"></div>
+    </section>
+
     <section class="dsb-step" data-step="front_pick">
       <div class="dsb-step-head"><h2 class="dsb-step-title">{{ __('Pick the yoke') }}</h2><p class="dsb-step-desc" data-pick-desc="front"></p></div>
       <div class="dsb-catalog" data-catalog-section="front">
@@ -158,7 +172,6 @@
     <section class="dsb-step" data-step="review">
       <article class="dsb-product">
         <div class="dsb-product-media">
-          <figure class="dsb-product-photo" id="dsb-review-photo" hidden></figure>
           <figure class="dsb-product-main"><div class="dsb-plan-svg dsb-review-plan" id="dsb-review-plan"></div><img id="dsb-review-diagram-img" hidden alt="{{ __('Configuration diagram') }}"></figure>
         </div>
         <div class="dsb-product-info">

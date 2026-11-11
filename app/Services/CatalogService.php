@@ -888,6 +888,12 @@ class CatalogService
                     $xref[$num] = true;
                 }
             }
+            // and the Spicer / Neapco / OEM numbers PTI lists for this same part (App\Support\PtiXref)
+            $seen = array_map(fn ($n) => self::normKey($n), array_keys($xref));
+            foreach (\App\Support\PtiXref::forProduct($id) as $num) {
+                if (in_array(strtoupper($num), $own, true) || in_array(self::normKey($num), $seen, true)) continue;
+                $xref[$num] = true; $seen[] = self::normKey($num);
+            }
             $xref = array_keys($xref);
             // which cross numbers are themselves in the catalog -> link them
             $links = [];
@@ -953,6 +959,12 @@ class CatalogService
                     if (mb_strlen($n) < 3) continue;
                     $add($n, $id, $ownKey !== '' && self::normKey($n) === $ownKey);
                 }
+            }
+            // interchange numbers PTI lists for the same part (published products only)
+            foreach (\App\Support\PtiXref::map() as $id => $nums) {
+                if (!isset($skus[$id])) continue;
+                $ownKey = self::normKey($skus[$id]);
+                foreach ($nums as $n) $add($n, $id, $ownKey !== '' && self::normKey($n) === $ownKey);
             }
             return ['num' => $num, 'sku' => $skus];
         });

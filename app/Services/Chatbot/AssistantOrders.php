@@ -394,6 +394,9 @@ class AssistantOrders
     {
         $this->cart->clear();
         OrderEvents::record($order, 'placed', 'Order placed through UDS Assistant', $d['pickup'] ? 'Local pickup' : $order->shipping_label, true);
+        // committed like a checkout order: an invoice now, a card or pay link once the money is in (PayLink::markPaid).
+        // Stock comes off, a custom driveshaft becomes a work order on the shop station, the CRM syncs (it used to skip all of it)
+        if ($d['payment'] !== 'net_terms') OrderEvents::record($order, 'notify:placed:deferred', 'Waiting for payment', null, true);
         $out = ['order_number' => $order->order_number, 'total_usd' => (float) $order->total, 'order_page' => OrderEvents::statusUrl($order, false), 'emailed_to' => $u->email];
 
         if ($d['payment'] === 'net_terms') {
@@ -401,6 +404,7 @@ class AssistantOrders
             OrderEvents::record($order, 'processing', 'In production / packing', null, true);
             try { B2bAccounts::evaluate($u->id); } catch (\Throwable $e) { report($e); }
             \App\Services\OrderMailer::confirmOnce($order);
+            PayLink::placedNotices($order);
             $out += ['payment' => 'invoice', 'invoice_due' => $order->terms_due_at, 'pay_link' => PayLink::url($order)];
         } elseif ($d['payment'] === 'saved_card') {
             try {

@@ -58,6 +58,8 @@ class PtiAttributeFill
         'end_to_radius' => ['pa_end-to-radius'], 'movement' => ['pa_movement'], 'included_parts' => ['pa_included-parts'], 'end_cap' => ['pa_end-cap'], 'set_screw' => ['pa_set-screw'],
         'flinger' => ['pa_flinger'], 'ubolt_no' => ['pa_u-bolt-no'], 'lock_washer_no' => ['pa_lock-washer-no'], 'nut_no' => ['pa_nut-no'],
         'oem_manufacturer' => ['pa_oem-manufacturer'], 'oem_series' => ['pa_oem-series'],
+        // PTI's short fitment note ("Fits Jeep Commander/ Grand Cherokee at differential"), only where ours has none (owner, 2026-11-11)
+        'notes' => ['pa_notes'],
     ];
 
     /** Attributes created for PTI's extra fields, with their admin / table label. */
@@ -69,8 +71,8 @@ class PtiAttributeFill
         'pa_oem-manufacturer' => 'OEM Manufacturer', 'pa_oem-series' => 'OEM Series',
     ];
 
-    /** Ours by definition: our brand and our own notes text. */
-    private const SKIP = ['brand', 'notes'];
+    /** Ours by definition: our brand. (Notes are copied only into a product that has none, like every other field.) */
+    private const SKIP = ['brand'];
 
     /** Measurements that decide whether a part fits: if both sides list one and they differ, the part is left alone. */
     private const FIT = ['series', 'cap_1_diameter', 'cap_2_diameter', 'stack_1', 'stack_2', 'tube_diameter', 'tube_wall', 'spline_count', 'spline_diameter', 'bolt_circle_diameter',
@@ -235,6 +237,10 @@ class PtiAttributeFill
                 return preg_replace('/^(\d+)x$/', '$1X', $v);
             case 'included_parts':
                 return str_ireplace('Boot, Clamp', 'Boot Clamp', $v);   // a few PTI kits list "Boot, Clamp" after "Boot"
+            case 'notes':
+                // a supplier's stock remark is not a fact about the part we sell; the supplier is never named
+                if (preg_match('/discontinu|obsolete|superseded|no longer|out of stock|call for|^(in)?active$/i', $v)) return '';
+                return trim(preg_replace(['/\(\s*\)/', '/\bPTI\b\s*#?/i', '/(^|\s)#\s+(?=[A-Z0-9])/i', '/\s{2,}/'], ['', '', '$1', ' '], $v), " \t/,;");
         }
         return $v;
     }

@@ -795,5 +795,16 @@
     "spline dia": "花键直径",
     "steel": "钢",
     "tube dia": "传动轴管直径",
-    "up to :max in": "最长 :max in"
+    "up to :max in": "最长 :max in",
+    "What make is the vehicle?": "车辆是什么品牌？",
+    "We show the flange yokes whose part data names that make. Not on the list, or not sure? See them all.": "我们显示零件资料中注明该品牌的法兰叉。不在列表中或不确定？查看全部。",
+    "No :series flange yoke names a vehicle make yet.": "目前没有 :series 法兰叉注明车辆品牌。",
+    "From your answers": "根据您的回答",
+    "1 yoke listed": "目录中有 1 个叉",
+    ":n yokes listed": "目录中有 :n 个叉",
+    "Other make or not sure": "其他品牌或不确定",
+    "See all :n flange yokes in :series": "查看全部 :n 个 :series 法兰叉",
+    "See every flange yoke in :series": "查看所有 :series 法兰叉",
+    "Listed for :make: :n of :total.": "适用于 :make：:total 个中的 :n 个。",
+    "Start over? Your answers will be cleared.": "重新开始？您的回答将被清除。"
 }

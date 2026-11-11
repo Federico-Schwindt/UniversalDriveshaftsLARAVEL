@@ -820,5 +820,8 @@
     "wall": "肉厚",
     "washer": "ワッシャー",
     "· page": "· ページ",
-    "— a different number, brand or lube spec, but the same fitment. Check the notes before you substitute.": "— 番号、ブランド、または潤滑仕様は異なりますが、適合性は同じです。代替品をご使用になる前に注意事項をご確認ください。"
+    "— a different number, brand or lube spec, but the same fitment. Check the notes before you substitute.": "— 番号、ブランド、または潤滑仕様は異なりますが、適合性は同じです。代替品をご使用になる前に注意事項をご確認ください。",
+    "Vehicles this bearing is listed for": "このベアリングが記載されている車両",
+    ":n model|:n models": ":n 車種|:n 車種",
+    "From the complete driveshafts listed for these vehicles. Confirm the bearing ID and the mount dimensions above before you order.": "これらの車両のドライブシャフト完成品の情報によります。ご注文前に、ベアリング内径と上記の取付寸法をご確認ください。"
 }
