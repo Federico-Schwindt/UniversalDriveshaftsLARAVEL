@@ -3750,3 +3750,7 @@ button.p-alt span{display:none}
   .ctile__about b{display:block;font-size:.84rem;line-height:1.25;color:var(--ink)}
   .ctile__about span{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 }
+/* product drawing on touch screens: the letters are buttons (no double-tap zoom delay, no grey tap flash) */
+.pdp-md .md-svg{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.pdp-md .md-dim{cursor:pointer;outline:none}
+.pdp-md .md-dim:focus-visible .md-badge-o{stroke-width:2.6}
