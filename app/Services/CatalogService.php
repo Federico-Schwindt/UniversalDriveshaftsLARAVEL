@@ -236,6 +236,12 @@ class CatalogService
 
     public function thumbsFor(array $ids): array
     {
+        return array_map(fn ($u) => media_url($u, 160), $this->thumbSources($ids));   // served from the local WebP cache
+    }
+
+    /** Batch: map of wp_product_id => the product's own picture (the source the WebP cache resizes), '' when none. */
+    public function thumbSources(array $ids): array
+    {
         $ids = array_values(array_unique(array_filter(array_map('intval', $ids))));
         if (!$ids) return [];
         $thumbs = $this->db()->table('wp_postmeta')
@@ -261,7 +267,6 @@ class CatalogService
             $out[$pid] = $this->uploads . ltrim($file, '/');
         }
         foreach ($ids as $pid) { if ($lv = self::live($pid)) { if (!empty($lv['image'])) $out[$pid] = $lv['image']; } }
-        foreach ($out as $pid => $u) $out[$pid] = media_url($u, 160);   // served from the local WebP cache
         return $out;
     }
 

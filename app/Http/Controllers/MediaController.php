@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Http;
  * Local image cache for the catalog pictures that still live on the WordPress site.
  * /media/{w}/{key}.webp  → fetched once, resized to {w}px wide, written as WebP under public/media
  * so every later hit is a static file served by nginx. Only universaldriveshafts.com uploads are proxied.
+ * `php artisan media:warm` makes the catalog's pictures ahead of time.
  */
 class MediaController extends Controller
 {
@@ -44,42 +45,54 @@ class MediaController extends Controller
     public function show(int $w, string $key)
     {
         abort_unless(in_array($w, self::WIDTHS, true) && preg_match('/^[A-Za-z0-9_-]{8,700}$/', $key), 404);
+        [$file, $src, $local] = self::ensure($w, $key);
+        abort_unless($src, 404);
+        if (!$file) return $local ? response()->file(public_path($src)) : redirect()->away($src, 302);   // degrade to the original picture
+        return response()->file($file, ['Content-Type' => 'image/webp', 'Cache-Control' => 'public, max-age=31536000, immutable']);
+    }
+
+    /**
+     * The cached WebP for a key, made on first use (media:warm makes them ahead, so a visitor rarely waits for one).
+     * [file|null, source|null, local]: no source = not a picture we serve (404); no file = it could not be made.
+     */
+    public static function ensure(int $w, string $key): array
+    {
         $src = base64_decode(strtr($key, '-_', '+/'), true);
         if ($src) $src = \App\Support\WpUploads::localPath($src) ?? $src;   // keys minted before the mirror existed
-        $local =$src && $src[0] === '/' && !str_contains($src, '..') && array_filter(self::LOCAL, fn ($d) => str_starts_with($src, $d)) && is_file(public_path($src));
+        $local = $src && $src[0] === '/' && !str_contains($src, '..') && array_filter(self::LOCAL, fn ($d) => str_starts_with($src, $d)) && is_file(public_path($src));
         // once the catalog is local (catalog:detach) a picture missing from the mirror is a 404, never a fetch from the old site
-        abort_unless($src && ($local || (!\App\Support\LiveOrigin::retired() && preg_match('#^https?://(www\.)?' . preg_quote(self::HOST, '#') . '/wp-content/uploads/[^\s"<>]+$#i', $src))), 404);
+        if (!$src || !($local || (!\App\Support\LiveOrigin::retired() && preg_match('#^https?://(www\.)?' . preg_quote(self::HOST, '#') . '/wp-content/uploads/[^\s"<>]+$#i', $src)))) return [null, null, false];
 
         $dir = public_path("media/$w"); $file = "$dir/$key.webp";
-        if (!is_file($file)) {
-            if (!is_dir($dir)) @mkdir($dir, 0775, true);
-            try {
-                if ($local) {
-                    $blob = file_get_contents(public_path($src));
-                } else {
-                    $resp = Http::withOptions(\App\Support\LiveOrigin::httpOptions())->timeout(15)->withHeaders(['User-Agent' => 'UDS media cache'])->get($src);
-                    if (!$resp->successful()) abort(404);
-                    $blob = $resp->body();
-                }
-                if (strlen($blob) < 100 || strlen($blob) > 25 * 1024 * 1024) abort(404);
-                $img = new \Imagick();
-                $img->readImageBlob($blob);
-                $img->setIteratorIndex(0);
-                $img = $img->coalesceImages()->current();
-                $img->setImageColorspace(\Imagick::COLORSPACE_SRGB);
-                if ($img->getImageWidth() > $w) $img->resizeImage($w, 0, \Imagick::FILTER_LANCZOS, 1);
-                $img->setImageFormat('webp');
-                $img->setOption('webp:method', '6');
-                $img->setImageCompressionQuality(80);
-                $img->stripImage();
-                $tmp = "$file." . getmypid() . '.tmp';
-                $img->writeImage($tmp);
-                @rename($tmp, $file);
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::warning('media cache failed for ' . $src . ': ' . $e->getMessage());
-                return $local ? response()->file(public_path($src)) : redirect()->away($src, 302);   // degrade to the original picture
+        if (is_file($file)) return [$file, $src, $local];
+        if (!is_dir($dir)) @mkdir($dir, 0775, true);
+        try {
+            if ($local) {
+                $blob = file_get_contents(public_path($src));
+            } else {
+                $resp = Http::withOptions(\App\Support\LiveOrigin::httpOptions())->timeout(15)->withHeaders(['User-Agent' => 'UDS media cache'])->get($src);
+                if (!$resp->successful()) throw new \RuntimeException('HTTP ' . $resp->status());
+                $blob = $resp->body();
             }
+            if (strlen($blob) < 100 || strlen($blob) > 25 * 1024 * 1024) throw new \RuntimeException('unexpected size ' . strlen($blob));
+            $img = new \Imagick();
+            $img->readImageBlob($blob);
+            $img->setIteratorIndex(0);
+            $img = $img->coalesceImages()->current();
+            $img->setImageColorspace(\Imagick::COLORSPACE_SRGB);
+            if ($img->getImageWidth() > $w) $img->resizeImage($w, 0, \Imagick::FILTER_LANCZOS, 1);
+            $img->setImageFormat('webp');
+            // method 4, not 6: about half the encoding time for a file a few percent larger (a cold picture took ~2 s)
+            $img->setOption('webp:method', '4');
+            $img->setImageCompressionQuality(80);
+            $img->stripImage();
+            $tmp = "$file." . getmypid() . '.tmp';
+            $img->writeImage($tmp);
+            @rename($tmp, $file);
+            return [$file, $src, $local];
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('media cache failed for ' . $src . ': ' . $e->getMessage());
+            return [null, $src, $local];
         }
-        return response()->file($file, ['Content-Type' => 'image/webp', 'Cache-Control' => 'public, max-age=31536000, immutable']);
     }
 }

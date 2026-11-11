@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Log;
  */
 class MailGuard
 {
+    /** Set by Branded (opts 'requested') on mail the recipient asked for: verification codes. */
+    public const REQUESTED_HEADER = 'X-UDS-Requested-By-Recipient';
+
     public static function on(): bool
     {
         return (bool) config('uds.mail_guard');
@@ -42,8 +45,12 @@ class MailGuard
     /** MessageSending listener: strips recipients outside the list; false cancels a message with nobody left. */
     public static function filter(MessageSending $event): ?bool
     {
-        if (!self::on()) return null;
         $msg = $event->message;
+        // a verification code goes only to the address the visitor typed, because they asked for it: never held back
+        // (owner, 2026-11-11: "im not receiving the otp code when creating an account on ushafts.com")
+        $requested = $msg->getHeaders()->has(self::REQUESTED_HEADER);
+        $msg->getHeaders()->remove(self::REQUESTED_HEADER);
+        if (!self::on() || $requested) return null;
         $dropped = [];
         foreach (['To', 'Cc', 'Bcc'] as $field) {
             $all = $msg->{'get' . $field}();
