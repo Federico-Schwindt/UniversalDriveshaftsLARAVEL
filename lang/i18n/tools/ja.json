@@ -807,5 +807,6 @@
     "See all :n flange yokes in :series": ":series のフランジヨーク全 :n 点を見る",
     "See every flange yoke in :series": ":series のフランジヨークをすべて見る",
     "Listed for :make: :n of :total.": ":make 向け：:total 点中 :n 点。",
-    "Start over? Your answers will be cleared.": "最初からやり直しますか？回答は消去されます。"
+    "Start over? Your answers will be cleared.": "最初からやり直しますか？回答は消去されます。",
+    "Toyota transfer cases have a bolt-on flange output: the shaft gets a slip yoke with a flange yoke": "トヨタのトランスファーケースはボルト留めのフランジ出力です。シャフトにはフランジヨーク付きスリップヨークが付きます"
 }
