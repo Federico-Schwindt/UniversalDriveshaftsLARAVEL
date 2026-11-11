@@ -32,6 +32,7 @@ Schedule::command('pti:sync --boxes --apply-boxes')->dailyAt('03:00')->withoutOv
 Schedule::command('pti:driveshaft-prices')->cron('15 */4 * * *')->withoutOverlapping(230);   // complete driveshafts every 4 h: PTI discounted price + make/model amount; dropped/unpriced shafts hidden, returning ones shown
 // new PTI photos (parts from the 03:30 sync, shafts from the 4-hourly discovery) lose the PTI watermark (template subtraction, no AI)
 Schedule::command('pti:dewatermark')->cron('20 1-21/4 * * *')->withoutOverlapping(200);
+Schedule::command('media:warm --sleep=50')->dailyAt('04:40')->withoutOverlapping(120);   // WebP pictures of new parts made before a visitor asks for them
 Schedule::command('pti:driveshaft-discover')->cron('45 */4 * * *')->withoutOverlapping(120);   // new shafts PTI added (full catalog scan, ~25 min)
 Schedule::command('pti:dropship-tracking')->everyFifteenMinutes()->withoutOverlapping(30);   // tracking of orders dropshipped from PTI (new labels too)
 Schedule::command('checkin:push')->everyTenMinutes()->withoutOverlapping(20)->skip(fn () => !\App\Services\CheckinBridge::enabled());   // builder shafts → shop station (retries), and its build progress → the customer

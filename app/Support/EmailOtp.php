@@ -77,7 +77,7 @@ class EmailOtp
                 'html' => '<div style="margin:6px 0 18px;text-align:center;white-space:nowrap;">' . $digits . '</div>',
                 'after' => ['The code expires in 10 minutes. Never share it — Universal Driveshafts will never ask you for it by phone.', 'If you did not request this, you can ignore this e-mail.'],
                 'signoff' => false,
-            ], $locale ? ['locale' => $locale] : []);
+            ], ['requested' => true] + ($locale ? ['locale' => $locale] : []));
         } catch (\Throwable $e) {
             report($e);
             Cache::forget(self::key($purpose, $email));

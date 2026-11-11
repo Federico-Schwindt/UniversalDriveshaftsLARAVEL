@@ -67,8 +67,12 @@
   const usedPrice = (app) => { const m = yokeTypeFor(app) === 'trans' ? CFG.yokes.used_trans : CFG.yokes.used_flange; return parseFloat((m || {})[(state.seriesKey || '').toLowerCase()] || 0); };
   const frontYokeAsk = () => { const f = fam(); return !!(f && f.yoke_choice !== false && yokeTypeFor(state.front)); };
   const maxLen = () => { const m = (CFG.maxLengths || {})[state.seriesKey]; return m ? m[state.materialKey || 'steel'] : null; };
-  // a new flange yoke asks the vehicle make first (owner, 2026-11-11), unless no yoke of the series names one (it could only say "see all")
+  // a new flange yoke asked the vehicle make first (owner, 2026-11-11), unless no yoke of the series names one. Switched off the
+  // same day: the makes on the yokes are not reliable yet (the owner's boss is sending the dimensions), so the list is the
+  // series' flange yokes with their dimension filters (pilot, bolt circle…). MAKE_STEP = true brings the step back.
+  const MAKE_STEP = false;
   const brandAsk = (side) => {
+    if (!MAKE_STEP) return false;
     const y = side === 'front' ? state.frontYoke : state.rearYoke, mc = makeCache[state.seriesKey || ''];
     return y.kind === 'new' && yokeTypeFor(side === 'front' ? state.front : state.rear) === 'flange' && !(mc && !mc.makes.length);
   };
@@ -536,7 +540,7 @@
     grid.innerHTML = `<div class="dsb-loading">${esc(t('Loading…'))}</div>`;
     const params = new URLSearchParams({type, series: state.seriesKey || '', page: cat.page[side], per_page: 24, filters: JSON.stringify(cat.filters[side])});
     if (type === 'trans' && fx.spline && !cat.filters[side]['splines-count-dia']) params.set('spline', fx.spline);
-    const y = side === 'front' ? state.frontYoke : state.rearYoke, mk = type === 'flange' && y.make && y.make !== 'all' ? y.make : '';
+    const y = side === 'front' ? state.frontYoke : state.rearYoke, mk = MAKE_STEP && type === 'flange' && y.make && y.make !== 'all' ? y.make : '';
     if (mk) params.set('make', mk);
     let sa = $('[data-seeall]', root);
     if (!sa) { sa = document.createElement('div'); sa.className = 'dsb-seeall'; sa.dataset.seeall = ''; root.insertBefore(sa, fl); }
@@ -1010,7 +1014,7 @@
     state.materialKey = state.seriesKey ? (aluEligible() && p.get('dsb_material') === 'aluminum' ? 'aluminum' : 'steel') : null;
     if (!f.front_app && p.get('dsb_front') && CFG.frontApps[p.get('dsb_front')]) state.front = p.get('dsb_front');
     if (p.get('dsb_rear') && CFG.rearApps[p.get('dsb_rear')] && rearApps().some(([k]) => k === p.get('dsb_rear'))) state.rear = p.get('dsb_rear');
-    const kinds = ['new', 'used', 'own'], make = (k) => (/^[a-z0-9-]{1,20}$/.test(p.get(k) || '') ? p.get(k) : '');
+    const kinds = ['new', 'used', 'own'], make = (k) => (MAKE_STEP && /^[a-z0-9-]{1,20}$/.test(p.get(k) || '') ? p.get(k) : '');
     if (kinds.includes(p.get('dsb_fy')) && yokeTypeFor(state.front) && f.yoke_choice !== false) state.frontYoke = {kind: p.get('dsb_fy'), product: products[p.get('dsb_fyid')] || null, model: p.get('dsb_fmod') || '', make: make('dsb_fmk')};
     if (kinds.includes(p.get('dsb_ry')) && yokeTypeFor(state.rear)) state.rearYoke = {kind: p.get('dsb_ry'), product: products[p.get('dsb_ryid')] || null, make: make('dsb_rmk')};
     if (['strap', 'ubolt', 'own'].includes(p.get('dsb_hw')) && state.rear === 'weld') state.hardware = {kind: p.get('dsb_hw'), product: products[p.get('dsb_hwid')] || null};

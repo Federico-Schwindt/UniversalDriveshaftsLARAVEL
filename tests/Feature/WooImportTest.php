@@ -87,6 +87,18 @@ class WooImportTest extends TestCase
         $to = array_map(fn ($a) => $a->getAddress(), $sent[0]->getOriginalMessage()->getTo());
         $this->assertSame([$admin], $to);
         $this->assertFalse(MailGuard::allowsPhone('+1 (360) 555-0142'));
+
+        // a verification code the visitor asked for goes out to them (owner, 2026-11-11: no OTP when creating an account)
+        $this->assertNull(\App\Support\EmailOtp::send('register', 'new.visitor@example.com'));
+        $sent = app('mail.manager')->mailer('array')->getSymfonyTransport()->messages();
+        $this->assertCount(2, $sent);
+        $otp = $sent[1]->getOriginalMessage();
+        $this->assertSame(['new.visitor@example.com'], array_map(fn ($a) => $a->getAddress(), $otp->getTo()));
+        $this->assertStringStartsWith('Your verification code', $otp->getSubject());
+        $this->assertFalse($otp->getHeaders()->has(MailGuard::REQUESTED_HEADER), 'the marker never leaves the server');
+        // anything else to a customer is still held back
+        \App\Support\Mailer::simple('c.customer@example.com', 'Still blocked', ['intro' => 'x']);
+        $this->assertCount(2, app('mail.manager')->mailer('array')->getSymfonyTransport()->messages());
     }
 
     public function test_monthly_sales_page_counts_imported_history_in_eastern_months(): void

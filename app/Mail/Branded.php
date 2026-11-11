@@ -17,6 +17,8 @@ class Branded extends Mailable
         if (!empty($this->opts['replyTo'])) $m->replyTo($this->opts['replyTo'][0], $this->opts['replyTo'][1] ?? null);
         if (!empty($this->opts['from'])) $m->from($this->opts['from'][0], $this->opts['from'][1] ?? null);
         foreach ($this->opts['attachments'] ?? [] as $a) $m->attachData($a['data'], $a['name'], ['mime' => $a['mime'] ?? 'application/octet-stream']);
+        // a message the recipient asked for themselves (a verification code): the pre-launch MailGuard lets it through
+        if (!empty($this->opts['requested'])) $m->withSymfonyMessage(fn ($msg) => $msg->getHeaders()->addTextHeader(\App\Support\MailGuard::REQUESTED_HEADER, '1'));
         return $m;
     }
 
