@@ -50,6 +50,9 @@ class CheckinApi
         $sig = 'sha256=' . hash_hmac('sha256', "{$ts}.{$method}.{$path}.{$raw}", (string) config('services.checkin.secret'));
         $req = Http::withHeaders(['X-UDS-Timestamp' => $ts, 'X-UDS-Signature' => $sig, 'Accept' => 'application/json', 'User-Agent' => 'UDS online store'])
             ->timeout((int) config('services.checkin.timeout', 20))->connectTimeout(10);
+        // a server whose own DNS points the station's name elsewhere (this staging box maps it to itself in /etc/hosts):
+        // CHECKIN_API_RESOLVE="driveshaftsindustries.com:443:<real ip>" pins it, like WC_ORIGIN_IP does for the old store
+        if ($pin = (string) config('services.checkin.resolve')) $req = $req->withOptions(['curl' => [CURLOPT_RESOLVE => [$pin]]]);
         if ($raw !== '') $req = $req->withBody($raw, 'application/json');
         $res = $req->send($method, rtrim((string) config('services.checkin.url'), '/') . $path);
         if (!$res->successful()) {

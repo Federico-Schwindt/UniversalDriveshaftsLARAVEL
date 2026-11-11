@@ -115,6 +115,7 @@ return [
         'url' => env('CHECKIN_API_URL'),
         'secret' => env('CHECKIN_API_SECRET'),
         'timeout' => (int) env('CHECKIN_API_TIMEOUT', 20),
+        'resolve' => env('CHECKIN_API_RESOLVE'),   // "host:443:ip", only where local DNS lies about the station
     ],
 
     'twilio' => [
