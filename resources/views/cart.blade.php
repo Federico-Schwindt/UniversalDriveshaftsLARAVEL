@@ -63,6 +63,7 @@
     @else
       @php $freeBase = $freeBase ?? $subtotal; $remaining = max(0, $freeMin - $freeBase); $pct = $freeMin > 0 ? min(100, round($freeBase / $freeMin * 100)) : 100; @endphp
       <div class="cartpage" data-cart>
+        <div class="cartmain">
         <div class="cartlist">
           @foreach($items as $i)
             @php
@@ -99,6 +100,51 @@
           @endforeach
         </div>
 
+          {{-- "Complete the job": parts that fit what is in the cart (App\Services\CompleteJob), below the lines box, not inside it --}}
+          @if(!empty($job['items']) || !empty($job['build']))
+          <section class="cjob" aria-labelledby="cjob-h">
+            <h2 id="cjob-h">{{ __('Complete the job') }}</h2>
+            <ul class="cjob__list">
+              @foreach($job['items'] as $s)
+              <li class="cjob__card">
+                <a class="cjob__img" href="/parts/{{ rawurlencode($s['sku']) }}" tabindex="-1" aria-hidden="true">@if($s['image'])<img src="{{ $s['image'] }}" alt="" loading="lazy" width="80" height="80">@else<x-icon name="package"/>@endif</a>
+                <div class="cjob__info">
+                  <p class="cjob__why">{{ $s['reason'] }}</p>
+                  <a class="cjob__name" href="/parts/{{ rawurlencode($s['sku']) }}"><b>{{ $s['sku'] }}</b> {{ \Illuminate\Support\Str::limit($s['name'], 64) }}</a>
+                  <span class="cjob__price">${{ number_format($s['price'], 2) }}@if($s['unit'] === 'ft') <small>{{ __('per foot') }}</small>@endif</span>
+                </div>
+                @if($s['unit'] === 'ft')
+                  <a class="btn btn-ghost btn-sm cjob__add" href="/parts/{{ rawurlencode($s['sku']) }}">{{ __('Choose length') }}</a>
+                @else
+                  <button type="button" class="btn btn-primary btn-sm cjob__add" data-cjob-add="{{ $s['id'] }}" aria-label="{{ __('Add :sku to cart', ['sku' => $s['sku']]) }}"><x-icon name="cart"/> {{ __('Add') }}</button>
+                @endif
+              </li>
+              @endforeach
+              @if(!empty($job['build']))
+              <li class="cjob__card cjob__card--build">
+                <span class="cjob__img"><x-icon name="wrench"/></span>
+                <div class="cjob__info">
+                  <p class="cjob__why">{{ __('Rather have the shaft built?') }}</p>
+                  <span class="cjob__name">{{ __('We weld, balance and ship it, priced online to your length.') }}</span>
+                </div>
+                <a class="btn btn-ghost btn-sm cjob__add" href="/online-builder">{{ __('Price a custom driveshaft') }}</a>
+              </li>
+              @endif
+            </ul>
+          </section>
+          <script>
+          document.addEventListener('click',function(e){
+            var b=e.target.closest('[data-cjob-add]');if(!b)return;
+            b.disabled=true;
+            fetch('/cart/add',{method:'POST',headers:{'X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').content,'X-Requested-With':'XMLHttpRequest','Accept':'application/json','Content-Type':'application/x-www-form-urlencoded'},
+              body:new URLSearchParams({product_id:b.getAttribute('data-cjob-add'),quantity:1})})
+              .then(function(r){return r.json();}).then(function(d){if(d&&d.success!==false){location.reload();}else{b.disabled=false;window.alert((d&&d.error)||'Error');}})
+              .catch(function(){b.disabled=false;});
+          });
+          </script>
+          @endif
+        </div>{{-- /cartmain --}}
+
         <aside class="cartsum">
           <h2>{!! __('Order summary') !!}</h2>
           <div class="freebar {{ $remaining <= 0 ? 'is-done' : '' }}" data-freebar data-min="{{ $freeMin }}" data-tube="{{ round($subtotal - $freeBase, 2) }}">
@@ -114,6 +160,12 @@
           <div class="cartsum__total"><span>{!! __('Total') !!}</span><span data-total>${{ number_format($subtotal,2) }}</span></div>
           <a href="/checkout" class="btn btn-primary btn-block btn-lg">{!! __('Checkout') !!} <x-icon name="arrow-right"/></a>
           @include('partials.ship-countdown', ['class' => 'shipcd--cart'])
+          @php
+            $arrItems = collect($items)->filter(fn ($i) => ($i['type'] ?? 'product') === 'product' && !empty($i['wp_product_id']))->map(fn ($i) => (int) $i['wp_product_id'] . ':' . (int) $i['qty'])->implode(',');
+            $arrBuilt = collect($items)->contains(fn ($i) => in_array($i['type'] ?? '', ['custom_build', 'premade_build'], true));
+          @endphp
+          @if($arrItems !== '' || $arrBuilt)<p class="arrive arrive--cart" data-arrive data-items="{{ $arrItems }}" @if($arrBuilt) data-built @endif data-zip="{{ \App\Support\Arrival::savedZip(auth()->user()) }}" aria-live="polite"></p>@endif
+          <script src="{{ asset('js/arrival.js') }}?v={{ @filemtime(public_path('js/arrival.js')) }}" defer></script>
           @include('partials.affirm-msg', ['amount' => $subtotal, 'class' => 'affirm-msg--cart'])
           <a href="/shop" class="textlink" style="justify-content:center"><x-icon name="arrow-left"/> {!! __('Keep shopping') !!}</a>
           <p class="cartsum__note">{!! __('Shipping is calculated at checkout. Prices exclude any core charge, which is quoted separately.') !!}</p>

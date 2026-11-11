@@ -335,7 +335,7 @@ class CatalogService
             'pa_thickness' => 'Thickness', 'pa_thread-size' => 'Thread Size', 'pa_thread-dia' => 'Thread Dia', 'pa_bolt-length' => 'Bolt Length', 'pa_bolt-torque' => 'Bolt Torque', 'pa_bolt-type' => 'Bolt Type',
             'pa_inside-dia' => 'Inside Dia', 'pa_outside-dia' => 'Outside Dia', 'pa_outer-dia' => 'Outer Dia', 'pa_bore-dia' => 'Bore Dia', 'pa_bore-type' => 'Bore Type',
             'pa_hex' => 'Hex', 'pa_keyway' => 'Keyway', 'pa_width-1' => 'Width', 'pa_width-2' => 'Width 2', 'pa_height' => 'Height', 'pa_length' => 'Length', 'pa_grade' => 'Grade', 'pa_lube' => 'Lube',
-            'pa_from-tube' => 'From Tube', 'pa_to-tube' => 'To Tube', 'pa_fits-to-tube' => 'Fits to Tube', 'pa_od' => 'OD', 'pa_disc-width' => 'Disc Width', 'pa_seal-o-d' => 'Seal OD', 'pa_seal-height' => 'Seal Height',
+            'pa_from-tube' => 'From Tube', 'pa_to-tube' => 'To Tube', 'pa_fits-to-tube' => 'Fits to Tube', 'pa_od' => 'OD', 'pa_disc-width' => 'Disc Width', 'pa_bracket-wid' => 'Bracket Width', 'pa_seal-o-d' => 'Seal OD', 'pa_seal-height' => 'Seal Height',
         ];
         if (isset($map[$tax])) return $map[$tax];
         static $wc = null;
@@ -375,7 +375,7 @@ class CatalogService
         $thr = max(3, (int) ceil($total * 0.25));
         $keep = [];
         foreach ($rows as $r) {
-            if ($r->taxonomy === 'pa_partn-number') continue;
+            if ($r->taxonomy === 'pa_partn-number' || in_array($r->taxonomy, self::DETAIL_ATTRS, true)) continue;
             if ((int) $r->prods >= $thr) $keep[$r->taxonomy] = ['prods' => (int) $r->prods, 'vals' => (int) $r->vals];
         }
         $has = fn ($t) => isset($keep[$t]);
@@ -383,7 +383,9 @@ class CatalogService
         // dimension attrs = kept minus the classified ones, ordered by coverage
         $dims = array_values(array_filter(array_keys($keep), fn ($t) => !in_array($t, ['pa_series', 'pa_brand', 'pa_style', 'pa_notes'], true)));
         usort($dims, fn ($a, $b) => $keep[$b]['prods'] <=> $keep[$a]['prods']);
-        $dims = array_slice($dims, 0, 6);
+        // the table's own columns (config/catalog_columns.php) keep their place and order; others only fill free slots
+        $pinned = array_values(array_filter((array) config("catalog_columns.$catSlug", []), $has));
+        $dims = array_slice(array_values(array_unique(array_merge($pinned, $dims))), 0, 6);
 
         $cols = [];
         if ($has('pa_series')) $cols[] = ['key' => 'pa_series', 'label' => 'Series'];
@@ -421,7 +423,7 @@ class CatalogService
 
     /**
      * Paginated products with search, sort and per-category attribute columns.
-     * $filters keyed by taxonomy => term-slug. $sort: price_asc|price_desc|part_asc|part_desc|name|attr:<tax>:<dir>.
+     * $filters keyed by taxonomy => term-slug. $sort: popular|price_asc|price_desc|part_asc|part_desc|name|attr:<tax>:<dir>.
      */
     public function products(string $catSlug, array $filters = [], int $page = 1, int $perPage = 60, string $sort = 'price_asc', string $q = '', array $attrKeys = []): array
     {
@@ -478,11 +480,24 @@ class CatalogService
                 ->where('tt2.taxonomy', $atax)->select('tr2.object_id', DB::raw('MAX(t2.name) as av'))->groupBy('tr2.object_id');
             $sel->leftJoinSub($avSub, 'av', 'av.object_id', '=', 'p.ID')->groupBy('av.av')->orderByRaw('av.av+0 ' . $dir)->orderBy('av.av', $dir);
         } else {
+            // WooCommerce's lifetime sales counter (best sellers first)
+            $sales = fn () => $sel->leftJoinSub($this->db()->table('wp_postmeta')->select('post_id', DB::raw('MAX(meta_value+0) as ts'))->where('meta_key', 'total_sales')->groupBy('post_id'), 'ts', 'ts.post_id', '=', 'p.ID')->groupBy('ts.ts');
+            if ($sort === 'relevance' && $q !== '') {
+                // search: the part number itself first (exact, then starting a dash-separated part: "1310" → 5-1310XU), then
+                // part numbers containing it, then title matches; best sellers first inside each band (audit 2026-11-11)
+                $lk = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $q);
+                $sales()->orderByRaw('CASE WHEN sk.sv = ? THEN 0 WHEN sk.sv LIKE ? OR sk.sv LIKE ? THEN 1 WHEN sk.sv LIKE ? THEN 2 ELSE 3 END', [$q, $lk . '%', '%-' . $lk . '%', '%' . $lk . '%'])
+                    ->orderByRaw('COALESCE(ts.ts, 0) desc')->orderBy('sk.sv');
+                $sort = 'done';
+            }
             match ($sort) {
+                'done' => null,
                 'price_desc' => $sel->orderByDesc('pr.pv'),
                 'part_asc' => $sel->orderBy('sk.sv'),
                 'part_desc' => $sel->orderByDesc('sk.sv'),
                 'name' => $sel->orderBy('p.post_title'),
+                // best sellers, then cheapest first among parts that never sold
+                'popular' => $sales()->orderByRaw('COALESCE(ts.ts, 0) desc')->orderBy('pr.pv'),
                 default => $sel->orderBy('pr.pv'),
             };
         }
@@ -706,6 +721,15 @@ class CatalogService
         if ($n <= 0) return $v;
         if ($n >= 1) $n /= 1000;
         return rtrim(rtrim(number_format($n, 3, '.', ''), '0'), '.');
+    }
+
+    /** cleanName() in English, for text that gets stored (cart lines, orders): the display version is translated. */
+    public function cleanNameStored(array $p): string
+    {
+        $loc = app()->getLocale();
+        if ($loc === 'en') return $this->cleanName($p);
+        app()->setLocale('en');
+        try { return $this->cleanName($p); } finally { app()->setLocale($loc); }
     }
 
     public function cleanName(array $p): string
@@ -988,6 +1012,12 @@ class CatalogService
         return $row ? ['slug' => $row->slug, 'name' => html_entity_decode($row->name)] : null;
     }
 
+    /** Spec-sheet details (most copied from PTI, 2026-11-11): shown on the product page, never a table column, never part of
+     *  the fitment signature, so filling them on some parts neither reshapes a category table nor splits identical parts. */
+    public const DETAIL_ATTRS = ['pa_class', 'pa_vented', 'pa_cl-to-washer', 'pa_counter-bore-depth', 'pa_hub-length', 'pa_joint-angle', 'pa_hole-to-hole',
+        'pa_dust-cap', 'pa_midship', 'pa_end-to-radius', 'pa_movement', 'pa_included-parts', 'pa_end-cap', 'pa_set-screw', 'pa_flinger', 'pa_u-bolt-no',
+        'pa_lock-washer-no', 'pa_nut-no', 'pa_bolt-no', 'pa_strap-no', 'pa_oem-manufacturer', 'pa_oem-series', 'pa_differential'];
+
     /** Attributes that describe a part but not its fitment: two parts may differ in these and still interchange. */
     public const NON_FITMENT_ATTRS = ['pa_brand', 'pa_notes', 'pa_partn-number', 'pa_application', 'pa_weight', 'pa_lube', 'pa_material',
         'pa_class', 'pa_grade', 'pa_bolt-torque', 'pa_gasket', 'pa_dust-cover', 'pa_self-locking', 'pa_use-with', 'pa_year-compatibility',
@@ -1006,7 +1036,7 @@ class CatalogService
                 ->join('wp_term_taxonomy as tt', 'tt.term_taxonomy_id', '=', 'tr.term_taxonomy_id')
                 ->join('wp_posts as p', 'p.ID', '=', 'pr.object_id')
                 ->where('pr.term_taxonomy_id', $term->term_taxonomy_id)->where('p.post_type', 'product')->where('p.post_status', 'publish')
-                ->where('tt.taxonomy', 'like', 'pa\_%')->whereNotIn('tt.taxonomy', self::NON_FITMENT_ATTRS)
+                ->where('tt.taxonomy', 'like', 'pa\_%')->whereNotIn('tt.taxonomy', array_merge(self::NON_FITMENT_ATTRS, self::DETAIL_ATTRS))
                 ->distinct()->get(['pr.object_id as pid', 'tt.taxonomy as tax', 'tt.term_id as tid']);
             $sig = [];
             foreach ($rows as $r) $sig[(int) $r->pid][] = $r->tax . '=' . $r->tid;

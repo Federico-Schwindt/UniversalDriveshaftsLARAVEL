@@ -63,7 +63,7 @@ class SeoImportWp extends Command
         // 1. collect the WordPress rules
         $rows = [];
         foreach ($src->table('wp_rank_math_redirections')->where('status', 'active')->get() as $r) {
-            foreach ((@unserialize($r->sources) ?: []) as $s) {
+            foreach ((@unserialize($r->sources, ['allowed_classes' => false]) ?: []) as $s) {
                 if (($s['comparison'] ?? 'exact') !== 'exact' || trim((string) ($s['pattern'] ?? '')) === '') continue;
                 $rows[] = ['source' => $s['pattern'], 'target' => $r->url_to, 'code' => (int) $r->header_code, 'origin' => 'rank_math', 'wp_hits' => (int) $r->hits];
             }

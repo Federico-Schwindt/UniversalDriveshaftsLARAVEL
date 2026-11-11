@@ -43,7 +43,7 @@ class SearchController extends Controller
     {
         $groups = []; $total = 0;
         foreach ($this->matchingCategories($q, 5) as $c) {
-            $data = $this->catalog->products($c['slug'], [], 1, 5, 'part_asc', $q, []);
+            $data = $this->catalog->products($c['slug'], [], 1, 5, 'relevance', $q, []);
             if (!$data['items']) continue;
             $total += $data['total'];
             $groups[] = ['key' => $c['slug'], 'label' => $c['name'], 'total' => $data['total'],
@@ -127,7 +127,7 @@ class SearchController extends Controller
         {
             foreach ($this->matchingCategories($q, 8) as $c) {
                 $schema = $this->catalog->categorySchema($c['slug']);
-                $data = $this->catalog->products($c['slug'], [], 1, 24, 'part_asc', $q, $schema['attrKeys']);
+                $data = $this->catalog->products($c['slug'], [], 1, 24, 'relevance', $q, $schema['attrKeys']);
                 if (!$data['items']) continue;
                 foreach ($data['items'] as &$it) { $it['price'] = $this->price((float) $it['price']); $it['regular'] = $this->price((float) $it['regular']); }
                 unset($it);

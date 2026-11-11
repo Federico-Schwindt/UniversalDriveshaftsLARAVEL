@@ -63,7 +63,9 @@ class CartService
                 'key'           => $hash,
                 'type'          => $item['type'] ?? 'product',
                 'wp_product_id' => $item['wp_product_id'] ?? null,
-                'name'          => $item['name'],
+                // catalog parts carry the product page's title, not the old store's "UDS 5-1310X …" (the SKU shows beside it)
+                'name'          => ($item['type'] ?? 'product') === 'product' && !empty($item['sku'])
+                    ? (app(CatalogService::class)->cleanNameStored(['name' => (string) $item['name'], 'sku' => (string) $item['sku']]) ?: $item['name']) : $item['name'],
                 'sku'           => $item['sku'] ?? '',
                 'image'         => $item['image'] ?? '',
                 'price'         => round((float) $item['price'], 2),

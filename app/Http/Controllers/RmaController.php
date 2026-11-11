@@ -44,6 +44,8 @@ class RmaController extends Controller
             'prefillEmail' => $order->email ?? ($u->email ?? ''),
             'prefillPhone' => $order->phone ?? '',
             'orderNumber' => $order->order_number ?? $num,
+            // opened from an order whose return window has passed: say so instead of showing a form that would be refused
+            'closedOn' => $order && $type !== 'cancel' && \App\Support\Rma::refusal($type, $order) ? \App\Support\Rma::windowEnds($order) : null,
         ]);
     }
 
@@ -61,11 +63,13 @@ class RmaController extends Controller
         ]);
         // a request that names a real order must come from that order's e-mail, so nobody can file a
         // return/exchange/cancellation against someone else's order with just its number
-        if (!empty($d['order_number'])) {
-            $o = DB::table('orders')->where('order_number', $d['order_number'])->first(['email']);
-            if ($o && strcasecmp((string) $o->email, (string) $d['email']) !== 0) {
-                return response()->json(['success' => false, 'message' => __('That order number is not associated with this e-mail address. Use the e-mail from your order confirmation, or leave the order number blank.')], 422);
-            }
+        $o = !empty($d['order_number']) ? DB::table('orders')->where('order_number', $d['order_number'])->first() : null;
+        if ($o && strcasecmp((string) $o->email, (string) $d['email']) !== 0) {
+            return response()->json(['success' => false, 'message' => __('That order number is not associated with this e-mail address. Use the e-mail from your order confirmation.')], 422);
+        }
+        // returns and exchanges: a real order, inside the return window
+        if ($why = \App\Support\Rma::refusal($d['type'], $o, (string) ($d['order_number'] ?? ''))) {
+            return response()->json(['success' => false, 'message' => $why], 422);
         }
         $ref = self::createRequest($d, $r->ip());
         return response()->json(['success' => true, 'ref' => $ref, 'type' => ucfirst($d['type'])]);

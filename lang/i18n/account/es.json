@@ -708,5 +708,17 @@
     "Questions? Reply to our e-mail or call :phone.": "¿Dudas? Responde a nuestro correo o llama al :phone.",
     "Withdrawn": "Retirada",
     "Cancellation": "Cancelación",
-    "Filed :date": "Enviada el :date"
+    "Filed :date": "Enviada el :date",
+    "Please enter your order number. It is in the subject line of your confirmation e-mail. No order number? Call us at :phone.": "Escriba su número de pedido. Está en el asunto del e-mail de confirmación. ¿No lo tiene? Llámenos al :phone.",
+    "We could not find order :n. Check the number in your confirmation e-mail, or call us at :phone.": "No encontramos el pedido :n. Revise el número en su e-mail de confirmación o llámenos al :phone.",
+    "Returns and exchanges can be requested within :days days of delivery. For order :n that time ended on :date. For a warranty claim on a defective part, call us at :phone.": "Las devoluciones y los cambios se pueden pedir dentro de los :days días posteriores a la entrega. Para el pedido :n ese plazo terminó el :date. Para un reclamo de garantía por una pieza defectuosa, llámenos al :phone.",
+    "That order number is not associated with this e-mail address. Use the e-mail from your order confirmation.": "Ese número de pedido no corresponde a este e-mail. Use el e-mail de su confirmación de pedido.",
+    "Unused stock parts, until :date": "Piezas de stock sin usar, hasta el :date",
+    "Returns closed on :date": "Devoluciones cerradas el :date",
+    "14 days after delivery. Defective part? Contact us about the warranty.": "14 días después de la entrega. ¿Pieza defectuosa? Consúltenos por la garantía.",
+    "No order number? Call us at :phone.": "¿No tiene el número de pedido? Llámenos al :phone.",
+    "The return window for this order has closed": "El plazo de devolución de este pedido terminó",
+    "Returns and exchanges can be requested within :days days of delivery. For order :n that time ended on :date.": "Las devoluciones y los cambios se pueden pedir dentro de los :days días posteriores a la entrega. Para el pedido :n ese plazo terminó el :date.",
+    "Defective part? UDS-brand parts carry a 12-month warranty. Call us, or send photos and your order number through the contact page.": "¿Pieza defectuosa? Las piezas marca UDS tienen 12 meses de garantía. Llámenos o envíe fotos y su número de pedido desde la página de contacto.",
+    "Contact us": "Contáctenos"
 }

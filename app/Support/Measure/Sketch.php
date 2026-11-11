@@ -143,6 +143,21 @@ class Sketch
         return '<line class="' . $cls . '" x1="' . self::n($x1) . '" y1="' . self::n($y1) . '" x2="' . self::n($x2) . '" y2="' . self::n($y2) . '"/>';
     }
 
+    /** does this attribute get a callout letter in this drawing */
+    public function has(string $key): bool
+    {
+        return isset($this->codes[$key]);
+    }
+
+    /** add a band of $dh for an extra view, from $from (the lowest point the views above use) or the bottom edge; returns its top */
+    public function extend(float $dh, ?float $from = null): float
+    {
+        $top = $from ?? $this->h;
+        $this->h = max($this->h, $top + $dh);
+
+        return $top;
+    }
+
     /** first of the given attribute keys that has a letter in this category, or null */
     private function pick(string|array $key): ?string
     {
@@ -208,6 +223,34 @@ class Sketch
                 . self::badge($x1 + ($x2 - $x1) * $t, $y1 + ($y2 - $y1) * $t, $this->codes[$k]);
         }
         $this->dims[] = [$k, $m];
+
+        return $this;
+    }
+
+    /**
+     * Angular dimension: an arc of radius $r about $cx,$cy from $a0 to $a1 (degrees, counter-clockwise on screen) with
+     * the letter at mid-arc; on an arc too short to hold the letter the arrows sit outside pointing in and the letter
+     * follows past the $a1 end.
+     */
+    public function angle(string|array $key, float $cx, float $cy, float $r, float $a0, float $a1): static
+    {
+        if (!$k = $this->pick($key)) {
+            return $this;
+        }
+        $pt = fn (float $a) => [$cx + $r * cos(deg2rad($a)), $cy - $r * sin(deg2rad($a))];
+        $ccw = fn (float $a) => atan2(-cos(deg2rad($a)), -sin(deg2rad($a)));   // screen heading when travelling counter-clockwise
+        [$x0, $y0] = $pt($a0);
+        [$x1, $y1] = $pt($a1);
+        if (deg2rad(abs($a1 - $a0)) * $r < 40) {
+            $m = '<path class="md-dl" d="' . self::d(self::arc($cx, $cy, $r, $a0 - rad2deg(15 / $r), $a1 + rad2deg(17 / $r))) . '"/>'
+                . self::arrow($x0, $y0, $ccw($a0)) . self::arrow($x1, $y1, $ccw($a1) + M_PI);
+            [$bx, $by] = $pt($a1 + rad2deg(29 / $r));
+        } else {
+            $m = '<path class="md-dl" d="' . self::d(self::arc($cx, $cy, $r, $a0, $a1)) . '"/>'
+                . self::arrow($x0, $y0, $ccw($a0) + M_PI) . self::arrow($x1, $y1, $ccw($a1));
+            [$bx, $by] = $pt(($a0 + $a1) / 2);
+        }
+        $this->dims[] = [$k, $m . self::badge($bx, $by, $this->codes[$k])];
 
         return $this;
     }

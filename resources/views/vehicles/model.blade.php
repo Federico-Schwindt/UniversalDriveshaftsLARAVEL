@@ -44,11 +44,11 @@
 <script type="application/ld+json">{!! json_encode([
   '@@context' => 'https://schema.org', '@@type' => 'FAQPage',
   'mainEntity' => array_map(fn ($f) => ['@@type' => 'Question', 'name' => $f['q'], 'acceptedAnswer' => ['@@type' => 'Answer', 'text' => $f['a']]], $faq),
-], JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE) !!}</script>
+], JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_HEX_TAG|JSON_HEX_AMP) !!}</script>
 <script type="application/ld+json">{!! json_encode([
   '@@context' => 'https://schema.org', '@@type' => 'ItemList',
   'name' => "$mm driveshafts $span", 'url' => url($url), 'numberOfItems' => $parts, 'itemListElement' => $products,
-], JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE) !!}</script>
+], JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_HEX_TAG|JSON_HEX_AMP) !!}</script>
 @endpush
 @section('content')
 <meta name="csrf-token" content="{{ csrf_token() }}">

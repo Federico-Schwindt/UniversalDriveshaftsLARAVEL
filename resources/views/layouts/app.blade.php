@@ -132,7 +132,8 @@
       </nav>
       <div class="ufoot__contact">
         <h2 class="ufoot__h">{!! __('Universal Driveshafts') !!}</h2>
-        <a href="tel:18135246491"><x-icon name="phone"/> (813) 524-6491</a>
+        {{-- the label is a name, the same in every language (owner, 2026-11-11) --}}
+        <a href="tel:18135246491"><x-icon name="phone"/> (813) 524-6491 &nbsp;Driveline Tech</a>
         <a href="tel:18136445707"><x-icon name="phone"/> {!! __('(813) 644-5707 &nbsp;OEM &amp; fleet') !!}</a>
         <a href="mailto:{{ config('uds.email') }}"><x-icon name="mail"/> {{ config('uds.email') }}</a>
         <form class="unews__form" method="POST" action="/newsletter" data-newsletter>@csrf<input type="text" name="website" tabindex="-1" autocomplete="off" class="unews__hp" aria-hidden="true"><label class="sr-only" for="unews-email">{!! __('E-mail') !!}</label><input id="unews-email" class="unews__in" type="email" name="email" placeholder="{!! __('E-mail for new parts and deals') !!}" required><button class="btn btn-primary btn-sm" type="submit">{!! __('Subscribe') !!}</button></form>

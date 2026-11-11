@@ -35,7 +35,7 @@ class CatalogWriter
             if ($t->taxonomy === 'product_cat') $cats[] = $t->slug;
             elseif (str_starts_with($t->taxonomy, 'pa_')) $attrs[$t->taxonomy][] = html_entity_decode($t->name);
         }
-        $order = @unserialize($meta['_product_attributes'] ?? '') ?: [];
+        $order = @unserialize($meta['_product_attributes'] ?? '', ['allowed_classes' => false]) ?: [];
         $live = DB::table('catalog_live')->where('wp_product_id', $id)->first();
         $images = [];
         if ($live && $live->image) { $images[] = $live->image; foreach (json_decode($live->gallery ?: '[]', true) ?: [] as $g) $images[] = $g; }

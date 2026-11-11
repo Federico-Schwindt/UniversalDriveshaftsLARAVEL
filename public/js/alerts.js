@@ -5,7 +5,7 @@
     return fetch(url, { method: 'POST', headers: { 'X-CSRF-TOKEN': csrf(), 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(data) })
       .then(function (r) { return r.json().then(function (d) { d._status = r.status; return d; }); });
   }
-  function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function show(el, html, err) { if (!el) return; el.hidden = false; el.innerHTML = html; el.classList.toggle('is-err', !!err); }
   function formData(f) { var o = {}; new FormData(f).forEach(function (v, k) { o[k] = v; }); return o; }
   var EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;

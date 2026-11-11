@@ -301,6 +301,38 @@ class PartGlossary
         return $text;
     }
 
+    /**
+     * A spec row's label as customers read it. The attribute names come from the old store ("Cap dia 1", "Brg Dia",
+     * "C l to face"); English gets plain words, a lone "1" drops when there is no "2" twin. Other languages keep their
+     * translated labels (audit 2026-11-11).
+     */
+    public static function specLabel(string $label, array $all = []): string
+    {
+        if (app()->getLocale() !== 'en') return __($label);
+        $twin = preg_match('/^(.*) 1$/', $label, $m) && (isset($all[$m[1] . ' 2']) || isset($all[mb_strtolower($m[1]) . ' 2']));
+        $l = mb_strtolower($twin ? $label : preg_replace('/ 1$/', '', $label));
+        $l = preg_replace(['/\bc l\b/', '/\bu j\b/', '/\bu joint\b/', '/\bu bolt\b/', '/\bo d\b/', '/\bi d\b/', '/^type sp$/'], ['cl', 'u-joint', 'u-joint', 'U-bolt', 'od', 'id', 'type'], $l);
+        $map = ['dia' => 'diameter', 'diam' => 'diameter', 'brg' => 'bearing', 'ctr' => 'center', 'od' => 'OD', 'id' => 'ID', 'cj' => 'CJ',
+            'cl' => 'CL', 'wid' => 'width', 'len' => 'length', 'no' => 'no.', 'num' => 'number of', 'etp' => 'ETP', 'pto' => 'PTO', 'cv' => 'CV',
+            'oem' => 'OEM', 'lg' => 'large', 'sm' => 'small'];
+        $words = array_map(fn ($w) => $map[$w] ?? $w, preg_split('/\s+/', trim($l)));
+        $out = implode(' ', $words);
+        return mb_strtoupper(mb_substr($out, 0, 1)) . mb_substr($out, 1);
+    }
+
+    /** A spec value as customers read it: Y / N flags become Yes / No, and PTI's codes (LD / HD class, N.S.S., INCLUDED) become words. */
+    public static function specValue(string $label, string $value): string
+    {
+        $v = trim(html_entity_decode($value)); $u = strtoupper($v); $l = mb_strtolower($label);
+        if (in_array($l, ['lube', 'greasable', 'self locking', 'dust cover', 'vented', 'midship'], true) && in_array($u, ['Y', 'N', 'YES', 'NO'], true)) {
+            return $u[0] === 'Y' ? __('Yes') : __('No');
+        }
+        if ($l === 'class' && in_array($u, ['LD', 'HD'], true)) return $u === 'LD' ? __('Light duty') : __('Heavy duty');
+        if ($u === 'N.S.S.') return __('Not sold separately');
+        if ($u === 'INCLUDED') return __('Included');
+        return $v;
+    }
+
     /** @return array<int,array{0:string,1:string}> */
     private static function compiled(): array
     {

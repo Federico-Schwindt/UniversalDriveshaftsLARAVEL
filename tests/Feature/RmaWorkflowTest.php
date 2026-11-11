@@ -92,6 +92,43 @@ class RmaWorkflowTest extends TestCase
         $this->actingAs($admin)->get('/admin/rma/' . $rma->id)->assertOk()->assertSee('Replacement sent')->assertSee('Box arrived dented')->assertSee('Reopen');
     }
 
+    /** Owner, 2026-11-11: returns and exchanges only within 14 days of delivery, and nobody can file one after that. */
+    public function test_returns_close_fourteen_days_after_delivery(): void
+    {
+        Mail::fake();
+        $o = $this->order();
+        $form = fn (array $over = []) => $this->postJson('/rma', $over + ['type' => 'return', 'order_number' => $o->order_number, 'name' => 'Sam Lee', 'email' => $o->email, 'product' => '5-153X', 'reason' => 'No longer needed']);
+
+        // delivered 13 days ago: still open, and the order page says until when
+        DB::table('orders')->where('id', $o->id)->update(['shipped_at' => now()->subDays(16), 'delivered_at' => now()->subDays(13)]);
+        $o = DB::table('orders')->find($o->id);
+        $this->get(\App\Support\OrderEvents::statusUrl($o, false))->assertOk()->assertSee('/return-request-form?order=', false)->assertDontSee('Returns closed on');
+        $form()->assertOk()->assertJsonPath('success', true);
+
+        // delivered 15 days ago: refused everywhere
+        DB::table('orders')->where('id', $o->id)->update(['delivered_at' => now()->subDays(15)]);
+        $o = DB::table('orders')->find($o->id);
+        $before = DB::table('rma_requests')->count();
+        $form()->assertStatus(422)->assertJsonPath('success', false)->assertJsonFragment(['message' => \App\Support\Rma::refusal('return', $o)]);
+        $form(['type' => 'exchange'])->assertStatus(422);
+        $this->assertSame($before, DB::table('rma_requests')->count());
+        $this->get(\App\Support\OrderEvents::statusUrl($o, false))->assertOk()->assertDontSee('/return-request-form?order=', false)->assertSee('Returns closed on');
+        $this->get('/return-request-form?order=' . urlencode($o->order_number) . '&e=' . urlencode($o->email))->assertOk()->assertSee('has closed')->assertDontSee('id="rma-form"', false);
+
+        // no delivery scan: counted from the ship date plus transit days
+        DB::table('orders')->where('id', $o->id)->update(['delivered_at' => null, 'shipped_at' => now()->subDays(17)]);
+        $form()->assertOk();
+        DB::table('orders')->where('id', $o->id)->update(['shipped_at' => now()->subDays(20)]);
+        $form()->assertStatus(422);
+
+        // the window can't be skipped by leaving the order out or typing one that doesn't exist
+        $form(['order_number' => ''])->assertStatus(422);
+        $form(['order_number' => 'UDS-NOPE-123'])->assertStatus(422);
+
+        // cancellations follow their own rule
+        $this->assertNull(\App\Support\Rma::refusal('cancel', DB::table('orders')->find($o->id)));
+    }
+
     public function test_mail_failures_are_recorded_not_swallowed(): void
     {
         Mail::shouldReceive('to')->andThrow(new \RuntimeException('SMTP down'));

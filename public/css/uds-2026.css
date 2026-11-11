@@ -2656,6 +2656,10 @@ body.has-ua{padding-bottom:84px}
 .pcard:hover{border-color:var(--line-strong);color:var(--ink)}
 .pcard__media{aspect-ratio:1;display:grid;place-items:center;background:#fff;padding:.6rem;color:var(--ink-faint);font-size:2rem}
 .pcard__media img{width:100%;height:100%;object-fit:contain}
+/* the photo is pinned inside its square: a % height does not resolve in the grid cell, so tall or wide photos (many PTI
+   shots are far from square) grew past the box and covered the part number (owner, /series/1350 on a phone, 2026-11-11) */
+.pcard__media{position:relative;overflow:hidden}
+.pcard__media img{position:absolute;top:.6rem;left:.6rem;width:calc(100% - 1.2rem);height:calc(100% - 1.2rem);max-width:none;max-height:none;object-fit:contain;object-position:center}
 .pcard__body{display:grid;gap:.3rem;padding:.8rem .9rem 1rem;border-top:1px solid var(--line);align-content:start}
 .pcard__sku{font:600 .86rem var(--font-m);color:var(--blue)}
 .pcard__name{font-size:.84rem;line-height:1.35;min-height:2.7em;color:var(--ink-2)}
@@ -3754,3 +3758,84 @@ button.p-alt span{display:none}
 .pdp-md .md-svg{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .pdp-md .md-dim{cursor:pointer;outline:none}
 .pdp-md .md-dim:focus-visible .md-badge-o{stroke-width:2.6}
+
+/* ==== AUDIT 2026-11-11 ==== */
+/* home on phones: ways to buy and the trust row as 2 x 2 instead of four tall cards each */
+@media (max-width:480px){
+  .hm-ways,.hm-trust{grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}
+  .hm-ways a{padding:.8rem .5rem}
+  .hm-ways span,.hm-trust span{font-size:.76rem}
+  .hm-trust{padding:.8rem 0}
+}
+/* category tiles on phones: words wrap whole ("Stub & Midshi / p Shaft"); a smaller photo leaves room for "Transmission" */
+@media (max-width:560px){
+  .ctile{grid-template-columns:44px minmax(0,1fr);column-gap:.5rem;padding:.5rem}
+  .ctile__img{width:44px;overflow:hidden}
+  .ctile__img img{transform:scale(1.18)}   /* the 4:3 category photos have white margins; fill the small square more */
+  .ctile__name{font-size:.8rem;hyphens:manual}
+}
+/* home component tiles fill whole rows: 20 categories = 4 rows of 5 (6 across left 2 alone on the last row) */
+@media (min-width:1200px){.hm-sec .ctiles{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media (min-width:761px) and (max-width:1199.98px){.hm-sec .ctiles{grid-template-columns:repeat(4,minmax(0,1fr))}}
+/* product page card rows: one full row of 6 (3 + 3 on tablets); phones keep the swipe row with all of them */
+@media (min-width:1200px){.ba-also .pgrid,.pdp__rel .pgrid{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media (min-width:761px) and (max-width:1199.98px){.ba-also .pgrid,.pdp__rel .pgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:761px){.ba-also .pgrid>:nth-child(n+7),.pdp__rel .pgrid>:nth-child(n+7){display:none}}
+/* sidebar part counts: readable on the dark rail (was 4.0:1 at 11px) */
+.sb__list small{color:#8b9ab0}
+/* photos pinned inside their boxes: tall or wide photos (many PTI shots are far from square) were cropped by
+   overflow:hidden or covered text, because a % height does not resolve in these grid cells (owner, 2026-11-11) */
+.pdp__stage{--stage-pad:clamp(1rem,.5rem + 2vw,2rem)}
+.pdp__stage img{position:absolute;top:var(--stage-pad);left:var(--stage-pad);width:calc(100% - 2*var(--stage-pad));height:calc(100% - 2*var(--stage-pad));max-width:none;max-height:none}
+.pdp__sticky-media{position:relative}
+.pdp__sticky-media img{position:absolute;inset:0;width:100%;height:100%;max-width:none;max-height:none}
+.uhubcard__media{position:relative}
+.uhubcard__media img{position:absolute;top:1rem;left:1rem;width:calc(100% - 2rem);height:calc(100% - 2rem);max-width:none;max-height:none}
+.guide-hub .uhubcard__media img{top:0;left:0;width:100%;height:100%}
+/* checkout band in the current look: no kicker, no pill badges, no teal (teal is for in stock / go) */
+.ck-trust{gap:.35rem 1.2rem}
+.ck-trust span{background:none;border:0;border-radius:0;padding:0;color:#c3cde0}
+.ck-trust svg{fill:#8fb0ea}
+.ck-steps .st.done{color:#fff}
+.ck-steps .st.done i{background:var(--blue);border-color:var(--blue);color:#fff}
+.ck-steps .ln.done{background:var(--blue)}
+/* wallet buttons: the row is reserved while Stripe loads (the form used to jump ~180px down) */
+.co-express.is-loading #express-btns{min-height:48px;border-radius:var(--r);background:var(--paper-2)}
+/* delivery date (js/arrival.js): one quiet line under the stock line and in the cart summary */
+.arrive{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem .6rem;margin:.45rem 0 0;font-size:.88rem;color:var(--ink-2);min-height:1.6rem}
+.arrive:empty{display:none}
+.arrive__i{width:18px;height:18px;flex:none;color:var(--blue)}
+.arrive__t b{color:var(--ink);font-weight:600}
+.arrive__t small{display:inline;font-size:.8rem;color:var(--ink-3)}
+.arrive.is-loading{color:var(--ink-3)}
+.arrive__chg,.arrive__ask,.arrive__loc{padding:0;border:0;background:none;color:var(--blue);font:600 .84rem var(--font-b);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.arrive__f{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem .5rem}
+.arrive__f input{width:6.5rem;height:36px;padding:0 .6rem;border:1px solid var(--line-strong);border-radius:var(--r-sm);font:500 .9rem var(--font-m);background:#fff}
+.arrive__go{height:36px;padding:0 .8rem;border:1px solid var(--blue);border-radius:var(--r-sm);background:var(--blue);color:#fff;font:600 .84rem var(--font-b);cursor:pointer}
+.arrive__err{flex-basis:100%;color:var(--red);font-size:.8rem}
+.arrive__err:empty{display:none}
+.arrive--cart{margin:.6rem 0 0;justify-content:center;text-align:center}
+/* cart: "Complete the job" (App\Services\CompleteJob) — parts matched on fitment, under the cart lines */
+.cjob{margin-top:1.5rem}
+.cjob h2{margin:0 0 .7rem;font-size:1.05rem}
+.cjob__list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:.6rem}
+.cjob__card{display:grid;grid-template-columns:64px minmax(0,1fr) auto;align-items:center;gap:.75rem;padding:.7rem .8rem;background:#fff;border:1px solid var(--line);border-radius:var(--r)}
+.cjob__img{position:relative;display:grid;place-items:center;width:64px;height:64px;color:var(--blue);font-size:1.6rem}
+.cjob__img img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.cjob__info{min-width:0;display:flex;flex-direction:column;gap:.15rem}
+.cjob__why{margin:0;font-size:.78rem;color:var(--ink-3);line-height:1.35}
+.cjob__name{font-size:.86rem;line-height:1.3;color:var(--ink);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.cjob__name b{font-family:var(--font-m);font-weight:600;color:var(--blue)}
+.cjob__price{font:600 .92rem var(--font-m);color:var(--ink)}
+.cjob__price small{font:500 .74rem var(--font-b);color:var(--ink-3)}
+.cjob__add{white-space:nowrap}
+.cjob__card--build{background:var(--paper-2)}
+@media (max-width:480px){
+  .cjob__list{grid-template-columns:1fr}
+  .cjob__card{grid-template-columns:56px minmax(0,1fr);row-gap:.5rem}
+  .cjob__img{width:56px;height:56px}
+  .cjob__add{grid-column:1/-1;justify-content:center}
+}
+.pcard__why{display:block;margin-top:.2rem;font-size:.74rem;line-height:1.35;color:var(--ink-3)}
+.cartmain{min-width:0}
+.cartmain .cjob{margin-top:1.25rem}

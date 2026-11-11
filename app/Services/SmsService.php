@@ -54,6 +54,16 @@ class SmsService
         return null;
     }
 
+    /** Area codes inside +1 that are other countries (Caribbean, Bermuda): a classic target for SMS pumping. */
+    private const NANP_ABROAD = ['242', '246', '264', '268', '284', '345', '441', '473', '649', '658', '664', '721', '758', '767', '784', '809', '829', '849', '868', '869', '876'];
+
+    /** A U.S. (territories included) or Canadian number: texts nobody has paid for go only to these. */
+    public static function domestic(string $phone): bool
+    {
+        $to = self::e164($phone);
+        return $to !== null && preg_match('/^\+1(\d{3})\d{7}$/', $to, $m) === 1 && !in_array($m[1], self::NANP_ABROAD, true);
+    }
+
     /** "…6491" for logs. */
     public static function mask(string $phone): string
     {

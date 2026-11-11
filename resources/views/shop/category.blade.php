@@ -2,7 +2,7 @@
 @php
   $page = (int) $data['page'];
   $cleanPath = '/shop/' . $group['slug'] . '/' . $cat['slug'];
-  $isFiltered = $q !== '' || !empty($filters) || ($sort !== 'price_asc');
+  $isFiltered = $q !== '' || !empty($filters) || ($sort !== 'popular');
   $count = (int) $data['total'];
   $seriesNames = array_column($catSeries, 'name');
   $catName = \App\Support\PartGlossary::t($cat['name']);
@@ -45,6 +45,7 @@
 .ucathead__series{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem;margin-top:1rem;font-size:.84rem;color:var(--ink-faint)}
 .ucathead__series a{font-family:var(--font-m);font-weight:600;font-size:.8rem;padding:.3rem .6rem;border-radius:var(--r-sm);background:#fff;border:1px solid var(--line);color:var(--blue)}
 .ucathead__series a:hover{border-color:var(--blue)}
+.ucathead__series a.is-on{background:var(--blue);border-color:var(--blue);color:#fff}.ucathead__series a.is-on small{color:rgba(255,255,255,.75)}
 .ucathead__series a small{font-weight:500;color:var(--ink-faint);margin-left:.3rem}
 </style>
 @endpush
@@ -77,7 +78,7 @@
     ], fn ($v) => $v !== null),
   ])->all();
 @endphp
-<script type="application/ld+json">{!! json_encode(['@@context' => 'https://schema.org', '@type' => 'CollectionPage', 'name' => $cat['name'], 'url' => $absBase . $cleanPath, 'description' => $first ?: $desc, 'mainEntity' => ['@type' => 'ItemList', 'numberOfItems' => $count, 'itemListOrder' => 'https://schema.org/ItemListOrderAscending', 'itemListElement' => $items]], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+<script type="application/ld+json">{!! json_encode(['@@context' => 'https://schema.org', '@type' => 'CollectionPage', 'name' => $cat['name'], 'url' => $absBase . $cleanPath, 'description' => $first ?: $desc, 'mainEntity' => ['@type' => 'ItemList', 'numberOfItems' => $count, 'itemListOrder' => 'https://schema.org/ItemListOrderAscending', 'itemListElement' => $items]], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) !!}</script>
 @endif
 @endpush
 
@@ -100,10 +101,12 @@
     @if($catSeries)
       <nav class="ucathead__series" aria-label="{{ __('Series in this category') }}">
         <span>{{ __('By series:') }}</span>
+        {{-- filter this table in place (audit 2026-11-11: the chips used to leave for /series/…, with counts that did not match) --}}
+        @php $onSeries = $filters['pa_series'] ?? null; @endphp
         @foreach(array_slice($catSeries, 0, 12, true) as $slug => $sv)
-          <a href="/series/{{ $slug }}" title="{{ __('All :series series parts', ['series' => $sv['name']]) }}">{{ \App\Support\PartGlossary::t($sv['name']) }}<small>{{ $sv['count'] }}</small></a>
+          <a href="/shop/{{ $group['slug'] }}/{{ $cat['slug'] }}{{ $onSeries === $slug ? '' : '?series=' . $slug }}" @if($onSeries === $slug) aria-current="true" class="is-on" @endif title="{{ __(':series series :type', ['series' => $sv['name'], 'type' => mb_strtolower(\App\Support\PartGlossary::t($cat['name']))]) }}">{{ \App\Support\PartGlossary::t($sv['name']) }}<small>{{ $sv['count'] }}</small></a>
         @endforeach
-        <a href="/series" style="color:var(--ink-2)">{{ __('All series') }}</a>
+        @if($onSeries)<a href="/shop/{{ $group['slug'] }}/{{ $cat['slug'] }}" style="color:var(--ink-2)">{{ __('All series') }}</a>@endif
       </nav>
     @endif
   </div>
@@ -124,6 +127,7 @@
       @endforeach
       <select class="sortsel" id="shop-sort" aria-label="{{ __('Sort results') }}" style="margin-left:auto">
         @if(str_starts_with($sort,'attr:'))<option value="{{ $sort }}" selected>{{ __('Sorted by column') }}</option>@endif
+        <option value="popular" @selected($sort==='popular')>{{ __('Most popular') }}</option>
         <option value="price_asc" @selected($sort==='price_asc')>{{ __('Price: low to high') }}</option>
         <option value="price_desc" @selected($sort==='price_desc')>{{ __('Price: high to low') }}</option>
         <option value="part_asc" @selected($sort==='part_asc')>{{ __('Part number: A to Z') }}</option>

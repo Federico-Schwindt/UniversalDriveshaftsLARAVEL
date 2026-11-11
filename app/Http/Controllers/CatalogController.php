@@ -61,9 +61,9 @@ class CatalogController extends Controller
             if (is_string($sv) && isset($this->catalog->categorySeries($cat)[$sv])) $filters['pa_series'] = $sv; else $drop[] = 'series';
         }
         $sortIn = $r->query('sort');
-        $sorts = array_merge(['price_asc', 'price_desc', 'part_asc', 'part_desc', 'name'],
+        $sorts = array_merge(['popular', 'price_asc', 'price_desc', 'part_asc', 'part_desc', 'name'],
             ...array_map(fn ($c) => ["attr:{$c['key']}:asc", "attr:{$c['key']}:desc"], $schema['columns']));
-        $sort = is_string($sortIn) && in_array($sortIn, $sorts, true) ? $sortIn : 'price_asc';
+        $sort = is_string($sortIn) && in_array($sortIn, $sorts, true) ? $sortIn : 'popular';   // best sellers first (audit 2026-11-11: price order put an industrial GUA1 joint on top)
         if ($sortIn !== null && $sortIn !== $sort) $drop[] = 'sort';
         $qIn = $r->query('q');
         if ($qIn !== null && !is_string($qIn)) $drop[] = 'q';

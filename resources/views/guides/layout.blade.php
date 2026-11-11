@@ -41,7 +41,7 @@
   'publisher' => ['@@id' => $base . '/#organization'],
   'about' => ['@@type' => 'Thing', 'name' => 'Driveshaft'],
   'isPartOf' => ['@@type' => 'CollectionPage', '@@id' => $base . '/guides', 'name' => 'Driveshaft guides'],
-], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) !!}</script>
 @include('partials.breadcrumb-schema', ['crumbs' => [[__('Home'), $base . '/'], [__('Guides'), $base . '/guides'], [$crumbName, $pageUrl]]])
 @endpush
 

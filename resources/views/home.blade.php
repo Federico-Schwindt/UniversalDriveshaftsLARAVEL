@@ -31,7 +31,6 @@
   </picture>
   <div class="wrap hm-top__grid">
   <div class="hm-intro">
-    <p class="hm-intro__tag">{!! __('Driveshaft components, complete driveshafts and performance, shipped from Florida') !!}</p>
     <h1>{!! __('Driveshaft parts and complete driveshafts') !!}</h1>
     <p>{!! __('U-joints, yokes, center support bearings, flanges and tubing from 1310 to 1810 series. Stock orders placed by 2 pm EST ship the same day.') !!}</p>
     <div class="hm-intro__cta">

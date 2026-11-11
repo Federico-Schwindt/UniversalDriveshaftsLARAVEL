@@ -82,7 +82,7 @@
     s.push('review');
     return s;
   }
-  const PHASES = [['Vehicle', ['tree']], ['Shaft', ['series', 'material']], ['Ends', ['front', 'rear', 'rear_yoke', 'rear_pick', 'hardware']],
+  const PHASES = [['Application', ['tree']], ['Shaft', ['series', 'material']], ['Ends', ['front', 'rear', 'rear_yoke', 'rear_pick', 'hardware']],
     ['Length', ['measure', 'speed']], ['Your price', ['options', 'front_yoke', 'front_pick', 'review']]];
   const STEP_NAMES = {series: 'U-joint series', material: 'Tube material', front: 'Front end', rear: 'Rear end', rear_yoke: 'Rear yoke', rear_pick: 'Pick the yoke', hardware: 'Rear hardware', measure: 'Measurements', speed: 'Speed check', options: 'Build options', front_yoke: 'Front yoke', front_pick: 'Pick the yoke', review: 'Your driveshaft'};
 
@@ -212,7 +212,10 @@
     $('[data-progress-name]').textContent = t(PHASES[stage][0]) + (sub && sub !== t(PHASES[stage][0]) ? ' · ' + sub : '');
     const frac = state.step === 'tree' ? Math.min(.9, state.answers.length / 5) : (k + 1) / (inStage.length + 1);
     $('[data-progress-bar]').style.width = Math.round(100 * (stage + frac) / PHASES.length) + '%';
-    $('[data-back]').disabled = state.step === 'tree' && !state.answers.length;
+    const first = state.step === 'tree' && !state.answers.length;
+    $('[data-back]').disabled = first;
+    // nothing to sum up before the first answer: the dock stays out of the way
+    const dock = document.querySelector('.bld-dock'); if (dock) dock.classList.toggle('is-empty', first);
   }
   function showStep(name, opts) {
     opts = opts || {};
@@ -916,6 +919,8 @@
     put('dsb_a1', state.a1); put('dsb_c1', state.c1); if (state.tier === 'new') p.set('dsb_tier', 'new');
     put('dsb_mph', state.speed.mph); put('dsb_ratio', state.speed.ratio); put('dsb_tire', state.speed.tire);
     Object.entries(state.amOptions || {}).forEach(([k, v], i) => { if (v) p.set('dsb_o' + i, k + '=' + v); });
+    // the optional steps already passed (speed check, supplier options), so a shared link or the assistant's link opens where it was left
+    put('dsb_seen', (state.speedSeen ? 's' : '') + (state.optionsSeen ? 'o' : ''));
     put('dsb_step', state.step === 'tree' ? '' : state.step);
     return p;
   }
@@ -929,7 +934,7 @@
     try { history[push && history.state ? 'pushState' : 'replaceState']({dsb: 1}, '', url); } catch (e) { /* ignore */ }
   }
   function restore(p) {
-    Object.assign(state, {step: 'tree', node: 'start', answers: [], family: null, dutyKey: null, subcatKey: null, seriesKey: null, variant: '', materialKey: null, front: null, rear: null, a1: '', c1: '', tier: 'certified', quote: null, tubeOd: '', speed: {mph: '', ratio: '', tire: ''}});
+    Object.assign(state, {step: 'tree', node: 'start', answers: [], family: null, dutyKey: null, subcatKey: null, seriesKey: null, variant: '', materialKey: null, front: null, rear: null, a1: '', c1: '', tier: 'certified', quote: null, tubeOd: '', speed: {mph: '', ratio: '', tire: ''}, speedSeen: false, optionsSeen: false});
     state.frontYoke = {kind: '', product: null, model: ''}; state.rearYoke = {kind: '', product: null}; state.hardware = {kind: '', product: null};
     const path = (p.get('dsb_p') || '').split('.').filter((x) => x !== '').map(Number);
     for (const idx of path) {
@@ -960,6 +965,7 @@
     if (p.get('dsb_tier') === 'new' || state.materialKey === 'aluminum') state.tier = 'new';
     state.amOptions = {}; for (let i = 0; i < 6; i++) { const kv = p.get('dsb_o' + i); if (kv && kv.includes('=')) state.amOptions[kv.slice(0, kv.indexOf('='))] = kv.slice(kv.indexOf('=') + 1); }
     state.speed = {mph: parseFloat(p.get('dsb_mph')) > 0 ? p.get('dsb_mph') : '', ratio: parseFloat(p.get('dsb_ratio')) > 0 ? p.get('dsb_ratio') : '', tire: parseFloat(p.get('dsb_tire')) > 0 ? p.get('dsb_tire') : ''};
+    const seen = p.get('dsb_seen') || ''; state.speedSeen = seen.includes('s'); state.optionsSeen = seen.includes('o');
     // products that are not cached yet are fetched by id (the kind stays; the pick step reopens if it fails)
     const fetches = [];
     const want = (y, app, id) => { if (y.kind === 'new' && !y.product && id) fetches.push(fetch(CFG.endpoints.yokes + '?' + new URLSearchParams({type: yokeTypeFor(app), id})).then((r) => r.json()).then(({data}) => { const pr = (data.products || [])[0]; if (pr) { remember(pr); y.product = pr; } }).catch(() => {})); };

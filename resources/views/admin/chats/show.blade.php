@@ -136,7 +136,7 @@
   var ID = {{ (int) $c->id }};
   var log = document.querySelector('[data-chat-log]'), form = document.querySelector('[data-chat-reply]'), modeEl = document.querySelector('[data-chat-mode]');
   var CSRF = (document.querySelector('meta[name="csrf-token"]') || {}).content || '', last = 0;
-  var esc = function (s) { var d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
   var money = function (n) { return '$' + Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
   var get = function (u) { return fetch(u, { headers: { 'Accept': 'application/json' }, credentials: 'same-origin' }).then(function (r) { return r.json(); }); };
 
@@ -169,7 +169,7 @@
   function side(d) {
     var p = d.presence;
     nowEl.innerHTML = p ? '<div class="now"><span class="dot ' + (p.online ? 'dot--ok' : '') + '" aria-hidden="true"></span><div><div class="small muted">' + (p.online ? 'On the site now' : 'Last seen ' + esc(p.ago)) + '</div>' +
-      '<a href="' + esc(p.url) + '" target="_blank" rel="noopener">' + esc((p.title || p.url || '').replace(/\s*[·|–-]\s*Universal Driveshafts.*$/, '') || p.url) + '</a><div class="small muted mono">' + esc(p.url) + '</div>' +
+      '<a href="' + esc(/^\/(?![\/\\])/.test(p.url || '') ? p.url : '#') + '" target="_blank" rel="noopener">' + esc((p.title || p.url || '').replace(/\s*[·|–-]\s*Universal Driveshafts.*$/, '') || p.url) + '</a><div class="small muted mono">' + esc(p.url) + '</div>' +
       (p.device ? '<div class="small muted">' + esc(p.device) + (p.ip ? ' · ' + esc(p.ip) : '') + '</div>' : '') + '</div></div>' : '<span class="muted small">No visits recorded yet.</span>';
     errEl.textContent = d.errors ? d.errors + ' error' + (d.errors > 1 ? 's' : '') + ' today' : '';
     errEl.style.color = d.errors ? 'var(--err)' : '';

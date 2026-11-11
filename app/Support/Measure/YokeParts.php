@@ -30,6 +30,91 @@ trait YokeParts
     }
 
     /**
+     * "Max. joint angle" view in a band under the drawing, only when the part lists the angle: this yoke across its
+     * ears holding the cross, the mating yoke in phantom swung about the cross to the angle (drawn at the part's own
+     * value, kept between 12° and 40° so the view stays readable) and the angle between the two shaft axes.
+     * $double: a double cardan head, flange yoke to tube yoke with the centre yoke between, half the angle at each cross.
+     * $from: the lowest point the drawing's own views use, so the band starts right under them.
+     */
+    private static function jointAngle(Sketch $s, array $vals, bool $double, float $from): void
+    {
+        if (!$s->has('pa_joint-angle')) {
+            return;
+        }
+        $deg = (float) preg_replace('/[^\d.]/', '', (string) ($vals['pa_joint-angle'] ?? ''));
+        $deg = max(12, min(40, $deg ?: 25));
+        // a yoke across its ears, cross centre at 0,0, opening towards +x; $neck = where its shaft ends
+        $fork = fn (float $neck) => [['M', 14, -30], ['L', -24, -30], ['C', -34, -30, -40, -14, -48, -12], ['L', $neck, -12], ['L', $neck, 12], ['L', -48, 12],
+            ['C', -40, 14, -34, 30, -24, 30], ['L', 14, 30], ['Q', 20, 30, 20, 24], ['Q', 20, 18, 14, 18], ['L', -4, 18], ['C', -14, 18, -18, 10, -18, 0],
+            ['C', -18, -10, -14, -18, -4, -18], ['L', 14, -18], ['Q', 20, -18, 20, -24], ['Q', 20, -30, 14, -30], ['Z']];
+        // drawn $z times the size of these figures, turned $a degrees counter-clockwise on screen about $ox,$oy;
+        // $flip mirrors the part first (opening towards -x)
+        $rot = fn (float $ox, float $oy, float $a, float $z, bool $flip = false) => function ($x, $y) use ($ox, $oy, $a, $z, $flip) {
+            $x = ($flip ? -$x : $x) * $z;
+            $y *= $z;
+            $c = cos(deg2rad($a));
+            $n = sin(deg2rad($a));
+
+            return [$ox + $x * $c + $y * $n, $oy - $x * $n + $y * $c];
+        };
+        $sin = sin(deg2rad($deg));
+
+        if (!$double) {
+            $z = 1.35;
+            $up = max(30, 134 * $sin + 12) * $z;      // centre line of the swung shaft above the cross
+            $top = $s->extend(16 + $up + 30 * $z + 34, $from);
+            $ox = 214;
+            $oy = $top + 16 + $up;
+            $tf = $rot($ox, $oy, 0, $z);
+            $s->shape($fork(-100), 'md-part', $tf, 'cast');
+            // the cross: trunnions in the ear bores, body at the centre
+            $s->shape([['M', -5, -18], ['L', 5, -18], ['L', 5, 18], ['L', -5, 18], ['Z']], 'md-part', $tf, 'cyv');
+            foreach ([-1, 1] as $m) {
+                $s->hid(-7, $m * 18, -7, $m * 30, $tf)->hid(7, $m * 18, 7, $m * 30, $tf);
+            }
+            $s->circle($ox, $oy, 9 * $z, 'md-part', 'cast')->circle($ox, $oy, 4 * $z, 'md-edge');
+            // the mating yoke, ear on: the ear round the cross and its shaft, in phantom
+            $mate = array_merge([['M', 30, -15], ['L', 0, -15]], array_slice(Sketch::arc(0, 0, 15, 90, 270, true), 1),
+                [['L', 30, 15], ['C', 38, 15, 42, 12, 48, 12], ['L', 104, 12], ['M', 104, -12], ['L', 48, -12], ['C', 42, -12, 38, -15, 30, -15]]);
+            $s->shape($mate, 'md-ph', $rot($ox, $oy, $deg, $z));
+            $s->cl(-110, 0, 134, 0, $tf)->cl(0, -40, 0, 40, $tf)->cl(0, 0, 134, 0, $rot($ox, $oy, $deg, $z));
+            $s->angle('pa_joint-angle', $ox, $oy, 118 * $z, 0, $deg);
+            $s->note($ox + 12 * $z, $oy + 30 * $z + 26, 'Max. joint angle');
+
+            return;
+        }
+        // double cardan: flange yoke level, centre yoke at half the angle, tube yoke (and tube) at the full angle
+        $d = 30;
+        $phi = $deg / 2;
+        $up = max(44, 190 * $sin + 8);
+        $top = $s->extend(14 + $up + 44 + 30, $from);
+        $ox = 196;
+        $oy = $top + 14 + $up;
+        $u = fn (float $a) => [cos(deg2rad($a)), -sin(deg2rad($a))];
+        [$ux, $uy] = $u($phi);
+        [$c1x, $c1y] = [$ox - $d * $ux, $oy - $d * $uy];
+        [$c2x, $c2y] = [$ox + $d * $ux, $oy + $d * $uy];
+        $s->shape($fork(-66), 'md-part', $rot($c1x, $c1y, 0, 1), 'cast');
+        $s->shape([['M', -78, -44], ['L', -66, -44], ['L', -66, 44], ['L', -78, 44], ['Z']], 'md-part', $rot($c1x, $c1y, 0, 1), 'cyh');   // the flange
+        $s->shape($fork(-64), 'md-part', $rot($c2x, $c2y, $deg, 1, true), 'cast');
+        foreach ([-1, 1] as $m) {   // the tube on the tube yoke, in phantom
+            $s->line(64, $m * 16, 116, $m * 16, 'md-ph', $rot($c2x, $c2y, $deg, 1));
+        }
+        $s->shape([['M', -$d - 6, -22], ['L', $d + 6, -22], ['Q', $d + 22, -22, $d + 22, 0], ['Q', $d + 22, 22, $d + 6, 22], ['L', -$d - 6, 22],
+            ['Q', -$d - 22, 22, -$d - 22, 0], ['Q', -$d - 22, -22, -$d - 6, -22], ['Z']], 'md-part', $rot($ox, $oy, $phi, 1), 'cast');
+        foreach ([[$c1x, $c1y], [$c2x, $c2y]] as [$x, $y]) {
+            $s->circle($x, $y, 11, 'md-part', 'face')->circle($x, $y, 7.5, 'md-edge');
+        }
+        // the two shaft axes meet at $p, d / cos(half angle) from each cross
+        [$tx, $ty] = $u($deg);
+        $k = $d / cos(deg2rad($phi));
+        [$px, $py] = [$c2x - $k * $tx, $c2y - $k * $ty];
+        $s->cl($c1x - 84, $c1y, $px + 190, $py)->cl($px, $py, $px + 190 * $tx, $py + 190 * $ty);
+        $s->angle('pa_joint-angle', $px, $py, 172, 0, $deg);
+        $s->note($ox + 40, $oy + 44 + 22, 'Max. joint angle');
+    }
+
+    /**
      * half section across the ears with the flange below + the flange face. The CV version has its ears bridged
      * over the cross, with the socket for the centring ball on top.
      */
@@ -73,6 +158,7 @@ trait YokeParts
         $s->cl($fx - 98, $fy, $fx + 98, $fy)->cl($fx, $fy - 98, $fx, $fy + 98);
         self::bolts($s, $fx, $fy, $bc, 8, 4, ['bc' => [1, 3], 't' => .12, 'dia' => [0, 45], 'count' => [284, $fy - 98], 'countHole' => 1]);
 
+        self::jointAngle($s, $vals, false, $cv ? 270 : 228);
         return $s;
     }
 
@@ -119,12 +205,13 @@ trait YokeParts
         $ty = $stud ? 130 : 118;
         self::tube($s, 372, $ty, 62, 55, $ty + 98);
 
+        self::jointAngle($s, $vals, false, $stud ? 252 : 240);
         return $s;
     }
 
-    public static function ballStudYoke(array $codes): Sketch
+    public static function ballStudYoke(array $codes, array $vals = []): Sketch
     {
-        return self::weldYoke($codes, [], true);
+        return self::weldYoke($codes, $vals, true);
     }
 
     /** half section (ears left, hub right) + the hub end: splined bore, or a round bore with keyway for PTO yokes */
@@ -185,23 +272,28 @@ trait YokeParts
         $x1 = $cx + 58;
         $x2 = $cx + 244;
         if ($trans) {
+            // the spline runs through to the throat floor, where the nut's washer bears
             $r = 30;
-            self::turned($s, [[$x1 - 2, $r], [$x2 - 3, $r], [$x2, $r - 3]], $cy, ['cut' => true, 'bores' => [[[$x1 + 14, 19], [$x2 - 20, 19], [$x2 - 20, 24], [$x2, 24]]]]);
-            $s->line($x1 + 14, $cy - 16, $x2 - 20, $cy - 16, 'md-edge');
+            self::turned($s, [[$x1 - 2, $r], [$x2 - 3, $r], [$x2, $r - 3]], $cy, ['cut' => true, 'bores' => [[[$x1 - 2, 19], [$x2 - 20, 19], [$x2 - 20, 24], [$x2, 24]]]]);
+            $s->line($x1 - 2, $cy - 16, $x2 - 20, $cy - 16, 'md-edge');
             $s->dimV('pa_hub-dia', $cy - $r, $cy + $r, $x2 + 24, $x2, $x2);
+            $s->dimH('pa_hub-length', $x1, $x2, $cy - $r - 36, $cy - $r, $cy - $r);
+            $s->dimH('pa_counter-bore-depth', $x2 - 20, $x2, $cy - $r - 14, $cy - 24, $cy - 24);
         } else {
             $r = 34;
             self::turned($s, [[$x1 - 2, $r], [$x2 - 22, $r], [$x2 - 22, $r - 2], [$x2 - 16, $r - 2], [$x2 - 16, $r], [$x2 - 3, $r], [$x2, $r - 3]], $cy,
                 ['cut' => true, 'bores' => [[[$x1 - 2, 26], [$x1 + 17, 26], [$x1 + 17, 23], [$x2, 23]]]]);
             $s->line($x1 + 17, $cy - 19.5, $x2, $cy - 19.5, 'md-edge');
         }
-        self::yoke($s, 'left', $cx, $cy, $x1 - $cx + 1, 2 * $r, ['series' => [22, 24], 'cut' => true] + ($trans ? [] : ['bore' => [26, 47]]));
+        self::yoke($s, 'left', $cx, $cy, $x1 - $cx + 1, 2 * $r, ['series' => [22, 24], 'cut' => true, 'bore' => $trans ? [19, 47] : [26, 47]]);
         if (!$trans) {   // the spline bore runs through to the throat, closed there by a plug
             $s->rect($cx + 47, $cy - 26, 3.5, 26, 'md-part', 0, 'cyv');
             $s->hid($cx + 47, $cy, $cx + 47, $cy + 26)->hid($cx + 50.5, $cy, $cx + 50.5, $cy + 26)->hid($cx + 47, $cy + 26, $x1 - 2, $cy + 26);
         }
         $s->cl($cx - 50, $cy, $x2 + 12, $cy);
         $s->dimH(['pa_center-u-joint-to-end', 'pa_c-l-to-end', 'pa_cj-to-end'], $cx, $x2, 222, $cy + 84, $cy + $r);
+        // cross centre to the washer face: the machined seat on the throat floor (the nut's washer, or a slip yoke's plug)
+        $s->dimH('pa_cl-to-washer', $cx, $cx + 47, $cy - 10);
 
         $ex = 410;
         $s->circle($ex, $cy, 60, 'md-part', 'face')->circle($ex, $cy, 56, 'md-edge');
@@ -219,16 +311,17 @@ trait YokeParts
             $s->tag('pa_splines-count', $ex - 29, $cy + 29, $ex - 52, $cy + 94);
         }
 
+        self::jointAngle($s, $vals, false, 240);
         return $s;
     }
 
-    public static function transYoke(array $codes): Sketch
+    public static function transYoke(array $codes, array $vals = []): Sketch
     {
-        return self::slipYoke($codes, [], true);
+        return self::slipYoke($codes, $vals, true);
     }
 
     /** yoke with an externally splined shaft + the spline end */
-    public static function yokeShaft(array $codes): Sketch
+    public static function yokeShaft(array $codes, array $vals = []): Sketch
     {
         $s = new Sketch($codes);
         $cx = 72;
@@ -240,6 +333,8 @@ trait YokeParts
         $s->cl($cx - 50, $cy, 358, $cy);
         $s->dimH(['pa_c-l-to-end', 'pa_center-u-joint-to-end', 'pa_cj-to-end'], $cx, 344, 32, $cy - 84, $cy - 30);
         $s->dimH('pa_splines-length', 236, 344, 204, $cy + 30, $cy + 30);
+        // spline end back to the radius where the shaft runs into the yoke
+        $s->dimH('pa_end-to-radius', $x1, 344, 64, $cy - 33, $cy - 30);
         $s->dimV(['pa_splines-dia', 'pa_splines-count-dia'], $cy - 30, $cy + 30, 370, 344, 344);
 
         $ex = 432;
@@ -247,11 +342,12 @@ trait YokeParts
         $s->circle($ex, $cy, 5, 'md-edge');
         $s->tag('pa_splines-count', $ex + 23, $cy - 23, $ex + 24, $cy - 78);
 
+        self::jointAngle($s, $vals, false, 254);
         return $s;
     }
 
     /** two yokes back to back + the view along the shaft with the circle the ear tips swing through */
-    public static function hYoke(array $codes): Sketch
+    public static function hYoke(array $codes, array $vals = []): Sketch
     {
         $s = new Sketch($codes);
         $cx = 126;
@@ -279,6 +375,7 @@ trait YokeParts
         $s->cl($ex - $R - 10, $ey, $ex + $R + 10, $ey)->cl($ex, $ey - $R - 10, $ex, $ey + $R + 10);
         $s->dimH('pa_swing-dia', $ex - $R, $ex + $R, $ey + $R + 20, $ey, $ey);
 
+        self::jointAngle($s, $vals, false, 256);
         return $s;
     }
 
@@ -336,7 +433,7 @@ trait YokeParts
      * double cardan head from the side: flange yoke and tube yoke across their ears, the centre yoke in front of
      * them ear on (one bearing cap for each cross), the tube in phantom + the flange face
      */
-    public static function cvHead(array $codes): Sketch
+    public static function cvHead(array $codes, array $vals = []): Sketch
     {
         $s = new Sketch($codes);
         $cy = 118;
@@ -365,6 +462,7 @@ trait YokeParts
         $s->cl($fx - 68, $cy, $fx + 68, $cy)->cl($fx, $cy - 68, $fx, $cy + 68);
         self::bolts($s, $fx, $cy, 41, 6, 4, ['bc' => [1, 3], 't' => .2, 'dia' => [0, 45]]);
 
+        self::jointAngle($s, $vals, true, 246);
         return $s;
     }
 
@@ -394,6 +492,8 @@ trait YokeParts
         $a = deg2rad(150);
         $s->dim('pa_bolt-circle-dia', $fx + 72 * cos($a), $cy - 72 * sin($a), $p[2][0], $p[2][1], ['t' => .22]);
         $s->dimH(['pa_nose-bushing-dia', 'pa_pilot-dia'], $fx - 15, $fx + 15, $cy, null, null, ['out' => true]);
+        // centre to centre of two neighbouring bolt holes (the chord of the bolt circle)
+        $s->dimH('pa_hole-to-hole', $p[1][0], $p[2][0], $cy + 88, $p[1][1] + 9, $p[2][1] + 9);
 
         return $s;
     }

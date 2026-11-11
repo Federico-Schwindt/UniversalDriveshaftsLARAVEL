@@ -52,6 +52,7 @@
         if (!r || !r.success) return;
         if (q <= 0) { line.remove(); } else { qtyEl.value = q; totalEl.textContent = money(price * q); }
         paint(r.data);
+        if (q <= 0 && r.data && r.data.count && root.querySelector('.cjob')) location.reload();
       }).catch(function () { line.classList.remove('is-busy'); });
     }
 
@@ -66,6 +67,8 @@
       post('/cart/remove', { key: key }).then(function (r) {
         line.remove();
         if (r && r.success) paint(r.data);
+        // "Complete the job" was worked out from the old cart: reload so it only offers parts that fit what is left
+        if (r && r.success && r.data && r.data.count && root.querySelector('.cjob')) location.reload();
       }).catch(function () { line.classList.remove('is-busy'); });
     });
   });

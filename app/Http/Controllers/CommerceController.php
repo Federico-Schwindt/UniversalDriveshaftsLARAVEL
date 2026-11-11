@@ -24,6 +24,12 @@ class CommerceController extends Controller
     /** Local order statuses that are not a purchase any more. */
     private const DEAD_STATUSES = ['cancelled', 'failed', 'refunded'];
 
+    /** Middleware a background lookup runs without: no session is read or written (see routes/commerce.php). */
+    public const STATELESS = [\Illuminate\Session\Middleware\StartSession::class, \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        \Illuminate\Foundation\Http\Middleware\PreventRequestForgery::class, \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+        \Illuminate\Session\Middleware\AuthenticateSession::class,
+        \App\Http\Middleware\TrackCustomerActivity::class];
+
     public function __construct(private CatalogService $catalog, private CartService $cart, private DriveshaftFinder $finder)
     {
     }
@@ -230,6 +236,54 @@ class CommerceController extends Controller
                        'remaining' => $quote['excluded'] ? null : max(0, round($min - $lineTotal, 2))],
             'pickup' => 'Local pickup in Florida — free',
         ]);
+    }
+
+    /**
+     * GET /api/arrival?zip=…&id=… (one part) or &items=id:qty,id:qty (the cart's parts, written into the cart page) —
+     * when they would arrive. No session: the page supplies the ZIP (the visitor's last one, or the account's saved one).
+     */
+    public function arrival(Request $r)
+    {
+        $zip = substr(preg_replace('/\D/', '', (string) $r->query('zip', '')), 0, 5);
+        if (strlen($zip) !== 5) return response()->json(['success' => false, 'need_zip' => true]);
+        $lines = $r->query('id') ? [(int) $r->query('id') . ':1'] : array_slice(explode(',', (string) $r->query('items', '')), 0, 40);
+        $items = [];
+        foreach ($lines as $l) {
+            [$id, $qty] = array_map('intval', explode(':', $l) + [1 => 1]);
+            $p = $id > 0 ? $this->catalog->productById($id) : null;
+            if ($p && (float) $p['price'] > 0) $items[] = ['type' => 'product', 'wp_product_id' => $id, 'qty' => max(1, min(999, $qty)), 'price' => (float) $p['price']];
+        }
+        if (!$items) return response()->json(['success' => false, 'zip' => $zip], 404);
+        $a = \App\Support\Arrival::forItems($items, $zip);
+        if (!$a) return response()->json(['success' => false, 'zip' => $zip]);
+        return response()->json(['success' => true, 'zip' => $zip, 'date' => \App\Support\Arrival::format($a['date']), 'iso' => $a['date']->toDateString(),
+            'service' => $a['service'], 'days' => $a['days']]);
+    }
+
+    /**
+     * GET /api/zip-near?lat=…&lng=… — the US ZIP at the visitor's location (the browser asked them first), for the
+     * delivery date. US Census reverse geocoder (free, no key): ZIP Code Tabulation Areas, layer 84. Coordinates are
+     * rounded to ~100 m and nothing is stored but the cached ZIP.
+     */
+    public function zipNear(Request $r)
+    {
+        $lat = round((float) $r->query('lat'), 3); $lng = round((float) $r->query('lng'), 3);
+        if ($lat < 17 || $lat > 72 || $lng < -180 || $lng > -64) return response()->json(['success' => false, 'outside' => true]);
+        $zip = Cache::get($key = "zipnear:$lat:$lng");
+        if (!$zip) {
+            try {
+                $resp = \Illuminate\Support\Facades\Http::timeout(6)->get('https://geocoding.geo.census.gov/geocoder/geographies/coordinates',
+                    ['x' => $lng, 'y' => $lat, 'benchmark' => 'Public_AR_Current', 'vintage' => 'Census2020_Current', 'layers' => '84', 'format' => 'json']);
+                $area = collect($resp->json('result.geographies') ?: [])->first(fn ($v, $k) => stripos((string) $k, 'zip') !== false)[0] ?? [];
+                $zip = (string) ($area['ZCTA5'] ?? $area['GEOID'] ?? $area['BASENAME'] ?? '');
+            } catch (\Throwable $e) {
+                Log::warning('zip-near: ' . $e->getMessage());
+                $zip = '';
+            }
+            if (!preg_match('/^\d{5}$/', $zip)) return response()->json(['success' => false]);
+            Cache::put($key, $zip, now()->addDays(30));
+        }
+        return response()->json(['success' => true, 'zip' => $zip]);
     }
 
     /* helpers */

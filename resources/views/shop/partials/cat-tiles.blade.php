@@ -3,6 +3,7 @@
      $group = group slug, $subs = CatalogService::group()['subcategories'] --}}
 <ul class="ctiles">
   @foreach($subs as $s)
+    @continue((int) ($s['count'] ?? 0) < 1)   {{-- an empty category is not a place to send a buyer --}}
     @php
       $name = \App\Support\PartGlossary::t($s['name']);
       $about = ($t = config("seo-copy.categories.{$s['slug']}.intro")) ? __((string) $t) : '';

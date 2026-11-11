@@ -12,7 +12,7 @@ class JsStrings
     public const KEYS = [
         // checkout
         'Tubing and driveshafts ship at the carrier rate and do not qualify for free shipping.',
-        'Free US ground shipping applied.', 'Only :amount left to qualify for FREE Shipping!', 'Invalid coupon',
+        'Free US ground shipping applied.', 'Invalid coupon',
         'Enter your ZIP to load rates…', 'Enter your postal code to load rates…', 'Free', 'Loading rates…',
         'Loading live UPS & FedEx rates…', 'No rates for this address', 'No carrier rates for this address', 'Choose a method…',
         'UPS and FedEx cannot deliver to a PO box. Enter a street address, or choose local pickup.',
@@ -24,6 +24,10 @@ class JsStrings
         'Network error. Please try again.',
         // cart
         ':amount more for free US ground shipping.',
+        // delivery date (js/arrival.js)
+        'Arrives :date', 'to :zip with :service', 'Change', 'Get a delivery date', 'ZIP code', 'Show date', 'Checking the delivery date…',
+        'Enter a 5-digit US ZIP code.', 'Custom builds ship when they are finished.', 'Delivery date for ZIP',
+        'Use my location', 'Enter ZIP', 'Delivery date:', 'near you', 'Could not get your location. Enter your ZIP code.', 'Finding your ZIP…',
         // home vehicle finder, sidebar
         'Pick a make first', 'Pick a year first', 'Choose a make', 'See driveshafts for :vehicle', 'See :make driveshafts', 'Expand menu', 'Collapse menu', 'Part not found.', 'Yes', 'No',
         // search overlay

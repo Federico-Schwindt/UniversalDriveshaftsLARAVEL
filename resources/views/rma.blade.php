@@ -75,6 +75,9 @@
 .rma2-done h2{margin:0 0 .4rem}
 .rma2-done .ref{font:600 1.15rem/1.2 var(--font-m);color:var(--blue);margin:.2rem 0 1rem}
 .rma2-done ol{text-align:left;max-width:440px;margin:1rem auto 0;padding-left:1.2rem;color:var(--ink-2);font-size:.92rem;line-height:1.6}
+.rma2-closed h2{margin:0 0 .6rem;font-size:1.15rem}
+.rma2-closed p{margin:.5rem 0 0;color:var(--ink-2);max-width:60ch}
+.rma2-closed .acts{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.2rem}
 </style>
 @endpush
 @section('content')
@@ -104,6 +107,14 @@
         <p style="margin-top:1.4rem"><a class="btn btn-ghost" href="{{ $order ? \App\Support\OrderEvents::statusUrl($order, false) : '/track-order' }}">{{ __($order ? 'Back to my order' : 'Back to order tracking') }} <x-icon name="arrow-right"/></a></p>
       </div>
 
+      @if($closedOn)
+      <div class="rma2-closed" role="status">
+        <h2>{{ __('The return window for this order has closed') }}</h2>
+        <p>{{ __('Returns and exchanges can be requested within :days days of delivery. For order :n that time ended on :date.', ['days' => \App\Support\Rma::WINDOW_DAYS, 'n' => $order->order_number, 'date' => $closedOn->isoFormat('LL')]) }}</p>
+        <p>{{ __('Defective part? UDS-brand parts carry a 12-month warranty. Call us, or send photos and your order number through the contact page.') }}</p>
+        <p class="acts"><a class="btn btn-primary" href="tel:+18135246491"><x-icon name="phone"/> (813) 524-6491</a><a class="btn btn-ghost" href="/contact">{{ __('Contact us') }}</a></p>
+      </div>
+      @else
       <form id="rma-form" novalidate onsubmit="return false">
         @csrf
         <input type="hidden" name="type" value="{{ $type }}">
@@ -116,7 +127,7 @@
           @endif
           <div class="rma2-f" style="margin-top:{{ $order ? '.9rem' : '0' }}">
             @unless($order)
-            <div class="full"><label for="r-order">{{ __('Order number') }} @if($type!=='return')*@endif</label><input id="r-order" type="text" name="order_number" value="{{ $orderNumber }}" placeholder="UDS-260910-W0GM" autocomplete="off" @if($type!=='return') required @endif><div class="rma2-hint">{{ __('In the subject line of your confirmation e-mail.') }}@if($type==='return') {{ __('Bought in person or lost it? Leave it blank and tell us below.') }}@endif</div></div>
+            <div class="full"><label for="r-order">{{ __('Order number') }} *</label><input id="r-order" type="text" name="order_number" value="{{ $orderNumber }}" placeholder="UDS-260910-W0GM" autocomplete="off" required><div class="rma2-hint">{{ __('In the subject line of your confirmation e-mail.') }} {{ __('No order number? Call us at :phone.', ['phone' => config('uds.pickup.phone')]) }}</div></div>
             @endunless
             <div><label for="r-name">{{ __('Your name *') }}</label><input id="r-name" type="text" name="name" value="{{ $prefillName }}" autocomplete="name" required></div>
             <div><label for="r-email">{{ __('E-mail *') }}</label><input id="r-email" type="email" name="email" value="{{ $prefillEmail }}" autocomplete="email" required></div>
@@ -178,6 +189,7 @@
           <button type="button" class="btn btn-primary btn-lg" id="rma-submit">{{ __(['return'=>'Request return','exchange'=>'Request exchange','cancel'=>'Request cancellation'][$type]) }} <x-icon name="arrow-right"/></button>
         </div>
       </form>
+      @endif
     </div>
   </div>
 
@@ -185,7 +197,7 @@
     <div class="rma2-card rma2-side-card">
       <h3>{{ __('The policy at a glance') }}</h3>
       <ul class="rma2-glance">
-        <li><span class="k"><b>30</b><small>{{ __('days') }}</small></span><span>{{ __('To return new, uninstalled stock parts, with an RMA number.') }}</span></li>
+        <li><span class="k"><b>{{ \App\Support\Rma::WINDOW_DAYS }}</b><small>{{ __('days') }}</small></span><span>{{ __('To return new, uninstalled stock parts, with an RMA number.') }}</span></li>
         <li><span class="k"><b>20%</b><small>{{ __('fee') }}</small></span><span>{{ __('Restocking fee on stock-part returns. Original shipping isn\'t refunded.') }}</span></li>
         <li class="no"><span class="k"><x-icon name="x"/></span><span>{{ __('Custom builds, cut-to-length and made-to-order items can\'t be returned.') }}</span></li>
         <li><span class="k"><b>5</b><small>{{ __('days') }}</small></span><span>{{ __('To report damage, a shortage or a wrong item — we fix those at our cost.') }}</span></li>
@@ -246,7 +258,7 @@
     if(!c.hasItems&&TYPE!=='cancel'&&!c.product) return err(T.which);
     if(!form.name.value.trim()) return err(T.name), form.name.focus();
     if(!/^\S+@\S+\.\S+$/.test(form.email.value.trim())) return err(T.email), form.email.focus();
-    var on=form.querySelector('[name=order_number]'); if(TYPE!=='return'&&on&&!on.value.trim()) return err(T.order), on.focus();
+    var on=form.querySelector('[name=order_number]'); if(on&&!on.value.trim()) return err(T.order), on.focus();
     btn.disabled=true; var label=btn.innerHTML; btn.textContent=T.sending;
     var fd=new FormData(form); ['product_free','details_free','want','condition'].forEach(function(k){fd.delete(k);});
     fetch('/rma',{method:'POST',headers:{'X-CSRF-TOKEN':CSRF,'X-Requested-With':'XMLHttpRequest','Accept':'application/json'},body:new URLSearchParams(fd)})

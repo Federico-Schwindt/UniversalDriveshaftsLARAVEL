@@ -70,7 +70,7 @@
 .pdp__rel h2{font-size:1.15rem;margin-bottom:.4rem}
 .pdp__rel-all{display:inline-flex;margin-bottom:1rem;font-size:.9rem}
 .pdp__rel .pcard__name{font-size:.84rem;min-height:0}
-.pgrid .pcard{min-width:0}.pcard__media{overflow:hidden;min-height:0}.pcard__media img{width:auto;height:auto;max-width:100%;max-height:100%}
+.pgrid .pcard{min-width:0}.pcard__media{min-height:0}
 .pcard__media:not(:has(img)){background:var(--paper-2)}.pcard__media > .i{font-size:2.4rem;opacity:.35}
 .pdp__faq{border-top:1px solid var(--line);padding-block:clamp(1.5rem,1rem + 1.5vw,2.25rem)}
 .pdp__faq h2{font-size:1.15rem;margin-bottom:.25rem}
@@ -83,6 +83,7 @@
 @include('shop.partials.js-i18n')
 <script src="{{ asset('js/catalog.js') }}?v={{ @filemtime(public_path('js/catalog.js')) }}" defer></script>
 <script src="{{ asset('js/product.js') }}?v={{ @filemtime(public_path('js/product.js')) }}" defer></script>
+<script src="{{ asset('js/arrival.js') }}?v={{ @filemtime(public_path('js/arrival.js')) }}" defer></script>
 @if($measure)<script src="{{ asset('js/measure.js') }}?v={{ @filemtime(public_path('js/measure.js')) }}" defer></script>@endif
 @endpush
 
@@ -158,7 +159,7 @@
     ], $faq)];
   }
 @endphp
-<script type="application/ld+json">{!! json_encode(['@@context' => 'https://schema.org', '@graph' => $graph], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+<script type="application/ld+json">{!! json_encode(['@@context' => 'https://schema.org', '@graph' => $graph], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) !!}</script>
 @endpush
 
 @section('content')
@@ -236,6 +237,8 @@
         @else
           <p class="pdp__stock pdp__stock--in"><x-icon name="check"/><b>{{ __('In stock') }}</b><span>{{ ($p['stock'] ?? 0) > 0 ? __(':n ready to ship', ['n' => stock_label($p['stock'])]) : '' }}</span></p>
           @include('partials.ship-countdown', ['class' => 'shipcd--pdp'])
+          {{-- delivery date to the visitor's ZIP (js/arrival.js) --}}
+          <p class="arrive" data-arrive data-id="{{ $p['id'] }}" data-zip="{{ \App\Support\Arrival::savedZip(auth()->user()) }}" aria-live="polite"></p>
         @endif
       @elseif($mode === 'bo')
         <p class="pdp__stock pdp__stock--bo"><x-icon name="clock"/><b>{{ __('On backorder') }}</b></p>
@@ -317,7 +320,7 @@
         @foreach(($p['specs'] ?? []) as $label => $val)
           @continue(in_array($label, ['Brand', 'Series', 'Style'], true) || $val === '')
           @php [$mda, $mdc] = $mdRow('pa_' . str_replace(' ', '-', strtolower($label))); @endphp
-          <div{!! $mda !!}><dt class="k">{!! $mdc !!}{{ __($label) }}</dt><dd class="v">{{ html_entity_decode($val) }}</dd></div>
+          <div{!! $mda !!}><dt class="k">{!! $mdc !!}{{ \App\Support\PartGlossary::specLabel($label, $p['specs']) }}</dt><dd class="v">{{ \App\Support\PartGlossary::specValue($label, (string) $val) }}</dd></div>
         @endforeach
         @if($p['weight'] !== '')<div><dt class="k">{{ __('Weight') }}</dt><dd class="v">{{ $p['weight'] }} lb</dd></div>@endif
       </dl>

@@ -91,8 +91,73 @@ class ChatWidgets
             if ($wantOrders || (count($rows) > 1 && str_contains($answer, '?') && !$details)) $w[] = self::orders($rows, $own);
         }
 
-        if ($tags['choices'] && !array_filter($w, fn ($x) => in_array($x['type'], ['choices', 'confirm'], true))) $w[] = self::choices($tags['choices']);
+        // the guided driveshaft build: the current question's options to tap, the finished build, or the cart line it became
+        $builds = $used('driveshaft_builder');
+        if ($builds && ($bw = self::builder((array) $builds[count($builds) - 1]['result']))) $w[] = $bw;
+
+        if ($tags['choices'] && !array_filter($w, fn ($x) => in_array($x['type'], ['choices', 'confirm', 'build_choices', 'build'], true))) $w[] = self::choices($tags['choices']);
         return array_values(array_filter($w, fn ($x) => $x && ($x['type'] !== 'orders' || $x['orders']) && ($x['type'] !== 'choices' || $x['options'])));
+    }
+
+    /** Up to this many builder options show as buttons; longer lists are typed. */
+    public const MAX_BUILD_OPTIONS = 12;
+
+    /** A driveshaft_builder result as a widget (AssistantBuilder made it from the builder's own data). */
+    public static function builder(array $r): ?array
+    {
+        if (!empty($r['added'])) {
+            return ['type' => 'build_added', 'title' => self::buildTitle((string) ($r['title'] ?? '')), 'price' => round((float) ($r['price_each_usd'] ?? 0), 2), 'qty' => (int) ($r['qty'] ?? 1),
+                'cart' => '/cart', 'checkout' => '/checkout', 'labels' => ['done' => __('Added to your cart'), 'cart' => __('View cart'), 'checkout' => __('Checkout')]];
+        }
+        if (!empty($r['ready']) && !empty($r['build'])) {
+            $b = $r['build'];
+            return [
+                'type' => 'build', 'title' => self::buildTitle((string) ($b['title'] ?? '')), 'price' => round((float) ($b['price_usd'] ?? 0), 2),
+                'photo' => (string) ($b['photo'] ?? ''), 'fits' => $b['fits'] ?? null,
+                'lines' => array_map(fn ($l) => ['label' => (string) $l['label'], 'usd' => round((float) $l['usd'], 2)], array_slice((array) ($b['lines_shown'] ?? $b['lines'] ?? []), 0, 6)),
+                'specs' => array_map(fn ($a) => ['q' => __((string) $a['q']), 'a' => (string) ($a['shown'] ?? __((string) $a['a']))], array_slice(array_values(array_filter((array) ($r['answers'] ?? []), fn ($a) => ($a['change'] ?? '') !== 'tree')), 0, 10)),
+                'speed' => $b['speed_shown'] ?? $b['speed_check'] ?? null, 'link' => (string) ($r['builder_link'] ?? '/online-builder'),
+                'labels' => ['add' => __('Add to cart'), 'add_say' => __('Yes, add it to my cart'), 'open' => __('Open in the builder'), 'total' => __('Total'), 'speed' => __('Speed check'),
+                    'photo' => __('photo of a shaft we build; yours is made to your measurements'), 'fits' => __('Fits')],
+            ];
+        }
+        $step = (string) ($r['step'] ?? '');
+        $opts = (array) ($r['options'] ?? []);
+        if ($opts && count($opts) <= self::MAX_BUILD_OPTIONS && !in_array($step, ['measure', 'speed', 'review'], true)) {
+            return ['type' => 'build_choices', 'stage' => self::buildStage((string) ($r['stage'] ?? '')), 'options' => array_map(fn ($o) => array_filter([
+                'label' => Str::limit((string) $o['label'], 80), 'note' => !empty($o['note']) ? Str::limit((string) $o['note'], 110) : null,
+                'price' => isset($o['price_usd']) ? round((float) $o['price_usd'], 2) : null, 'from' => isset($o['from_usd']) ? round((float) $o['from_usd'], 2) : null,
+            ], fn ($v) => $v !== null), $opts), 'labels' => ['from' => __('from :price', ['price' => ':price'])]];
+        }
+        if ($step === 'measure') {
+            return ['type' => 'build_link', 'stage' => self::buildStage((string) ($r['stage'] ?? '')), 'link' => (string) ($r['builder_link'] ?? '/online-builder'),
+                'text' => __('See where A1 and C1 are measured on the drawing for your ends.'), 'labels' => ['open' => __('Open the measuring drawing')]];
+        }
+        return null;
+    }
+
+    /** "Custom 1350 series steel driveshaft, …" in the customer's language (the builder page's own wording). */
+    private static function buildTitle(string $t): string
+    {
+        if (!preg_match('/^Custom (.+?) series (steel|aluminum) driveshaft(?:, (.+?) to (.+?))?(?:, ([\d.]+) in)?$/u', $t, $m)) return $t;
+        $tl = fn (string $s) => mb_strtolower(__($s));
+        $front = isset($m[3]) && $m[3] !== '' ? $tl(ucfirst($m[3])) : ''; $rear = isset($m[4]) && $m[4] !== '' ? $tl(ucfirst($m[4])) : '';
+        // labels are stored lower-cased in the title; the translation keys are the settings labels
+        foreach (['front', 'rear'] as $side) foreach ((array) (app(\App\Services\DsbPricing::class)->settings()[$side . '_apps'] ?? []) as $a) {
+            if (!empty($m[3]) && mb_strtolower((string) $a['label']) === $m[3] && $side === 'front') $front = $tl((string) $a['label']);
+            if (!empty($m[4]) && mb_strtolower((string) $a['label']) === $m[4] && $side === 'rear') $rear = $tl((string) $a['label']);
+        }
+        $mat = mb_strtolower(__(ucfirst($m[2])));
+        if (!empty($m[5])) return __('Custom :series series :material driveshaft, :front to :rear, :len in', ['series' => $m[1], 'material' => $mat, 'front' => $front, 'rear' => $rear, 'len' => $m[5]]);
+        if ($front !== '') return __('Custom :series series :material driveshaft, :front to :rear', ['series' => $m[1], 'material' => $mat, 'front' => $front, 'rear' => $rear]);
+        return $t;
+    }
+
+    /** "Step 2 of 5 · Shaft · U-joint series" in the customer's language. */
+    private static function buildStage(string $stage): string
+    {
+        if (!preg_match('/^Step (\d) of (\d) · (.+)$/u', $stage, $m)) return $stage;
+        return __('Step :n of :total', ['n' => $m[1], 'total' => $m[2]]) . ' · ' . implode(' · ', array_map(fn ($p) => __($p), explode(' · ', $m[3])));
     }
 
     public static function choices(array $options): array

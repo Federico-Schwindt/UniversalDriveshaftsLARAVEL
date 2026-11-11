@@ -140,7 +140,9 @@
 .pg .pcard{display:flex;flex-direction:column;padding:.75rem;background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:visible;transform:none;transition:none}
 .pg .pcard:hover{transform:none;box-shadow:none;border-color:var(--line-strong)}
 .pg .pcard__img{display:grid;place-items:center;aspect-ratio:1;margin-bottom:.6rem;padding:0;background:#fff;font-size:2rem;color:var(--ink-faint)}
-.pg .pcard__img img{width:100%;height:100%;object-fit:contain}
+.pg .pcard__img{position:relative;overflow:hidden}
+/* pinned in the square: tall or wide photos overflowed and covered the part number (owner, /series/1350, 2026-11-11) */
+.pg .pcard__img img{position:absolute;inset:0;width:100%;height:100%;max-width:none;max-height:none;object-fit:contain;object-position:center}
 .pg .pcard__sku{font:600 .9rem var(--font-m);color:var(--blue);letter-spacing:0}
 .pg .pcard__name{margin-top:.15rem;font-size:.84rem;line-height:1.35;color:var(--ink-2);flex:1;min-height:0}
 .pg .pcard__buy{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-top:.7rem}

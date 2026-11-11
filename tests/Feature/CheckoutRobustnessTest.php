@@ -24,6 +24,9 @@ class CheckoutRobustnessTest extends TestCase
     /** @var array<int,\Illuminate\Http\Client\Request> */
     private array $stripeCalls = [];
     private bool $intentFails = false;
+    /** Answers for the next GET payment_intents calls (default: not paid, another order). */
+    private array $gets = [];
+    private ?\Closure $onCancel = null;
 
     protected function setUp(): void
     {
@@ -34,8 +37,8 @@ class CheckoutRobustnessTest extends TestCase
         Http::fake(function ($req) {
             if (!str_contains($req->url(), 'api.stripe.com')) return Http::response([], 200);
             $this->stripeCalls[] = $req;
-            if (str_ends_with($req->url(), '/cancel')) return Http::response(['id' => 'pi_old', 'status' => 'canceled']);
-            if ($req->method() === 'GET') return Http::response(['id' => 'pi_x', 'status' => 'requires_payment_method', 'metadata' => ['order_number' => 'nope']]);
+            if (str_ends_with($req->url(), '/cancel')) return $this->onCancel ? ($this->onCancel)($req) : Http::response(['id' => 'pi_old', 'status' => 'canceled']);
+            if ($req->method() === 'GET') return Http::response(array_shift($this->gets) ?? ['id' => 'pi_x', 'status' => 'requires_payment_method', 'metadata' => ['order_number' => 'nope']]);
             if ($this->intentFails) return Http::response(['error' => ['message' => 'boom']], 500);
             $id = 'pi_test' . count($this->stripeCalls);
             return Http::response(['id' => $id, 'client_secret' => $id . '_secret_x', 'status' => 'requires_payment_method']);
@@ -103,9 +106,14 @@ class CheckoutRobustnessTest extends TestCase
         $this->assertSame(0, (int) DB::table('coupons')->where('id', $c->id)->value('used_count'), 'not counted before the money is in');
         $this->assertFalse(OrderEvents::has($o, 'notify:sms:placed'));
 
-        // an unpaid card order does not use up the per-customer limit
+        // an unpaid card order holds the coupon for a while (its own retry keeps it), then lets it go
         [$ok] = app(\App\Services\CouponService::class)->validate($c->code, 100, null, $email);
-        $this->assertTrue($ok);
+        $this->assertFalse($ok, 'held by the checkout waiting for its card payment');
+        [$ok] = app(\App\Services\CouponService::class)->validate($c->code, 100, null, $email, $o->id);
+        $this->assertTrue($ok, 'the same checkout tried again keeps it');
+        DB::table('orders')->where('id', $o->id)->update(['updated_at' => now()->subMinutes(\App\Services\CouponService::HOLD_MINUTES + 1)]);
+        [$ok] = app(\App\Services\CouponService::class)->validate($c->code, 100, null, $email);
+        $this->assertTrue($ok, 'an abandoned card checkout does not use up the per-customer limit');
 
         $pi = ['id' => $o->stripe_payment_intent, 'amount_received' => (int) round($o->total * 100), 'currency' => 'usd'];
         $this->assertTrue(PayLink::markPaid($o, 'test', 'stripe', $pi));
@@ -122,12 +130,123 @@ class CheckoutRobustnessTest extends TestCase
 
     public function test_pay_at_pickup_counts_the_coupon_and_clears_the_cart_right_away(): void
     {
+        $this->actingAs($this->verifiedUser());
         $this->fillCart();
         $c = $this->coupon();
         $this->post('/cart/coupon', ['code' => $c->code])->assertOk();
         $this->place(['payment_method' => 'pay_at_pickup'])->assertOk()->assertJsonPath('data.client_secret', null);
         $this->assertSame(1, (int) DB::table('coupons')->where('id', $c->id)->value('used_count'));
         $this->assertSame(0, app(CartService::class)->count());
+    }
+
+    private function verifiedUser(): User
+    {
+        $u = User::query()->create(['name' => 'Alex Morgan', 'email' => 'pk-' . uniqid() . '@example.com', 'password' => bcrypt('x' . uniqid())]);
+        DB::table('users')->where('id', $u->id)->update(['email_verified_at' => now()]);
+        return $u->fresh();
+    }
+
+    /** Pay at pickup takes stock, texts and queues shop work before any money: a confirmed account, a couple of open orders. */
+    public function test_pay_at_pickup_needs_a_confirmed_account_and_a_few_open_orders_at_most(): void
+    {
+        $this->fillCart();
+        $email = 'pk-guest-' . uniqid() . '@example.com';
+        $this->place(['email' => $email, 'payment_method' => 'pay_at_pickup'])->assertStatus(422);
+        $u = User::query()->create(['name' => 'Alex Morgan', 'email' => 'pk-' . uniqid() . '@example.com', 'password' => bcrypt('x' . uniqid())]);
+        $this->actingAs($u)->place(['email' => $email, 'payment_method' => 'pay_at_pickup'])->assertStatus(422);
+        $this->assertSame(0, DB::table('orders')->where('email', $email)->count(), 'no order from a guest or an unconfirmed account');
+
+        // another account: a fresh session (AuthenticateSession would sign a switched user out)
+        $this->flushSession();
+        $this->actingAs($v = $this->verifiedUser());
+        foreach (range(1, \App\Http\Controllers\ShopController::OPEN_PICKUP_ORDERS) as $n) {
+            $this->fillCart();
+            $this->place(['email' => $v->email, 'payment_method' => 'pay_at_pickup'])->assertOk();
+        }
+        $this->fillCart();
+        $this->place(['email' => $v->email, 'payment_method' => 'pay_at_pickup'])->assertStatus(422);
+        $this->assertSame(\App\Http\Controllers\ShopController::OPEN_PICKUP_ORDERS, DB::table('orders')->where('user_id', $v->id)->count());
+    }
+
+    /** An order nobody has paid for yet never texts a number abroad (SMS pumping). */
+    public function test_an_unpaid_order_texts_only_a_domestic_number(): void
+    {
+        $this->assertTrue(\App\Services\SmsService::domestic('(813) 555-0142'));
+        $this->assertTrue(\App\Services\SmsService::domestic('+1 787 555 0142'));   // Puerto Rico
+        $this->assertFalse(\App\Services\SmsService::domestic('+1 876 555 0142'));  // Jamaica
+        $this->assertFalse(\App\Services\SmsService::domestic('+44 20 7946 0958'));
+        $this->actingAs($v = $this->verifiedUser());
+        $this->fillCart();
+        $num = $this->place(['email' => $v->email, 'phone' => '+44 20 7946 0958', 'sms_opt_in' => 1, 'payment_method' => 'pay_at_pickup'])->assertOk()->json('data.order_number');
+        $o = DB::table('orders')->where('order_number', $num)->first();
+        $this->assertFalse(OrderEvents::has($o, 'notify:sms:placed'));
+        $this->assertTrue(OrderEvents::has($o, 'notify:crm'), 'the rest of the notices still ran');
+    }
+
+    /** A limited coupon can't be spread over several unpaid card orders and paid for later, nor won twice in a race. */
+    public function test_the_last_use_of_a_coupon_goes_to_one_order(): void
+    {
+        $cs = app(\App\Services\CouponService::class);
+        $c = $this->coupon();
+        DB::table('coupons')->where('id', $c->id)->update(['usage_limit' => 1, 'per_customer_limit' => null]);
+        $this->fillCart();
+        $this->post('/cart/coupon', ['code' => $c->code])->assertOk();
+        $email = 'last-' . uniqid() . '@example.com';
+        $num = $this->place(['email' => $email])->assertOk()->json('data.order_number');
+        $o = DB::table('orders')->where('order_number', $num)->first();
+        $this->assertSame($c->code, $o->coupon_code);
+        $this->assertSame(1, $cs->taken(DB::table('coupons')->find($c->id)));
+
+        // anyone else is told it is used up while that card payment is pending
+        [$ok, , $err] = $cs->validate($c->code, 100, null, 'someone-' . uniqid() . '@example.com');
+        $this->assertFalse($ok);
+        $this->assertSame('This coupon has reached its usage limit.', $err);
+        $this->assertFalse($cs->claim(DB::table('coupons')->find($c->id), 'someone@example.com'));
+        // the same checkout retried keeps it
+        $this->place(['email' => $email])->assertOk();
+        $this->assertSame($c->code, DB::table('orders')->where('id', $o->id)->value('coupon_code'));
+        $this->assertTrue($cs->claim(DB::table('coupons')->find($c->id), $email, $o->id));
+        // paid: counted once, still used up
+        $pi = ['id' => 'pi_x', 'amount_received' => (int) round(DB::table('orders')->where('id', $o->id)->value('total') * 100), 'currency' => 'usd'];
+        $this->assertTrue(PayLink::markPaid(DB::table('orders')->find($o->id), 'test', 'stripe', $pi));
+        $this->assertSame(1, (int) DB::table('coupons')->where('id', $c->id)->value('used_count'));
+        $this->assertSame(1, $cs->taken(DB::table('coupons')->find($c->id)));
+    }
+
+    /** A retry after a declined card cancels the earlier payment first; if that payment went through, the order stays as paid. */
+    public function test_a_retry_never_reprices_an_order_that_was_paid_meanwhile(): void
+    {
+        $this->fillCart();
+        $email = 'race-' . uniqid() . '@example.com';
+        $num = $this->place(['email' => $email])->assertOk()->json('data.order_number');
+        $o = DB::table('orders')->where('order_number', $num)->first();
+        $paid = ['id' => $o->stripe_payment_intent, 'status' => 'succeeded', 'amount_received' => (int) round($o->total * 100), 'currency' => 'usd', 'metadata' => ['order_number' => $num]];
+
+        // the earlier payment succeeded after the first look: Stripe refuses to cancel it, and the order is marked paid
+        $this->fillCart();   // a second line added meanwhile must not reach the paid order
+        $this->gets = [['id' => $o->stripe_payment_intent, 'status' => 'requires_action', 'metadata' => ['order_number' => $num]], $paid, $paid];
+        $this->onCancel = fn () => Http::response(['error' => ['code' => 'payment_intent_unexpected_state']], 400);
+        $this->place(['email' => $email])->assertOk()->assertJsonPath('data.order_number', $num)->assertJsonPath('data.client_secret', null);
+        $now = DB::table('orders')->find($o->id);
+        $this->assertSame('paid', $now->payment_status);
+        $this->assertEquals($o->total, $now->total);
+        $this->assertSame(1, (int) DB::table('order_items')->where('order_id', $o->id)->sum('qty'));
+
+        // the webhook lands while the retry is between its checks and its write: the paid row is left alone
+        $this->fillCart();
+        $num2 = $this->place(['email' => $email])->assertOk()->json('data.order_number');
+        $o2 = DB::table('orders')->where('order_number', $num2)->first();
+        $this->assertNotSame($num, $num2);
+        $this->fillCart();
+        $this->onCancel = function () use ($o2) {
+            DB::table('orders')->where('id', $o2->id)->update(['payment_status' => 'paid', 'status' => 'processing']);
+            return Http::response(['id' => $o2->stripe_payment_intent, 'status' => 'canceled']);
+        };
+        $this->place(['email' => $email])->assertOk()->assertJsonPath('data.order_number', $num2)->assertJsonPath('data.client_secret', null);
+        $after = DB::table('orders')->find($o2->id);
+        $this->assertSame('paid', $after->payment_status);
+        $this->assertEquals($o2->total, $after->total);
+        $this->assertSame(1, (int) DB::table('order_items')->where('order_id', $o2->id)->sum('qty'));
     }
 
     public function test_a_changed_total_is_refused_with_the_new_numbers(): void

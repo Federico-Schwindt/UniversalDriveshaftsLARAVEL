@@ -26,6 +26,8 @@ trait ShaftParts
         self::phantomTube($s, $sh, $sh + 90, $cy, 52, 45, $sh + 32);
         $s->cl(20, $cy, $sh + 98, $cy);
         $s->dimH('pa_splines-length', 30, 122, 44, $cy - 26, $cy - 26);
+        // spline end to the radius at the foot of the shoulder the seat runs into
+        $s->dimH('pa_end-to-radius', 30, 184, 20, $cy - 26, $cy - 33);
         $s->dimH(['pa_end-to-weld', 'pa_face-to-weld'], 30, $sh, 222, $cy + 26, $cy + 54);
         $s->dimV('pa_butt-dia', $cy - 45, $cy + 45, $sh + 16, null, null, ['t' => .74]);
         $s->dimV(['pa_tube-dia', 'pa_tube-dia-wall', 'pa_fits-to-tube'], $cy - 52, $cy + 52, $sh + 108, $sh + 90, $sh + 90);

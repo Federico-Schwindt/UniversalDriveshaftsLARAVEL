@@ -81,12 +81,17 @@ class OrderStatusController extends Controller
         $q = '?order=' . rawurlencode($order->order_number) . '&e=' . rawurlencode($order->email);
         $shipped = (bool) $order->tracking_number || (bool) $order->shipped_at || (bool) $order->delivered_at || $order->status === 'completed';
         $open = !in_array($order->status, ['cancelled', 'refunded', 'failed'], true);
+        // returns and exchanges only inside the 14-day window (the form refuses after it too)
+        $ends = \App\Support\Rma::windowEnds($order);
+        $canReturn = $open && $shipped && (!$ends || now()->lte($ends));
         return [
             'invoice' => '/orders/' . rawurlencode($order->order_number) . '/invoice?e=' . rawurlencode($order->email),
-            'return' => $open && $shipped ? '/return-request-form' . $q : null,
-            'exchange' => $open && $shipped ? '/exchange-request-form' . $q : null,
+            'return' => $canReturn ? '/return-request-form' . $q : null,
+            'exchange' => $canReturn ? '/exchange-request-form' . $q : null,
             'cancel' => $open && !$shipped ? '/product-cancel-request-form' . $q : null,
-            'damage' => $open && $shipped ? '/return-request-form' . $q . '&reason=' . rawurlencode('Damaged / defective') : null,
+            'damage' => $canReturn ? '/return-request-form' . $q . '&reason=' . rawurlencode('Damaged / defective') : null,
+            'returnUntil' => $canReturn ? $ends : null,
+            'returnClosed' => $open && $shipped && !$canReturn ? $ends : null,
         ];
     }
 

@@ -18,7 +18,9 @@
       @if(session('acct_ok'))<p role="status" class="pg-msg ok">{{ session('acct_ok') }}</p>@endif
       @if(session('acct_err'))<p role="alert" class="pg-msg bad">{{ session('acct_err') }}</p>@endif
       @if(($authUser->wholesale_status ?? 'none') === 'approved')
-        <div class="pg-form"><div class="fit-thanks"><h3>@php $wTier = \App\Services\B2bAccounts::tierOf($authUser); $wPct = rtrim(rtrim(number_format(\App\Services\B2bAccounts::tiers()[$wTier]['pct'], 2), '0'), '.'); @endphp{{ __("You're a :group wholesale account", ['group' => \App\Services\B2bAccounts::tiers()[$wTier]['name']]) }} <x-icon name="check"/></h3><p>{{ __('Your :pct% trade discount is applied automatically. Happy ordering!', ['pct' => $wPct]) }}</p></div></div>
+        {{-- on its own line: an inline @php…@endphp glued to {{ }} compiles to a stray placeholder and $wPct is never set (500 for approved accounts) --}}
+        @php $wTier = \App\Services\B2bAccounts::tierOf($authUser); $wPct = rtrim(rtrim(number_format(\App\Services\B2bAccounts::tiers()[$wTier]['pct'], 2), '0'), '.'); @endphp
+        <div class="pg-form"><div class="fit-thanks"><h3>{{ __("You're a :group wholesale account", ['group' => \App\Services\B2bAccounts::tiers()[$wTier]['name']]) }} <x-icon name="check"/></h3><p>{{ __('Your :pct% trade discount is applied automatically. Happy ordering!', ['pct' => $wPct]) }}</p></div></div>
       @elseif(($authUser->wholesale_status ?? 'none') === 'pending')
         <div class="pg-form"><div class="fit-thanks" style="background:#eef4ff;border-color:#c4d4f5;color:#1c3d7a"><h3 style="color:#1c3d7a">{{ __('Application received') }}</h3><p>{{ __("Our team is reviewing your wholesale application. We'll email you once it's approved.") }}</p></div></div>
       @else

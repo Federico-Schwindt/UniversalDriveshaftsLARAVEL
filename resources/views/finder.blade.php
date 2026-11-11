@@ -169,7 +169,7 @@ button.fdr-step:focus-visible{outline:2px solid var(--blue,#1246ab);outline-offs
   var ORDER=['make','year','model','drive','loc','engine','trans','trans_speeds','trans_code','cab','bed','chassis','doors','trim','rear_wheels','transfer_case','differential'];
   var SHORT={loc:TT("Loc"),trans_speeds:TT("Speeds"),trans_code:TT("Trans code"),chassis:TT("Wheelbase"),bed:TT("Bed"),rear_wheels:TT("Rear wheels")};
   var PH='<svg class="fdr-ph" viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><circle cx="9" cy="20" r="6"/><circle cx="55" cy="20" r="6"/><path d="M15 17h34v6H15z"/></svg>';
-  function esc(s){var d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML;}
+  function esc(s){return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; });}
   function money(n){return '$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
   function slug(s){return String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
   function logo(m){var s=slug(m);return LOGOS.indexOf(s)>-1?'/media/160/'+btoa('/img/makes/'+s+'.png').replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')+'.webp':null;}
