@@ -806,5 +806,6 @@
     "See all :n flange yokes in :series": "查看全部 :n 个 :series 法兰叉",
     "See every flange yoke in :series": "查看所有 :series 法兰叉",
     "Listed for :make: :n of :total.": "适用于 :make：:total 个中的 :n 个。",
-    "Start over? Your answers will be cleared.": "重新开始？您的回答将被清除。"
+    "Start over? Your answers will be cleared.": "重新开始？您的回答将被清除。",
+    "Toyota transfer cases have a bolt-on flange output: the shaft gets a slip yoke with a flange yoke": "丰田分动箱为螺栓连接的法兰输出:传动轴配带法兰叉的滑动叉"
 }
