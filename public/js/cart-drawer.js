@@ -6,7 +6,7 @@
   var body = root.querySelector('[data-ucart-body]'), foot = root.querySelector('[data-ucart-foot]');
   var PHONE = window.matchMedia('(max-width: 1240px)');
   var ADD_URL = /\/(cart\/add|shop\/catalog\/add|catalog\/driveshafts\/add)(\?|$)/;
-  var lastFocus = null;
+  var lastFocus = null, data = window.UCART_DATA, drawn = null;   // the cart as the page was made (partials/cart-drawer)
 
   function money(n) { return '$' + Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -16,6 +16,8 @@
   }
 
   function render(d) {
+    // the server's answer usually matches what the panel already shows: redrawing it would only make the pictures blink
+    var sig = JSON.stringify(d); if (sig === drawn) return; drawn = sig;
     var items = d.items || [], count = d.count || 0;
     badges(count);
     var c = root.querySelector('[data-ucart-count]');
@@ -27,7 +29,8 @@
       foot.hidden = true; return;
     }
     body.innerHTML = '<ul class="ucart__list">' + items.map(function (it) {
-      var pic = it.image ? '<img src="' + esc(it.image) + '" alt="" loading="lazy">' : '<span class="ucart__ph" aria-hidden="true"></span>';
+      // not lazy: the panel is drawn while hidden, so its pictures are fetched (quietly) before it ever opens
+      var pic = it.image ? '<img src="' + esc(it.image) + '" alt="" width="68" height="68" fetchpriority="low">' : '<span class="ucart__ph" aria-hidden="true"></span>';
       var each = it.qty > 1 ? '<small>' + esc((T.each || ':price').replace(':price', money(it.price))) + '</small>' : '';
       return '<li class="ucart__it" data-key="' + esc(it.key) + '"><span class="ucart__pic">' + pic + '</span>' +
         '<div class="ucart__info">' + (it.sku ? '<span class="ucart__sku">' + esc(it.sku) + '</span>' : '') + '<b>' + esc(it.name) + '</b>' +
@@ -54,6 +57,12 @@
   function load() {
     return fetch('/cart/mini', { headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }, credentials: 'same-origin' })
       .then(function (r) { return r.json(); }).then(function (j) { if (j && j.success) render(j.data); return j; });
+  }
+
+  // open with what is already drawn (the page's own copy of the cart), then ask the server for the latest
+  function show() {
+    if (drawn === null) render(data || {});
+    load(); open();
   }
 
   function open() {
@@ -104,8 +113,13 @@
   document.addEventListener('click', function (e) {
     var a = e.target.closest('.iconbtn--cart, [data-open-cart]');
     if (!a || !PHONE.matches || e.metaKey || e.ctrlKey) return;
-    e.preventDefault(); var m = document.querySelector('#udrawer [data-drawer-close]'); if (a.hasAttribute('data-open-cart') && m) m.click(); load(); open();
+    e.preventDefault(); var m = document.querySelector('#udrawer [data-drawer-close]'); if (a.hasAttribute('data-open-cart') && m) m.click(); show();
   });
+
+  // on phones and tablets the panel is drawn as soon as the page runs, so a tap shows the lines and pictures at once
+  if (PHONE.matches) render(data || {});
+  // a page restored with the back button carries the cart as it was when it was left
+  window.addEventListener('pageshow', function (e) { if (e.persisted) load(); });
 
   // any successful add-to-cart, from any page script: refresh and (on phones) slide the panel in
   if (window.fetch) {
@@ -123,5 +137,5 @@
       return p;
     };
   }
-  window.UDSCart = { open: function () { load(); open(); }, refresh: load };
+  window.UDSCart = { open: show, refresh: load };
 })();

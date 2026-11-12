@@ -63,9 +63,11 @@ class AppServiceProvider extends ServiceProvider
 
         // Catalogue totals are shown in the header menu, the home page and the
         // footer. Share them from one cached source so the numbers on the site
-        // can never drift from the catalogue itself.
+        // can never drift from the catalogue itself. once(): '*' runs for every
+        // view and component (each icon), and a category page read the cache file
+        // 176 times.
         View::composer('*', function ($view) {
-            $view->with('udsCatalog', Cache::remember('uds_catalog_totals', 3600, function () {
+            $view->with('udsCatalog', once(fn () => Cache::remember('uds_catalog_totals', 3600, function () {
                 try {
                     $groups = app(CatalogService::class)->groups();
                     return [
@@ -76,7 +78,7 @@ class AppServiceProvider extends ServiceProvider
                 } catch (\Throwable $e) {
                     return ['parts' => 0, 'cats' => 0, 'groups' => []];
                 }
-            }));
+            })));
 
         });
     }

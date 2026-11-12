@@ -142,7 +142,6 @@
     });
   }
 
-  /* ---------- "About …" popovers (.cinfo): hover and focus are CSS; a tap toggles them (iOS gives buttons no focus) ---------- */
   /* ---------- pages fetched ahead of time (the layout's speculation rules) carry the cart as it was: putting the
      rules back throws those copies away, so this runs whenever something is added to the cart ---------- */
   function initPrefetch() {
@@ -155,6 +154,26 @@
     });
   }
 
+  /* ---------- lazy pictures start loading only when they are about to scroll in, and on a phone that is a blank
+     square for a second or more (owner, 2026-11-12). Once the page has loaded, the small ones (lists, cards, 160 and
+     320 px copies of a few KB each) are fetched in the background, so they are already there when the visitor scrolls ---------- */
+  function initPicsAhead() {
+    var c = navigator.connection;
+    if (c && (c.saveData || /2g/.test(c.effectiveType || ''))) return;
+    function go() {
+      var imgs = [].filter.call(document.querySelectorAll('img[loading="lazy"]'), function (i) {
+        return /\/media\/(160|320)\//.test(i.getAttribute('src') || '') || (+i.getAttribute('width') || 999) <= 400;
+      });
+      (function next() {
+        imgs.splice(0, 12).forEach(function (i) { i.loading = 'eager'; });
+        if (imgs.length) setTimeout(next, 120);
+      })();
+    }
+    var idle = function () { (window.requestIdleCallback || function (f) { setTimeout(f, 200); })(go, { timeout: 1500 }); };
+    if (document.readyState === 'complete') idle(); else window.addEventListener('load', idle);
+  }
+
+  /* ---------- "About …" popovers (.cinfo): hover and focus are CSS; a tap toggles them (iOS gives buttons no focus) ---------- */
   function initInfoPops() {
     document.addEventListener('click', function (e) {
       var b = e.target.closest('.cinfo__btn'), cur = b && b.parentNode;
@@ -167,7 +186,7 @@
   }
 
   function boot() {
-    initReveal(); initHeader(); initSidebar(); initInfoPops(); initLangMenus(); initPrefetch();
+    initReveal(); initHeader(); initSidebar(); initInfoPops(); initLangMenus(); initPrefetch(); initPicsAhead();
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot);

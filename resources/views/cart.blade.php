@@ -78,7 +78,7 @@
             @endphp
             <article class="cartline" data-key="{{ $i['key'] }}" data-price="{{ $i['price'] }}">
               <span class="cartline__media">
-                @if(!empty($i['image']))<img class="p-pic" src="{{ $i['image'] }}" data-zoom="{{ $zoom }}" alt="{{ $i['sku'] }}" loading="lazy">@else<x-icon name="package"/>@endif
+                @if(!empty($i['image']))<img class="p-pic" src="{{ \App\Services\CartService::thumb($i['image']) }}" data-zoom="{{ $zoom }}" alt="{{ $i['sku'] }}" width="88" height="88">@else<x-icon name="package"/>@endif
               </span>
               <div class="cartline__info">
                 @if($i['sku'])<span class="cartline__sku">{{ $i['sku'] }}</span>@endif

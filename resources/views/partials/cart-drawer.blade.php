@@ -31,4 +31,6 @@
   'empty' => __('Your cart is empty'), 'emptySub' => __('Parts you add show up here.'), 'browse' => __('Browse the parts catalog'),
   'items' => __(':n items'), 'item' => __('1 item'), 'remove' => __('Remove :name'), 'qty' => __('Quantity'), 'less' => __('One less'), 'more' => __('One more'),
   'each' => __(':price each'), 'shipLeft' => __('Add :amount more in parts for free US shipping'), 'shipOk' => __('Your parts ship free in the US'),
-], JSON_UNESCAPED_UNICODE) !!};</script>
+], JSON_UNESCAPED_UNICODE) !!};
+{{-- the cart as this page was made: the panel opens with its lines at once (owner, 2026-11-12: it stayed blank for seconds) --}}
+window.UCART_DATA = @json(($ucart = app(\App\Services\CartService::class))->count() ? $ucart->mini() : null);</script>
