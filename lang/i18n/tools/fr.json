@@ -808,5 +808,9 @@
     "See every flange yoke in :series": "Voir toutes les fourches à bride :series",
     "Listed for :make: :n of :total.": "Pour :make : :n sur :total.",
     "Start over? Your answers will be cleared.": "Recommencer ? Vos réponses seront effacées.",
-    "Toyota transfer cases have a bolt-on flange output: the shaft gets a slip yoke with a flange yoke": "Les boîtes de transfert Toyota ont une sortie à bride boulonnée : l'arbre reçoit une fourche coulissante avec fourche à bride"
+    "Toyota transfer cases have a bolt-on flange output: the shaft gets a slip yoke with a flange yoke": "Les boîtes de transfert Toyota ont une sortie à bride boulonnée : l'arbre reçoit une fourche coulissante avec fourche à bride",
+    "Question :n": "Question :n",
+    "In inches, with the vehicle at ride height. A1 and C1 are both required.": "En pouces, le véhicule étant à sa hauteur de caisse normale. A1 et C1 sont toutes deux obligatoires.",
+    "Please enter C1 (u-joint center to u-joint center).": "Veuillez saisir C1 (de centre de croisillon à centre de croisillon).",
+    "C1 cannot be longer than A1. Please check both measurements.": "C1 ne peut pas être plus long que A1. Veuillez vérifier les deux mesures."
 }

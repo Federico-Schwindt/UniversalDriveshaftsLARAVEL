@@ -18,6 +18,11 @@
   <div class="wrap">
     <nav class="ucrumb" aria-label="{!! __('Breadcrumb') !!}"><a href="/">{!! __('Home') !!}</a><x-icon name="caret-right"/><a href="/shop">{!! __('Catalog') !!}</a><x-icon name="caret-right"/><span aria-current="page">{!! __('Search') !!}</span></nav>
     <h1>@if($q === ''){{ __('Search the catalog') }} @else{!! trans_choice(':count result for :q|:count results for :q', $total, ['count' => number_format($total), 'q' => '<span class="srch-q">'.e($q).'</span>']) !!}@endif</h1>
+    @if(!empty($read) && $total > 0)
+      {{-- the query was not taken as typed: say how it was read --}}
+      <p class="srch-read">@if($read['fixed']){!! __('Showing results for :q', ['q' => '<b>“' . e($read['fixed']) . '”</b>']) !!}@endif
+        @if($read['dropped'])<span>{{ __('Left out, no part mentions it: :words', ['words' => implode(', ', $read['dropped'])]) }}</span>@endif</p>
+    @endif
     <form class="srch-form" action="/search" method="get" role="search">
       <x-icon name="search"/>
       <input type="search" name="q" value="{{ $q }}" placeholder="{!! __('Part number, name or series — e.g. 5-1310X, flange yoke, U2594-173') !!}" aria-label="{!! __('Search parts') !!}" autocomplete="off" autofocus>
@@ -39,6 +44,11 @@
       <h2>{{ __('Nothing matched “:q”', ['q' => $q]) }}</h2>
       <p>{!! __('Check the number against the one stamped on the part, try the series only (1310, 1350) or the bare number without a prefix. Complete driveshafts are easier to find by vehicle.') !!}</p>
       <div class="cartempty__cta"><a class="btn btn-primary" href="/catalog/driveshafts"><x-icon name="crosshair"/> {!! __('Find by vehicle') !!}</a><a class="btn btn-ghost" href="/shop">{!! __('Browse the catalog') !!}</a><a class="btn btn-ghost" href="/quick-order">{!! __('Quick order') !!}</a></div>
+      {{-- a part we can source is still a sale: one tap to a person --}}
+      <div class="srch-ask">
+        <p><b>{!! __('Can’t find it? We’ll find it for you.') !!}</b> {!! __('Send us the part number, the vehicle or a photo of the part.') !!}</p>
+        <div class="srch-ask__cta"><a class="btn btn-line" href="tel:+18135246491"><x-icon name="phone"/> (813) 524-6491</a><a class="btn btn-line" href="https://wa.me/18136445707?text={{ rawurlencode(__('Hi! I am looking for this part: :q', ['q' => $q])) }}" target="_blank" rel="noopener"><x-icon name="whatsapp"/> {!! __('Chat on WhatsApp') !!}</a></div>
+      </div>
     </div>
   @elseif($q === '')
     <div class="srch-hints">
@@ -107,3 +117,12 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 @include('partials.ds-add')
 @endsection
+@if($q !== '')
+@push('scripts')
+@include('partials.track', ['ev' => 'search', 'p' => ['search_term' => $q, 'results' => $total]])
+@if($sections)
+@include('partials.track', ['ev' => 'view_item_list', 'p' => ['item_list_id' => 'search', 'item_list_name' => 'Search results',
+  'items' => array_slice(array_merge(...array_map(fn ($s) => array_map(fn ($it) => \App\Support\Funnel::item((int) $it['id'], (string) $it['sku'], (string) $it['name'], (float) $it['price'], 1, (string) $s['cat']['name']), array_slice($s['data']['items'], 0, 6)), $sections)), 0, 30)]])
+@endif
+@endpush
+@endif

@@ -622,6 +622,7 @@
     if(shipId===PICKUP){var pa=document.getElementById('pickup-ack');if(!pa.checked){pa.closest('.co-agree').style.outline='2px solid var(--err)';inlineMsg('pickup-msg',M.pickup,pa);return;}}
     var ag=document.getElementById('agree-terms'); if(ag&&!ag.checked){ag.closest('.co-agree').style.outline='2px solid var(--err)';ag.closest('.co-agree').style.borderRadius='12px';inlineMsg('terms-msg',M.terms,ag);return;}
     const btn=this;btn.disabled=true;btn.textContent=M.placing;
+    if(window.udsFunnelPay)udsFunnelPay(payMode());
     /* deferred-intent mode: the Payment Element must validate before the order is created,
        otherwise an unpayable order is left behind every time a card detail is wrong */
     var mode=payMode(), onTerms=mode==='terms', onSaved=!onTerms&&mode!=='new';
@@ -730,7 +731,25 @@
   }
 })();
 </script>
-<script src="/js/geo.js?v={{ @filemtime(public_path('js/geo.js')) }}"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key={{ config('uds.gmaps_key') }}&libraries=places&callback=udsInitPlaces" async defer></script>
+{{-- the Maps key rides on the tag: geo.js fetches Google only when a street field is focused --}}
+<script src="/js/geo.js?v={{ @filemtime(public_path('js/geo.js')) }}" data-gmaps-key="{{ config('uds.gmaps_key') }}"></script>
 @includeIf('partials.checkout-recovery')   {{-- abandoned-cart capture (recovery agent) --}}
+{{-- funnel: checkout begun, shipping chosen (or kept as offered) and payment submitted, for GA4 and Meta (partials/analytics) --}}
+<script>
+(function () {
+  if (!window.udsTrack) return;
+  var cart = @json(\App\Support\Funnel::cart(array_values($items))), sel = document.getElementById('ship-select'), shipSent = false;
+  udsTrack('begin_checkout', cart);
+  function ship() {
+    if (!sel || !sel.value) return;
+    shipSent = true;
+    udsTrack('add_shipping_info', Object.assign({shipping_tier: ((sel.options[sel.selectedIndex] || {}).text || sel.value).split(' — ')[0].trim()}, cart));
+  }
+  if (sel) sel.addEventListener('change', ship);
+  window.udsFunnelPay = function (mode) {
+    if (!shipSent) ship();
+    udsTrack('add_payment_info', Object.assign({payment_type: mode === 'terms' ? 'net terms' : (mode === 'new' ? 'card' : 'saved card')}, cart));
+  };
+})();
+</script>
 @endsection

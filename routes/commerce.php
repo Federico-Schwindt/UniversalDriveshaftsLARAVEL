@@ -15,4 +15,6 @@ Route::post('/shop/estimate', [\App\Http\Controllers\CommerceController::class, 
 // delivery date + location → ZIP: background calls with no session at all, so they can never write back a stale session
 // over an Add to cart made while they run (the cart vanished that way in testing, 2026-11-11)
 Route::get('/api/arrival', [\App\Http\Controllers\CommerceController::class, 'arrival'])->middleware('throttle:lookup')->withoutMiddleware(\App\Http\Controllers\CommerceController::STATELESS);
+// the cart's shipping cost to a ZIP: reads the session cart, never writes the session (CommerceController::peekCart)
+Route::get('/api/cart-ship', [\App\Http\Controllers\CommerceController::class, 'cartShip'])->middleware('throttle:lookup')->withoutMiddleware(\App\Http\Controllers\CommerceController::STATELESS);
 Route::get('/api/zip-near', [\App\Http\Controllers\CommerceController::class, 'zipNear'])->middleware('throttle:lookup')->withoutMiddleware(\App\Http\Controllers\CommerceController::STATELESS);

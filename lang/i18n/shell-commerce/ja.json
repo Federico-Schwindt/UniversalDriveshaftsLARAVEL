@@ -805,5 +805,20 @@
     "You already have orders waiting to be paid at pickup. Pay this one by card, or call (813) 524-6491.": "店頭払い待ちのご注文がすでにあります。このご注文はカードでお支払いいただくか、(813) 524-6491 までお電話ください。",
     "Your earlier order changed while you were checking out. Please review your cart and place the order again.": "お手続き中に以前のご注文が変更されました。カートをご確認のうえ、もう一度ご注文ください。",
     "We could not reach the card processor. Please try again in a moment.": "カード決済サービスに接続できませんでした。しばらくしてからもう一度お試しください。",
-    "A payment for this order is already being processed. Please check back in a few minutes — you have not been charged twice.": "このご注文のお支払いはすでに処理中です。数分後にもう一度ご確認ください。二重に請求されてはいません。"
+    "A payment for this order is already being processed. Please check back in a few minutes — you have not been charged twice.": "このご注文のお支払いはすでに処理中です。数分後にもう一度ご確認ください。二重に請求されてはいません。",
+    "Showing results for :q": ":q の検索結果を表示しています",
+    "Left out, no part mentions it: :words": "除外（該当する部品がありません）：:words",
+    "Can’t find it? We’ll find it for you.": "見つかりませんか？私たちがお探しします。",
+    "Send us the part number, the vehicle or a photo of the part.": "部品番号、車種、または部品の写真をお送りください。",
+    "Hi! I am looking for this part: :q": "こんにちは！この部品を探しています：:q",
+    "Estimated total": "概算合計",
+    "Shipping is an estimate for your ZIP code; the checkout confirms it with your address.": "送料は郵便番号にもとづく概算です。お会計時にご住所で確定します。",
+    "Shipping is calculated at checkout.": "送料はお会計時に計算されます。",
+    "Prices exclude any core charge, which is quoted separately.": "価格にはコア代金は含まれておりません。コア代金は別途お見積りいたします。",
+    "Shipping to :zip with :service": ":zip 宛て、:service で発送",
+    "Shipping to :zip": ":zip 宛てに発送",
+    "Often ordered with :sku": ":sku とよく一緒に注文されています",
+    "Often ordered with :series series :kind": ":series シリーズの:kindとよく一緒に注文されています",
+    "Please read and accept the Terms of Use to place your order.": "ご注文の前に利用規約をお読みのうえ、同意してください。",
+    "Something went wrong. Please try again or call (813) 524-6491.": "問題が発生しました。もう一度お試しいただくか、(813) 524-6491 までお電話ください。"
 }

@@ -805,5 +805,20 @@
     "You already have orders waiting to be paid at pickup. Pay this one by card, or call (813) 524-6491.": "Vous avez déjà des commandes à régler au retrait. Payez celle-ci par carte ou appelez le (813) 524-6491.",
     "Your earlier order changed while you were checking out. Please review your cart and place the order again.": "Votre commande précédente a changé pendant le paiement. Vérifiez votre panier et passez la commande à nouveau.",
     "We could not reach the card processor. Please try again in a moment.": "Impossible de joindre le processeur de cartes. Veuillez réessayer dans un instant.",
-    "A payment for this order is already being processed. Please check back in a few minutes — you have not been charged twice.": "Un paiement pour cette commande est déjà en cours de traitement. Revenez dans quelques minutes : vous n’avez pas été débité deux fois."
+    "A payment for this order is already being processed. Please check back in a few minutes — you have not been charged twice.": "Un paiement pour cette commande est déjà en cours de traitement. Revenez dans quelques minutes : vous n’avez pas été débité deux fois.",
+    "Showing results for :q": "Résultats pour :q",
+    "Left out, no part mentions it: :words": "Ignoré, aucune pièce ne le mentionne : :words",
+    "Can’t find it? We’ll find it for you.": "Vous ne trouvez pas ? Nous le trouvons pour vous.",
+    "Send us the part number, the vehicle or a photo of the part.": "Envoyez-nous la référence, le véhicule ou une photo de la pièce.",
+    "Hi! I am looking for this part: :q": "Bonjour ! Je cherche cette pièce : :q",
+    "Estimated total": "Total estimé",
+    "Shipping is an estimate for your ZIP code; the checkout confirms it with your address.": "Les frais d'expédition sont une estimation pour votre code postal ; ils sont confirmés lors du paiement avec votre adresse.",
+    "Shipping is calculated at checkout.": "Les frais d'expédition sont calculés lors du paiement.",
+    "Prices exclude any core charge, which is quoted separately.": "Les prix n'incluent pas la consigne éventuelle, qui est indiquée séparément.",
+    "Shipping to :zip with :service": "Expédition vers :zip avec :service",
+    "Shipping to :zip": "Expédition vers :zip",
+    "Often ordered with :sku": "Souvent commandé avec :sku",
+    "Often ordered with :series series :kind": "Souvent commandé avec :kind de la série :series",
+    "Please read and accept the Terms of Use to place your order.": "Veuillez lire et accepter les Conditions d'utilisation pour passer votre commande.",
+    "Something went wrong. Please try again or call (813) 524-6491.": "Une erreur s'est produite. Veuillez réessayer ou appeler le (813) 524-6491."
 }

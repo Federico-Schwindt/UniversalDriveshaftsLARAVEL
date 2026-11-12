@@ -88,6 +88,10 @@
           setTimeout(function () {
             buttons.forEach(function (b) { b.classList.remove('is-done'); var s = b.querySelector('span'); if (s) s.textContent = originalLabel; });
           }, 1600);
+          // the next step stays in sight: View cart / Checkout under the button, Checkout beside the sticky one
+          var added = document.getElementById('pdp-added'), go = document.getElementById('pdp-sticky-go');
+          if (added) added.hidden = false;
+          if (go) go.hidden = false;
         } else {
           buttons.forEach(function (b) { var s = b.querySelector('span'); if (s) s.textContent = originalLabel; });
         }
@@ -104,9 +108,12 @@
   if (sticky && add) {
     var buyBox = add.closest('.pdp__cart');
     if (buyBox && 'IntersectionObserver' in window) {
+      // on a phone the picture fills the first screen and the buy box opens below it: the bar shows whenever the box is
+      // out of sight, below as well as above (audit 2026-11-12: Add to cart sat at y=953 of an 844 px screen)
+      var phone = window.matchMedia('(max-width: 760px)');
       new IntersectionObserver(function (entries) {
         var e = entries[0];
-        var show = !e.isIntersecting && e.boundingClientRect.top < 0;
+        var show = !e.isIntersecting && (e.boundingClientRect.top < 0 || phone.matches);
         sticky.classList.toggle('is-on', show);
         sticky.setAttribute('aria-hidden', show ? 'false' : 'true');
       }, { threshold: 0 }).observe(buyBox);

@@ -26,7 +26,7 @@
   <div class="dsb-progress" aria-live="polite">
     <button type="button" class="dsb-back" data-back aria-label="{{ __('Back') }}"><x-icon name="arrow-left"/><span>{{ __('Back') }}</span></button>
     <div class="dsb-progress-text"><b data-progress-step>{{ __('Step 1') }}</b><span data-progress-name></span></div>
-    <button type="button" class="dsb-restart" data-restart hidden><x-icon name="refresh"/><span>{{ __('Start over') }}</span></button>
+    <button type="button" class="dsb-restart" data-restart aria-label="{{ __('Start over') }}" hidden><x-icon name="refresh"/><span>{{ __('Start over') }}</span></button>
     <div class="dsb-bar" aria-hidden="true"><i data-progress-bar></i></div>
   </div>
 

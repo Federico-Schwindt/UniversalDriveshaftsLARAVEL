@@ -261,6 +261,76 @@ class CommerceController extends Controller
     }
 
     /**
+     * GET /api/cart-ship?zip=… — what shipping this visitor's cart costs to a US ZIP, for the cart page's summary
+     * (owner, 2026-11-12: "mostrar el costo de envío con el código postal que ya conocemos"). The cheapest way to
+     * ship it, as the checkout would offer it for that ZIP: live carrier rates, pallets, free shipping from $1,000.
+     * The session is only read (peekCart), never written: see STATELESS.
+     */
+    public function cartShip(Request $r)
+    {
+        $zip = substr(preg_replace('/\D/', '', (string) $r->query('zip', '')), 0, 5);
+        if (strlen($zip) !== 5) return response()->json(['success' => false, 'need_zip' => true]);
+        $items = array_values($this->peekCart($r));
+        if (!$items) return response()->json(['success' => false, 'empty' => true, 'zip' => $zip]);
+
+        $sig = md5(json_encode(array_map(fn ($i) => [$i['type'] ?? 'product', $i['wp_product_id'] ?? null, (string) ($i['sku'] ?? ''), (int) $i['qty'], (float) $i['price'],
+            isset($i['meta']['config']) ? md5(json_encode($i['meta']['config'])) : ''], $items)));
+        $pick = Cache::get($key = "cartship:$sig:$zip");
+        if (!$pick) {
+            try {
+                $opts = $this->cart->shippingOptions('US', self::zipState($zip), $zip, $items);
+            } catch (\Throwable $e) {
+                Log::warning('cart-ship: ' . $e->getMessage());
+                $opts = [];
+            }
+            $opts = array_values(array_filter($opts, fn ($o) => ($o['id'] ?? '') !== CartService::PICKUP_ID));
+            if (!$opts) return response()->json(['success' => false, 'zip' => $zip]);   // no carrier rate: never cached, the checkout explains
+            $best = collect($opts)->sortBy('cost')->first();
+            // free shipping goes by ground: its carrier and transit time are the cheapest parcel service's
+            $timed = collect($opts)->filter(fn ($o) => !empty($o['days']) && !CartService::isFreight((string) $o['id']))->sortBy('cost')->first();
+            $name = fn ($o) => preg_replace('/ · .*$/u', '', (string) ($o['label'] ?? ''));
+            $partsFree = (bool) preg_match('/^Free shipping on parts \+ (.+) for .+$/', (string) $best['label'], $m);   // tube and shafts are rated, the rest ships free
+            $pick = ['id' => (string) $best['id'], 'cost' => round((float) $best['cost'], 2), 'more' => count($opts) > 1, 'parts_free' => $partsFree,
+                'service' => $partsFree ? $m[1] : ($best['id'] === 'free_shipping' ? ($timed ? $name($timed) : '') : $name($best)),
+                'days' => (int) ($best['days'] ?? ($best['id'] === 'free_shipping' ? ($timed['days'] ?? 0) : 0))];
+            // parts free + a rated tube: the option carries no transit time, the cart's cheapest parcel service does
+            if (!$pick['days'] && !CartService::isFreight($pick['id']) && ($a = \App\Support\Arrival::forItems($items, $zip))) $pick['days'] = $a['days'];
+            Cache::put($key, $pick, 1800);
+        }
+        // a driveshaft built to order ships when it is finished: a price, no date
+        $built = (bool) array_filter($items, fn ($i) => in_array($i['type'] ?? '', ['custom_build', 'premade_build'], true));
+        $date = $pick['days'] > 0 && !$built ? \App\Support\Arrival::dateAfter($pick['days']) : null;
+        return response()->json(['success' => true, 'zip' => $zip, 'cost' => $pick['cost'], 'free' => $pick['cost'] <= 0, 'more' => $pick['more'],
+            'parts_free' => $pick['parts_free'], 'service' => $pick['service'], 'freight' => CartService::isFreight($pick['id']), 'built' => $built,
+            'date' => $date ? \App\Support\Arrival::format($date) : null, 'iso' => $date?->toDateString()]);
+    }
+
+    /**
+     * The cart of the session this request's cookie names, read without the session middleware: nothing is saved when
+     * the request ends, so a slow carrier answer can never write an old cart back over a change made meanwhile.
+     */
+    private function peekCart(Request $r): array
+    {
+        $store = app('session')->driver();
+        if (!$store->isStarted()) {
+            $store->setId((string) $r->cookies->get($store->getName()));
+            $store->start();
+        }
+        return (array) $this->cart->items();
+    }
+
+    /** The state a ZIP outside the lower 48 belongs to ('' for the rest): those never ship free (CartService::NON_CONTIGUOUS). */
+    private static function zipState(string $zip): string
+    {
+        $p = (int) substr($zip, 0, 3);
+        return match (true) {
+            $p >= 995 => 'AK', $p === 967 || $p === 968 => 'HI', $p === 969 => 'GU', $p === 8 => 'VI', $p === 6 || $p === 7 || $p === 9 => 'PR',
+            $p === 340 => 'AA', $p >= 90 && $p <= 98 => 'AE', $p >= 962 && $p <= 966 => 'AP',
+            default => '',
+        };
+    }
+
+    /**
      * GET /api/zip-near?lat=…&lng=… — the US ZIP at the visitor's location (the browser asked them first), for the
      * delivery date. US Census reverse geocoder (free, no key): ZIP Code Tabulation Areas, layer 84. Coordinates are
      * rounded to ~100 m and nothing is stored but the cached ZIP.

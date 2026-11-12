@@ -277,6 +277,12 @@
         </button>
         @if($byFoot)<p class="pdp__ftnote"><x-icon name="ruler"/> {{ __('Quantity is in') }} <b>{{ __('feet') }}</b>: <span data-ft-live>1 ft = 12" · ${{ number_format($p['price'],2) }}</span></p>@endif
       </div>
+      {{-- once added, the next step is one tap away (owner 2026-10-24: the cart panel does not open by itself) --}}
+      <div class="pdp__added" id="pdp-added" role="status" hidden>
+        <span class="pdp__added-t"><x-icon name="check"/> {{ __('Added to your cart') }}</span>
+        <a href="/cart" class="textlink">{{ __('View cart') }}</a>
+        <a href="/checkout" class="btn btn-primary btn-sm">{{ __('Checkout') }} <x-icon name="arrow-right"/></a>
+      </div>
       @endif
 
       <ul class="pdp__assure">
@@ -305,6 +311,7 @@
       <button type="button" class="btn btn-primary" id="pdp-sticky-add" data-add="{{ $p['id'] }}">
         <x-icon name="cart"/><span>{{ __('Add to cart') }}</span>
       </button>
+      <a href="/checkout" class="btn btn-line" id="pdp-sticky-go" hidden>{{ __('Checkout') }} <x-icon name="arrow-right"/></a>
       @endif
     </div>
   </div>
@@ -498,3 +505,7 @@ if(!seen)setTimeout(open,350);
 <div class="stock-pop" id="stock-pop"></div>
 <div class="img-pop" id="img-pop" aria-hidden="true"><img alt=""></div>
 @endsection
+@push('scripts')
+@include('partials.track', ['ev' => 'view_item', 'p' => ['value' => round((float) $p['price'], 2),
+  'items' => [\App\Support\Funnel::item((int) $p['id'], (string) $p['sku'], (string) $displayName, (float) $p['price'], 1, (string) ($cat['name'] ?? ''))]]])
+@endpush

@@ -5,8 +5,10 @@
   var T = window.UCART_T || {}, CSRF = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
   var body = root.querySelector('[data-ucart-body]'), foot = root.querySelector('[data-ucart-foot]');
   var PHONE = window.matchMedia('(max-width: 1240px)');
-  var ADD_URL = /\/(cart\/add|shop\/catalog\/add|catalog\/driveshafts\/add)(\?|$)/;
+  var ADD_URL = /\/(cart\/add|shop\/catalog\/add|catalog\/driveshafts\/add|quick-order\/add|dsb\/submit)(\?|$)/;
+  var EDIT_URL = /\/cart\/(update|remove)(\?|$)/;   // the cart page's +/- and remove
   var lastFocus = null, data = window.UCART_DATA, drawn = null;   // the cart as the page was made (partials/cart-drawer)
+  var known = data || {}, expect = false;   // the cart as last seen, and whether this page just changed it (funnel events)
 
   function money(n) { return '$' + Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -43,6 +45,20 @@
     foot.hidden = false;
   }
 
+  // funnel: what a change on this page added or removed, as GA4 add_to_cart / remove_from_cart (partials/analytics udsTrack).
+  // Diffing the cart before and after covers every add button on the site (catalog, product, search, builder) at once.
+  function seen(d) {
+    if (expect && window.udsTrack) {
+      var was = {}, now = {};
+      (known.items || []).forEach(function (i) { was[i.key] = i; });
+      (d.items || []).forEach(function (i) { now[i.key] = i; });
+      var send = function (ev, it, q) { udsTrack(ev, {value: Math.round(it.price * q * 100) / 100, items: [{item_id: it.item_id || it.sku, item_name: it.name, sku: it.sku, price: it.price, quantity: q}]}); };
+      Object.keys(now).forEach(function (k) { var q = now[k].qty - (was[k] ? was[k].qty : 0); if (q > 0) send('add_to_cart', now[k], q); });
+      Object.keys(was).forEach(function (k) { var q = was[k].qty - (now[k] ? now[k].qty : 0); if (q > 0) send('remove_from_cart', was[k], q); });
+    }
+    expect = false; known = d;
+  }
+
   // free US shipping meter (parts only; tubing and complete driveshafts are rated)
   function ship(d, n) {
     var box = root.querySelector('[data-ucart-ship]'), min = +d.free_min || 0, base = +d.free_base || 0;
@@ -56,7 +72,7 @@
 
   function load() {
     return fetch('/cart/mini', { headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }, credentials: 'same-origin' })
-      .then(function (r) { return r.json(); }).then(function (j) { if (j && j.success) render(j.data); return j; });
+      .then(function (r) { return r.json(); }).then(function (j) { if (j && j.success) { seen(j.data); render(j.data); } return j; });
   }
 
   // open with what is already drawn (the page's own copy of the cart), then ask the server for the latest
@@ -80,9 +96,9 @@
   }
 
   function post(url, data) {
-    root.classList.add('is-busy');
+    root.classList.add('is-busy'); expect = true;
     return fetch(url, { method: 'POST', credentials: 'same-origin', headers: { 'X-CSRF-TOKEN': CSRF, 'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(data) })
-      .then(function (r) { return r.json(); }).then(function (j) { root.classList.remove('is-busy'); if (j && j.success) render(j.data); })
+      .then(function (r) { return r.json(); }).then(function (j) { root.classList.remove('is-busy'); if (j && j.success) { seen(j.data); render(j.data); } })
       .catch(function () { root.classList.remove('is-busy'); });
   }
 
@@ -127,10 +143,10 @@
     window.fetch = function (input, init) {
       var url = typeof input === 'string' ? input : (input && input.url) || '';
       var p = orig.apply(this, arguments);
-      if (ADD_URL.test(url) && (!init || (init.method || 'GET').toUpperCase() === 'POST')) {
+      if ((ADD_URL.test(url) || EDIT_URL.test(url)) && (!init || (init.method || 'GET').toUpperCase() === 'POST')) {
         p.then(function (r) { return r.clone().json(); }).then(function (j) {
           if (!j || !j.success) return;
-          load();   // owner, 2026-10-24: refresh the count only; the panel opens from the cart icon
+          expect = true; load();   // owner, 2026-10-24: refresh the count only; the panel opens from the cart icon
           window.dispatchEvent(new Event('uds:cart'));   // pages fetched ahead of time show the old cart: uds.js drops them
         }).catch(function () {});
       }

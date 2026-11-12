@@ -20,7 +20,7 @@ class DriveshaftFinderController extends Controller
     }
 
     /** Part page. The public URL carries the U-prefixed SKU; the bare supplier number redirects to it. */
-    public function part(string $pn)
+    public function part(Request $r, string $pn)
     {
         $bare = DriveshaftFinder::pn($pn);
         abort_if(!$this->finder->partPage($bare), 404);
@@ -28,7 +28,26 @@ class DriveshaftFinderController extends Controller
         $part = $this->finder->partPage($bare);
         abort_if(!$part, 404);
         $logos = array_map(fn ($f) => basename($f, '.png'), glob(public_path('img/makes/*.png')) ?: []);
-        return view('finder-part', ['p' => $part, 'logos' => $logos]);
+        return view('finder-part', ['p' => $part, 'logos' => $logos, 'fit' => $this->fitFor($r, $bare)]);
+    }
+
+    /**
+     * "Fits your 2005 Ford F250 Super Duty · AWD/4WD · Front" for the vehicle the finder sent the shopper here with, only
+     * when one of this shaft's fitment rows (PTI's application data) proves it; anything else in the link is ignored.
+     */
+    private function fitFor(Request $r, string $bare): ?string
+    {
+        $make = trim($this->qs($r, 'make')); $year = (int) $this->qs($r, 'year', '0'); $model = trim($this->qs($r, 'model'));
+        if ($make === '' || !$year || $model === '') return null;
+        $q = DriveshaftFinder::fitments()->where('part_number', $bare)->where('make', $make)->where('year', $year)->where('model', $model);
+        $shown = [];
+        foreach (['drive', 'loc', 'engine'] as $f) {
+            $v = trim($this->qs($r, $f));
+            if ($v === '') continue;
+            $q->where(fn ($w) => $w->whereNull($f)->orWhere($f, $v));   // NULL = the row holds for every value
+            $shown[] = $v;
+        }
+        return $q->exists() ? implode(' · ', array_merge(["$year $make $model"], $shown)) : null;
     }
 
     /** /shop/complete-driveshafts/by-vehicle: every finder part as a catalog table. */

@@ -220,7 +220,9 @@
     const ph = PHASES.findIndex(([, steps]) => steps.includes(state.step)), stage = ph < 0 ? 0 : ph;
     const inStage = fixedSteps().filter((x) => PHASES[stage][1].includes(x)), k = Math.max(0, inStage.indexOf(state.step));
     $('[data-progress-step]').textContent = t('Step :n of :total', {n: stage + 1, total: PHASES.length});
-    const sub = state.step === 'tree' ? '' : t(STEP_NAMES[state.step] || '');
+    // the application stage is a run of questions: their number moves while the stage stays at 1 (owner, 2026-11-12)
+    const qi = state.answers.findIndex((a) => a.node === state.node);
+    const sub = state.step === 'tree' ? t('Question :n', {n: (qi < 0 ? state.answers.length : qi) + 1}) : t(STEP_NAMES[state.step] || '');
     $('[data-progress-name]').textContent = t(PHASES[stage][0]) + (sub && sub !== t(PHASES[stage][0]) ? ' · ' + sub : '');
     const frac = state.step === 'tree' ? Math.min(.9, state.answers.length / 5) : (k + 1) / (inStage.length + 1);
     $('[data-progress-bar]').style.width = Math.round(100 * (stage + frac) / PHASES.length) + '%';

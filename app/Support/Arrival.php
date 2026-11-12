@@ -57,9 +57,15 @@ class Arrival
             $rate = ['service' => preg_replace('/ · .*$/u', '', (string) $with[0]['label']), 'days' => (int) $with[0]['days']];
             Cache::put($key, $rate, 6 * 3600);
         }
+        return ['date' => self::dateAfter($rate['days']), 'days' => $rate['days'], 'service' => $rate['service'], 'zip' => $zip];
+    }
+
+    /** The next ship day plus this many business days in transit. */
+    public static function dateAfter(int $days): Carbon
+    {
         $d = CartService::shipDate()->copy();
-        for ($i = 0; $i < $rate['days']; $i++) { do { $d->addDay(); } while ($d->isWeekend()); }
-        return ['date' => $d, 'days' => $rate['days'], 'service' => $rate['service'], 'zip' => $zip];
+        for ($i = 0; $i < $days; $i++) { do { $d->addDay(); } while ($d->isWeekend()); }
+        return $d;
     }
 
     /** "Thursday, Nov 14" in the visitor's language. */

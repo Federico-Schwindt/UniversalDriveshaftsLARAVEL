@@ -28,6 +28,7 @@ class JsStrings
         'Arrives :date', 'to :zip with :service', 'Change', 'Get a delivery date', 'ZIP code', 'Show date', 'Checking the delivery date…',
         'Enter a 5-digit US ZIP code.', 'Custom builds ship when they are finished.', 'Delivery date for ZIP',
         'Use my location', 'Enter ZIP', 'Delivery date:', 'near you', 'Could not get your location. Enter your ZIP code.', 'Finding your ZIP…',
+        'Shipping to :zip with :service', 'Shipping to :zip',   // cart summary: the shipping cost for that ZIP
         // home vehicle finder, sidebar
         'Pick a make first', 'Pick a year first', 'Choose a make', 'See driveshafts for :vehicle', 'See :make driveshafts', 'Expand menu', 'Collapse menu', 'Part not found.', 'Yes', 'No',
         // search overlay
@@ -36,6 +37,7 @@ class JsStrings
         'Type a part number, a series like <b>1310</b> or a name. Press <kbd>Enter</kbd> for the full results page, <kbd>↑</kbd><kbd>↓</kbd> to move, <kbd>Esc</kbd> to close.',
         'Searching…', 'Search failed — try again.',
         '<b>No parts match “:q”.</b> Check the number against the one stamped on the part, try the series only, or <a href="/catalog/driveshafts">find a complete driveshaft by vehicle</a>.',
+        'Showing results for :q', 'Left out, no part mentions it: :words', 'Search', 'Add',
         'All :n', 'See all results', 'Open category', 'Replaces', 'Add :sku to cart', 'Add to cart', 'See :n result for “:q”', 'See all :n results for “:q”',
         // phone field
         'Search country', 'Number without the country code', ', change country',

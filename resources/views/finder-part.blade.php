@@ -53,7 +53,11 @@
 .fpp-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:10px 0 18px}
 .fpp-head h1{margin:0;font-size:clamp(1.6rem,3.2vw,2.4rem)}
 .fpp-head h1 small{display:block;font-family:var(--font-m,monospace);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint,#697687);font-weight:500;margin-bottom:6px}
-.fpp-acts{display:flex;gap:10px;flex-wrap:wrap}
+.fpp-acts{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.fpp-headprice{font-family:var(--font-m,monospace);font-size:1.5rem;font-weight:600;font-variant-numeric:tabular-nums;display:flex;flex-direction:column;line-height:1.1}
+.fpp-headprice small{font-size:.75rem;font-weight:500;color:var(--ink-faint,#697687)}
+.fpp-fit{display:inline-flex;align-items:center;gap:.4rem;margin:.6rem 0 0;padding:.4rem .75rem;border-radius:8px;background:var(--ok-50,#e8f6ee);color:var(--ok-700,#1d6b3f);font-weight:600;font-size:.95rem}
+@media (max-width:640px){.fpp-acts{width:100%}.fpp-acts .btn{flex:1;justify-content:center}}
 .fpp-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start}
 @media(max-width:900px){.fpp-grid{grid-template-columns:1fr}}
 .fpp-card{background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(16,32,64,.10);padding:26px;min-width:0}
@@ -96,9 +100,14 @@
 <section class="fpp"><div class="wrap">
   <div class="crumb"><a href="/">{{ __('Home') }}</a><span class="sep">/</span><a href="/catalog/driveshafts">{{ __('Complete driveshafts') }}</a><span class="sep">/</span><span>{{ $pn }}</span></div>
   <div class="fpp-head">
-    <h1><small>{{ __('Complete driveshaft') }}</small>{{ __('Part number') }} {{ $pn }}</h1>
+    <div>
+      <h1><small>{{ __('Complete driveshaft') }}</small>{{ __('Part number') }} {{ $pn }}</h1>
+      @if(!empty($fit))<p class="fpp-fit"><x-icon name="check"/> {{ __('Fits your :vehicle', ['vehicle' => $fit]) }}</p>@endif
+    </div>
     <div class="fpp-acts">
-      <a class="btn btn-line" href="/catalog/driveshafts">{{ __('Check fit by vehicle') }}</a>
+      @if(empty($fit))<a class="btn btn-line" href="/catalog/driveshafts">{{ __('Check fit by vehicle') }}</a>@endif
+      {{-- the price beside the button, in the first screen on a phone (audit 2026-11-12: it sat below the fold) --}}
+      @if($p['can_buy'])<span class="fpp-headprice">${{ number_format($p['price'],2) }}@if($p['core_price'])<small>{{ __('+ :amount core', ['amount' => '$' . number_format($p['core_price'],2)]) }}</small>@endif</span>@endif
       @if($p['can_buy'])<button class="btn btn-primary" type="button" data-add-top>{{ __('Add to cart') }}</button>@else<button class="btn btn-primary" type="button" data-quote="{{ $pn }}" data-pn="{{ $p['part_number'] }}">{{ __('Get a quote') }}</button>@endif
     </div>
   </div>
@@ -112,7 +121,7 @@
         @if(count($p['images']) > 1)
         <div class="fpp-thumbs" id="fpp-thumbs">
           @foreach($p['images'] as $i => $src)
-            <button type="button" class="{{ $i === 0 ? 'on' : '' }}" data-src="{{ $src }}" aria-label="View photo {{ $i + 1 }}"><img src="{{ $src }}" alt="" loading="lazy"></button>
+            <button type="button" class="{{ $i === 0 ? 'on' : '' }}" data-src="{{ $src }}" aria-label="View photo {{ $i + 1 }}"><img src="{{ \App\Services\CartService::thumb($src) }}" alt="" width="62" height="62"></button>
           @endforeach
         </div>
         @endif
@@ -220,3 +229,7 @@
 </script>
 <script src="/js/alerts.js?v={{ @filemtime(public_path('js/alerts.js')) }}" defer></script>   {{-- quote modal for unpriced driveshafts (recovery agent) --}}
 @endsection
+@push('scripts')
+@include('partials.track', ['ev' => 'view_item', 'p' => ['value' => round((float) ($p['price'] ?? 0), 2),
+  'items' => [\App\Support\Funnel::item(null, (string) $pn, (string) $desc, (float) ($p['price'] ?? 0), 1, 'Complete driveshafts', 'driveshaft')]]])
+@endpush

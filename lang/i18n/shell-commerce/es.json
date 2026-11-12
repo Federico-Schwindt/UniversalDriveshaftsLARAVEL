@@ -805,5 +805,20 @@
  "You already have orders waiting to be paid at pickup. Pay this one by card, or call (813) 524-6491.": "Ya tienes pedidos pendientes de pago al retirar. Paga este con tarjeta o llama al (813) 524-6491.",
  "Your earlier order changed while you were checking out. Please review your cart and place the order again.": "Tu pedido anterior cambió mientras pagabas. Revisa tu carrito y vuelve a hacer el pedido.",
  "We could not reach the card processor. Please try again in a moment.": "No pudimos comunicarnos con el procesador de tarjetas. Inténtalo de nuevo en un momento.",
- "A payment for this order is already being processed. Please check back in a few minutes — you have not been charged twice.": "Ya se está procesando un pago para este pedido. Vuelve a revisar en unos minutos; no se te cobró dos veces."
+ "A payment for this order is already being processed. Please check back in a few minutes — you have not been charged twice.": "Ya se está procesando un pago para este pedido. Vuelve a revisar en unos minutos; no se te cobró dos veces.",
+ "Showing results for :q": "Mostrando resultados para :q",
+ "Left out, no part mentions it: :words": "Omitido, ninguna pieza lo menciona: :words",
+ "Can’t find it? We’ll find it for you.": "¿No lo encuentras? Lo buscamos por ti.",
+ "Send us the part number, the vehicle or a photo of the part.": "Envíanos el número de pieza, el vehículo o una foto de la pieza.",
+ "Hi! I am looking for this part: :q": "¡Hola! Estoy buscando esta pieza: :q",
+ "Estimated total": "Total estimado",
+ "Shipping is an estimate for your ZIP code; the checkout confirms it with your address.": "El envío es un estimado para tu código postal; al pagar se confirma con tu dirección.",
+ "Shipping is calculated at checkout.": "El envío se calcula al pagar.",
+ "Prices exclude any core charge, which is quoted separately.": "Los precios no incluyen el cargo por casco (core), que se cotiza aparte.",
+ "Shipping to :zip with :service": "Envío a :zip por :service",
+ "Shipping to :zip": "Envío a :zip",
+ "Often ordered with :sku": "Se suele pedir junto con :sku",
+ "Often ordered with :series series :kind": "Se suele pedir junto con :kind de la serie :series",
+ "Please read and accept the Terms of Use to place your order.": "Lee y acepta los Términos de uso para realizar tu pedido.",
+ "Something went wrong. Please try again or call (813) 524-6491.": "Algo salió mal. Inténtalo de nuevo o llama al (813) 524-6491."
 }

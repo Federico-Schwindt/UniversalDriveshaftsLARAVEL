@@ -21,7 +21,7 @@ class SearchController extends Controller
         if (mb_strlen($q) < 2) return response()->json(['q' => $q, 'groups' => [], 'total' => 0]);
         $u = Auth::user(); $tier = ($u && ($u->wholesale_status ?? '') === 'approved') ? (string) ($u->wholesale_discount ?? 0) : '0';
         $ver = \Illuminate\Support\Facades\Cache::get('catalog_ver', 1);   // a catalog sync busts these too
-        return response()->json($this->cached("search_api:$ver:" . app()->getLocale() . ":$tier:" . mb_strtolower($q), $q, fn () => $this->grouped($q)));
+        return response()->json($this->cached("search_api2:$ver:" . app()->getLocale() . ":$tier:" . mb_strtolower($q), $q, fn () => $this->grouped($q)));
     }
 
     /**
@@ -79,7 +79,17 @@ class SearchController extends Controller
             if ($x['xrefExact'] && $total < 4) array_unshift($groups, $group); else $groups[] = $group;
             $total += count($items);
         }
-        return ['q' => $q, 'groups' => $groups, 'total' => $total];
+        return ['q' => $q, 'groups' => $groups, 'total' => $total, 'read' => $this->read($q)];
+    }
+
+    /**
+     * How the query was read when it was not taken as typed: 'fixed' = the query as corrected ("drivshaft" → driveshaft),
+     * 'dropped' = words no part holds with the rest ("chevy 1310 u-joint" → the 1310 u-joints). Null when taken as typed.
+     */
+    private function read(string $q): ?array
+    {
+        $u = $this->catalog->understood($q);
+        return $u['fixed'] || $u['dropped'] ? ['fixed' => $u['fixed'], 'dropped' => $u['dropped']] : null;
     }
 
     /**
@@ -114,9 +124,9 @@ class SearchController extends Controller
         $tier = ($u && ($u->wholesale_status ?? '') === 'approved') ? (string) ($u->wholesale_discount ?? 0) : '0';
         $ver = \Illuminate\Support\Facades\Cache::get('catalog_ver', 1);   // bumped by catalog:sync-live, so a sync busts these
         $vm = mb_strlen($q) >= 2
-            ? $this->cached("search_page:$ver:" . app()->getLocale() . ":$tier:" . mb_strtolower($q), $q, fn () => $this->buildPage($q))
+            ? $this->cached("search_page2:$ver:" . app()->getLocale() . ":$tier:" . mb_strtolower($q), $q, fn () => $this->buildPage($q))
             : ['sections' => [], 'driveshafts' => [], 'total' => 0];
-        return view('search', ['q' => $q, 'sections' => $vm['sections'], 'driveshafts' => $vm['driveshafts'], 'total' => $vm['total']]);
+        return view('search', ['q' => $q, 'sections' => $vm['sections'], 'driveshafts' => $vm['driveshafts'], 'total' => $vm['total'], 'read' => $vm['read'] ?? null]);
     }
 
     /** Build the full results view-model for a query (cached by page()). */
@@ -158,7 +168,7 @@ class SearchController extends Controller
                 }
             }
         }
-        return ['sections' => $sections, 'driveshafts' => $ds, 'total' => $total];
+        return ['sections' => $sections, 'driveshafts' => $ds, 'total' => $total, 'read' => $this->read($q)];
     }
 
     private function q(Request $r): string
@@ -169,13 +179,13 @@ class SearchController extends Controller
     /** Catalog categories holding products whose title or SKU contains the phrase, most hits first. */
     private function matchingCategories(string $q, int $limit): array
     {
-        $cats = $this->matchingCategoriesCached($q, $limit);
         // a bare series number ("1310", "1350 series") is a u-joint search first: that group leads instead of whichever
-        // category happens to hold the most titles containing the number (Flange Yokes, 70)
-        if (preg_match('/^\s*(?:spl\s*)?\d{4}[a-z]{0,3}(?:\s*series)?\s*$/i', $q)) {
-            usort($cats, fn ($a, $b) => (int) ($b['slug'] === 'u-joints') <=> (int) ($a['slug'] === 'u-joints'));
-        }
-        return $cats;
+        // category happens to hold the most titles containing the number (Flange Yokes, 93). It is picked before the
+        // list is cut to $limit: with 12 hits it came 8th and the cut to 5 dropped it (2026-11-12)
+        if (!preg_match('/^\s*(?:spl\s*)?\d{4}[a-z]{0,3}(?:\s*series)?\s*$/i', $q)) return $this->matchingCategoriesCached($q, $limit);
+        $cats = $this->matchingCategoriesCached($q, 40);
+        usort($cats, fn ($a, $b) => (int) ($b['slug'] === 'u-joints') <=> (int) ($a['slug'] === 'u-joints'));
+        return array_slice($cats, 0, $limit);
     }
 
     private function matchingCategoriesCached(string $q, int $limit): array

@@ -23,18 +23,21 @@ Schedule::command('analytics:geocode')->everyThirtyMinutes()->withoutOverlapping
 Schedule::command('seo:gsc-sync')->dailyAt('06:30')->withoutOverlapping(60);   // Search Console → Admin → SEO → Performance (no key = no-op)
 Schedule::call(fn () => \App\Support\CustomerActivity::prune())->name('customer-activity-prune')->dailyAt('04:20');   // admin chat page trail, 30 days
 Schedule::call(fn () => \Illuminate\Support\Facades\DB::table('seo_404s')->where('last_seen_at', '<', now()->subDays(90))->where('hits', '<', 5)->delete())->name('seo-404-prune')->dailyAt('04:10');
+// only one server may run the PTI jobs: they share PTI's single cart (box quotes at 3 am) and PTI's site. PTI_SCHEDULE=false
+// on the other one (owner, 2026-11-12: off on dev.udshafts.com, on at ushafts.com)
+$pti = fn () => (bool) config('uds.pti_schedule', true);
 // Powertrain Industries: new parts arrive as drafts with PTI photos, stock 4x a day, weight + box measured overnight while nobody orders at PTI
-Schedule::command('pti:sync --catalog --create --images --stock')->dailyAt('03:30')->withoutOverlapping(180)
+Schedule::command('pti:sync --catalog --create --images --stock')->dailyAt('03:30')->withoutOverlapping(180)->when($pti)
     ->then(fn () => \Illuminate\Support\Facades\Artisan::call('pti:dewatermark', ['--set' => 'parts']));   // new parts go live: clean their photos at once
-Schedule::command('pti:sync --stock')->cron('30 9,15,21 * * *')->withoutOverlapping(180);
+Schedule::command('pti:sync --stock')->cron('30 9,15,21 * * *')->withoutOverlapping(180)->when($pti);
 // boxes fill PTI's real cart: 3 am ET when nobody builds orders there (was 01:30 UTC = 9:30 pm ET); Cache::lock('pti-cart') guards dropships too
-Schedule::command('pti:sync --boxes --apply-boxes')->dailyAt('03:00')->withoutOverlapping(180);
-Schedule::command('pti:driveshaft-prices')->cron('15 */4 * * *')->withoutOverlapping(230);   // complete driveshafts every 4 h: PTI discounted price + make/model amount; dropped/unpriced shafts hidden, returning ones shown
+Schedule::command('pti:sync --boxes --apply-boxes')->dailyAt('03:00')->withoutOverlapping(180)->when($pti);
+Schedule::command('pti:driveshaft-prices')->cron('15 */4 * * *')->withoutOverlapping(230)->when($pti);   // complete driveshafts every 4 h: PTI discounted price + make/model amount; dropped/unpriced shafts hidden, returning ones shown
 // new PTI photos (parts from the 03:30 sync, shafts from the 4-hourly discovery) lose the PTI watermark (template subtraction, no AI)
-Schedule::command('pti:dewatermark')->cron('20 1-21/4 * * *')->withoutOverlapping(200);
+Schedule::command('pti:dewatermark')->cron('20 1-21/4 * * *')->withoutOverlapping(200)->when($pti);
 Schedule::command('media:warm --sleep=50')->dailyAt('04:40')->withoutOverlapping(120);   // WebP pictures of new parts made before a visitor asks for them
-Schedule::command('pti:driveshaft-discover')->cron('45 */4 * * *')->withoutOverlapping(120);   // new shafts PTI added (full catalog scan, ~25 min)
-Schedule::command('pti:dropship-tracking')->everyFifteenMinutes()->withoutOverlapping(30);   // tracking of orders dropshipped from PTI (new labels too)
+Schedule::command('pti:driveshaft-discover')->cron('45 */4 * * *')->withoutOverlapping(120)->when($pti);   // new shafts PTI added (full catalog scan, ~25 min)
+Schedule::command('pti:dropship-tracking')->everyFifteenMinutes()->withoutOverlapping(30)->when($pti);   // tracking of orders dropshipped from PTI (new labels too)
 Schedule::command('checkin:push')->everyTenMinutes()->withoutOverlapping(20)->skip(fn () => !\App\Services\CheckinBridge::enabled());   // builder shafts → shop station (retries), and its build progress → the customer
 require __DIR__ . '/console-recovery.php';   // schedules owned by the recovery agent
 require __DIR__ . '/console-tracking.php';   // schedules owned by the tracking agent

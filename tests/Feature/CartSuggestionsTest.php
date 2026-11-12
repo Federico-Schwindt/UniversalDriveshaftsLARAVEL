@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Services\CatalogService;
 use App\Services\CompleteJob;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 /**
@@ -49,6 +51,55 @@ class CartSuggestionsTest extends TestCase
         foreach (app(CompleteJob::class)->forProduct($id)['also'] as $r) {
             $this->assertStringNotContainsString('1350', (string) ($r['series'] ?? ''), 'another series is not offered with a 1330 joint');
         }
+    }
+
+    /** Owner, 2026-11-12: "sugerir piezas relacionadas". The cart's second list is what others ordered with these parts. */
+    public function test_also_bought_in_the_cart_is_buyable_and_never_a_substitute_or_a_repeat(): void
+    {
+        $c = app(CatalogService::class);
+        $job = app(CompleteJob::class);
+        $own = 0; $like = 0;
+        foreach (['u-joints', 'weld-yoke', 'flange-yokes'] as $cat) {
+            foreach ($c->products($cat, [], 1, 20, 'popular')['items'] as $p) {
+                $r = $job->forCart([['type' => 'product', 'wp_product_id' => (int) $p['id'], 'sku' => $p['sku'], 'qty' => 1, 'price' => (float) $p['price']]]);
+                $ids = array_column($r['also'], 'id');
+                $this->assertLessThanOrEqual(4, count($ids));
+                $this->assertLessThanOrEqual(6, count($r['items']) + count($ids), 'both lists share the six places');
+                $this->assertSame($ids, array_values(array_unique($ids)));
+                $this->assertNotContains((int) $p['id'], $ids, "{$p['sku']} is already in the cart");
+                $this->assertSame([], array_intersect($ids, array_column($r['items'], 'id')), 'a proven fit is not listed twice');
+                foreach ($r['also'] as $a) {
+                    $this->assertTrue($a['in_stock'], "{$a['sku']} can ship now");
+                    $this->assertGreaterThan(0, $a['price']);
+                    $this->assertNotSame($cat, $c->primaryCategory($a['id'])['slug'], "{$a['sku']} is another part of the same kind as {$p['sku']}: a substitute");
+                    $this->assertStringStartsWith('Often ordered with ', $a['reason'], 'what others ordered, never a fitment claim');
+                    str_contains($a['reason'], $p['sku']) ? $own++ : $like++;
+                }
+            }
+        }
+        $this->assertGreaterThan(0, $own, 'parts with order history offer what was ordered with them');
+        $this->assertGreaterThan(0, $like, 'parts without it offer what was ordered with parts of their kind and series');
+    }
+
+    public function test_like_parts_history_counts_shared_orders_and_leaves_the_parts_themselves_out(): void
+    {
+        [$a, $b, $washer, $strap, $gone] = [990000001, 990000002, 990000003, 990000004, 990000005];   // ids no real order has
+        $order = function (array $ids, string $status = 'completed') {
+            $id = DB::table('orders')->insertGetId(['order_number' => 'UDS-ALSO-' . uniqid(), 'email' => 'also-' . uniqid() . '@example.com', 'billing_first_name' => 'Alex',
+                'status' => $status, 'payment_status' => 'paid', 'source' => 'web', 'total' => 20, 'subtotal' => 20, 'created_at' => now(), 'updated_at' => now()]);
+            foreach ($ids as $pid) {
+                DB::table('order_items')->insert(['order_id' => $id, 'type' => 'product', 'wp_product_id' => $pid, 'name' => 'Test part', 'sku' => "T-$pid", 'price' => 10, 'qty' => 1,
+                    'line_total' => 10, 'created_at' => now(), 'updated_at' => now()]);
+            }
+        };
+        $order([$a, $washer]);
+        $order([$b, $washer]);
+        $order([$a, $strap]);
+        $order([$a, $b]);                     // the like parts together: neither is offered for the other
+        $order([$a, $gone], 'cancelled');     // a cancelled order is no history
+        Cache::forget('also_bought_map');
+        $this->assertSame([$washer => 2, $strap => 1], app(CatalogService::class)->alsoBoughtCounts([$a, $b]));
+        $this->assertSame([], app(CatalogService::class)->alsoBoughtCounts([990000009]));
     }
 
     public function test_delivery_lookups_never_start_a_session(): void
