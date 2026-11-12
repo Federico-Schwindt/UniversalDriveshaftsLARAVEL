@@ -16,7 +16,8 @@ class BearingFits
     /** normalised bearing number => [make => [model => [years]]], cached until the fitment table changes. */
     private static function index(): array
     {
-        $ver = DB::table('ds_fitments')->max('id') . '-' . DB::table('ds_fitments')->count();
+        // counting 40k fitment rows took ~6 ms on every product page: the table's version is looked up every 10 minutes
+        $ver = Cache::remember('bearing_fits_ver', 600, fn () => DB::table('ds_fitments')->max('id') . '-' . DB::table('ds_fitments')->count());
         return Cache::remember('bearing_fits_v1_' . $ver, 86400, function () {
             $out = [];
             foreach (DB::table('ds_fitments')->whereNotNull('c_brg')->where('c_brg', '!=', '')->get(['c_brg', 'make', 'model', 'year']) as $f) {

@@ -32,9 +32,9 @@
     <a class="sb__cta" href="/online-builder" title="{{ __('Build a driveshaft') }}"><x-icon name="wrench"/><span>{{ __('Build a driveshaft') }}</span></a>
 
     <nav class="sb__nav" aria-label="{{ __('Primary') }}">
-      <div @class(['sb__grp', 'is-open' => $sbShopOpen])>
+      <div @class(['sb__grp', 'is-open' => $sbShopOpen, 'is-here' => $sbAny(['/shop', '/parts', '/quick-order', '/search'])])>
         <div class="sb__headrow"><a class="sb__head" href="{{ '/shop' }}" title="{{ __('Parts catalog') }}"><x-icon name="grid"/><span>{{ __('Parts catalog') }}</span></a><button type="button" class="sb__tog" aria-expanded="{{ $sbShopOpen ? 'true' : 'false' }}" aria-controls="sb-shop" aria-label="{{ __('Show the menu') }}: {{ __('Parts catalog') }}"><x-icon name="caret-down"/></button></div>
-        <ul class="sb__list" id="sb-shop">
+        <ul class="sb__list" id="sb-shop" data-title="{{ __('Parts catalog') }}">
           <li><a href="/shop" @class(['is-on' => $sbPath === '/shop'])>{{ __('All categories') }}</a></li>
           <li><a href="/shop/complete-driveshafts" @class(['is-on' => $sbOn('/shop/complete-driveshafts')])>{{ __('Complete driveshafts') }}</a></li>
           @foreach(['driveshaft-components' => __('Driveshaft components'), 'small-parts' => __('Small parts')] as $g => $gLabel)
@@ -58,9 +58,9 @@
       </div>
 
       @php $o = $sbAny($sbDrive); @endphp
-      <div @class(['sb__grp', 'is-open' => $o])>
+      <div @class(['sb__grp', 'is-open' => $o, 'is-here' => $o])>
         <div class="sb__headrow"><a class="sb__head" href="{{ '/driveshafts' }}" title="{{ __('Driveshafts') }}"><x-icon name="cube"/><span>{{ __('Driveshafts') }}</span></a><button type="button" class="sb__tog" aria-expanded="{{ $o ? 'true' : 'false' }}" aria-controls="sb-drive" aria-label="{{ __('Show the menu') }}: {{ __('Driveshafts') }}"><x-icon name="caret-down"/></button></div>
-        <ul class="sb__list" id="sb-drive">
+        <ul class="sb__list" id="sb-drive" data-title="{{ __('Driveshafts') }}">
           <li><a href="/catalog/driveshafts" @class(['is-on' => $sbOn('/catalog/driveshafts')])>{{ __('Find by vehicle') }}</a></li>
           <li><a href="/online-builder" @class(['is-on' => $sbPath === '/online-builder'])>{{ __('Online driveshaft builder') }}</a></li>
           <li><a href="/premade-driveshafts" @class(['is-on' => $sbOn('/premade-driveshafts')])>{{ __('Premade driveshafts') }}</a></li>
@@ -77,9 +77,9 @@
       <a href="/services" @class(['sb__link', 'is-on' => $sbOn('/services')]) title="{{ __('Services') }}"><x-icon name="gauge"/><span>{{ __('Shop services') }}</span></a>
 
       @php $o = $sbAny($sbHelp); @endphp
-      <div @class(['sb__grp', 'is-open' => $o])>
+      <div @class(['sb__grp', 'is-open' => $o, 'is-here' => $o])>
         <div class="sb__headrow"><a class="sb__head" href="{{ '/contact' }}" title="{{ __('Help') }}"><x-icon name="question"/><span>{{ __('Help') }}</span></a><button type="button" class="sb__tog" aria-expanded="{{ $o ? 'true' : 'false' }}" aria-controls="sb-help" aria-label="{{ __('Show the menu') }}: {{ __('Help') }}"><x-icon name="caret-down"/></button></div>
-        <ul class="sb__list" id="sb-help">
+        <ul class="sb__list" id="sb-help" data-title="{{ __('Help') }}">
           <li><a href="/track-order" @class(['is-on' => $sbOn('/track-order')])>{{ __('Track an order') }}</a></li>
           <li><a href="/rma" @class(['is-on' => $sbOn('/rma')])>{{ __('Returns and RMA') }}</a></li>
           <li><a href="/shipping-policy" @class(['is-on' => $sbOn('/shipping-policy')])>{{ __('Shipping') }}</a></li>
@@ -89,10 +89,10 @@
         </ul>
       </div>
 
-      @php $o = $sbAny($sbAcct); @endphp
-      <div @class(['sb__grp', 'is-open' => $o])>
+      @php $o = $sbAny(array_merge($sbAcct, ['/admin'])); @endphp
+      <div @class(['sb__grp', 'is-open' => $o, 'is-here' => $o])>
         <div class="sb__headrow"><a class="sb__head" href="{{ $sbAcctUrl }}" title="{{ auth()->check() ? __('My account') : __('Account') }}"><x-icon name="user"/><span>{{ auth()->check() ? __('My account') : __('Account') }}</span></a><button type="button" class="sb__tog" aria-expanded="{{ $o ? 'true' : 'false' }}" aria-controls="sb-acct" aria-label="{{ __('Show the menu') }}: {{ auth()->check() ? __('My account') : __('Account') }}"><x-icon name="caret-down"/></button></div>
-        <ul class="sb__list" id="sb-acct">
+        <ul class="sb__list" id="sb-acct" data-title="{{ auth()->check() ? __('My account') : __('Account') }}">
           @auth
             @if(auth()->user()->is_admin)<li><a href="/admin">{{ __('Admin') }}</a></li>@endif
             @foreach([['/account', 'Overview'], ['/account/orders', 'Orders'], ['/account/buy-again', 'Buy again'], ['/account/addresses', 'Addresses'], ['/account/business', 'Business account'], ['/account/designs', 'Driveshaft designs'], ['/account/requests', 'Custom requests'], ['/account/settings', 'Profile & security']] as [$href, $label])

@@ -271,17 +271,62 @@ hr{border:0;border-top:1px solid var(--line);margin:2rem 0}
 .sb .langsw__cur .langsw__name{display:inline;font-size:.82rem}
 .sb .langsw .langsw__menu{top:auto;bottom:calc(100% + .4rem);left:0;right:auto;transform-origin:bottom left}
 
-/* icon rail */
+/* icon rail: one centred 44px button per entry, the section of the current page marked, and on hover (or keyboard
+   focus) a group's links fly out beside the rail with its name on top, so nothing needs the menu unfolded. Nothing
+   inside the rail is ever wider than it: no clipped labels, no scrollbars (owner, 2026-11-11: "necesito que se vea mejor"). */
+.sb__list[data-title]::before{content:none}
 @media (min-width:1100px){
   html.sb-rail .sb{width:68px}
   html.sb-rail .sb__top{justify-content:center;padding:0}
   html.sb-rail .sb__logo{display:none}
   html.sb-rail .sb__fold .i{transform:rotate(180deg)}
-  html.sb-rail .sb__cta{justify-content:center;margin-inline:.65rem;padding-inline:0}
-  html.sb-rail .sb__head,html.sb-rail .sb__link{justify-content:center;padding-inline:0}
-  html.sb-rail .sb__cta span,html.sb-rail .sb__head span,html.sb-rail .sb__link span,html.sb-rail .sb__tog,
-  html.sb-rail .sb__list,html.sb-rail .sb__foot{display:none}
+  html.sb-rail .sb__scroll{overflow:visible;padding:.75rem 0}
+  html.sb-rail .sb__head span,html.sb-rail .sb__tog,html.sb-rail .sb .sb__grp > .sb__list,html.sb-rail .sb__help-t,html.sb-rail .sb__hours,html.sb-rail .sb .langsw{display:none}
+  html.sb-rail .sb__nav{display:grid;gap:.25rem}
+  html.sb-rail .sb__cta,html.sb-rail .sb__head,html.sb-rail .sb__link,html.sb-rail .sb__tel,html.sb-rail .sb__wa{position:relative;justify-content:center;
+    width:44px;min-height:0;height:44px;margin:0 auto;padding:0;border:0;border-radius:var(--r)}
+  html.sb-rail .sb__cta{margin-bottom:.6rem}
+  html.sb-rail .sb__head .i:first-child,html.sb-rail .sb__link .i{font-size:1.25rem}
+  html.sb-rail .sb__headrow{position:relative;justify-content:center}
+  html.sb-rail .sb__headrow .sb__head{flex:none}
+  html.sb-rail .sb__head:hover,html.sb-rail .sb__link:hover,html.sb-rail .sb__grp:hover .sb__head{background:rgba(255,255,255,.08)}
+  html.sb-rail .sb__head:hover .i,html.sb-rail .sb__link:hover .i,html.sb-rail .sb__grp:hover .sb__head .i{color:#fff}
+  /* the section you are in: lit icon and the red bar on the rail's edge */
+  html.sb-rail .sb__grp.is-here .sb__head,html.sb-rail .sb__link.is-on{background:rgba(255,255,255,.1)}
+  html.sb-rail .sb__grp.is-here .sb__head .i,html.sb-rail .sb__link.is-on .i{color:#fff}
+  html.sb-rail .sb__grp.is-here .sb__headrow::before,html.sb-rail .sb__link.is-on::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;
+    border-radius:0 3px 3px 0;background:var(--sb-accent)}
+  html.sb-rail .sb__link.is-on::before{left:-12px}
+  /* fly-out */
+  html.sb-rail .sb__grp{position:relative}
+  /* keyboard focus keeps it open, a click does not (a clicked arrow would hold it open after the mouse left) */
+  html.sb-rail .sb .sb__grp:hover > .sb__list{display:block}
+  html.sb-rail .sb .sb__grp:has(:focus-visible) > .sb__list{display:block}
+  html.sb-rail .sb .sb__grp > .sb__list{position:absolute;left:100%;top:0;z-index:5;
+    width:272px;max-height:calc(100vh - 1.5rem);overflow-y:auto;overscroll-behavior:contain;padding:0 0 .45rem;
+    background:var(--sb-bg);border:1px solid rgba(255,255,255,.08);border-left:0;border-radius:0 var(--r-xl) var(--r-xl) 0;
+    box-shadow:14px 12px 32px rgba(4,10,20,.38);scrollbar-width:thin;scrollbar-color:#2a3a52 transparent;animation:sbFly var(--dur-1) var(--ease-out)}
+  html.sb-rail .sb__list[data-title]::before{content:attr(data-title);display:block;padding:.8rem 1rem .6rem;margin-bottom:.3rem;
+    border-bottom:1px solid rgba(255,255,255,.07);color:#fff;font:600 .9rem/1.2 var(--font-b)}
+  html.sb-rail .sb__list a,html.sb-rail .sb__list button{padding-left:1rem}
+  html.sb-rail .sb .sb__sub > ul a{padding-left:1.75rem}
+  html.sb-rail .sb__sep{margin-left:1rem}
+  /* name tips for the single buttons */
+  html.sb-rail .sb__cta > span,html.sb-rail .sb__link > span,html.sb-rail .sb__tel > span,html.sb-rail .sb__wa > span{display:block;position:absolute;left:calc(100% + 12px);top:50%;z-index:5;
+    transform:translateY(-50%);padding:.4rem .65rem;border-radius:var(--r-sm);background:#05101e;color:#fff;font:500 .82rem/1.2 var(--font-b);
+    white-space:nowrap;box-shadow:0 6px 18px rgba(4,10,20,.35);pointer-events:none}
+  html.sb-rail .sb__cta:not(:hover):not(:focus-visible) > span,html.sb-rail .sb__link:not(:hover):not(:focus-visible) > span,
+  html.sb-rail .sb__tel:not(:hover):not(:focus-visible) > span,html.sb-rail .sb__wa:not(:hover):not(:focus-visible) > span{display:none}
+  html.sb-rail .sb__cta:hover > span,html.sb-rail .sb__link:hover > span,html.sb-rail .sb__tel:hover > span,html.sb-rail .sb__wa:hover > span{animation:sbFly var(--dur-1) var(--ease-out)}
+  /* call and WhatsApp stay one click away */
+  html.sb-rail .sb__foot{padding:.6rem 0 .8rem;gap:0}
+  html.sb-rail .sb__help{gap:.25rem}
+  html.sb-rail .sb__tel{color:#fff}
+  html.sb-rail .sb__tel:hover,html.sb-rail .sb__wa:hover{background:rgba(255,255,255,.08)}
+  html.sb-rail .sb__tel .i,html.sb-rail .sb__wa .i{font-size:1.2rem}
 }
+@keyframes sbFly{from{opacity:0;translate:-4px 0}to{opacity:1;translate:0 0}}
+@media (prefers-reduced-motion:reduce){html.sb-rail .sb *{animation:none!important}}
 /* off-canvas */
 @media (max-width:1099.98px){
   .sb{width:min(86vw,320px);transform:translateX(-100%);visibility:hidden;

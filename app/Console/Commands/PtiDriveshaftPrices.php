@@ -61,7 +61,7 @@ class PtiDriveshaftPrices extends Command
         if ($this->option('dry')) return self::SUCCESS;
 
         foreach (array_chunk($hide, 500) as $c) DB::table('ds_parts')->whereIn('part_number', $c)->update(['is_active' => 0, 'hidden_reason' => 'pti_absent', 'updated_at' => now()]);
-        if ($hide || $back) { foreach (['finder:makes', 'catalog_ds_subcat'] as $k) Cache::forget($k); Cache::forever('catalog_ver', time()); }
+        if ($hide || $back) { foreach (['finder:makes', 'finder:search-index', 'catalog_ds_subcat'] as $k) Cache::forget($k); Cache::forever('catalog_ver', time()); }
         Artisan::call('catalog:price-driveshafts');
         $this->line(trim(collect(explode("\n", Artisan::output()))->last(fn ($l) => trim($l) !== '')));
         return self::SUCCESS;

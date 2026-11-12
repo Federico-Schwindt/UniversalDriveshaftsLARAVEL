@@ -302,7 +302,7 @@
       @foreach($items as $i)
         <div class="sum-it">
           <div class="th">
-            @if(!empty($i['image']))<img src="{{ $i['image'] }}" alt="" loading="lazy">
+            @if(!empty($i['image']))<img src="{{ \App\Services\CartService::thumb($i['image']) }}" alt="">
             @else<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1246ab" stroke-width="1.8"><path d="M3 12h3l2-3 3 6 3-9 2 6h5"/></svg>@endif
             <span class="q">{{ $i['qty'] }}</span>
           </div>

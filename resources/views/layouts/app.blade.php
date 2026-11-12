@@ -183,6 +183,11 @@
 <script src="{{ asset('js/search.js') }}?v={{ @filemtime(public_path('js/search.js')) }}" defer></script>
 <script src="{{ asset('js/phone.js') }}?v={{ @filemtime(public_path('js/phone.js')) }}" defer></script>
 @if($udsAssistant)@include('partials.assistant')@endif
+{{-- Instant pages: a link is fetched while the pointer rests on it (or as the finger or button goes down), so most clicks
+     open a page that is already here (Chrome and Edge; other browsers ignore it). Never fetched early: pages with side
+     effects or per-visit content (cart, checkout, account, admin, sign-in) and the language links, which set a cookie.
+     Laravel keeps these requests out of the session's "previous URL"; uds.js drops them when the cart changes. --}}
+<script type="speculationrules" data-uds-spec>{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":["/cart","/cart/*","/checkout","/checkout/*","/pay/*","/account","/account/*","/admin","/admin/*","/api/*","/login","/register","/register/*","/logout","/password/*","/email/*","/newsletter/*","/reviews/*","/feeds/*","/media/*","/assistant/*"]}},{"not":{"selector_matches":"[hreflang], [download], [target=_blank], [rel~=nofollow], [data-no-prefetch]"}}]},"eagerness":"moderate"}]}</script>
 @stack('scripts')
 {{-- right after switching away from English: the text on the site is machine-translated (owner, 2026-10-24) --}}
 @if(app()->getLocale() !== 'en' && in_array(request()->query('lang'), \App\Http\Middleware\SetLocale::SUPPORTED, true))

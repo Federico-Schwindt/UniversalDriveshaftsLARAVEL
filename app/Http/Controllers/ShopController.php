@@ -111,12 +111,7 @@ class ShopController extends Controller
 
     private function cartPayload()
     {
-        return response()->json(['success' => true, 'data' => [
-            'count' => $this->cart->count(), 'subtotal' => $this->cart->subtotal(),
-            'items' => array_values($this->cart->items()),
-            // free US shipping meter: tubing and complete driveshafts don't count toward it
-            'free_min' => (float) CartService::freeMin(), 'free_base' => (float) $this->cart->freeShippingBase(),
-        ]]);
+        return response()->json(['success' => true, 'data' => $this->cart->mini()]);
     }
 
 

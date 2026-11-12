@@ -37,6 +37,28 @@ class CartService
         return session(self::KEY, []);
     }
 
+    /**
+     * The cart as the slide-in panel shows it. Every page carries it (layouts/app), so the panel opens with its lines
+     * instead of waiting on the network; /cart/mini and the panel's +/- answer with the same shape.
+     */
+    public function mini(): array
+    {
+        $items = $this->items();
+        return [
+            'count' => $this->count(), 'subtotal' => $this->subtotal(),
+            'items' => array_values(array_map(fn ($i) => ['key' => $i['key'], 'sku' => (string) $i['sku'], 'name' => (string) $i['name'], 'image' => self::thumb((string) $i['image']),
+                'price' => (float) $i['price'], 'qty' => (int) $i['qty']], $items)),
+            // free US shipping meter: tubing and complete driveshafts don't count toward it
+            'free_min' => self::freeMin(), 'free_base' => $items ? $this->freeShippingBase($items) : 0.0,
+        ];
+    }
+
+    /** A cart line's picture at list size (the 320 px copy the catalog lists already loaded), not the product page's 1200 px one. */
+    public static function thumb(string $src): string
+    {
+        return preg_replace('#^/media/\d+/#', '/media/320/', $src);
+    }
+
     public function count(): int
     {
         return array_sum(array_column($this->items(), 'qty'));
