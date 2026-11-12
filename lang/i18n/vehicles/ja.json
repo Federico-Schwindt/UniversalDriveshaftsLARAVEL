@@ -148,5 +148,6 @@
     "{1} The :mm driveshafts we list are :kind shafts with :b center support bearing.|[2,*] The :mm driveshafts we list are :kind shafts with :b center support bearings.": "{1} 掲載されている :mm 用プロペラシャフトは、センターサポートベアリング（:b）を備えた :kind シャフトです。|[2,*] 掲載されている :mm 用プロペラシャフトは、センターサポートベアリング（:b）を備えた :kind シャフトです。",
     "{1} We list :n complete driveshaft for the :mm, covering model years :y1 to :y2.|[2,*] We list :n complete driveshafts for the :mm, covering model years :y1 to :y2.": "{1} :mm 用完成品プロペラシャフト（対象年式: :y1〜:y2）が :n 件あります。|[2,*] :mm 用完成品プロペラシャフト（対象年式: :y1〜:y2）が :n 件あります。",
     "{1} We list :n complete driveshaft for the :mm, covering the :y model year.|[2,*] We list :n complete driveshafts for the :mm, covering the :y model year.": "{1} :mm 用完成品プロペラシャフト（対象年式: :y）が :n 件あります。|[2,*] :mm 用完成品プロペラシャフト（対象年式: :y）が :n 件あります。",
-    "{1} We stock :parts complete driveshaft for :make, covering model years :span.|[2,*] We stock :parts complete driveshafts for :n :make models, covering model years :span.": "{1} :make用完成品プロペラシャフトを:parts本在庫しています（対応年式:span）。|[2,*] :makeの:n車種用完成品プロペラシャフトを:parts本在庫しています（対応年式:span）。"
+    "{1} We stock :parts complete driveshaft for :make, covering model years :span.|[2,*] We stock :parts complete driveshafts for :n :make models, covering model years :span.": "{1} :make用完成品プロペラシャフトを:parts本在庫しています（対応年式:span）。|[2,*] :makeの:n車種用完成品プロペラシャフトを:parts本在庫しています（対応年式:span）。",
+    "Fits your :vehicle": "お客様の :vehicle に適合"
 }

@@ -110,6 +110,8 @@ button.fdr-step:focus-visible{outline:2px solid var(--blue,#1246ab);outline-offs
   #fdr-table tbody tr{display:flex;flex-wrap:wrap;align-items:flex-start;gap:0 12px;padding:14px;border-radius:12px}
   #fdr-table tbody td{display:block;border:0!important;padding:0;text-align:left;min-width:0!important;font-size:.92rem}
   #fdr-table tbody td::before{display:block;margin-bottom:2px}
+  #fdr-table tbody td[data-th]::before{content:attr(data-th)}
+  #fdr-table tbody td.is-empty{display:none}
   #fdr-table tbody td[data-label="Pic"]{order:1;flex:0 0 64px;padding:0}
   #fdr-table tbody td[data-label="Pic"] .fdr-pic,#fdr-table tbody td[data-label="Pic"] .fdr-ph{width:64px;height:52px}
   #fdr-table tbody td[data-label="Part number"]{order:2;flex:1 1 0}
@@ -159,7 +161,7 @@ button.fdr-step:focus-visible{outline:2px solid var(--blue,#1246ab);outline-offs
 </div></section>
 
 @if(app()->getLocale() !== 'en')
-<script>window.UDS_T=Object.assign(window.UDS_T||{},{!! json_encode(collect(['Step :n','Choose the :item',':n driveshafts fit so far','Answer the question above to see your exact driveshaft.','Show all :n now','Choose :item first','Missing step:','Choose it above to see which shaft is yours and add it to the cart.','Add :sku to cart','Remove :item','Loc','Speeds','Trans code','Wheelbase','Bed','Rear wheels','Could not load the catalog. Please try again or call (813) 524-6491.','&larr; Back','&times;','Clear all','UDS','Choose','Steps','Change :item','Change','Choose below','Next','Start over','No driveshaft found','Nothing in the catalog matches that combination. Change a selection, or call (813) 524-6491 and we will build one to your measurements.','Open the online builder','More than one driveshaft fits these answers. Match the ID code or center bearing number on your current shaft against the notes below, or call us and we will confirm it.','Weld to weld: ','(Save','core','Call for price','Please select','Add to cart','Get a quote','Open part page','Complete driveshaft','Add','Pic','Price','Part number','Model','Drive','Ctr. brg','Notes','Could not add this part.','&larr; Back to vehicle search'])->mapWithKeys(fn ($k) => [$k => __($k)]), JSON_UNESCAPED_UNICODE|JSON_HEX_TAG|JSON_HEX_AMP) !!});</script>
+<script>window.UDS_T=Object.assign(window.UDS_T||{},{!! json_encode(collect(['Step :n','Choose the :item',':n driveshafts fit so far','Answer the question above to see your exact driveshaft.','Show all :n now','Choose :item first','Missing step:','Choose it above to see which shaft is yours and add it to the cart.','Add :sku to cart','Remove :item','Loc','Speeds','Trans code','Wheelbase','Bed','Rear wheels','Could not load the catalog. Please try again or call (813) 524-6491.','&larr; Back','&times;','Clear all','UDS','Choose','Steps','Change :item','Change','Choose below','Next','Start over','No driveshaft found','Nothing in the catalog matches that combination. Change a selection, or call (813) 524-6491 and we will build one to your measurements.','Open the online builder','More than one driveshaft fits these answers. Match the ID code or center bearing number on your current shaft against the notes below, or call us and we will confirm it.','Weld to weld: ','(Save','core','Call for price','Please select','Add to cart','Get a quote','Open part page','Complete driveshaft','Add','Pic','Price','Part number','Model','Drive','Ctr. brg','Notes','Position','Center bearing','Could not add this part.','&larr; Back to vehicle search'])->mapWithKeys(fn ($k) => [$k => __($k)]), JSON_UNESCAPED_UNICODE|JSON_HEX_TAG|JSON_HEX_AMP) !!});</script>
 @endif
 <script>var TT=function(s){return (window.UDS_T||{})[s]||s;};
 (function(){
@@ -174,6 +176,9 @@ button.fdr-step:focus-visible{outline:2px solid var(--blue,#1246ab);outline-offs
   function slug(s){return String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
   function logo(m){var s=slug(m);return LOGOS.indexOf(s)>-1?'/media/160/'+btoa('/img/makes/'+s+'.png').replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')+'.webp':null;}
   function lab(k){return SHORT[k]||LABELS[k]||k;}
+  function full(k){return LABELS[k]||lab(k);}
+  // the part page confirms "Fits your …" from these, when its own fitment rows prove it
+  function carry(c){var q=new URLSearchParams();['make','year','model','drive','loc','engine'].forEach(function(k){if(c&&c[k])q.set(k,c[k]);});var s=q.toString();return s?'?'+s:'';}   // in a sentence: "Choose the shaft location", never "Choose the loc"
   function qs(c){var p=new URLSearchParams();ORDER.forEach(function(k){if(c[k]!==undefined&&c[k]!=='')p.set(k,c[k]);});return p.toString();}
   function keys(c){return ORDER.filter(function(k){return c[k]!==undefined;});}
 
@@ -227,7 +232,7 @@ button.fdr-step:focus-visible{outline:2px solid var(--blue,#1246ab);outline-offs
       if(isMake){var l=logo(o);return '<button type="button" class="fdr-tile is-make" data-facet="make" data-val="'+esc(o)+'">'+(l?'<img src="'+l+'" alt="" loading="lazy">':'<i class="mono">'+TT("UDS")+'</i>')+'<span>'+esc(o)+'</span></button>';}
       return '<button type="button" class="fdr-tile'+(longest>12?' is-text':'')+'" data-facet="'+esc(n.facet)+'" data-val="'+esc(o)+'"><b>'+esc(o)+'</b></button>';
     }).join('');
-    var head='<div class="fdr-q"><p class="fdr-q__n">'+TT("Step :n").replace(':n',idx)+'</p><h2>'+esc(TT("Choose the :item").replace(':item',lab(n.facet).toLowerCase()))+'</h2></div>';
+    var head='<div class="fdr-q"><p class="fdr-q__n">'+TT("Step :n").replace(':n',idx)+'</p><h2>'+esc(TT("Choose the :item").replace(':item',full(n.facet).toLowerCase()))+'</h2></div>';
     return head+'<div class="fdr-tiles'+(isMake?' is-makes':(n.facet==='year'?' is-years':''))+(n.options.length<5&&!isMake?' few':'')+'">'+tiles+'</div>';
   }
   function results(rows,c,pending,title){
@@ -243,17 +248,18 @@ button.fdr-step:focus-visible{outline:2px solid var(--blue,#1246ab);outline-offs
       var extra=Object.keys(f).filter(function(k){return ['drive','loc'].indexOf(k)<0;}).map(function(k){return lab(k)+': '+f[k].values.join(' / ');});
       if(r.weld_to_weld&&r.weld_to_weld.length)extra.push(TT("Weld to weld: ")+r.weld_to_weld.join(' / '));
       var price=r.can_buy?((r.price_list?'<span class="fdr-was">'+money(r.price_list)+'</span>':'')+'<span class="fdr-now">'+money(r.price)+'</span>'+(r.price_list?'<span class="fdr-save">'+TT("(Save")+' '+money(r.price_list-r.price)+')</span>':'')+(r.core_price?'<span class="fdr-core">+ '+money(r.core_price)+' '+TT("core")+'</span>':'')):'<span class="fdr-call">'+TT("Call for price")+'</span>';
-      var add=pending&&!title?'<span class="fdr-sel">'+esc(TT("Choose :item first").replace(':item',lab(nf).toLowerCase()))+'</span>':(r.can_buy?'<span class="p-add"><button class="p-plus" data-add="'+esc(r.part_number)+'" aria-label="'+TT("Add :sku to cart").replace(':sku',esc(r.sku||r.part_number))+'" title="'+TT("Add to cart")+'">+<span class="fdr-addtxt">'+TT("Add to cart")+'</span></button></span>':'<button type="button" class="btn btn-line btn-sm" data-quote="'+esc(r.sku||r.part_number)+'" data-pn="'+esc(r.part_number)+'" data-vehicle="'+esc([c.year,c.make,c.model,c.drive].filter(Boolean).join(' '))+'">'+TT("Get a quote")+'</button>');
+      var add=pending&&!title?'<span class="fdr-sel">'+esc(TT("Choose :item first").replace(':item',full(nf).toLowerCase()))+'</span>':(r.can_buy?'<span class="p-add"><button class="p-plus" data-add="'+esc(r.part_number)+'" aria-label="'+TT("Add :sku to cart").replace(':sku',esc(r.sku||r.part_number))+'" title="'+TT("Add to cart")+'">+<span class="fdr-addtxt">'+TT("Add to cart")+'</span></button></span>':'<button type="button" class="btn btn-line btn-sm" data-quote="'+esc(r.sku||r.part_number)+'" data-pn="'+esc(r.part_number)+'" data-vehicle="'+esc([c.year,c.make,c.model,c.drive].filter(Boolean).join(' '))+'">'+TT("Get a quote")+'</button>');
       var fits=r.fits&&r.fits.length?'<ul class="fdr-fits">'+r.fits.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>':'';
       return '<tr><td data-label="Add">'+add+'</td><td data-label="Pic">'+(r.image?'<img class="fdr-pic" width="70" height="52" loading="lazy" src="'+esc(r.image)+'" data-full="'+esc(r.image)+'" alt="'+esc(r.sku||r.part_number)+'">':PH)+'</td><td data-label="Price">'+price+'</td>'+
-        '<td data-label="Part number"><a class="fdr-pn" href="/catalog/driveshafts/part/'+encodeURIComponent(r.sku||r.part_number)+'" title="'+TT("Open part page")+'">'+esc(r.sku||r.part_number)+' &#8599;</a><span class="fdr-desc">'+esc(r.description||TT("Complete driveshaft"))+(r.condition&&r.condition!=='new'?' ('+esc(r.condition)+')':'')+'</span>'+fits+'</td>'+
-        (title?'':'<td data-label="Model">'+esc(c.model||'-')+'</td>')+
-        '<td data-label="Drive">'+esc(v('drive'))+'</td><td data-label="Loc">'+esc(v('loc'))+'</td>'+
-        '<td data-label="Ctr. brg"><span class="fdr-id">'+esc((r.c_brg||[]).join(' & ')||'-')+'</span></td>'+
-        '<td data-label="Notes" class="l"><span class="fdr-id">'+esc((r.notes||[]).join(' | ')||'-')+'</span>'+(extra.length?'<span class="fdr-more">'+esc(extra.join(' · '))+'</span>':'')+'</td></tr>';
+        '<td data-label="Part number"><a class="fdr-pn" href="/catalog/driveshafts/part/'+encodeURIComponent(r.sku||r.part_number)+carry(c)+'" title="'+TT("Open part page")+'">'+esc(r.sku||r.part_number)+' &#8599;</a><span class="fdr-desc">'+esc(r.description||TT("Complete driveshaft"))+(r.condition&&r.condition!=='new'?' ('+esc(r.condition)+')':'')+'</span>'+fits+'</td>'+
+        // data-label keys the layout; data-th is what a phone card shows ("Position", not "LOC"); empty notes are left out there
+        (title?'':'<td data-label="Model" data-th="'+esc(TT("Model"))+'">'+esc(c.model||'-')+'</td>')+
+        '<td data-label="Drive" data-th="'+esc(TT("Drive"))+'">'+esc(v('drive'))+'</td><td data-label="Loc" data-th="'+esc(TT("Position"))+'">'+esc(v('loc'))+'</td>'+
+        '<td data-label="Ctr. brg" data-th="'+esc(TT("Center bearing"))+'"><span class="fdr-id">'+esc((r.c_brg||[]).join(' & ')||'-')+'</span></td>'+
+        '<td data-label="Notes" data-th="'+esc(TT("Notes"))+'" class="l'+((r.notes||[]).length||extra.length?'':' is-empty')+'"><span class="fdr-id">'+esc((r.notes||[]).join(' | ')||'-')+'</span>'+(extra.length?'<span class="fdr-more">'+esc(extra.join(' · '))+'</span>':'')+'</td></tr>';
     }).join('');
     var th=function(k,t){return '<th'+(c[k]!==undefined?' class="hl"':'')+'>'+t+(c[k]!==undefined?'<small>['+esc(c[k])+']</small>':'')+'</th>';};
-    return '<div class="fdr-card">'+head+missing+note+'<div class="ptbl-wrap"><table class="ptbl" id="fdr-table"><thead><tr><th>'+TT("Add")+'</th><th>'+TT("Pic")+'</th><th>'+TT("Price")+'</th><th>'+TT("Part number")+'</th>'+(title?'':th('model',TT("Model")))+th('drive',TT("Drive"))+th('loc',TT("Loc"))+'<th>'+TT("Ctr. brg")+'</th><th class="l">'+TT("Notes")+'</th></tr></thead><tbody>'+body+'</tbody></table></div></div>';
+    return '<div class="fdr-card">'+head+missing+note+'<div class="ptbl-wrap"><table class="ptbl" id="fdr-table"><thead><tr><th>'+TT("Add")+'</th><th>'+TT("Pic")+'</th><th>'+TT("Price")+'</th><th>'+TT("Part number")+'</th>'+(title?'':th('model',TT("Model")))+th('drive',TT("Drive"))+th('loc',TT("Position"))+'<th>'+TT("Center bearing")+'</th><th class="l">'+TT("Notes")+'</th></tr></thead><tbody>'+body+'</tbody></table></div></div>';
   }
   document.addEventListener('click',function(e){
     var o=e.target.closest('.fdr-tile'); if(o){var c=Object.assign({},state.chosen||{});c[o.getAttribute('data-facet')]=o.getAttribute('data-val');load(c,true);window.scrollTo({top:root.getBoundingClientRect().top+scrollY-100,behavior:'smooth'});return;}

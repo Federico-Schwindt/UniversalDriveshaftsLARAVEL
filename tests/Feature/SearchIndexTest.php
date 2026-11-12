@@ -67,10 +67,52 @@ class SearchIndexTest extends TestCase
                 ->where('p.post_type', 'product')->where('p.post_status', 'publish')
                 ->where(fn ($w) => $w->where('p.post_title', 'like', "%$q%")->orWhere('sk.sv', 'like', "%$q%"))
                 ->pluck('p.ID')->map(fn ($v) => (int) $v)->sort()->values()->all();
-            $ids = $c->searchIds($q);
+            // what the SQL found comes first, as before; word matches in any order (category names, synonyms) follow
+            $ids = array_slice($c->searchIds($q), 0, count($rows));
             sort($ids);
             $this->assertSame($rows, $ids, "query $q");
         }
+    }
+
+    /** Owner, 2026-11-12: "yoke spicer 1310", "1310 ujoint" and "drivshaft" found nothing. */
+    public function test_words_in_any_order_synonyms_and_typos_are_found(): void
+    {
+        $c = app(CatalogService::class);
+        $ttid = (int) $c->term('end-yokes')->term_taxonomy_id;
+        $yoke = $this->product('ZZQ End Yoke 1310 Series Spicer Dana 60', 'ZZQ-EY1', 50, 3, $ttid);
+        $uj = $this->product('ZZQ U-Joint 1310 Series', 'ZZQ-UJ1', 20, 3, $ttid);
+        $csb = $this->product('ZZQ Center Support Bearing Toyota', 'ZZQ-CB1', 30, 3, $ttid);
+        Cache::flush();
+
+        $this->assertContains($yoke, $c->searchIds('zzq spicer yoke 1310'));            // any order
+        $this->assertContains($yoke, $c->searchIds('zzq pinion yokes dana 60'));        // trade synonym + plural
+        $this->assertFalse(CatalogService::hasWords('dana 60 1600', ['6']));            // a number stands alone: "6" is not in "60"
+        $this->assertTrue(CatalogService::hasWords('5-1310xu', ['1310', 'xu']));
+        foreach (['zzq 1310 ujoint', 'zzq u joint 1310', 'zzq crucetas 1310', 'zzq universal joints'] as $q) $this->assertContains($uj, $c->searchIds($q), $q);
+        $this->assertContains($csb, $c->searchIds('zzq carrier bearing toyota'));
+        // a typo is corrected to a word the catalog uses, and said so
+        $this->assertContains($csb, $c->searchIds('zzq toyotta bearing'));
+        $this->assertSame('zzq toyota bearing', $c->understood('zzq toyotta bearing')['fixed']);
+        // a word no part holds with the rest is left out, rarest first, and said so
+        $this->assertContains($uj, $c->searchIds('zzq chevy 1310 u-joint'));
+        $this->assertSame(['chevrolet'], $c->understood('zzq chevy 1310 u-joint')['dropped']);
+        // a query taken as typed says nothing
+        $this->assertSame([null, []], [$c->understood('zzq-uj1')['fixed'], $c->understood('zzq-uj1')['dropped']]);
+        // the phrase as typed still ranks first
+        $this->assertSame($uj, $c->searchIds('ZZQ-UJ1')[0]);
+    }
+
+    public function test_the_vehicle_finder_search_reads_vehicles_and_years(): void
+    {
+        DB::table('ds_parts')->insert(['part_number' => 'ZZQ-91', 'description' => 'ZZQTEST 2PC', 'supplier' => 'PTI', 'is_active' => 1, 'created_at' => now(), 'updated_at' => now()]);
+        DB::table('ds_parts')->insert(['part_number' => 'ZZQ-92', 'description' => 'ZZQTEST 2PC', 'supplier' => 'PTI', 'is_active' => 1, 'created_at' => now(), 'updated_at' => now()]);
+        foreach ([2004, 2005, 2006] as $y) DB::table('ds_fitments')->insert(['part_number' => 'ZZQ-91', 'make' => 'Zzqford', 'year' => $y, 'model' => 'Z-250 Super Duty', 'fkey' => "zzq-91-$y"]);
+        DB::table('ds_fitments')->insert(['part_number' => 'ZZQ-92', 'make' => 'Zzqford', 'year' => 1999, 'model' => 'Zzqranger', 'fkey' => 'zzq-92-1999']);
+        Cache::flush();
+        $f = app(DriveshaftFinder::class);
+        $this->assertSame(['ZZQ-91'], array_column($f->search('zzqford z250 2005 driveshaft'), 'part_number'));   // F-250 written F250, a year, "driveshaft"
+        $this->assertSame(['ZZQ-92'], array_column($f->search('zzqranger zzqtest'), 'part_number'));
+        $this->assertSame('2004-2006 Zzqford Z-250 Super Duty', trim(preg_replace('/\s+/', ' ', $f->search('zzqford z 250')[0]['fits'][0])));
     }
 
     public function test_the_vehicle_finder_search_reads_part_numbers_descriptions_and_fitment_notes(): void

@@ -31,7 +31,7 @@ class InstantCartTest extends TestCase
     public function test_the_panel_endpoint_answers_with_the_same_lines(): void
     {
         $d = $this->withSession(['uds_cart' => ['k1' => $this->line()]])->getJson('/cart/mini')->assertOk()->json('data');
-        $this->assertSame(['key' => 'k1', 'sku' => 'ZZ-1', 'name' => 'Test </script> shaft', 'image' => '/media/320/abcdefgh.webp?v=1', 'price' => 10.5, 'qty' => 2], $d['items'][0]);
+        $this->assertSame(['key' => 'k1', 'sku' => 'ZZ-1', 'name' => 'Test </script> shaft', 'image' => '/media/320/abcdefgh.webp?v=1', 'price' => 10.5, 'qty' => 2, 'item_id' => 'ZZ-1'], $d['items'][0]);
         $this->assertSame(2, $d['count']);
         $this->assertArrayHasKey('free_base', $d);
     }

@@ -166,3 +166,7 @@
 <div class="img-pop" id="img-pop" aria-hidden="true"><img alt=""></div>
 
 @endsection
+@push('scripts')
+@include('partials.track', ['ev' => 'view_item_list', 'p' => ['item_list_id' => $cat['slug'], 'item_list_name' => $cat['name'],
+  'items' => array_map(fn ($it) => \App\Support\Funnel::item((int) $it['id'], (string) $it['sku'], (string) $it['name'], (float) $it['price'], 1, (string) $cat['name']), array_slice($data['items'], 0, 30))]])
+@endpush

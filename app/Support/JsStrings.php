@@ -36,6 +36,7 @@ class JsStrings
         'Type a part number, a series like <b>1310</b> or a name. Press <kbd>Enter</kbd> for the full results page, <kbd>↑</kbd><kbd>↓</kbd> to move, <kbd>Esc</kbd> to close.',
         'Searching…', 'Search failed — try again.',
         '<b>No parts match “:q”.</b> Check the number against the one stamped on the part, try the series only, or <a href="/catalog/driveshafts">find a complete driveshaft by vehicle</a>.',
+        'Showing results for :q', 'Left out, no part mentions it: :words',
         'All :n', 'See all results', 'Open category', 'Replaces', 'Add :sku to cart', 'Add to cart', 'See :n result for “:q”', 'See all :n results for “:q”',
         // phone field
         'Search country', 'Number without the country code', ', change country',

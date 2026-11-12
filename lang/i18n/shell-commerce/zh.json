@@ -805,5 +805,10 @@
     "You already have orders waiting to be paid at pickup. Pay this one by card, or call (813) 524-6491.": "您已有等待到店付款的订单。请用银行卡支付此订单，或致电 (813) 524-6491。",
     "Your earlier order changed while you were checking out. Please review your cart and place the order again.": "您之前的订单在结账期间发生了变化。请检查购物车后重新下单。",
     "We could not reach the card processor. Please try again in a moment.": "暂时无法连接银行卡处理方。请稍后再试。",
-    "A payment for this order is already being processed. Please check back in a few minutes — you have not been charged twice.": "此订单的付款正在处理中。请几分钟后再查看——您没有被重复扣款。"
+    "A payment for this order is already being processed. Please check back in a few minutes — you have not been charged twice.": "此订单的付款正在处理中。请几分钟后再查看——您没有被重复扣款。",
+    "Showing results for :q": "显示 :q 的结果",
+    "Left out, no part mentions it: :words": "已忽略，没有零件提到：:words",
+    "Can’t find it? We’ll find it for you.": "找不到？我们帮您找。",
+    "Send us the part number, the vehicle or a photo of the part.": "请发送零件号、车型或零件照片给我们。",
+    "Hi! I am looking for this part: :q": "您好！我在找这个零件：:q"
 }

@@ -542,12 +542,23 @@ class CatalogService
      * Every published product as a few short lowercase strings. A search used to be SQL LIKE over a postmeta derived
      * table, 100–190 ms a query and 17 of them for one results page (2 s; owner, 2026-11-11: "2s no es aceptable");
      * scanning ~3,000 strings in PHP takes about a millisecond.
-     * 'p' => [id => [sku lowercase, title + sku haystack, sku, price|null, lifetime sales, [product_cat term_taxonomy_id, …]]],
-     * 'cat' => [term_taxonomy_id => [slug, name]].
+     * 'p' => [id => [sku lowercase, title + sku haystack, sku, price|null, lifetime sales, [product_cat term_taxonomy_id, …],
+     *   title + sku + category names in catalog spelling (canon())]],
+     * 'cat' => [term_taxonomy_id => [slug, name]], 'v' => [catalog word => products using it], 'vb' => ' every word '.
      */
     public function searchIndex(): array
     {
-        return $this->remember('search:index', 21600, function () {   // catalog edits bump catalog_ver, so 6 h only ages the sales order
+        // one search page asks for it a dozen times (each category, the counts): read and unserialize the 1 MB once
+        $ver = \Illuminate\Support\Facades\Cache::get('catalog_ver', 1);
+        if ($this->searchMemo && $this->searchMemo[0] === $ver) return $this->searchMemo[1];
+        return ($this->searchMemo = [$ver, $this->searchIndexCached()])[1];
+    }
+
+    private ?array $searchMemo = null;
+
+    private function searchIndexCached(): array
+    {
+        return $this->remember('search:index:v2', 21600, function () {   // catalog edits bump catalog_ver, so 6 h only ages the sales order
             $titles = $this->db()->table('wp_posts')->where('post_type', 'product')->where('post_status', 'publish')->pluck('post_title', 'ID');
             $meta = [];
             foreach ($this->db()->table('wp_postmeta as m')->join('wp_posts as p', 'p.ID', '=', 'm.post_id')
@@ -563,29 +574,36 @@ class CatalogService
                 $cats[(int) $r->term_taxonomy_id] = [$r->slug, html_entity_decode($r->name)];
                 $catOf[(int) $r->object_id][] = (int) $r->term_taxonomy_id;
             }
-            $p = [];
+            $p = []; $vocab = [];
             foreach ($titles as $id => $title) {
-                $m = $meta[$id] ?? []; $sku = (string) ($m['_sku'] ?? '');
+                $m = $meta[$id] ?? []; $sku = (string) ($m['_sku'] ?? ''); $tts = array_values(array_unique($catOf[$id] ?? []));
+                $words = self::canon(html_entity_decode((string) $title) . ' ' . $sku . ' ' . implode(' ', array_map(fn ($tt) => $cats[$tt][1] ?? '', $tts)));
+                foreach (self::vocabOf($words) as $w) $vocab[$w] = ($vocab[$w] ?? 0) + 1;
                 $p[(int) $id] = [mb_strtolower($sku), self::haystack([(string) $title, html_entity_decode((string) $title), $sku]), $sku,
-                    $m['_price'] ?? null, (float) ($m['total_sales'] ?? 0), array_values(array_unique($catOf[$id] ?? []))];
+                    $m['_price'] ?? null, (float) ($m['total_sales'] ?? 0), $tts, $words];
             }
-            return ['p' => $p, 'cat' => $cats];
+            return ['p' => $p, 'cat' => $cats, 'v' => $vocab, 'vb' => ' ' . implode(' ', array_keys($vocab)) . ' '];
         });
     }
 
     /**
-     * Ids of the published products whose title or SKU contains $q (literal, any case), optionally only those in one
-     * category, in the listing's order. 'relevance': the part number itself first (exact, then starting a dash-separated
-     * part: "1310" → 5-1310XU), then part numbers containing it, then title matches; best sellers first inside each band.
+     * Ids of the published products a query finds, optionally only those in one category, in the listing's order: those
+     * whose title or SKU contains $q as typed (any case), then those holding every word of it in any order, in catalog
+     * spelling (understand(): "yoke spicer 1310", "1310 ujoint", "drivshaft" all found nothing before, owner 2026-11-12).
+     * 'relevance': the part number itself first (exact, then starting a dash-separated part: "1310" → 5-1310XU), then part
+     * numbers containing it, then title matches, then word matches; best sellers first inside each band.
      */
     public function searchIds(string $q, ?int $ttid = null, string $sort = 'relevance'): array
     {
         $ql = mb_strtolower(trim($q));
         if ($ql === '') return [];
-        $hits = [];
-        foreach ($this->searchIndex()['p'] as $id => $r) {
-            if (!self::found($r[1], $q) || ($ttid !== null && !in_array($ttid, $r[5], true))) continue;
-            $hits[$id] = $r;
+        $idx = $this->searchIndex();
+        $words = $this->understood($q)['words'];
+        $hits = []; $loose = [];
+        foreach ($idx['p'] as $id => $r) {
+            if ($ttid !== null && !in_array($ttid, $r[5], true)) continue;
+            if (self::found($r[1], $q)) $hits[$id] = $r;
+            elseif ($words && self::hasWords($r[6], $words)) { $hits[$id] = $r; $loose[$id] = true; }
         }
         $band = fn ($s) => $s === $ql ? 0 : (str_starts_with($s, $ql) || str_contains($s, '-' . $ql) ? 1 : (str_contains($s, $ql) ? 2 : 3));
         $price = fn ($r) => $r[3] ?? -INF;   // SQL puts a missing price first going up
@@ -596,7 +614,7 @@ class CatalogService
             'part_asc' => strcmp($hits[$a][0], $hits[$b][0]),
             'part_desc' => strcmp($hits[$b][0], $hits[$a][0]),
             'name' => strcmp($hits[$a][1], $hits[$b][1]),
-            default => $band($hits[$a][0]) <=> $band($hits[$b][0]) ?: $hits[$b][4] <=> $hits[$a][4] ?: strcmp($hits[$a][0], $hits[$b][0]),
+            default => (isset($loose[$a]) ? 4 : $band($hits[$a][0])) <=> (isset($loose[$b]) ? 4 : $band($hits[$b][0])) ?: $hits[$b][4] <=> $hits[$a][4] ?: strcmp($hits[$a][0], $hits[$b][0]),
         } ?: $a <=> $b);
         return array_keys($hits);
     }
@@ -622,6 +640,142 @@ class CatalogService
         foreach ($n as $x) if (str_contains($hay, $x)) return true;
         return false;
     }
+
+    /**
+     * What people type → how the catalog writes it, applied to product text and queries alike (canon()). Trade synonyms
+     * and the Spanish names fold to one spelling; F-250 / F 250 → f250. Order matters: the longer phrases go first.
+     */
+    private const SAY = [
+        '/\bcardan joints?\b|\bu[ -]?joints?\b|\buniversal joints?\b|\bcrucetas?\b/' => 'ujoint',
+        '/\bdrive[ -]?shafts?\b|\bprop(?:eller)?[ -]?shafts?\b|\bdrivelines?\b|\bcardan(?:es)?\b/' => 'driveshaft',
+        '/\bslip[ -]?yokes?\b|\btrans(?:mission)?[ -]yokes?\b/' => 'slip yoke',
+        '/\bweld[ -]yokes?\b/' => 'tube yoke',
+        '/\bpinion[ -]yokes?\b/' => 'end yoke',
+        '/\byolks?\b|\bhorquillas?\b|\byugos?\b/' => 'yoke',
+        '/\b(?:carrier|hanger|centre|center)[ -](?:support[ -])?bearings?\b|\bsoportes? central(?:es)?\b/' => 'center support bearing',
+        '/\brodamientos?\b|\baleros?\b/' => 'bearing',
+        '/\bu[ -]?bolts?\b/' => 'ubolt',
+        '/\bbridas?\b/' => 'flange',
+        '/\btubing\b|\btubos?\b/' => 'tube',
+        '/\bchevy\b/' => 'chevrolet',
+        '/\bvw\b/' => 'volkswagen',
+        '/\bmercedes[ -]benz\b|\bbenz\b/' => 'mercedes',
+        '/\b([a-z]{1,2})-(\d{2,4})\b/' => '$1$2',
+        '/\b([cdefkr]) (\d{2,4})\b/' => '$1$2',
+    ];
+
+    /** Vehicle makes in catalog spelling: on a universal part ("chevy 1310 u-joint") they are the first word to give up. */
+    private const MAKES = ['acura' => 1, 'audi' => 1, 'bmw' => 1, 'buick' => 1, 'cadillac' => 1, 'chevrolet' => 1, 'chrysler' => 1, 'dodge' => 1,
+        'ford' => 1, 'gmc' => 1, 'honda' => 1, 'hummer' => 1, 'hyundai' => 1, 'infiniti' => 1, 'international' => 1, 'isuzu' => 1, 'jeep' => 1,
+        'kia' => 1, 'lexus' => 1, 'lincoln' => 1, 'mazda' => 1, 'mercedes' => 1, 'mercury' => 1, 'mitsubishi' => 1, 'nissan' => 1, 'pontiac' => 1,
+        'porsche' => 1, 'ram' => 1, 'subaru' => 1, 'suzuki' => 1, 'toyota' => 1, 'volkswagen' => 1, 'volvo' => 1, 'freightliner' => 1,
+        'kenworth' => 1, 'peterbilt' => 1, 'mack' => 1, 'hino' => 1];
+
+    /** Words a query may carry that say nothing about the part. */
+    private const FILLER = ['for' => 1, 'and' => 1, 'the' => 1, 'with' => 1, 'new' => 1, 'oem' => 1, 'part' => 1, 'parts' => 1, 'piece' => 1,
+        'replacement' => 1, 'fits' => 1, 'fit' => 1, 'del' => 1, 'las' => 1, 'los' => 1, 'para' => 1, 'con' => 1, 'una' => 1,
+        'pieza' => 1, 'piezas' => 1, 'repuesto' => 1, 'repuestos' => 1];
+
+    /** Lowercase ASCII text in catalog spelling (SAY), punctuation as spaces: "U-Joint, 1310 (Spicer)" → "ujoint 1310 spicer". */
+    public static function canon(string $s): string
+    {
+        $s = ' ' . mb_strtolower(\Illuminate\Support\Str::ascii($s)) . ' ';
+        $s = preg_replace(array_keys(self::SAY), array_values(self::SAY), $s);
+        return trim(preg_replace('/[\s,;:()\[\]"\/|+*!?]+/', ' ', $s));
+    }
+
+    /** The plain words of a canon() text that a typo can be corrected to: letters only, 3 or more. */
+    public static function vocabOf(string $words): array
+    {
+        return array_values(array_unique(array_filter(explode(' ', $words), fn ($w) => strlen($w) >= 3 && ctype_alpha($w))));
+    }
+
+    /**
+     * A query as the words to match, in catalog spelling: plurals as singulars, filler dropped. A word no product uses
+     * becomes the closest word the index does use (one typo in a word of up to 5 letters, two in a longer one:
+     * "drivshaft" → driveshaft); with nothing that close it is dropped when $drop (the parts catalog: "chevy 1310 ujoint"
+     * still finds the u-joints) or kept, so nothing matches (the finder). $idx = ['v' => word counts, 'vb' => ' words '].
+     * ['words' => [...], 'fixed' => the query as corrected, null when nothing was, 'dropped' => [words left out]].
+     */
+    public static function understand(string $q, array $idx, bool $drop = true): array
+    {
+        static $memo = [];
+        $key = $q . "\0" . strlen($idx['vb'] ?? '') . ($drop ? 'd' : 'k');
+        if (isset($memo[$key])) return $memo[$key];
+        if (count($memo) > 200) $memo = [];
+        $words = []; $dropped = []; $fixed = false;
+        foreach (explode(' ', self::canon($q)) as $w) {
+            $w = trim($w, '-.\'');
+            if ($w === '' || !preg_match('/[a-z0-9]/', $w) || isset(self::FILLER[$w])) continue;
+            if (ctype_alpha($w)) {
+                if (strlen($w) < 3) continue;   // "a", "u", "de": in a substring match they would hit everything
+                if (strlen($w) >= 4 && str_ends_with($w, 's') && !str_ends_with($w, 'ss')) $w = substr($w, 0, -1);
+                if (!str_contains($idx['vb'] ?? '', $w)) {
+                    $near = self::nearest($w, $idx['v'] ?? []);
+                    if ($near !== null) { $w = $near; $fixed = true; }
+                    elseif ($drop) { $dropped[] = $w; continue; }
+                }
+            }
+            $words[] = $w;
+        }
+        $words = array_values(array_unique($words));
+        $say = fn ($w) => ['ujoint' => 'u-joint', 'ubolt' => 'u-bolt'][$w] ?? $w;
+        return $memo[$key] = ['words' => $words, 'fixed' => $fixed && $words ? implode(' ', array_map($say, $words)) : null, 'dropped' => $dropped];
+    }
+
+    /** The index word closest to a misspelt one (fewest edits, then the most used), null when none is close enough. */
+    private static function nearest(string $w, array $vocab): ?string
+    {
+        $max = strlen($w) <= 5 ? 1 : 2; $best = null; $bestD = $max + 1; $bestN = 0;
+        foreach ($vocab as $v => $n) {
+            $v = (string) $v;
+            if (abs(strlen($v) - strlen($w)) > $max) continue;
+            $d = levenshtein($w, $v);
+            if ($d < $bestD || ($d === $bestD && $n > $bestN)) { $best = $v; $bestD = $d; $bestN = $n; }
+        }
+        return $bestD <= $max ? $best : null;
+    }
+
+    /** Does a canon() text hold every word? Numbers must stand alone ("60" is not in "1600"); other words may be part of one. */
+    public static function hasWords(string $text, array $words): bool
+    {
+        foreach ($words as $w) if (ctype_digit($w) ? !preg_match('/(?<!\d)' . $w . '(?!\d)/', $text) : !str_contains($text, $w)) return false;
+        return (bool) $words;
+    }
+
+    /**
+     * How a query is read for the parts catalog (understand()), for searchIds() and the "showing results for" line. When
+     * no product holds all its words together, the rarest word is left out while two or more remain: a vehicle make on
+     * a universal part ("chevy 1310 u-joint" → the 1310 u-joints) or a word only a few titles use.
+     */
+    public function understood(string $q): array
+    {
+        $idx = $this->searchIndex();
+        $key = $q . "\0" . $idx['vb'];
+        if (isset($this->readMemo[$key])) return $this->readMemo[$key];
+        $u = self::understand($q, $idx);
+        if (count($u['words']) >= 2) {
+            $phrase = false;
+            foreach ($idx['p'] as $r) if (self::found($r[1], $q)) { $phrase = true; break; }
+            $any = function (array $words) use ($idx) { foreach ($idx['p'] as $r) if (self::hasWords($r[6], $words)) return true; return false; };
+            while (!$phrase && count($u['words']) >= 2 && !$any($u['words'])) {
+                // which word to give up: a year, then a vehicle make (parts fit by series, not by vehicle), then the rarest
+                // other word, a number last; the first whose absence lets the rest match, else the first of them
+                $n = array_fill_keys($u['words'], 0);
+                foreach ($idx['p'] as $r) foreach ($u['words'] as $w) if (self::hasWords($r[6], [$w])) $n[$w]++;
+                $tier = fn ($w) => preg_match('/^(19|20)\d\d$/', $w) ? 0 : (isset(self::MAKES[$w]) ? 1 : (ctype_alpha($w) ? 2 : 3));
+                $order = $u['words'];
+                usort($order, fn ($a, $b) => $tier($a) <=> $tier($b) ?: $n[$a] <=> $n[$b]);
+                $give = $order[0];
+                foreach ($order as $w) if ($any(array_diff($u['words'], [$w]))) { $give = $w; break; }
+                $u['dropped'][] = $give;
+                $u['words'] = array_values(array_diff($u['words'], [$give]));
+            }
+        }
+        return $this->readMemo[$key] = $u;
+    }
+
+    private array $readMemo = [];
 
     /** Categories holding products whose title or SKU contains $q: [['slug', 'name', 'n'], …], most hits first. */
     public function searchCategories(string $q): array

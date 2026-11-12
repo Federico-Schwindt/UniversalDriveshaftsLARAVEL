@@ -176,3 +176,8 @@
 </section>
 <div class="img-pop" id="img-pop" aria-hidden="true"><img alt=""></div>
 @endsection
+@if($items)
+@push('scripts')
+@include('partials.track', ['ev' => 'view_cart', 'p' => \App\Support\Funnel::cart(array_values($items))])
+@endpush
+@endif

@@ -84,7 +84,7 @@ class PtiDriveshaftDiscover extends Command
         }
         if ($added) {
             Artisan::call('catalog:price-driveshafts');
-            foreach (['finder:makes', 'finder:search-index', 'catalog_ds_subcat'] as $k) Cache::forget($k);
+            foreach (['finder:makes', 'finder:search-index-v2', 'catalog_ds_subcat'] as $k) Cache::forget($k);
             Cache::forever('catalog_ver', time());
         }
         $this->info("added $added shaft(s), $fitTotal vehicle row(s)" . (count($new) > $added ? '; ' . (count($new) - $added) . ' left for the next run' : ''));

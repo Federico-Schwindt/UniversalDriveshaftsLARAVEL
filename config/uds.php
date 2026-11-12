@@ -1,5 +1,7 @@
 <?php
 return [
+    // Scheduled PTI jobs (routes/console.php): only one server may run them, they share PTI's single cart. Off on dev.udshafts.com.
+    'pti_schedule' => (bool) env('PTI_SCHEDULE', true),
     // Google tags carried over from Site Kit on the old WordPress site (2026-11-04): GA4 property 472848382, Ads conversion ID.
     // On by default in production only, so staging never pollutes the numbers.
     'analytics_enabled' => env('ANALYTICS_ENABLED', env('APP_ENV') === 'production'),

@@ -113,7 +113,10 @@
       return;
     }
     hint.hidden = true;
-    results.innerHTML = groups.map(function(g){
+    // the query was not taken as typed (a typo fixed, a word no part holds left out): say how it was read
+    var rd = d.read, read = rd ? '<p class="us-read">' + (rd.fixed ? T('Showing results for :q', {q: '<b>“' + esc(rd.fixed) + '”</b>'}) : '') +
+      (rd.dropped && rd.dropped.length ? (rd.fixed ? ' · ' : '') + esc(T('Left out, no part mentions it: :words', {words: rd.dropped.join(', ')})) : '') + '</p>' : '';
+    results.innerHTML = read + groups.map(function(g){
       return '<section class="us-group"><header class="us-ghead"><h3>' + esc(g.label) + '</h3><a href="' + esc(g.url) + '">' + (g.total > g.items.length ? T('All :n', {n: g.total}) : (g.key === 'xref' || g.key === 'exact' ? T('See all results') : T('Open category'))) + ' ' + ARROW + '</a></header>' +
         g.items.map(function(p){
           var idx = items.push(p) - 1;

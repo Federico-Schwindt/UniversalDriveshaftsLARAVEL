@@ -1,4 +1,17 @@
 @php $ga = config('uds.ga4'); $aw = config('uds.google_ads'); $fb = config('uds.fb_pixel'); @endphp
+{{-- the shopping funnel (App\Support\Funnel): GA4 ecommerce events and their Meta twins. Always defined, so page scripts
+     can call it; it sends nothing where the tags are off (staging, staff), since gtag and fbq do not exist there --}}
+<script>
+window.udsTrack = function (ev, p) {
+  p = p || {};
+  try {
+    if (window.gtag) gtag('event', ev, Object.assign({currency: 'USD'}, p));
+    var fb = {view_item: 'ViewContent', add_to_cart: 'AddToCart', begin_checkout: 'InitiateCheckout', add_payment_info: 'AddPaymentInfo', search: 'Search'}[ev];
+    if (fb && window.fbq) fbq('track', fb, ev === 'search' ? {search_string: p.search_term} : {value: p.value, currency: 'USD', content_type: 'product',
+      contents: (p.items || []).map(function (i) { return {id: i.sku || i.item_id, quantity: i.quantity || 1}; })});
+  } catch (e) {}
+};
+</script>
 {{-- staff browsing the store are not visitors: no tags for admins (Site Kit excluded logged-in staff too) --}}
 @if(config('uds.analytics_enabled') && !auth()->user()?->is_admin)
   {{-- The tag libraries (gtag ~350 KB, Meta pixel ~220 KB) load once the page has finished loading instead of competing

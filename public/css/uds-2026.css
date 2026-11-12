@@ -2288,8 +2288,14 @@ body.has-ua{padding-bottom:84px}
 .pdp__sticky-price{font-family:var(--font-m);font-weight:600;font-size:1.15rem;
   font-variant-numeric:tabular-nums;flex:none}
 .pdp__sticky .btn{flex:none;min-height:48px}
+.pdp__added{display:flex;align-items:center;flex-wrap:wrap;gap:.6rem 1rem;margin-top:.9rem;padding:.75rem 1rem;
+  border:1px solid var(--line);border-left:3px solid var(--ok);border-radius:var(--r-sm);background:var(--paper)}
+.pdp__added[hidden]{display:none}
+.pdp__added-t{display:inline-flex;align-items:center;gap:.4rem;font-weight:600;color:var(--ink);margin-right:auto}
+.pdp__added-t .i{color:var(--ok)}
 @media (max-width:640px){
-  .pdp__sticky-media,.pdp__sticky-id span{display:none}
+  /* price + Add to cart (+ Checkout once added) fill a phone's width; the part number is on the page above */
+  .pdp__sticky-media,.pdp__sticky-id{display:none}
   .pdp__sticky-in{gap:.75rem;padding-inline:1rem}
   .pdp__sticky .btn{flex:1;justify-content:center}
 }
@@ -2863,6 +2869,17 @@ body.has-ua{padding-bottom:84px}
 .srch-head .wrap{padding-block:0 1.5rem}
 .srch-head h1{font-size:clamp(1.5rem,1.2rem + 1.4vw,2.2rem)}
 .srch-q{font-family:var(--font-m);color:var(--blue);font-weight:600}
+/* how a query was read ("Showing results for “driveshaft”") and the no-results "we'll find it" box */
+.srch-read{margin:.5rem 0 0;color:var(--ink-2);font-size:.95rem}
+.srch-read b{color:var(--ink)}
+.srch-read span{display:block;color:var(--ink-faint);font-size:.85rem;margin-top:.15rem}
+.srch-ask{margin:1.5rem auto 0;padding-top:1.25rem;border-top:1px solid var(--line);max-width:560px}
+.srch-ask p{margin:0 0 .75rem;color:var(--ink-2)}
+.srch-ask b{color:var(--ink)}
+.srch-ask__cta{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap}
+.us-read{margin:0 0 .5rem;padding:.55rem .8rem;background:var(--paper-2);border-radius:var(--r-sm, 8px);color:var(--ink-2);font-size:.85rem}
+.us-read b{color:var(--ink)}
+.us-ask{margin-top:.6rem;display:flex;gap:.5rem;flex-wrap:wrap}
 .srch-form{display:flex;align-items:center;gap:.6rem;background:#fff;border:1.5px solid var(--line-strong);border-radius:var(--r-pill);padding:.35rem .4rem .35rem 1rem;max-width:760px;margin-top:1rem;box-shadow:var(--sh-1)}
 .srch-form:focus-within{border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-100)}
 .srch-form .i{color:var(--ink-faint);font-size:1.15rem;flex:none}

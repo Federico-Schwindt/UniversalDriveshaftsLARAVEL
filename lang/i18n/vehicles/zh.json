@@ -148,5 +148,6 @@
     "{1} The :mm driveshafts we list are :kind shafts with :b center support bearing.|[2,*] The :mm driveshafts we list are :kind shafts with :b center support bearings.": "{1} 我们列出的 :mm 传动轴为 :kind 传动轴,配有 :b 个中间支撑轴承。|[2,*] 我们列出的 :mm 传动轴为 :kind 传动轴,配有 :b 个中间支撑轴承。",
     "{1} We list :n complete driveshaft for the :mm, covering model years :y1 to :y2.|[2,*] We list :n complete driveshafts for the :mm, covering model years :y1 to :y2.": "{1} 我们列出了 :n 款适用于 :mm 的整套传动轴,涵盖 :y1 至 :y2 车型年份。|[2,*] 我们列出了 :n 款适用于 :mm 的整套传动轴,涵盖 :y1 至 :y2 车型年份。",
     "{1} We list :n complete driveshaft for the :mm, covering the :y model year.|[2,*] We list :n complete driveshafts for the :mm, covering the :y model year.": "{1} 我们列出了 :n 款适用于 :mm 的整套传动轴,涵盖 :y 车型年份。|[2,*] 我们列出了 :n 款适用于 :mm 的整套传动轴,涵盖 :y 车型年份。",
-    "{1} We stock :parts complete driveshaft for :make, covering model years :span.|[2,*] We stock :parts complete driveshafts for :n :make models, covering model years :span.": "{1} 我们备有适用于 :make 的 :parts 根总成传动轴现货，涵盖年款 :span。|[2,*] 我们备有适用于 :n 个 :make 车型的 :parts 根总成传动轴现货，涵盖年款 :span。"
+    "{1} We stock :parts complete driveshaft for :make, covering model years :span.|[2,*] We stock :parts complete driveshafts for :n :make models, covering model years :span.": "{1} 我们备有适用于 :make 的 :parts 根总成传动轴现货，涵盖年款 :span。|[2,*] 我们备有适用于 :n 个 :make 车型的 :parts 根总成传动轴现货，涵盖年款 :span。",
+    "Fits your :vehicle": "适配您的 :vehicle"
 }

@@ -47,7 +47,9 @@ class CartService
         return [
             'count' => $this->count(), 'subtotal' => $this->subtotal(),
             'items' => array_values(array_map(fn ($i) => ['key' => $i['key'], 'sku' => (string) $i['sku'], 'name' => (string) $i['name'], 'image' => self::thumb((string) $i['image']),
-                'price' => (float) $i['price'], 'qty' => (int) $i['qty']], $items)),
+                'price' => (float) $i['price'], 'qty' => (int) $i['qty'],
+                // the id the analytics funnel knows the line by (App\Support\Funnel): add to cart and remove are sent from these lines
+                'item_id' => \App\Support\Funnel::item(isset($i['wp_product_id']) ? (int) $i['wp_product_id'] : null, (string) $i['sku'], '', 0, 1, '', (string) ($i['type'] ?? 'product'))['item_id'] ?? ''], $items)),
             // free US shipping meter: tubing and complete driveshafts don't count toward it
             'free_min' => self::freeMin(), 'free_base' => $items ? $this->freeShippingBase($items) : 0.0,
         ];

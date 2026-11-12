@@ -161,14 +161,18 @@ class DriveshaftFinder
     {
         $term = self::pn($term);
         if (mb_strlen($term) < 2) return [];
-        // shafts whose fitments name it (part number, carrier bearing, notes) first, then by part number or description
+        // shafts whose fitments name it (part number, carrier bearing, notes) first, then by part number or description,
+        // then those holding every word in any order, vehicles and years included ("ford f250 2005", "silverado 2pc")
         $idx = $this->searchIndex(); $pns = [];
-        foreach ($idx as $pn => $r) { if (count($pns) >= 40) break; if ($r[1] !== '' && CatalogService::found($r[1], $term)) $pns[$pn] = true; }
-        foreach ($idx as $pn => $r) { if (count($pns) >= 40) break; if (CatalogService::found($r[0], $term)) $pns[$pn] = true; }
+        foreach ($idx['p'] as $pn => $r) { if (count($pns) >= 40) break; if ($r[1] !== '' && CatalogService::found($r[1], $term)) $pns[$pn] = true; }
+        foreach ($idx['p'] as $pn => $r) { if (count($pns) >= 40) break; if (CatalogService::found($r[0], $term)) $pns[$pn] = true; }
+        $words = array_values(array_diff(CatalogService::understand($term, $idx, false)['words'], ['driveshaft', 'shaft', 'complete', 'assembly']));   // every row is one
+        if ($words) foreach ($idx['p'] as $pn => $r) { if (count($pns) >= 40) break; if (CatalogService::hasWords($r[2], $words)) $pns[$pn] = true; }
         $pns = collect(array_map('strval', array_keys($pns)));
         if ($pns->isEmpty()) return [];
         $rows = self::fitments()->whereIn('part_number', $pns)->get();
         $out = $this->results($rows, true);
+        if (array_filter($words, fn ($w) => preg_match('/[a-z]/', $w) || preg_match('/^(19|20)\d\d$/', $w))) $out = $this->vehicleFirst($out, $rows, $words);   // a vehicle or a year named
         $have = array_column($out, 'part_number');
         foreach ($pns as $pn) { // parts with no fitment rows at all (boat shafts)
             if (!in_array($pn, $have, true)) $out = array_merge($out, $this->results(collect(), true, [$pn]));
@@ -177,23 +181,60 @@ class DriveshaftFinder
     }
 
     /**
-     * The active shafts as lowercase strings for search(): [part number => [part number + description, part number +
-     * carrier bearing + notes of its fitment rows ('' without any)]]. The LIKE over 42,000 fitment rows took 65–230 ms
-     * of every search; this scan takes about a millisecond. Active parts only: a shaft PTI dropped never resurfaces.
+     * The vehicle a search names first: shafts with a fitment row holding the most query words (a year by its own row,
+     * so "2005" picks the 2002–2007 F250 group) ahead of the rest, and that vehicle at the top of each shaft's list.
+     */
+    private function vehicleFirst(array $out, $rows, array $words): array
+    {
+        $years = array_filter($words, fn ($w) => preg_match('/^(19|20)\d\d$/', $w)); $rest = array_diff($words, $years);
+        $text = []; $best = [];
+        foreach ($rows as $r) {
+            $car = $r->make . '|' . $r->model . '|' . $r->drive;
+            $t = $text[$car] ??= CatalogService::canon($r->make . ' ' . $r->model . ' ' . $r->drive);
+            $n = count(array_filter($rest, fn ($w) => CatalogService::hasWords($t, [$w]))) + (in_array((string) $r->year, $years, true) ? 1 : 0);
+            if ($n > ($best[$r->part_number][0] ?? 0)) $best[$r->part_number] = [$n, $car];
+        }
+        foreach ($out as $i => &$p) {
+            $p['_rank'] = [-($best[$p['part_number']][0] ?? 0), $i];
+            if (!isset($best[$p['part_number']])) continue;
+            [$make, $model, $drive] = explode('|', $best[$p['part_number']][1]);
+            $g = $rows->where('part_number', $p['part_number'])->where('make', $make)->where('model', $model)->where('drive', $drive);
+            $fit = trim($g->min('year') . '-' . $g->max('year') . ' ' . $make . ' ' . $model . ' ' . $drive);
+            $p['fits'] = array_values(array_unique(array_merge([$fit], $p['fits'] ?? [])));
+        }
+        unset($p);
+        usort($out, fn ($a, $b) => $a['_rank'] <=> $b['_rank']);
+        return array_map(function ($p) { unset($p['_rank']); return $p; }, $out);
+    }
+
+    /**
+     * The active shafts as lowercase strings for search(): 'p' => [part number => [part number + description, part number
+     * + carrier bearing + notes of its fitment rows ('' without any), all of it plus the makes, models and years it fits
+     * in catalog spelling (CatalogService::canon())]], with that text's vocabulary ('v', 'vb') for typo correction.
+     * The LIKE over 42,000 fitment rows took 65–230 ms of every search; this scan takes about a millisecond. Active parts
+     * only: a shaft PTI dropped never resurfaces.
      */
     private function searchIndex(): array
     {
-        return \Illuminate\Support\Facades\Cache::remember('finder:search-index', 3600, function () {
-            $parts = []; $fit = [];
+        return \Illuminate\Support\Facades\Cache::remember('finder:search-index-v2', 21600,   // PTI's discovery and price runs forget it
+            function () {
+            $parts = []; $fit = []; $cars = [];
             foreach (DB::table('ds_parts')->where('is_active', 1)->get(['part_number', 'description']) as $p) $parts[$p->part_number] = (string) $p->description;
             foreach (self::fitments()->select('part_number', 'c_brg', 'notes')->distinct()->get() as $f) {
                 $fit[$f->part_number] ??= [$f->part_number];
                 array_push($fit[$f->part_number], (string) $f->c_brg, (string) $f->notes);
             }
-            $idx = [];
-            foreach ($parts as $pn => $desc) $idx[$pn] = [CatalogService::haystack([$pn, $desc]), isset($fit[$pn]) ? CatalogService::haystack(array_unique($fit[$pn])) : ''];
+            foreach (self::fitments()->select('part_number', 'make', 'model', 'year')->distinct()->get() as $f) {
+                $cars[$f->part_number][(string) $f->make] = true; $cars[$f->part_number][(string) $f->model] = true; $cars[$f->part_number][(string) $f->year] = true;
+            }
+            $idx = []; $vocab = [];
+            foreach ($parts as $pn => $desc) {
+                $words = CatalogService::canon($pn . ' ' . $desc . ' ' . implode(' ', array_unique($fit[$pn] ?? [])) . ' ' . implode(' ', array_keys($cars[$pn] ?? [])));
+                foreach (CatalogService::vocabOf($words) as $w) $vocab[$w] = ($vocab[$w] ?? 0) + 1;
+                $idx[$pn] = [CatalogService::haystack([$pn, $desc]), isset($fit[$pn]) ? CatalogService::haystack(array_unique($fit[$pn])) : '', $words];
+            }
             ksort($idx, SORT_STRING | SORT_FLAG_CASE);
-            return $idx;
+            return ['p' => $idx, 'v' => $vocab, 'vb' => ' ' . implode(' ', array_keys($vocab)) . ' '];
         });
     }
 

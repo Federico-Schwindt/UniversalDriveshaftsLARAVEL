@@ -21,7 +21,7 @@ class SearchController extends Controller
         if (mb_strlen($q) < 2) return response()->json(['q' => $q, 'groups' => [], 'total' => 0]);
         $u = Auth::user(); $tier = ($u && ($u->wholesale_status ?? '') === 'approved') ? (string) ($u->wholesale_discount ?? 0) : '0';
         $ver = \Illuminate\Support\Facades\Cache::get('catalog_ver', 1);   // a catalog sync busts these too
-        return response()->json($this->cached("search_api:$ver:" . app()->getLocale() . ":$tier:" . mb_strtolower($q), $q, fn () => $this->grouped($q)));
+        return response()->json($this->cached("search_api2:$ver:" . app()->getLocale() . ":$tier:" . mb_strtolower($q), $q, fn () => $this->grouped($q)));
     }
 
     /**
@@ -79,7 +79,17 @@ class SearchController extends Controller
             if ($x['xrefExact'] && $total < 4) array_unshift($groups, $group); else $groups[] = $group;
             $total += count($items);
         }
-        return ['q' => $q, 'groups' => $groups, 'total' => $total];
+        return ['q' => $q, 'groups' => $groups, 'total' => $total, 'read' => $this->read($q)];
+    }
+
+    /**
+     * How the query was read when it was not taken as typed: 'fixed' = the query as corrected ("drivshaft" → driveshaft),
+     * 'dropped' = words no part holds with the rest ("chevy 1310 u-joint" → the 1310 u-joints). Null when taken as typed.
+     */
+    private function read(string $q): ?array
+    {
+        $u = $this->catalog->understood($q);
+        return $u['fixed'] || $u['dropped'] ? ['fixed' => $u['fixed'], 'dropped' => $u['dropped']] : null;
     }
 
     /**
@@ -114,9 +124,9 @@ class SearchController extends Controller
         $tier = ($u && ($u->wholesale_status ?? '') === 'approved') ? (string) ($u->wholesale_discount ?? 0) : '0';
         $ver = \Illuminate\Support\Facades\Cache::get('catalog_ver', 1);   // bumped by catalog:sync-live, so a sync busts these
         $vm = mb_strlen($q) >= 2
-            ? $this->cached("search_page:$ver:" . app()->getLocale() . ":$tier:" . mb_strtolower($q), $q, fn () => $this->buildPage($q))
+            ? $this->cached("search_page2:$ver:" . app()->getLocale() . ":$tier:" . mb_strtolower($q), $q, fn () => $this->buildPage($q))
             : ['sections' => [], 'driveshafts' => [], 'total' => 0];
-        return view('search', ['q' => $q, 'sections' => $vm['sections'], 'driveshafts' => $vm['driveshafts'], 'total' => $vm['total']]);
+        return view('search', ['q' => $q, 'sections' => $vm['sections'], 'driveshafts' => $vm['driveshafts'], 'total' => $vm['total'], 'read' => $vm['read'] ?? null]);
     }
 
     /** Build the full results view-model for a query (cached by page()). */
@@ -158,7 +168,7 @@ class SearchController extends Controller
                 }
             }
         }
-        return ['sections' => $sections, 'driveshafts' => $ds, 'total' => $total];
+        return ['sections' => $sections, 'driveshafts' => $ds, 'total' => $total, 'read' => $this->read($q)];
     }
 
     private function q(Request $r): string
