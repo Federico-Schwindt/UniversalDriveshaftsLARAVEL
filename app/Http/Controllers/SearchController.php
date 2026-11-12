@@ -179,13 +179,13 @@ class SearchController extends Controller
     /** Catalog categories holding products whose title or SKU contains the phrase, most hits first. */
     private function matchingCategories(string $q, int $limit): array
     {
-        $cats = $this->matchingCategoriesCached($q, $limit);
         // a bare series number ("1310", "1350 series") is a u-joint search first: that group leads instead of whichever
-        // category happens to hold the most titles containing the number (Flange Yokes, 70)
-        if (preg_match('/^\s*(?:spl\s*)?\d{4}[a-z]{0,3}(?:\s*series)?\s*$/i', $q)) {
-            usort($cats, fn ($a, $b) => (int) ($b['slug'] === 'u-joints') <=> (int) ($a['slug'] === 'u-joints'));
-        }
-        return $cats;
+        // category happens to hold the most titles containing the number (Flange Yokes, 93). It is picked before the
+        // list is cut to $limit: with 12 hits it came 8th and the cut to 5 dropped it (2026-11-12)
+        if (!preg_match('/^\s*(?:spl\s*)?\d{4}[a-z]{0,3}(?:\s*series)?\s*$/i', $q)) return $this->matchingCategoriesCached($q, $limit);
+        $cats = $this->matchingCategoriesCached($q, 40);
+        usort($cats, fn ($a, $b) => (int) ($b['slug'] === 'u-joints') <=> (int) ($a['slug'] === 'u-joints'));
+        return array_slice($cats, 0, $limit);
     }
 
     private function matchingCategoriesCached(string $q, int $limit): array

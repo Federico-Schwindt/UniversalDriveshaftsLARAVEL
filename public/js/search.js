@@ -1,8 +1,9 @@
-/* Universal Driveshafts — full-screen catalog search (grouped by category, keyboard driven). */
+/* Universal Driveshafts — catalog search (grouped by category, keyboard driven): a panel under the header field on
+   desktop, a white sheet on phones. */
 (function () {
   var DSICON = '<svg viewBox="0 0 64 40" width="34" height="34" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"><circle cx="12" cy="20" r="7"/><circle cx="52" cy="20" r="7"/><rect x="19" y="16.5" width="26" height="7" rx="2"/></svg>';
   var ARROW = '<svg class="i" viewBox="0 0 256 256" fill="currentColor" width="1em" height="1em" aria-hidden="true"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/></svg>';
-  var PLUS = '<svg class="i" viewBox="0 0 256 256" fill="currentColor" width="1em" height="1em" aria-hidden="true"><path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"/></svg>';
+  var CART = '<svg class="i" viewBox="0 0 256 256" fill="currentColor" width="1em" height="1em" aria-hidden="true"><path d="M104,216a16,16,0,1,1-16-16A16,16,0,0,1,104,216Zm88-16a16,16,0,1,0,16,16A16,16,0,0,0,192,200ZM239.71,74.14l-25.64,92.28A24.06,24.06,0,0,1,191,184H92.16A24.06,24.06,0,0,1,69,166.42L33.92,40H16a8,8,0,0,1,0-16H40a8,8,0,0,1,7.71,5.86L57.19,64H232a8,8,0,0,1,7.71,10.14ZM221.47,80H61.64l22.81,82.14A8,8,0,0,0,92.16,168H191a8,8,0,0,0,7.71-5.86Z"/></svg>';
   var T = window.udsT || function (x, r) { if (r) for (var k in r) x = x.split(':' + k).join(r[k]); return x; };
   var SUGGEST = ['1310', '1350', '1410', 'flange yoke', 'slip yoke', 'center support bearing', 'weld yoke', 'tubing'];
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function (c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; }); }
@@ -30,8 +31,9 @@
         '<input type="search" class="us-input" placeholder="' + T('Part number, name or series — 5-1310X, flange yoke, U2594-173') + '" aria-label="' + T('Search parts') + '" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="us-results" aria-autocomplete="list">' +
         '<button class="us-clear" type="button" hidden aria-label="' + T('Clear search') + '"><svg class="i" viewBox="0 0 256 256" fill="currentColor" width="1em" height="1em" aria-hidden="true"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></svg></button>' +
         '<kbd class="us-kbd" aria-hidden="true">Esc</kbd>' +
+        '<button class="us-go" type="button">' + T('Search') + '</button>' +
       '</div>' +
-      '<button class="us-close" type="button" aria-label="' + T('Close search') + '">' + T('Close') + '</button>' +
+      '<button class="us-close" type="button" aria-label="' + T('Close search') + '">' + T('Cancel') + '</button>' +
     '</div></div>' +
     '<div class="us-body"><div class="us-inner">' +
       '<div class="us-hint"></div>' +
@@ -47,8 +49,21 @@
   var clearBtn = ov.querySelector('.us-clear');
   var lastQ = '', t, items = [], active = -1, seq = 0, opener = null;
 
+  // desktop: the panel hangs from the header field, which keeps its place and look; phones (no header field): a sheet
+  var head = document.querySelector('.tb__search');
+  function place(){
+    var r = head && head.offsetParent !== null ? head.getBoundingClientRect() : null;
+    ov.classList.toggle('is-drop', !!(r && r.width));
+    if (!r || !r.width) return;
+    ov.style.setProperty('--us-x', r.left + 'px'); ov.style.setProperty('--us-y', Math.max(12, r.top) + 'px');
+    ov.style.setProperty('--us-w', r.width + 'px'); ov.style.setProperty('--us-h', r.height + 'px');
+    var hi = head.querySelector('input'); if (hi && hi.placeholder) input.placeholder = hi.placeholder;
+  }
+  window.addEventListener('resize', function(){ if (ov.classList.contains('on')) place(); });
+
   function open(prefill){
     opener = document.activeElement;
+    place();
     var dr=document.getElementById('mob-drawer'); if(dr){dr.classList.remove('on');dr.setAttribute('aria-hidden','true');document.documentElement.classList.remove('md-lock');var bb=document.getElementById('mob-burger');if(bb)bb.setAttribute('aria-expanded','false');}
     ov.classList.add('on'); ov.setAttribute('aria-hidden', 'false');
     document.documentElement.style.overflow = 'hidden';
@@ -125,7 +140,7 @@
             '<span class="us-cimg">' + img + '</span>' +
             '<span class="us-cbody"><b class="us-cname">' + mark(p.name, q) + '</b><span class="us-csku">' + mark(p.sku, q) + '</span>' + (p.xref ? '<span class="us-xref">' + T('Replaces') + ' <b>' + mark(p.xref, q) + '</b></span>' : '') + '</span>' +
             '<span class="us-cprice' + (p.price == null ? ' is-call' : '') + '">' + money(p.price) + '</span>' +
-            (p.add && Number(p.price) > 0 ? '<button class="us-cadd" type="button" data-add-sku="' + esc(p.add) + '" aria-label="' + T('Add :sku to cart', {sku: esc(p.sku)}) + '" title="' + T('Add to cart') + '">' + PLUS + '</button>' : '<span class="us-cgo" aria-hidden="true">' + ARROW + '</span>') +
+            (p.add && Number(p.price) > 0 ? '<button class="us-cadd" type="button" data-add-sku="' + esc(p.add) + '" aria-label="' + T('Add :sku to cart', {sku: esc(p.sku)}) + '" title="' + T('Add to cart') + '">' + CART + '<span>' + T('Add') + '</span></button>' : '<span class="us-cgo" aria-hidden="true">' + ARROW + '</span>') +
           '</a>';
         }).join('') + '</section>';
     }).join('');
@@ -167,6 +182,7 @@
   input.addEventListener('input', function(){ run(false); });
   clearBtn.onclick = function(){ input.value = ''; lastQ=''; run(true); input.focus(); };
   ov.querySelector('.us-close').onclick = close;
+  ov.querySelector('.us-go').onclick = function(){ var q = input.value.trim(); if (q.length >= 2) goPage(q); else input.focus(); };
   ov.addEventListener('click', function(e){ if (e.target === ov || e.target.classList.contains('us-body')) close(); });
   hint.addEventListener('click', function(e){
     var c = e.target.closest('[data-q]'); if (c){ input.value = c.getAttribute('data-q'); run(true); input.focus(); return; }
