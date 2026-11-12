@@ -28,6 +28,7 @@ class JsStrings
         'Arrives :date', 'to :zip with :service', 'Change', 'Get a delivery date', 'ZIP code', 'Show date', 'Checking the delivery date…',
         'Enter a 5-digit US ZIP code.', 'Custom builds ship when they are finished.', 'Delivery date for ZIP',
         'Use my location', 'Enter ZIP', 'Delivery date:', 'near you', 'Could not get your location. Enter your ZIP code.', 'Finding your ZIP…',
+        'Shipping to :zip with :service', 'Shipping to :zip',   // cart summary: the shipping cost for that ZIP
         // home vehicle finder, sidebar
         'Pick a make first', 'Pick a year first', 'Choose a make', 'See driveshafts for :vehicle', 'See :make driveshafts', 'Expand menu', 'Collapse menu', 'Part not found.', 'Yes', 'No',
         // search overlay

@@ -244,4 +244,5 @@
   #ubs-dsb .dsb-card--brand .dsb-opt-arrow{display:none}
   #ubs-dsb .dsb-seeall .dsb-btn{width:100%;justify-content:center}
 }
-@media (max-width:380px){ #ubs-dsb .dsb-restart span{display:none} }
+/* "Application · Question 3" needs the room: the start over button is its icon on narrow phones */
+@media (max-width:480px){ #ubs-dsb .dsb-restart span{display:none} }

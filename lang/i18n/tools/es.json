@@ -808,5 +808,9 @@
     "See every flange yoke in :series": "Ver todos los yugos de brida :series",
     "Listed for :make: :n of :total.": "Para :make: :n de :total.",
     "Start over? Your answers will be cleared.": "¿Empezar de nuevo? Se borrarán tus respuestas.",
-    "Toyota transfer cases have a bolt-on flange output: the shaft gets a slip yoke with a flange yoke": "Las cajas de transferencia Toyota tienen salida de brida atornillada: el cardán lleva un yugo deslizante con yugo de brida"
+    "Toyota transfer cases have a bolt-on flange output: the shaft gets a slip yoke with a flange yoke": "Las cajas de transferencia Toyota tienen salida de brida atornillada: el cardán lleva un yugo deslizante con yugo de brida",
+    "Question :n": "Pregunta :n",
+    "In inches, with the vehicle at ride height. A1 and C1 are both required.": "En pulgadas, con el vehículo a altura normal. A1 y C1 son obligatorias.",
+    "Please enter C1 (u-joint center to u-joint center).": "Ingresa C1 (de centro de cruceta a centro de cruceta).",
+    "C1 cannot be longer than A1. Please check both measurements.": "C1 no puede ser mayor que A1. Revisa ambas medidas."
 }

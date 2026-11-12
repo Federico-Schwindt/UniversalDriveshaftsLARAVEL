@@ -110,7 +110,7 @@
 @endforeach
 @endif
 @if($editing || $editBilling)
-<script src="/js/geo.js?v={{ @filemtime(public_path('js/geo.js')) }}"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key={{ config('uds.gmaps_key') }}&libraries=places&callback=udsInitPlaces" async defer></script>
+{{-- the Maps key rides on the tag: geo.js fetches Google only when a street field is focused --}}
+<script src="/js/geo.js?v={{ @filemtime(public_path('js/geo.js')) }}" data-gmaps-key="{{ config('uds.gmaps_key') }}"></script>
 @endif
 @endsection

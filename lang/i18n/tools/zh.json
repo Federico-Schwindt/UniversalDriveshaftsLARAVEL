@@ -807,5 +807,9 @@
     "See every flange yoke in :series": "查看所有 :series 法兰叉",
     "Listed for :make: :n of :total.": "适用于 :make：:total 个中的 :n 个。",
     "Start over? Your answers will be cleared.": "重新开始？您的回答将被清除。",
-    "Toyota transfer cases have a bolt-on flange output: the shaft gets a slip yoke with a flange yoke": "丰田分动箱为螺栓连接的法兰输出:传动轴配带法兰叉的滑动叉"
+    "Toyota transfer cases have a bolt-on flange output: the shaft gets a slip yoke with a flange yoke": "丰田分动箱为螺栓连接的法兰输出:传动轴配带法兰叉的滑动叉",
+    "Question :n": "问题 :n",
+    "In inches, with the vehicle at ride height. A1 and C1 are both required.": "单位为英寸，车辆处于正常行驶高度。A1 和 C1 均为必填项。",
+    "Please enter C1 (u-joint center to u-joint center).": "请输入 C1(万向节中心到万向节中心)。",
+    "C1 cannot be longer than A1. Please check both measurements.": "C1 不能大于 A1。请检查这两个测量值。"
 }

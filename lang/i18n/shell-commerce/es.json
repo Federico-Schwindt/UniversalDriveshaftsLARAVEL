@@ -810,5 +810,15 @@
  "Left out, no part mentions it: :words": "Omitido, ninguna pieza lo menciona: :words",
  "Can’t find it? We’ll find it for you.": "¿No lo encuentras? Lo buscamos por ti.",
  "Send us the part number, the vehicle or a photo of the part.": "Envíanos el número de pieza, el vehículo o una foto de la pieza.",
- "Hi! I am looking for this part: :q": "¡Hola! Estoy buscando esta pieza: :q"
+ "Hi! I am looking for this part: :q": "¡Hola! Estoy buscando esta pieza: :q",
+ "Estimated total": "Total estimado",
+ "Shipping is an estimate for your ZIP code; the checkout confirms it with your address.": "El envío es un estimado para tu código postal; al pagar se confirma con tu dirección.",
+ "Shipping is calculated at checkout.": "El envío se calcula al pagar.",
+ "Prices exclude any core charge, which is quoted separately.": "Los precios no incluyen el cargo por casco (core), que se cotiza aparte.",
+ "Shipping to :zip with :service": "Envío a :zip por :service",
+ "Shipping to :zip": "Envío a :zip",
+ "Often ordered with :sku": "Se suele pedir junto con :sku",
+ "Often ordered with :series series :kind": "Se suele pedir junto con :kind de la serie :series",
+ "Please read and accept the Terms of Use to place your order.": "Lee y acepta los Términos de uso para realizar tu pedido.",
+ "Something went wrong. Please try again or call (813) 524-6491.": "Algo salió mal. Inténtalo de nuevo o llama al (813) 524-6491."
 }

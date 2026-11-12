@@ -23,7 +23,7 @@ class DsbController extends Controller
     /** Strings the builder's JavaScript shows, English => current language (lang/ files are the lead's). */
     private const JS_STRINGS = [
         // progress / navigation
-        'Step :n', 'Step :n of :total', 'Back', 'Continue', 'Edit', 'Change', 'Not selected', 'Pending', 'Ready', 'Start over',
+        'Step :n', 'Step :n of :total', 'Question :n', 'Back', 'Continue', 'Edit', 'Change', 'Not selected', 'Pending', 'Ready', 'Start over',
         'Your answers', 'Output type', 'U-joint series', 'Tube material', 'Rear end', 'Rear yoke', 'Rear hardware', 'Measurements',
         'Front yoke', 'Pick the yoke', 'Your driveshaft', 'Front end', 'Heavy-duty family',
         // series / material

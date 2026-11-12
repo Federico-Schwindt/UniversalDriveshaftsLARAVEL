@@ -4,7 +4,10 @@
    background call must never write back a stale session over an Add to cart); data-id = one part, data-items = the
    cart's parts (id:qty,…), data-built = the cart holds a custom build. Owner, 2026-11-11.
    No ZIP yet: the IP's approximate ZIP (/geo, once a week per browser) shows a date marked "near you"; "Use my location"
-   asks the browser (only on a tap, never on page load) and /api/zip-near turns the position into a ZIP. */
+   asks the browser (only on a tap, never on page load) and /api/zip-near turns the position into a ZIP.
+   Cart summary (data-cart-ship; owner, 2026-11-12): the same ZIP also prices the cart. GET /api/cart-ship reads the
+   session cart without writing the session; the cost goes in the summary's Shipping row ([data-shipval]), this line says
+   where to and when, and cart.js adds it to the total ("uds:cart-ship"). A changed cart asks again ("uds:cart-painted"). */
 (function () {
   'use strict';
   var KEY = 'uds.zip';
@@ -49,7 +52,39 @@
     inp.addEventListener('input', function () { inp.value = inp.value.replace(/\D/g, '').slice(0, 5); });
     inp.focus();
   }
+  function money(n) { return '$' + Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  // the cart's shipping cost: what the summary shows, and what cart.js adds to the total (null = not known)
+  function cost(d) {
+    var v = document.querySelector('[data-shipval]');
+    if (v) { v.classList.remove('is-loading'); v.textContent = d ? (d.free ? T('Free') : money(d.cost)) : v.getAttribute('data-none'); }
+    window.udsCartShip = d;
+    document.dispatchEvent(new CustomEvent('uds:cart-ship', { detail: d }));
+  }
+  function loadCart(el, zip, approx) {
+    var v = document.querySelector('[data-shipval]'), first = el._zip !== zip;
+    if (el._ac) el._ac.abort();   // an older answer is for an older cart
+    var ac = el._ac = window.AbortController ? new AbortController() : null;
+    el._zip = zip; el._approx = !!approx;
+    el.classList.add('is-loading');
+    if (first) el.innerHTML = ICON + '<span>' + T('Loading rates…') + '</span>';   // a changed quantity keeps the line it had
+    if (v) { v.classList.add('is-loading'); if (first) v.textContent = '…'; }
+    fetch('/api/cart-ship?' + new URLSearchParams({ zip: zip }), { headers: { 'Accept': 'application/json' }, credentials: 'same-origin', signal: ac ? ac.signal : undefined })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (ac && el._ac !== ac) return;
+        el.classList.remove('is-loading');
+        if (!d || !d.success) { el._zip = ''; cost(null); if (d && d.empty) el.hidden = true; else idle(el); return; }   // no carrier rate: nothing is made up
+        var r = { zip: esc(d.zip), service: esc(d.service) }, near = approx ? ' (' + T('near you') + ')' : '';
+        el.innerHTML = ICON + '<span class="arrive__t">' + (d.date
+          ? T('Arrives :date', { date: '<b>' + esc(d.date) + '</b>' }) + ' <small>' + T('to :zip with :service', r) + near + '</small>'
+          : (d.service ? T('Shipping to :zip with :service', r) : T('Shipping to :zip', r)) + near + (d.built ? ' <small>' + T('Custom builds ship when they are finished.') + '</small>' : '')) +
+          '</span><button type="button" class="arrive__chg">' + T('Change') + '</button>';
+        cost(d);
+      })
+      .catch(function (e) { if (e && e.name === 'AbortError') return; el.classList.remove('is-loading'); el._zip = ''; cost(null); idle(el); });
+  }
   function load(el, zip, approx) {
+    if (el.hasAttribute('data-cart-ship')) return loadCart(el, zip, approx);
     if (el.hasAttribute('data-built')) { el.innerHTML = ICON + '<span class="arrive__t">' + T('Custom builds ship when they are finished.') + '</span>'; return; }
     el.classList.add('is-loading');
     el.innerHTML = ICON + '<span>' + T('Checking the delivery date…') + '</span>';
@@ -88,4 +123,10 @@
   });
   // a ZIP typed here or in the shipping estimator updates every box on the page
   document.addEventListener('uds:zip', function (e) { boxes.forEach(function (el) { el.hidden = false; load(el, e.detail); }); });
+  // the cart page changed a quantity or removed a line: price the new cart, once the taps stop
+  var again;
+  document.addEventListener('uds:cart-painted', function () {
+    clearTimeout(again);
+    again = setTimeout(function () { boxes.forEach(function (el) { if (el.hasAttribute('data-cart-ship') && el._zip) loadCart(el, el._zip, el._approx); }); }, 350);
+  });
 })();

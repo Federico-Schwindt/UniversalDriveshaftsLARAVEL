@@ -1585,6 +1585,17 @@ class CatalogService
         return array_slice($rows, 0, $limit);
     }
 
+    /** What was ordered together with any of these products (a kind of part, say): [product id => orders shared], most first. */
+    public function alsoBoughtCounts(array $ids): array
+    {
+        $map = $this->alsoBoughtMap();
+        $sum = [];
+        foreach ($ids as $id) foreach ($map[$id] ?? [] as $other => $n) $sum[$other] = ($sum[$other] ?? 0) + $n;
+        foreach ($ids as $id) unset($sum[$id]);
+        arsort($sum);
+        return $sum;
+    }
+
     /** product_id => [co-purchased product_id => shared-order count] (top 12 each), built in one pass over both order sources. Cached 6 h. */
     private function alsoBoughtMap(): array
     {

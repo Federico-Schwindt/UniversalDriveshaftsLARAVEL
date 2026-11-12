@@ -14,9 +14,21 @@
     }).then(function (r) { return r.json(); });
   }
 
+  // the total: the parts plus, once arrival.js has it for the visitor's ZIP, the shipping (then it is an estimate and says so)
+  var sum = Number(root.getAttribute('data-sum')) || 0, ship = null;
+  function total() {
+    root.querySelectorAll('[data-total]').forEach(function (el) { el.textContent = money(sum + (ship || 0)); });
+    root.querySelectorAll('[data-totallbl],[data-shipnote]').forEach(function (el) { el.textContent = el.getAttribute(ship === null ? 'data-plain' : 'data-est'); });
+  }
+  function shipped(d) { ship = d && d.success ? Number(d.cost) || 0 : null; total(); }
+  document.addEventListener('uds:cart-ship', function (e) { shipped(e.detail); });
+  if (window.udsCartShip) shipped(window.udsCartShip);   // the answer came before this script ran
+
   function paint(data) {
-    var subtotal = Number(data.subtotal) || 0;
-    root.querySelectorAll('[data-subtotal],[data-total]').forEach(function (el) { el.textContent = money(subtotal); });
+    var subtotal = sum = Number(data.subtotal) || 0;
+    root.querySelectorAll('[data-subtotal]').forEach(function (el) { el.textContent = money(subtotal); });
+    total();
+    if (data.count) document.dispatchEvent(new CustomEvent('uds:cart-painted'));
     var badge = document.querySelector('[data-cart-count]');
     if (badge) { badge.textContent = data.count; badge.hidden = !data.count; }
 

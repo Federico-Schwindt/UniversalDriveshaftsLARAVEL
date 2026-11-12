@@ -928,6 +928,7 @@ body.has-ua{padding-bottom:84px}
 .cartadd__more{margin-left:auto;font-size:.85rem}
 .cartadd__msg{flex-basis:100%;margin:0;font-size:.85rem;color:var(--ok)}
 .cartadd__msg.is-bad{color:var(--err)}
+.cartlist + .cartadd{margin:.75rem 0 0}   /* under the cart lines (owner, 2026-11-12) */
 @media (max-width:560px){.cartadd__lbl{flex-basis:100%}.cartadd__more{margin-left:0}}
 
 /* ---- page head (catalog, group and other listing pages, 2026-11): breadcrumb, H1, one line ---- */
@@ -1514,8 +1515,18 @@ body.has-ua{padding-bottom:84px}
 /* ============================================================================
    CART
    ========================================================================== */
-.cartpage{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:clamp(1.5rem,1rem + 2.5vw,2.75rem);align-items:start}
-@media (max-width:920px){.cartpage{grid-template-columns:1fr}}
+/* lines + add by part number | summary, and under the lines the suggestions (.cartmore). In the page the suggestions
+   come after the summary, so a phone shows Checkout before them (owner, 2026-11-12). */
+.cartpage{display:grid;grid-template-columns:minmax(0,1fr) 350px;grid-template-rows:auto 1fr;gap:0 clamp(1.5rem,1rem + 2.5vw,2.75rem);align-items:start}
+.cartmain{grid-column:1;grid-row:1}
+.cartpage > .cartsum{grid-column:2;grid-row:1/span 2}
+.cartmore{grid-column:1;grid-row:2;min-width:0;margin-top:1.75rem}
+.cartmore .cjob:first-child{margin-top:0}
+@media (max-width:920px){
+  .cartpage{grid-template-columns:1fr;grid-template-rows:none;row-gap:1.5rem}
+  .cartmain,.cartpage > .cartsum,.cartmore{grid-column:1;grid-row:auto}
+  .cartmore{margin-top:0}
+}
 
 .cartlist{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--r-lg);
   background:#fff;overflow:hidden}
@@ -2632,48 +2643,26 @@ body.has-ua{padding-bottom:84px}
 .track .i{font-size:1em}
 
 /* ============================================================================
-   GOOGLE PLACES AUTOCOMPLETE  —  the dropdown Google injects at document root
-   for [data-gplaces] address fields. Its default look (plain white box, no
-   radius, Arial, a generic red pin) reads like stock browser chrome next to
-   the rest of the checkout, so it's restyled to the same card language as
-   the site's other popovers: same radius, shadow, border, hover, font.
-   Google's own class names (.pac-*) are the only hook available — the widget
-   renders outside our DOM, so these must stay un-scoped, real selectors.
+   ADDRESS SUGGESTIONS  —  the list js/geo.js draws under a [data-gplaces] street
+   field (Google's predictions, our markup). Same card language as the site's
+   other popovers; the "Powered by Google" line is required by Google's terms.
    ========================================================================== */
-.pac-container{
-  font-family:var(--font-b)!important;border:1px solid var(--line)!important;
-  border-radius:var(--r-lg)!important;box-shadow:var(--sh-3)!important;
-  margin-top:.5rem!important;padding:.5rem!important;overflow:hidden;
-  z-index:1000!important;
-}
-/* Google's required "powered by Google" attribution renders as a background
-   image on .pac-container's ::after / .pac-logo modifier — left alone
-   (removing it breaks the Places API terms of service), just given breathing
-   room so it doesn't look glued to the last suggestion. */
-.pac-container.pac-logo::after{margin:.4rem .3rem .2rem!important}
-.pac-item{
-  border:0!important;border-top:1px solid var(--line-2)!important;padding:.65rem .6rem!important;
-  border-radius:var(--r-sm);font-size:.92rem;color:var(--ink-2);cursor:pointer;
-  display:flex;align-items:center;gap:.6rem;
-}
-.pac-item:first-child{border-top:0!important}
-.pac-item:hover,.pac-item-selected{background:var(--blue-050)!important}
-.pac-icon{
-  /* swap Google's dated pin sprite for our own map-pin glyph, same color as
-     every other icon accent in the design system */
-  width:1.1rem!important;height:1.1rem!important;margin:0!important;background:none!important;
-  flex:none;
-}
-.pac-icon::before{
-  content:"";display:block;width:100%;height:100%;
-  background:var(--blue);
+.addrsug-host{position:relative}
+.addrsug{position:absolute;z-index:40;margin-top:.35rem;padding:.35rem;background:var(--paper,#fff);
+  border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--sh-3);font-family:var(--font-b)}
+.addrsug ul{list-style:none;margin:0;padding:0}
+.addrsug li{display:flex;align-items:center;gap:.6rem;min-height:44px;padding:.5rem .6rem;border-top:1px solid var(--line-2);
+  border-radius:var(--r-sm);font-size:.92rem;line-height:1.3;color:var(--ink-2);cursor:pointer}
+.addrsug li:first-child{border-top:0}
+.addrsug li::before{content:"";flex:none;width:1.1rem;height:1.1rem;background:var(--blue);
   -webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><path d='M128,16a88.1,88.1,0,0,0-88,88c0,75.3,80,132.17,83.41,134.55a8,8,0,0,0,9.18,0C136,236.17,216,179.3,216,104A88.1,88.1,0,0,0,128,16Zm0,56a32,32,0,1,1-32,32A32,32,0,0,1,128,72Z'/></svg>") center/contain no-repeat;
-  mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><path d='M128,16a88.1,88.1,0,0,0-88,88c0,75.3,80,132.17,83.41,134.55a8,8,0,0,0,9.18,0C136,236.17,216,179.3,216,104A88.1,88.1,0,0,0,128,16Zm0,56a32,32,0,1,1-32,32A32,32,0,0,1,128,72Z'/></svg>") center/contain no-repeat;
-}
-.pac-item-query{font-family:var(--font-h)!important;font-weight:600!important;color:var(--ink)!important;font-size:.92rem!important}
-.pac-matched{color:var(--blue)!important;font-weight:600!important}
-.pac-item .pac-item-query + span{color:var(--ink-faint)!important;font-size:.85rem!important}
-@media (max-width:560px){.pac-container{margin-top:.35rem!important}}
+  mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><path d='M128,16a88.1,88.1,0,0,0-88,88c0,75.3,80,132.17,83.41,134.55a8,8,0,0,0,9.18,0C136,236.17,216,179.3,216,104A88.1,88.1,0,0,0,128,16Zm0,56a32,32,0,1,1-32,32A32,32,0,0,1,128,72Z'/></svg>") center/contain no-repeat}
+.addrsug li:hover,.addrsug li[aria-selected="true"]{background:var(--blue-050)}
+.addrsug li span{min-width:0;overflow-wrap:anywhere}
+.addrsug li b{font-family:var(--font-h);font-weight:600;color:var(--ink)}
+.addrsug li small{font-size:.85rem;color:var(--ink-faint)}
+.addrsug__by{display:flex;justify-content:flex-end;margin:.35rem .3rem .15rem}
+.addrsug__by img{display:block;width:120px;height:14px}
 
 /* spacing utilities (replace per-element inline margins) */
 .u-mt{margin-top:.75rem!important}
@@ -3879,11 +3868,15 @@ button.p-alt span{display:none}
 .arrive__go{height:36px;padding:0 .8rem;border:1px solid var(--blue);border-radius:var(--r-sm);background:var(--blue);color:#fff;font:600 .84rem var(--font-b);cursor:pointer}
 .arrive__err{flex-basis:100%;color:var(--red);font-size:.8rem}
 .arrive__err:empty{display:none}
-.arrive--cart{margin:.6rem 0 0;justify-content:center;text-align:center}
+/* cart summary: under the Shipping row it explains (where to, when, with whom) */
+.arrive--cart{margin:-.35rem 0 0;font-size:.84rem;line-height:1.45;align-items:flex-start}
+.arrive--cart .arrive__i{margin-top:.1rem}
+.arrive--cart .arrive__t{flex:1 1 0;min-width:0}
+.cartsum [data-shipval].is-loading,.cartsum:has([data-shipval].is-loading) [data-total]{opacity:.45}
 /* cart: "Complete the job" (App\Services\CompleteJob) — parts matched on fitment, under the cart lines */
 .cjob{margin-top:1.5rem}
 .cjob h2{margin:0 0 .7rem;font-size:1.05rem}
-.cjob__list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:.6rem}
+.cjob__list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(420px,100%),1fr));gap:.6rem}
 .cjob__card{display:grid;grid-template-columns:64px minmax(0,1fr) auto;align-items:center;gap:.75rem;padding:.7rem .8rem;background:#fff;border:1px solid var(--line);border-radius:var(--r)}
 .cjob__img{position:relative;display:grid;place-items:center;width:64px;height:64px;color:var(--blue);font-size:1.6rem}
 .cjob__img img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
@@ -3894,7 +3887,7 @@ button.p-alt span{display:none}
 .cjob__price{font:600 .92rem var(--font-m);color:var(--ink)}
 .cjob__price small{font:500 .74rem var(--font-b);color:var(--ink-3)}
 .cjob__add{white-space:nowrap}
-.cjob__card--build{background:var(--paper-2)}
+.cjob__card--build{grid-column:1/-1;background:var(--paper-2)}
 @media (max-width:480px){
   .cjob__list{grid-template-columns:1fr}
   .cjob__card{grid-template-columns:56px minmax(0,1fr);row-gap:.5rem}
@@ -3903,4 +3896,3 @@ button.p-alt span{display:none}
 }
 .pcard__why{display:block;margin-top:.2rem;font-size:.74rem;line-height:1.35;color:var(--ink-3)}
 .cartmain{min-width:0}
-.cartmain .cjob{margin-top:1.25rem}

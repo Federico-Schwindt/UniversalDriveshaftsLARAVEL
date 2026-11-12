@@ -731,8 +731,8 @@
   }
 })();
 </script>
-<script src="/js/geo.js?v={{ @filemtime(public_path('js/geo.js')) }}"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key={{ config('uds.gmaps_key') }}&libraries=places&callback=udsInitPlaces" async defer></script>
+{{-- the Maps key rides on the tag: geo.js fetches Google only when a street field is focused --}}
+<script src="/js/geo.js?v={{ @filemtime(public_path('js/geo.js')) }}" data-gmaps-key="{{ config('uds.gmaps_key') }}"></script>
 @includeIf('partials.checkout-recovery')   {{-- abandoned-cart capture (recovery agent) --}}
 {{-- funnel: checkout begun, shipping chosen (or kept as offered) and payment submitted, for GA4 and Meta (partials/analytics) --}}
 <script>

@@ -28,7 +28,7 @@ class CompleteJob
 
     public function __construct(private CatalogService $catalog) {}
 
-    /** @return array{items: array<int,array>, build: bool} */
+    /** @return array{items: array<int,array>, build: bool, also: array<int,array>} proven fits, the offer to build the shaft, what others ordered with these parts */
     public function forCart(array $cartItems, int $limit = 6): array
     {
         $have = [];
@@ -52,7 +52,54 @@ class CompleteJob
         }
         // people buying weld yokes or tube are building a shaft: offer to build it for them (no fitment claim)
         $build = (bool) array_filter($have, fn ($h) => in_array($h['cat'], ['weld-yoke', 'tubing'], true));
-        return ['items' => $out, 'build' => $build];
+        // the places the proven fits leave free: what other customers ordered with these parts, as its own list
+        $also = [];
+        foreach ($this->alsoFor($have, array_merge($inCart, array_keys($picked)), min(4, $limit - count($out))) as [$c, $why]) {
+            $also[] = ['id' => $c['id'], 'sku' => $c['sku'], 'name' => $c['name'], 'image' => $c['image'], 'price' => ShopController::shopperPrice($c['price']),
+                'in_stock' => $c['in_stock'], 'unit' => $c['unit'], 'reason' => $why];
+        }
+        return ['items' => $out, 'build' => $build, 'also' => $also];
+    }
+
+    /**
+     * Cart: what other customers ordered together with the parts in it (owner, 2026-11-12: "sugerir piezas relacionadas"),
+     * each cart line offering in turn. A part with no order history of its own (most of the catalog) offers what was
+     * ordered, in two orders or more, with parts of its kind and series. Like the product page's list it makes no fitment
+     * claim and leaves out same-kind substitutes and other series; here also what cannot ship now. [[candidate, why], …]
+     */
+    private function alsoFor(array $have, array $skip, int $limit): array
+    {
+        if ($limit < 1 || !$have) return [];
+        $key = 'cjob:also:' . md5(json_encode([array_column($have, 'id'), $skip, $limit, app()->getLocale()]));
+        return \Illuminate\Support\Facades\Cache::remember($key, 600, function () use ($have, $skip, $limit) {
+            $cats = array_column($have, 'cat');
+            $ok = fn (array $h, ?array $d) => $d && $d['price'] > 0 && $d['in_stock'] && !in_array($d['cat'], $cats, true)   // same kind as a cart line = a substitute
+                && !($h['seriesSet'] && $d['seriesSet'] && !array_intersect($h['seriesSet'], $d['seriesSet']));
+            $lists = [];
+            foreach ($have as $h) {
+                $list = [];
+                foreach ($this->catalog->alsoBought($h['id'], 12) as $r) {
+                    if ($ok($h, $d = $this->part((int) $r['id']))) $list[] = [$d, __('Often ordered with :sku', ['sku' => $h['sku']])];
+                }
+                if (!$list && $h['seriesSet']) {
+                    $like = array_column(array_filter($this->pool($h['cat']), fn ($c) => array_intersect($c['seriesSet'], $h['seriesSet'])), 'id');
+                    $often = array_filter($this->catalog->alsoBoughtCounts($like), fn ($n) => $n >= 2);
+                    foreach (array_keys(array_slice($often, 0, 24, true)) as $id) {
+                        if ($ok($h, $d = $this->part((int) $id))) $list[] = [$d, __('Often ordered with :series series :kind', ['series' => $h['series'], 'kind' => $h['kind']])];
+                    }
+                }
+                $lists[] = $list;
+            }
+            $out = []; $seen = array_flip($skip);
+            for ($round = 0; count($out) < $limit && $round < 24; $round++) {
+                foreach ($lists as $list) {
+                    if (count($out) >= $limit || !isset($list[$round]) || isset($seen[$list[$round][0]['id']])) continue;
+                    $seen[$list[$round][0]['id']] = true;
+                    $out[] = $list[$round];
+                }
+            }
+            return $out;
+        });
     }
 
     /**
@@ -155,9 +202,9 @@ class CompleteJob
     {
         static $cache = [];
         if (array_key_exists($id, $cache)) return $cache[$id];
-        $cat = $this->catalog->primaryCategory($id)['slug'] ?? null;
+        $cat = $this->catalog->primaryCategory($id);
         $row = $this->catalog->rows([$id], self::KEYS)[0] ?? null;
-        return $cache[$id] = ($cat && $row) ? $this->describe($cat, $row) : null;
+        return $cache[$id] = ($cat && $row) ? $this->describe($cat['slug'], $row) + ['kind' => \App\Support\PartGlossary::t($cat['name'])] : null;
     }
 
     /** A category's parts, best sellers first, described (the catalog caches the list for 10 minutes). */

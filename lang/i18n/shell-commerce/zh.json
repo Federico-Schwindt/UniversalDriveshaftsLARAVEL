@@ -810,5 +810,15 @@
     "Left out, no part mentions it: :words": "已忽略，没有零件提到：:words",
     "Can’t find it? We’ll find it for you.": "找不到？我们帮您找。",
     "Send us the part number, the vehicle or a photo of the part.": "请发送零件号、车型或零件照片给我们。",
-    "Hi! I am looking for this part: :q": "您好！我在找这个零件：:q"
+    "Hi! I am looking for this part: :q": "您好！我在找这个零件：:q",
+    "Estimated total": "预计总计",
+    "Shipping is an estimate for your ZIP code; the checkout confirms it with your address.": "运费为按您的邮编估算的金额,结账时将按您的地址确认。",
+    "Shipping is calculated at checkout.": "运费在结账时计算。",
+    "Prices exclude any core charge, which is quoted separately.": "价格不含任何旧件押金(core charge),该费用另行报价。",
+    "Shipping to :zip with :service": "寄往 :zip,配送方式::service",
+    "Shipping to :zip": "寄往 :zip",
+    "Often ordered with :sku": "常与 :sku 一起订购",
+    "Often ordered with :series series :kind": "常与 :series 系列的:kind一起订购",
+    "Please read and accept the Terms of Use to place your order.": "请先阅读并接受使用条款,然后再下单。",
+    "Something went wrong. Please try again or call (813) 524-6491.": "出了点问题。请重试或致电 (813) 524-6491。"
 }
