@@ -114,7 +114,8 @@ class WooImport extends Command
     /** WordPress password hashes by user id: the live store's export when there is one, else the stale snapshot. */
     private function hashes(): \Illuminate\Support\Collection
     {
-        $snap = DB::connection('wp_src')->table('wp_users')->pluck('user_pass', 'ID');
+        // the snapshot lives only on the staging box; on Hostinger (where the launch import runs) the export is the source
+        try { $snap = DB::connection('wp_src')->table('wp_users')->pluck('user_pass', 'ID'); } catch (\Throwable) { $snap = collect(); }
         $file = "{$this->dir}/wp-user-hashes.json";
         if (!is_file($file)) return $snap;
         $live = collect(json_decode(file_get_contents($file), true) ?: [])->map(fn ($u) => $u['pass']);
