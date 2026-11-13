@@ -56,6 +56,7 @@
     <div class="orc-row orc-row--line"><dt>{!! __('Discount') !!}@if($order->coupon_code) <b>{{ $order->coupon_code }}</b>@elseif(($order->tier_discount ?? 0) > 0 && $order->b2b_tier) <b>{{ __(':tier account', ['tier' => \App\Services\B2bAccounts::label($order->b2b_tier)]) }}</b>@endif</dt><dd>-${{ number_format($order->discount_total,2) }}</dd></div>
     @endif
     <div class="orc-row orc-row--line"><dt>{!! __('Shipping') !!}</dt><dd>@if($order->shipping_total>0)${{ number_format($order->shipping_total,2) }}@else {{ __('Free') }} @endif</dd></div>
+    @if(($order->tax_total ?? 0) > 0)<div class="orc-row orc-row--line"><dt>{{ __('Sales tax') }}@if($order->tax_county) <small>({{ $order->tax_county }})</small>@endif</dt><dd>${{ number_format($order->tax_total,2) }}</dd></div>@endif
     <div class="orc-row orc-row--total"><dt>{!! __('Total') !!}</dt><dd>${{ number_format($order->total,2) }}</dd></div>
   </dl>
   <p class="orc__help">{!! __('Questions about your order? Call') !!} <a href="tel:+18135246491">(813) 524-6491</a> {!! __('or email') !!} <a href="mailto:Inquiry@universaldriveshafts.com">{!! __('Inquiry@universaldriveshafts.com') !!}</a> {!! __('with your order number.') !!}</p>
@@ -70,7 +71,7 @@
   $convItems = $items->map(fn ($i) => ['item_id' => $i->wp_product_id && $i->type === 'product' ? \App\Http\Controllers\FeedController::offerId((int) $i->wp_product_id) : (string) ($i->sku ?: $i->wp_product_id),
       'item_name' => (string) $i->name, 'price' => round((float) $i->price, 2), 'quantity' => (int) $i->qty, 'sku' => (string) ($i->sku ?: $i->wp_product_id)])->values()->all();
   $convOrder = ['transaction_id' => (string) $order->order_number, 'value' => round((float) $order->total, 2), 'currency' => 'USD',
-                'shipping' => round((float) $order->shipping_total, 2), 'coupon' => (string) ($order->coupon_code ?? ''), 'items' => $convItems];
+                'shipping' => round((float) $order->shipping_total, 2), 'tax' => round((float) ($order->tax_total ?? 0), 2), 'coupon' => (string) ($order->coupon_code ?? ''), 'items' => $convItems];
 @endphp
 {{-- conversion for GA4 / Google Ads / Meta, sent once per order even if the page is reloaded --}}
 <script>

@@ -258,6 +258,7 @@ Route::middleware('auth')->group(function () {
     // Google-only accounts: a code to the current mailbox before the e-mail changes or a first password is set
     Route::post('/account/reauth/send', [\App\Http\Controllers\AccountController::class, 'reauthSend'])->middleware('throttle:4,10');
     Route::post('/account/avatar', [\App\Http\Controllers\AccountController::class, 'avatarSave']);
+    Route::post('/account/tax-certificate', [\App\Http\Controllers\AccountController::class, 'taxCertificate'])->middleware('throttle:6,10');
     Route::post('/account/cards/{pm}/remove', [\App\Http\Controllers\AccountController::class, 'cardRemove'])->where('pm', 'pm_[A-Za-z0-9]+')->middleware('throttle:10,1');
     Route::get('/account/designs/{ref}/load', [\App\Http\Controllers\AccountController::class, 'loadDesign']);
     Route::post('/account/designs/{ref}/delete', [\App\Http\Controllers\AccountController::class, 'deleteDesign']);

@@ -115,7 +115,7 @@
           <script src="{{ asset('js/arrival.js') }}?v={{ @filemtime(public_path('js/arrival.js')) }}" defer></script>
           @include('partials.affirm-msg', ['amount' => $subtotal, 'class' => 'affirm-msg--cart'])
           <a href="/shop" class="textlink" style="justify-content:center"><x-icon name="arrow-left"/> {!! __('Keep shopping') !!}</a>
-          <p class="cartsum__note"><span data-shipnote data-plain="{!! __('Shipping is calculated at checkout.') !!}" data-est="{!! __('Shipping is an estimate for your ZIP code; the checkout confirms it with your address.') !!}">{!! __('Shipping is calculated at checkout.') !!}</span> {!! __('Prices exclude any core charge, which is quoted separately.') !!}</p>
+          <p class="cartsum__note"><span data-shipnote data-plain="{!! __('Shipping is calculated at checkout.') !!}" data-est="{!! __('Shipping is an estimate for your ZIP code; the checkout confirms it with your address.') !!}">{!! __('Shipping is calculated at checkout.') !!}</span> {!! __('Prices exclude any core charge, which is quoted separately.') !!} {{ __('Florida deliveries and pickups add Florida sales tax at checkout.') }}</p>
         </aside>
         {{-- "Complete the job": parts that fit what is in the cart (App\Services\CompleteJob).
              "Customers also bought": what others ordered with these parts, a list of its own because it makes no fitment claim.

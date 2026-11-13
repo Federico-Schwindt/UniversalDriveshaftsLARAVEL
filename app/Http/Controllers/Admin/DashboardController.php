@@ -20,6 +20,7 @@ class DashboardController extends Controller
             try {
                 $c['orders_open'] = DB::table('orders')->whereIn('status', ['pending', 'processing'])->count();
                 $c['wholesale_pending'] = DB::table('users')->where('wholesale_status', 'pending')->count();
+                $c['tax_pending'] = DB::table('users')->where('tax_exempt_status', 'pending')->count();   // Florida certificates to check
                 $c['leads_new'] = DB::table('leads')->where('status', 'new')->count();
                 $c['rma_new'] = DB::table('rma_requests')->where('status', 'new')->count();
                 // assistant chats waiting for a person: asked for one, or taken over and the customer wrote last

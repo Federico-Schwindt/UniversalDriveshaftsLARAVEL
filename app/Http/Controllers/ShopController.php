@@ -171,6 +171,8 @@ class ShopController extends Controller
             'coupon' => $cpn ? ['code'=>$cpn->code,'discount'=>$cpnDisc,'free_shipping'=>$cpnFree] : null,
             'items' => $this->cart->items(),
             'subtotal' => $this->cart->subtotal(),
+            // Florida sales tax: a pickup is taxed at the shop's county; a delivery's comes with its rates (shippingOptions)
+            'taxPickup' => \App\Support\SalesTax::profile('US', 'FL', '', true, $u),
             'freeMin' => CartService::freeMin(),
             'freeBase' => $this->cart->freeShippingBase(),
             'stripeKey' => config('services.stripe.key', ''),
@@ -195,6 +197,8 @@ class ShopController extends Controller
             'delivery' => $dest['delivery'],
             'international' => $country !== '' && $country !== 'US',
             'ships' => '',   // the live countdown at the top of the checkout already says it
+            // how a delivery to this ZIP is taxed (null: no Florida tax); the page works the amount out as the total moves
+            'tax' => \App\Support\SalesTax::profile($country, (string) $r->input('state', ''), (string) $r->input('zip', ''), false, \Auth::user()),
         ];
 
         if (self::isPoBox($dest['street'])) {
@@ -353,7 +357,10 @@ class ShopController extends Controller
         $useTier = $tierAmt > $cpnDisc;
         $disc = $useTier ? $tierAmt : $cpnDisc;
         if ($useTier && $cpn && !$cpnFree) $cpn = null;   // the coupon added nothing; leave it unused
-        $total = round(max(0, $subtotal - $disc) + $shipCost, 2);
+        // Florida sales tax: deliveries in Florida and pickups at the shop, unless the account has a certificate on file
+        $taxProfile = \App\Support\SalesTax::profile($country, $state, $zip, $isPickup, \Auth::user());
+        $tax = \App\Support\SalesTax::amount($taxProfile, $this->cart->items(), $disc, $shipCost);
+        $total = round(max(0, $subtotal - $disc) + $shipCost + $tax, 2);
         if ($netTerms) {
             [$ok, , , , $why] = \App\Services\B2bAccounts::terms(\Auth::user(), $total);
             if (!$ok) return response()->json(['success' => false, 'errors' => [match ($why) {
@@ -368,12 +375,12 @@ class ShopController extends Controller
         if ($r->filled('expected_total') && abs((int) round($total * 100) - (int) $r->input('expected_total')) > 1) {
             return response()->json(['success' => false, 'code' => 'total_changed',
                 'errors' => [__('Your total changed to :amount — please review it and place the order again.', ['amount' => '$' . number_format($total, 2)])],
-                'totals' => ['subtotal' => $subtotal, 'discount' => $disc, 'shipping' => $shipCost, 'total' => $total]], 409);
+                'totals' => ['subtotal' => $subtotal, 'discount' => $disc, 'shipping' => $shipCost, 'tax' => $tax, 'total' => $total]], 409);
         }
         $stripeCard = \App\Support\PayLink::stripeReady() && !$payAtPickup && !$netTerms;
         if ($pending && $pending->stripe_payment_intent && \App\Support\PayLink::stripeReady() && ($stop = $this->retireIntent($pending))) return $stop;
 
-        $order = DB::transaction(function () use ($r, $ship, $subtotal, $total, $shipCost, $cpnDisc, $cpn, $payAtPickup, $dest, $netTerms, $useTier, $tier, $tierAmt, $pending, $stripeCard) {
+        $order = DB::transaction(function () use ($r, $ship, $subtotal, $total, $shipCost, $cpnDisc, $cpn, $payAtPickup, $dest, $netTerms, $useTier, $tier, $tierAmt, $pending, $stripeCard, $tax, $taxProfile) {
             // the last use of a limited coupon goes to one checkout only (the row lock makes the other one wait for this commit)
             if ($cpn && !$this->coupons->claim($cpn, (string) $r->input('email'), $pending->id ?? null)) return 'coupon';
             $row = [
@@ -417,6 +424,12 @@ class ShopController extends Controller
                 'shipping_total' => $shipCost,
                 'discount_total' => $cpnDisc,
                 'coupon_code' => $cpn->code ?? null,
+                // where the Florida tax went, for the DR-15 return (an exempt Florida sale keeps its certificate number)
+                'tax_total' => $tax,
+                'tax_county' => $taxProfile['county'] ?? null,
+                'tax_rate' => $taxProfile ? $taxProfile['rate'] : null,
+                'taxable_total' => $taxProfile ? round(max(0, $subtotal - $cpnDisc) + ($taxProfile['shipping'] ? $shipCost : 0), 2) : null,
+                'tax_exempt_cert' => ($taxProfile['exempt'] ?? false) ? (\Auth::user()->tax_cert_number ?: 'on file') : null,
                 'total' => $total,
                 'customer_note' => (string) $r->input('customer_note', ''),
                 'po_number' => (string) $r->input('po_number', '') ?: null,

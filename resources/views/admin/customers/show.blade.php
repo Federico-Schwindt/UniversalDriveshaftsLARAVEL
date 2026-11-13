@@ -55,6 +55,25 @@
         <div class="muted small">Joined {{ \Carbon\Carbon::parse($user->created_at)->format('M j, Y') }}@if($user->last_login_at) · last login {{ \Carbon\Carbon::parse($user->last_login_at)->diffForHumans() }}@endif @if($user->google_id) · Google sign-in @endif</div>
       </div>
     </form>
+    {{-- Florida resale / exemption certificate (App\Support\SalesTax) --}}
+    @php $txExp = $user->tax_cert_expires && \Carbon\Carbon::parse($user->tax_cert_expires)->endOfDay()->isPast(); @endphp
+    <form method="post" action="/admin/customers/{{ $user->id }}/tax" class="card" id="tax" enctype="multipart/form-data">@csrf
+      <div class="card__head"><h2>Florida tax exemption</h2>@if($user->tax_exempt_status === 'approved' && !$txExp)<span class="badge badge--ok">Tax exempt</span>@elseif($user->tax_exempt_status === 'pending')<span class="badge badge--warn">To review</span>@elseif($txExp)<span class="badge badge--warn">Expired</span>@endif</div>
+      <div class="card__body stack">
+        @if($user->tax_cert_file)<p class="small" style="margin:0"><a href="/admin/customers/{{ $user->id }}/tax-certificate" target="_blank" rel="noopener">{!! ic('ext') !!} Open the certificate they sent</a> · <a href="https://floridarevenue.com/taxes/certificates" target="_blank" rel="noopener">Verify the number</a></p>@else<p class="small muted" style="margin:0">No copy on file. Florida requires the DR-13 copy (or a verification number from <a href="https://floridarevenue.com/taxes/certificates" target="_blank" rel="noopener">floridarevenue.com</a>) for every tax-free sale.</p>@endif
+        @if(adm_can('wholesale'))
+        <div class="form-grid"><div class="field"><label>Status</label><select class="select" name="tax_exempt_status">@foreach(['none'=>'Pays tax','pending'=>'Sent, to review','approved'=>'Approved — tax exempt','rejected'=>'Not accepted'] as $k=>$l)<option value="{{ $k }}" @selected(($user->tax_exempt_status ?? 'none')===$k)>{{ $l }}</option>@endforeach</select></div>
+          <div class="field"><label>Type</label><select class="select" name="tax_cert_kind"><option value="resale" @selected($user->tax_cert_kind !== 'exempt')>Annual Resale Certificate (DR-13)</option><option value="exempt" @selected($user->tax_cert_kind === 'exempt')>Certificate of Exemption</option></select></div></div>
+        <div class="form-grid"><div class="field"><label>Certificate number</label><input class="input mono" name="tax_cert_number" value="{{ old('tax_cert_number', $user->tax_cert_number) }}" maxlength="40">@error('tax_cert_number')<span class="hint" style="color:var(--err,#c0392b)">{{ $message }}</span>@enderror</div>
+          <div class="field"><label>Expires</label><input class="input" type="date" name="tax_cert_expires" value="{{ $user->tax_cert_expires }}"><span class="hint">Annual resale certificates end Dec 31.</span></div></div>
+        <div class="field"><label>Note to the customer</label><input class="input" name="tax_cert_note" value="{{ $user->tax_cert_note }}" maxlength="255" placeholder="Shown on their account when not accepted"></div>
+        <div class="field"><label>Replace the copy</label><input class="input" type="file" name="tax_cert_file" accept=".pdf,image/jpeg,image/png,image/webp"></div>
+        <button class="btn btn--primary btn--block">Save exemption</button>
+        @else
+        <p class="small" style="margin:0">Status: <b>{{ $user->tax_exempt_status ?: 'pays tax' }}</b>@if($user->tax_cert_number) · <span class="mono">{{ $user->tax_cert_number }}</span>@endif — a manager approves exemptions.</p>
+        @endif
+      </div>
+    </form>
     @else
     <div class="card"><div class="card__body"><p class="small">This customer checked out as a guest. <a href="/admin/customers/new?email={{ urlencode($email) }}">Create an account</a> to track them, approve wholesale pricing and let them see order history.</p></div></div>
     @endif

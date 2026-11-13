@@ -213,6 +213,7 @@
         <div><span>{{ __('Subtotal') }}</span><span>${{ number_format($order->subtotal,2) }}</span></div>
         @if($order->discount_total>0)<div><span>{{ __('Discount') }}{{ $order->coupon_code ? ' ('.$order->coupon_code.')' : (($order->tier_discount ?? 0) > 0 ? ' (' . \App\Services\B2bAccounts::label($order->b2b_tier) . ')' : '') }}</span><span>−${{ number_format($order->discount_total,2) }}</span></div>@endif
         <div><span>{{ __($isPickup ? 'Local pickup' : 'Shipping') }}</span><span>{{ $order->shipping_total>0 ? '$'.number_format($order->shipping_total,2) : __('Free') }}</span></div>
+        @if(($order->tax_total ?? 0) > 0)<div><span>{{ __('Sales tax') }}</span><span>${{ number_format($order->tax_total,2) }}</span></div>@endif
         <div class="grand"><span>{{ __('Total') }}</span><span>${{ number_format($order->total,2) }}</span></div>
       </div>
     </section>

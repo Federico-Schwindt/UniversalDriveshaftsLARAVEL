@@ -155,6 +155,73 @@ class CustomersController extends Controller
         return back()->with('admin_ok', 'Note removed.');
     }
 
+    /**
+     * POST /admin/customers/{id}/tax — the Florida resale / exemption certificate: approved, the account's Florida
+     * orders carry no sales tax (App\Support\SalesTax). A money decision, so managers only (wholesale section).
+     */
+    public function tax(Request $r, int $id)
+    {
+        $u = DB::table('users')->find($id); abort_unless($u, 404);
+        abort_unless(\App\Support\AdminAccess::can('wholesale'), 403, 'Only managers can approve tax exemptions.');
+        $d = $r->validate([
+            'tax_exempt_status' => 'nullable|in:none,pending,approved,rejected', 'tax_cert_kind' => 'nullable|in:resale,exempt',
+            'tax_cert_number' => 'nullable|string|max:40', 'tax_cert_expires' => 'nullable|date', 'tax_cert_note' => 'nullable|string|max:255',
+            'tax_cert_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp|max:8192',
+        ]);
+        $status = ($d['tax_exempt_status'] ?? 'none') === 'none' ? null : $d['tax_exempt_status'];
+        if ($status === 'approved' && trim((string) ($d['tax_cert_number'] ?? '')) === '') return back()->withErrors(['tax_cert_number' => 'An approved exemption needs the certificate number.']);
+        $upd = ['tax_exempt_status' => $status, 'tax_cert_kind' => $d['tax_cert_kind'] ?? null, 'tax_cert_number' => strtoupper(trim((string) ($d['tax_cert_number'] ?? ''))) ?: null,
+            'tax_cert_expires' => $d['tax_cert_expires'] ?? null, 'tax_cert_note' => $d['tax_cert_note'] ?? null, 'updated_at' => now()];
+        if ($status !== $u->tax_exempt_status) $upd['tax_cert_reviewed_at'] = in_array($status, ['approved', 'rejected'], true) ? now() : null;
+        if ($f = $r->file('tax_cert_file')) $upd['tax_cert_file'] = $f->storeAs('tax-certs', $id . '-' . now()->format('YmdHis') . '.' . strtolower($f->extension()), 'local');
+        DB::table('users')->where('id', $id)->update($upd);
+        AdminLog::record('customer.tax', 'Tax exemption ' . ($status ?? 'removed') . ' for ' . $u->email . ($upd['tax_cert_number'] ? ' (' . $upd['tax_cert_number'] . ')' : ''), 'customer', $id, array_diff_key($upd, ['updated_at' => 1]));
+        \Illuminate\Support\Facades\Cache::forget('adm_nav_counts');
+        return back()->with('admin_ok', 'Tax exemption saved.');
+    }
+
+    /** GET /admin/customers/{id}/tax-certificate — the copy the customer sent (private disk). */
+    public function taxFile(int $id)
+    {
+        $u = DB::table('users')->find($id);
+        $disk = \Illuminate\Support\Facades\Storage::disk('local');
+        abort_unless($u && $u->tax_cert_file && $disk->exists($u->tax_cert_file), 404);
+        return response()->file($disk->path($u->tax_cert_file), ['Cache-Control' => 'private, no-store', 'X-Content-Type-Options' => 'nosniff']);
+    }
+
+    /**
+     * GET /admin/tax-exemptions — Florida sales tax: what each month collected, by county, for the DR-15 return (CSV with
+     * ?csv=YYYY-MM), and the certificates waiting for a decision.
+     */
+    public function taxList(Request $r)
+    {
+        // a sale counts once it is paid, or billed on terms; cancelled and failed orders never. Months are Eastern.
+        $sales = fn () => DB::table('orders')->whereNotNull('tax_county')->whereNotIn('status', ['cancelled', 'failed', 'trash', 'draft'])
+            ->where(fn ($w) => $w->where('payment_status', 'paid')->orWhere('payment_method', 'net_terms'));
+        $et = fn ($o) => \Carbon\Carbon::parse($o->created_at, 'UTC')->tz('America/New_York');
+        if (preg_match('/^\d{4}-\d{2}$/', (string) $r->query('csv'))) {
+            $m = $r->query('csv');
+            $from = \Carbon\Carbon::createFromFormat('Y-m-d', $m . '-01', 'America/New_York')->startOfDay();
+            $rows = $sales()->whereBetween('created_at', [$from->copy()->utc(), $from->copy()->addMonth()->utc()])->orderBy('created_at')
+                ->get(['order_number', 'created_at', 'tax_county', 'tax_rate', 'taxable_total', 'tax_total', 'tax_exempt_cert', 'shipping_method', 'total', 'refund_total']);
+            $out = fopen('php://temp', 'r+');
+            fputcsv($out, ['Order', 'Date (ET)', 'County', 'Rate %', 'Taxable', 'Tax', 'Exempt certificate', 'Pickup', 'Order total', 'Refunded']);
+            foreach ($rows as $o) fputcsv($out, [$o->order_number, $et($o)->format('Y-m-d H:i'), $o->tax_county, $o->tax_rate, $o->taxable_total, $o->tax_total, $o->tax_exempt_cert, $o->shipping_method === \App\Services\CartService::PICKUP_ID ? 'yes' : '', $o->total, $o->refund_total]);
+            rewind($out);
+            return response(stream_get_contents($out), 200, ['Content-Type' => 'text/csv', 'Content-Disposition' => "attachment; filename=florida-sales-tax-$m.csv"]);
+        }
+        $orders = $sales()->where('created_at', '>=', now('America/New_York')->subMonths(12)->startOfMonth()->utc())
+            ->get(['created_at', 'tax_county', 'tax_rate', 'taxable_total', 'tax_total', 'tax_exempt_cert'])->groupBy(fn ($o) => $et($o)->format('Y-m'))->sortKeysDesc();
+        $months = $orders->map(fn ($g, $m) => (object) ['m' => $m, 'n' => $g->count(), 'tax' => $g->sum('tax_total'),
+            'taxable' => $g->whereNull('tax_exempt_cert')->sum('taxable_total'), 'exempt' => $g->whereNotNull('tax_exempt_cert')->sum('taxable_total')])->values();
+        $counties = collect($orders->first() ?? [])->whereNull('tax_exempt_cert')->groupBy('tax_county')
+            ->map(fn ($g, $c) => (object) ['c' => $c, 'rate' => $g->max('tax_rate'), 'taxable' => $g->sum('taxable_total'), 'tax' => $g->sum('tax_total')])->sortByDesc('tax')->values();
+        $rows = DB::table('users')->whereNotNull('tax_exempt_status')
+            ->orderByRaw("FIELD(tax_exempt_status, 'pending', 'approved', 'rejected')")->orderByDesc('updated_at')
+            ->get(['id', 'name', 'email', 'company', 'tax_exempt_status', 'tax_cert_kind', 'tax_cert_number', 'tax_cert_expires', 'tax_cert_reviewed_at', 'updated_at']);
+        return view('admin.customers.tax', compact('rows', 'months', 'counties'));
+    }
+
     public function resetLink(int $id)
     {
         $u = DB::table('users')->find($id); abort_unless($u, 404);
