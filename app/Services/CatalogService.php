@@ -221,10 +221,14 @@ class CatalogService
         if ($map === null) {
             $map = \Illuminate\Support\Facades\Cache::remember('catalog_live_map', 600, function () {
                 $m = [];
+                // the store's generic picture ("placeholder-228x228-1.webp", a cart icon on the 24 short couple driveshafts) is no photo at all
+                // (owner, 2026-11-13: "imágenes genéricas … elimina esas y deja sin foto")
+                $own = fn ($u) => $u && stripos($u, 'placeholder') === false && !str_contains($u, '1312312312132') ? $u : null;
                 try {
                     foreach (DB::table('catalog_live')->get(['wp_product_id', 'image', 'thumb', 'gallery', 'price', 'in_stock', 'pti_in_stock', 'name']) as $r) {
+                        $img = $own($r->image);
                         // in stock when we have it or our supplier PTI has it on hand (pti:sync --stock)
-                        $m[(int) $r->wp_product_id] = ['image' => $r->image, 'thumb' => $r->thumb ?: $r->image, 'gallery' => json_decode($r->gallery ?: '[]', true) ?: [], 'price' => $r->price, 'in_stock' => (bool) $r->in_stock || (bool) $r->pti_in_stock, 'name' => $r->name,
+                        $m[(int) $r->wp_product_id] = ['image' => $img, 'thumb' => $own($r->thumb) ?: $img, 'gallery' => array_values(array_filter(json_decode($r->gallery ?: '[]', true) ?: [], $own)), 'price' => $r->price, 'in_stock' => (bool) $r->in_stock || (bool) $r->pti_in_stock, 'name' => $r->name,
                             'own' => (bool) $r->in_stock, 'supplier_only' => !$r->in_stock && (bool) $r->pti_in_stock];
                     }
                 } catch (\Throwable $e) {}

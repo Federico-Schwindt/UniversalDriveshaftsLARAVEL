@@ -267,7 +267,7 @@ button.fdr-step:focus-visible{outline:2px solid var(--blue,#1246ab);outline-offs
     if(e.target.closest('#fdr-back')){var ks=keys(state.chosen||{});if(ks.length)dropFrom(ks[ks.length-1]);return;}
     if(e.target.closest('#fdr-clear')){load({},true);return;}
     if(e.target.closest('#fdr-early')){early=true;render();return;}
-    var a=e.target.closest('[data-add]'); if(a){a.disabled=true;var c3=state.chosen||{};fetch('/catalog/driveshafts/add',{method:'POST',headers:{'X-CSRF-TOKEN':CSRF,'X-Requested-With':'XMLHttpRequest','Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({part_number:a.getAttribute('data-add'),qty:1,vehicle:[c3.year,c3.make,c3.model,c3.drive].filter(Boolean).join(' ')})}).then(function(r){return r.json();}).then(function(d){a.disabled=false;if(d.success){var was=a.innerHTML;a.textContent='✓';document.querySelectorAll('[data-cart-count]').forEach(function(b){b.textContent=d.count;b.hidden=false;});setTimeout(function(){a.innerHTML=was;},1400);}else{alert(d.message||TT("Could not add this part."));}}).catch(function(){a.disabled=false;});}
+    var a=e.target.closest('[data-add]'); if(a){var c3=state.chosen||{};window.udsAdd(a,'/catalog/driveshafts/add',{part_number:a.getAttribute('data-add'),qty:1,vehicle:[c3.year,c3.make,c3.model,c3.drive].filter(Boolean).join(' ')});}
   });
   function dropFrom(k){var i=ORDER.indexOf(k),c2={};
     // make/year/model/drive are a chain: removing one clears everything after it. Deeper filters are independent.

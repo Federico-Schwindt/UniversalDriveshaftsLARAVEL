@@ -54,50 +54,18 @@
   var add = document.getElementById('pdp-add');
   var stickyAdd = document.getElementById('pdp-sticky-add');
   var buttons = [add, stickyAdd].filter(Boolean);
-  var busy = false;
 
-  var originalLabel = add ? add.querySelector('span').textContent : 'Add to cart';
-
+  // the same Adding / Added response as every Add button on the site (uds.js udsAdd)
   function wireAddButton(btn) {
     btn.addEventListener('click', function () {
-      if (busy) return;
-      busy = true;
-      buttons.forEach(function (b) {
-        b.disabled = true; b.classList.add('is-busy');
-        var s = b.querySelector('span'); if (s) s.textContent = T('Adding…');
-      });
-
-      fetch('/shop/catalog/add', {
-        method: 'POST',
-        headers: {
-          'X-CSRF-TOKEN': csrf, 'X-Requested-With': 'XMLHttpRequest',
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: new URLSearchParams({ id: btn.dataset.add, qty: (qty && qty.value) || 1 })
-      }).then(function (r) {
-        if (r.status === 419) return { success: false, error: T('Session expired — reload the page and try again.') };
-        if (r.status === 429) return { success: false, error: T('Too many tries — wait a minute and try again.') };
-        return r.json().catch(function () { return { success: false }; });
-      }).then(function (d) {
-        busy = false; say(d.success ? '' : (d.error || T('Could not add to cart. Please try again.')));
-        buttons.forEach(function (b) { b.disabled = false; b.classList.remove('is-busy'); });
-        if (d.success) {
-          buttons.forEach(function (b) { b.classList.add('is-done'); var s = b.querySelector('span'); if (s) s.textContent = T('Added ✓'); });
-          var badge = document.querySelector('[data-cart-count]');
-          if (badge) { badge.textContent = d.count; badge.hidden = false; badge.classList.remove('bump'); void badge.offsetWidth; badge.classList.add('bump'); }
-          setTimeout(function () {
-            buttons.forEach(function (b) { b.classList.remove('is-done'); var s = b.querySelector('span'); if (s) s.textContent = originalLabel; });
-          }, 1600);
-          // the next step stays in sight: View cart / Checkout under the button, Checkout beside the sticky one
-          var added = document.getElementById('pdp-added'), go = document.getElementById('pdp-sticky-go');
-          if (added) added.hidden = false;
-          if (go) go.hidden = false;
-        } else {
-          buttons.forEach(function (b) { var s = b.querySelector('span'); if (s) s.textContent = originalLabel; });
-        }
-      }).catch(function () {
-        busy = false; say(T('Network error. Please try again.'));
-        buttons.forEach(function (b) { b.disabled = false; b.classList.remove('is-busy'); var s = b.querySelector('span'); if (s) s.textContent = originalLabel; });
+      say('');
+      window.udsAdd(buttons, '/shop/catalog/add', { id: btn.dataset.add, qty: (qty && qty.value) || 1 }, { quiet: true }).then(function (d) {
+        if (d.busy) return;
+        if (!d.ok) { say(d.error || T('Could not add to cart. Please try again.')); return; }
+        // the next step stays in sight: View cart / Checkout under the button, Checkout beside the sticky one
+        var added = document.getElementById('pdp-added'), go = document.getElementById('pdp-sticky-go');
+        if (added) added.hidden = false;
+        if (go) go.hidden = false;
       });
     });
   }

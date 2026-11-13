@@ -282,8 +282,8 @@
       {{-- once added, the next step is one tap away (owner 2026-10-24: the cart panel does not open by itself) --}}
       <div class="pdp__added" id="pdp-added" role="status" hidden>
         <span class="pdp__added-t"><x-icon name="check"/> {{ __('Added to your cart') }}</span>
-        <a href="/cart" class="textlink">{{ __('View cart') }}</a>
-        <a href="/checkout" class="btn btn-primary btn-sm">{{ __('Checkout') }} <x-icon name="arrow-right"/></a>
+        <a href="/cart" class="btn btn-ghost">{{ __('View cart') }}</a>
+        <a href="/checkout" class="btn btn-primary">{{ __('Checkout') }} <x-icon name="arrow-right"/></a>
       </div>
       @endif
 
