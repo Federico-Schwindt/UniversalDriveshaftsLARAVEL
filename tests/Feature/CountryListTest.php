@@ -5,21 +5,22 @@ namespace Tests\Feature;
 use Tests\TestCase;
 
 /**
- * Owner, 2026-11-13: the checkout's country list looked messy, so it is A to Z (the United States included) with
- * "Other" last; and the state became a list too (config/states.php, public/js/states.js).
+ * Owner, 2026-11-13: the checkout's country list looked messy, so it is A to Z (the United States included) and has
+ * no "Other"; and the state became a list too (config/states.php, public/js/states.js).
  */
 class CountryListTest extends TestCase
 {
-    public function test_countries_are_alphabetical_with_other_last(): void
+    public function test_countries_are_alphabetical_and_all_real(): void
     {
         $c = config('countries');
-        $this->assertSame('OTHER', array_key_last($c));
-        $names = array_values(array_slice($c, 0, -1));
+        $names = array_values($c);
         $sorted = $names;
         sort($sorted, SORT_STRING);
         $this->assertSame($sorted, $names);
-        $this->assertCount(97, $c);
+        $this->assertCount(96, $c);
         $this->assertArrayHasKey('US', $c);
+        // no "Other": the carriers cannot quote it, so a customer picking it could not check out
+        foreach (array_keys($c) as $code) $this->assertMatchesRegularExpression('/^[A-Z]{2}$/', $code);
     }
 
     public function test_state_lists_are_alphabetical_and_keyed_by_the_code_the_carriers_use(): void

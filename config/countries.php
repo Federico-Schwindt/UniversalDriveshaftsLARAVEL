@@ -1,5 +1,6 @@
 <?php
-// ISO 3166-1 country list for shipping selects: A to Z, "Other" last (the United States stays the default choice).
+// ISO 3166-1 country list for shipping selects, A to Z (the United States stays the default choice). No "Other":
+// every option is a real country the carriers can quote (owner, 2026-11-13).
 return [
     'DZ' => 'Algeria',
     'AR' => 'Argentina',
@@ -97,5 +98,4 @@ return [
     'UY' => 'Uruguay',
     'VE' => 'Venezuela',
     'VN' => 'Vietnam',
-    'OTHER' => 'Other — international',
 ];
