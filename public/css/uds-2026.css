@@ -3132,11 +3132,17 @@ input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-sea
 .rg-figs{display:grid;gap:1rem;margin:0 0 1.4rem;grid-template-columns:1fr}
 .rg-figs--2{grid-template-columns:repeat(2,minmax(0,1fr))}
 .rg-figs--3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.rg-figs--4{grid-template-columns:repeat(4,minmax(0,1fr))}
 .rg-fig{margin:0;border:1px solid var(--line);border-radius:var(--r-sm);background:#fff;overflow:hidden}
 .rg-fig a{display:block}
 .rg-fig img{display:block;width:100%;height:auto;transition:opacity var(--dur-2)}
 .rg-fig a:hover img{opacity:.9}
 .rg-fig figcaption{padding:.5rem .75rem;font-size:.85rem;color:var(--ink-3)}
+.rg-pick{display:grid;grid-template-rows:auto 1fr;color:var(--ink);transition:border-color var(--dur-2),box-shadow var(--dur-2)}
+.rg-pick b{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.6rem .75rem;border-top:1px solid var(--line-2);font-weight:600;font-size:.95rem;line-height:1.25}
+.rg-pick b .i{flex:none;color:var(--blue);transition:transform var(--dur-2)}
+.rg-pick:hover{border-color:var(--blue);box-shadow:var(--sh-1)}
+.rg-pick:hover b .i{transform:translateX(3px)}
 .rg-defs{display:grid;gap:.55rem;margin:0 0 1.4rem}
 .rg-defs div{display:flex;gap:.75rem;align-items:baseline}
 .rg-defs dt{flex:none;display:grid;place-items:center;width:1.75rem;height:1.75rem;border-radius:50%;background:var(--blue);color:#fff;font:600 .88rem var(--font-m)}
@@ -3148,7 +3154,16 @@ input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-sea
 .rg-table tbody th{font-family:var(--font-m);font-weight:600;white-space:nowrap}
 .rg-table tbody tr:last-child > *{border-bottom:0}
 .rg-chart{max-height:70vh;overflow:auto}
-.rg-chart thead th{position:sticky;top:0;z-index:1}
+.rg-filter{display:flex;align-items:center;gap:.5rem;max-width:26rem;margin:0 0 .75rem;padding:0 .8rem;border:1px solid var(--line);border-radius:var(--r-sm);background:#fff;color:var(--ink-3)}
+.rg-filter:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-050)}
+.rg-filter input{flex:1;min-width:0;border:0;outline:0;background:none;padding:.65rem 0;font:inherit;font-size:16px;color:var(--ink)}
+.rg-filter__none{margin:-.6rem 0 1.4rem;color:var(--ink-2)}
+.rg-chart thead th{position:sticky;top:0;z-index:1;white-space:normal;vertical-align:bottom;line-height:1.25}
+.rg-chart td{white-space:nowrap}
+.rg-chart tbody th{white-space:normal}
+.rg-chart th,.rg-chart td{padding:.55rem .6rem}
+.rg-chart td.rg-chart__app{white-space:normal;min-width:8rem}
+.rg-chart .rg-ok{display:block;font-size:.75rem}
 .rg-ok{color:var(--ok);font-weight:600}
 .rg-next{display:flex;align-items:center;gap:.75rem;margin:0 0 .75rem;padding:.9rem 1rem;border:1px solid var(--line);border-radius:var(--r-sm);background:#fff;color:var(--ink);text-decoration:none;transition:border-color var(--dur-2),background var(--dur-2)}
 .rg-next span{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3)}
@@ -3156,7 +3171,9 @@ input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-sea
 .rg-next .i{color:var(--blue)}
 .rg-next:hover{border-color:var(--blue);background:var(--blue-050)}
 .rg-cta{margin:.5rem 0 1.4rem}
-.rg-body a.btn,.rg-body a.rg-next,.rg-body .rg-pager a,.rg-body .rg-fig a{text-decoration:none}
+.rg-body a.btn,.rg-body a.rg-next,.rg-body .rg-pager a,.rg-body .rg-fig a,.rg-body a.rg-pick{text-decoration:none}
+.rg-body a.rg-pick{color:var(--ink)}
+.rg-s{display:none}
 .rg-body a.btn-primary{color:#fff}
 .rg-body a.btn-ghost{color:var(--ink)}
 .rg-cta small{font-weight:400;opacity:.8}
@@ -3169,15 +3186,33 @@ input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-sea
 .rg-all{display:inline-flex;align-items:center;gap:.4rem;font-weight:600;color:var(--blue);font-size:.92rem}
 .rg-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.25rem}
 .rg-card{display:grid;grid-template-rows:auto 1fr;border:1px solid var(--line);border-radius:var(--r);background:#fff;overflow:hidden}
-.rg-card__media{display:grid;place-items:center;aspect-ratio:2/1;background:#fff;border-bottom:1px solid var(--line);color:var(--ink-3);font-size:2rem}
-.rg-card__media img{width:100%;height:100%;object-fit:contain}
+.rg-card__media{position:relative;display:grid;place-items:center;aspect-ratio:2/1;overflow:hidden;background:#fff;border-bottom:1px solid var(--line);color:var(--blue-200);font-size:3rem}
+.rg-card__media img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:.35rem}
+.rg-card__media:not(:has(img)){background:var(--paper-2)}
 .rg-card__body{padding:1rem 1.1rem 1.2rem}
 .rg-card h2{font-size:1.1rem;margin:0 0 .4rem}
 .rg-card h2 a{color:var(--ink);text-decoration:none}
 .rg-card p{margin:0 0 .6rem;color:var(--ink-2);font-size:.9rem}
 .rg-card ul{margin:0;padding:0;list-style:none;display:grid;gap:.3rem;font-size:.9rem}
 .rg-card li a{color:var(--blue)}
-@media (max-width:640px){.rg-figs--3{grid-template-columns:repeat(2,minmax(0,1fr))}.rg-pager{grid-template-columns:1fr}.rg-pager__next{text-align:left}}
+.guide-help.rg-help-end{display:none}
+@media (max-width:980px){.guide-help.rg-help-end{display:grid;margin-top:2rem}}
+@media (max-width:640px){
+  .rg-figs--3,.rg-figs--4{grid-template-columns:repeat(2,minmax(0,1fr))}.rg-pager{grid-template-columns:1fr}.rg-pager__next{text-align:left}
+  .rg-cards{grid-template-columns:1fr;gap:1rem}
+  .rg-table table{font-size:.84rem}
+  .rg-table th,.rg-table td{padding:.5rem .55rem}
+  .rg-table thead th{white-space:normal;line-height:1.25}
+  .rg-chart__app,.rg-chart .rg-l{display:none}
+  .rg-chart .rg-s{display:inline}
+  .rg-chart table{font-size:.8rem;table-layout:fixed}
+  .rg-chart th,.rg-chart td{padding:.5rem .4rem}
+  .rg-chart tbody th{overflow-wrap:anywhere}
+  .rg-chart thead th{overflow-wrap:anywhere;hyphens:auto}
+  .rg-chart thead th:nth-child(1){width:28%}
+  .rg-chart thead th:nth-child(2),.rg-chart thead th:nth-child(3),.rg-chart thead th:nth-child(4){width:16%}
+  .rg-chart .rg-ok{font-size:.7rem}
+}
 .guide-body li strong,.guide-body p strong,.guide-body td strong{color:var(--ink)}
 .guide-body a{color:var(--blue);text-decoration:underline;text-decoration-color:var(--blue-200);text-underline-offset:.16em;text-decoration-thickness:1.5px}
 .guide-body a:hover{text-decoration-color:var(--blue)}

@@ -26,7 +26,11 @@ class ResourceGuidesTest extends TestCase
             $html = $this->get(ResourceGuides::url($g['path']))->assertOk()->getContent();
             $this->assertSame(1, preg_match_all('#<h1[^>]*>#', $html), $g['path']);
             $this->assertStringContainsString('<link rel="canonical" href="' . rtrim(config('app.url'), '/') . ResourceGuides::url($g['path']) . '">', $html);
-            foreach ($g['blocks'] as $b) foreach ($b['items'] ?? [] as $im) if (isset($im['src'])) $this->assertFileExists(public_path(ltrim($im['src'], '/')));
+            foreach ($g['blocks'] as $b) foreach ($b['items'] ?? [] as $im) if (isset($im['src'])) {
+                $this->assertFileExists(public_path(ltrim($im['src'], '/')));
+                // the old pages' alt texts were file names ("1 4 300x300 1", "male222"): each picture says what it shows
+                $this->assertMatchesRegularExpression('/^[A-Z][a-z].{15,}$/', $im['alt'], $im['src']);
+            }
         }
         $this->get('/resources')->assertOk()->assertSee('Measuring guides');
     }
@@ -54,6 +58,14 @@ class ResourceGuidesTest extends TestCase
         $xml = $this->get('/sitemap-pages.xml')->assertOk()->getContent();
         $this->assertStringContainsString('/resources/flange-yoke/male-flange-extended-pilot-hole</loc>', $xml);
         Cache::forget('uds_sitemap_pages');
+    }
+
+    public function test_the_two_piece_choices_open_their_guides(): void
+    {
+        $html = $this->get('/resources/two-piece-driveshaft')->assertOk()->getContent();
+        foreach (ResourceGuides::children('two-piece-driveshaft') + ['two-piece-driveshaft-flange-measuring-guideline' => 1] as $path => $x) {
+            $this->assertMatchesRegularExpression('#<a class="rg-fig rg-pick" href="' . preg_quote(ResourceGuides::url($path), '#') . '">#', $html);
+        }
     }
 
     public function test_the_bearing_chart_is_drawn_from_the_catalog(): void

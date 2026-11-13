@@ -15,7 +15,7 @@
      "type": "images",
      "items": [
       {
-       "alt": "Transmission slip yoke v2 100.jpg",
+       "alt": "Transmission slip yoke measurements: spline length, spline diameter and hub diameter",
        "caption": "",
        "src": "/img/guides/transmission-slip-yoke-v2-100.webp",
        "w": 1400,
@@ -56,7 +56,7 @@
      "type": "images",
      "items": [
       {
-       "alt": "Outside v2",
+       "alt": "Transmission slip yoke with an outside snap ring groove",
        "caption": "",
        "link": {
         "kind": "guide",
@@ -82,7 +82,7 @@
      "type": "images",
      "items": [
       {
-       "alt": "Inside v2",
+       "alt": "Transmission slip yoke with an inside snap ring groove",
        "caption": "",
        "link": {
         "kind": "guide",
@@ -119,7 +119,7 @@
      "type": "images",
      "items": [
       {
-       "alt": "inside popup",
+       "alt": "Inside snap ring transmission slip yoke: where to measure",
        "caption": "",
        "src": "/img/guides/inside-popup.webp",
        "w": 1400,
@@ -178,7 +178,7 @@
      "type": "images",
      "items": [
       {
-       "alt": "Outside snap popup",
+       "alt": "Outside snap ring transmission slip yoke: where to measure",
        "caption": "",
        "src": "/img/guides/outside-snap-popup.webp",
        "w": 1400,
@@ -286,7 +286,7 @@
      "type": "images",
      "items": [
       {
-       "alt": "",
+       "alt": "Male flange yoke with an extended pilot hole",
        "caption": "",
        "link": {
         "kind": "guide",
@@ -297,7 +297,7 @@
        "h": 658
       },
       {
-       "alt": "male222",
+       "alt": "Male flange yoke: where to measure",
        "caption": "",
        "link": {
         "kind": "guide",
@@ -323,7 +323,7 @@
      "type": "images",
      "items": [
       {
-       "alt": "",
+       "alt": "Female flange yoke with a recessed pilot hole",
        "caption": "",
        "link": {
         "kind": "guide",
@@ -334,7 +334,7 @@
        "h": 818
       },
       {
-       "alt": "",
+       "alt": "Female flange yoke: where to measure",
        "caption": "",
        "link": {
         "kind": "guide",
@@ -392,14 +392,14 @@
      "type": "images",
      "items": [
       {
-       "alt": "",
+       "alt": "Male flange yoke with an extended pilot hole",
        "caption": "",
        "src": "/img/guides/3-e1739859343375.webp",
        "w": 1000,
        "h": 658
       },
       {
-       "alt": "male222",
+       "alt": "Male flange yoke: where to measure",
        "caption": "",
        "src": "/img/guides/male222.webp",
        "w": 1400,
@@ -503,14 +503,14 @@
      "type": "images",
      "items": [
       {
-       "alt": "",
+       "alt": "Female flange yoke with a recessed pilot hole",
        "caption": "",
        "src": "/img/guides/2-e1739859375205.webp",
        "w": 1000,
        "h": 818
       },
       {
-       "alt": "",
+       "alt": "Female flange yoke: where to measure",
        "caption": "",
        "src": "/img/guides/1.webp",
        "w": 1400,
@@ -569,14 +569,14 @@
      "type": "images",
      "items": [
       {
-       "alt": "",
+       "alt": "Outside snap ring u-joint: width and cap diameter",
        "caption": "",
        "src": "/img/guides/4.webp",
        "w": 1000,
        "h": 1000
       },
       {
-       "alt": "",
+       "alt": "Yoke with tabs: where to measure for an outside snap ring u-joint",
        "caption": "",
        "src": "/img/guides/5.webp",
        "w": 1000,
@@ -598,14 +598,14 @@
      "type": "images",
      "items": [
       {
-       "alt": "inside ring v2",
+       "alt": "Inside snap ring u-joint: width and cap diameter",
        "caption": "",
        "src": "/img/guides/inside-ring-v2.webp",
        "w": 1000,
        "h": 1000
       },
       {
-       "alt": "",
+       "alt": "Yoke without tabs: where to measure for an inside snap ring u-joint",
        "caption": "",
        "src": "/img/guides/6.webp",
        "w": 1000,
@@ -644,7 +644,7 @@
      "type": "images",
      "items": [
       {
-       "alt": "",
+       "alt": "Outside snap ring u-joint: width and cap diameter",
        "caption": "",
        "src": "/img/guides/4.webp",
        "w": 1000,
@@ -668,7 +668,7 @@
      "type": "images",
      "items": [
       {
-       "alt": "",
+       "alt": "Yoke with tabs: where to measure for an outside snap ring u-joint",
        "caption": "",
        "src": "/img/guides/6.webp",
        "w": 1000,
@@ -782,7 +782,7 @@
      "type": "images",
      "items": [
       {
-       "alt": "inside ring",
+       "alt": "Inside snap ring u-joint: width and cap diameter",
        "caption": "",
        "src": "/img/guides/inside-ring.webp",
        "w": 1001,
@@ -806,7 +806,7 @@
      "type": "images",
      "items": [
       {
-       "alt": "",
+       "alt": "Yoke without tabs: where to measure for an inside snap ring u-joint",
        "caption": "",
        "src": "/img/guides/6.webp",
        "w": 1000,
@@ -878,14 +878,14 @@
      "type": "images",
      "items": [
       {
-       "alt": "End Yoke 2 100 1",
+       "alt": "Transfer case end yoke measurements C, D and E",
        "caption": "",
        "src": "/img/guides/end-yoke-2-100-1.webp",
        "w": 1000,
        "h": 1000
       },
       {
-       "alt": "End Yoke v2 100",
+       "alt": "End yoke measurements A and B",
        "caption": "",
        "src": "/img/guides/end-yoke-v2-100.webp",
        "w": 1000,
@@ -930,7 +930,7 @@
      "type": "images",
      "items": [
       {
-       "alt": "Universal Driveshafts",
+       "alt": "Outside snap ring end yoke with tabs",
        "caption": "",
        "link": {
         "kind": "guide",
@@ -952,7 +952,7 @@
      "type": "images",
      "items": [
       {
-       "alt": "",
+       "alt": "Inside snap ring end yoke without tabs",
        "caption": "",
        "link": {
         "kind": "guide",
@@ -989,14 +989,14 @@
      "type": "images",
      "items": [
       {
-       "alt": "inside ring v2",
+       "alt": "Inside snap ring u-joint: width and cap diameter",
        "caption": "",
        "src": "/img/guides/inside-ring-v2.webp",
        "w": 1000,
        "h": 1000
       },
       {
-       "alt": "",
+       "alt": "Inside snap ring end yoke: where to measure",
        "caption": "",
        "src": "/img/guides/6.webp",
        "w": 1000,
@@ -1055,14 +1055,14 @@
      "type": "images",
      "items": [
       {
-       "alt": "",
+       "alt": "Outside snap ring u-joint: width and cap diameter",
        "caption": "",
        "src": "/img/guides/4.webp",
        "w": 1000,
        "h": 1000
       },
       {
-       "alt": "",
+       "alt": "Outside snap ring end yoke with tabs: where to measure",
        "caption": "",
        "src": "/img/guides/5.webp",
        "w": 1000,
@@ -1170,14 +1170,14 @@
      "type": "images",
      "items": [
       {
-       "alt": "Companion Yoke 1 100 1",
+       "alt": "Companion yoke with a keyway",
        "caption": "",
        "src": "/img/guides/companion-yoke-1-100-1.webp",
        "w": 1400,
        "h": 1399
       },
       {
-       "alt": "Companion 2 100 1",
+       "alt": "Companion yoke with a keyway: measuring diagram",
        "caption": "",
        "src": "/img/guides/companion-2-100-1.webp",
        "w": 1000,
@@ -1230,14 +1230,14 @@
      "type": "images",
      "items": [
       {
-       "alt": "Spline 2 100 1",
+       "alt": "Splined companion yoke",
        "caption": "",
        "src": "/img/guides/spline-2-100-1-e1740031665575.webp",
        "w": 1400,
        "h": 840
       },
       {
-       "alt": "Spline Companion 100 1",
+       "alt": "Splined companion yoke: measuring diagram",
        "caption": "",
        "src": "/img/guides/spline-companion-100-1.webp",
        "w": 1000,
@@ -1539,65 +1539,50 @@
      "type": "images",
      "items": [
       {
-       "alt": "1-6-300×300-1.png",
-       "caption": "",
+       "alt": "Two piece driveshaft that slides into the transmission seal",
+       "caption": "Seal",
        "src": "/img/guides/1-6-300x300-1.webp",
        "w": 300,
-       "h": 300
-      }
-     ]
-    },
-    {
-     "type": "heading",
-     "text": "Seal"
-    },
-    {
-     "type": "images",
-     "items": [
+       "h": 300,
+       "link": {
+        "kind": "guide",
+        "path": "two-piece-driveshaft/two-piece-driveshaft-measuring-seal"
+       }
+      },
       {
-       "alt": "1 4 300x300 1",
-       "caption": "",
+       "alt": "Two piece driveshaft bolted to a transmission end yoke",
+       "caption": "End Yoke",
        "src": "/img/guides/1-4-300x300-1.webp",
        "w": 300,
-       "h": 300
-      }
-     ]
-    },
-    {
-     "type": "heading",
-     "text": "End Yoke"
-    },
-    {
-     "type": "images",
-     "items": [
+       "h": 300,
+       "link": {
+        "kind": "guide",
+        "path": "two-piece-driveshaft/two-piece-driveshaft-end-yoke"
+       }
+      },
       {
-       "alt": "1 5 300x300 1",
-       "caption": "",
+       "alt": "Two piece driveshaft with a rubber boot extension at the transmission",
+       "caption": "Rubber Boot Extension",
        "src": "/img/guides/1-5-300x300-1.webp",
        "w": 300,
-       "h": 300
-      }
-     ]
-    },
-    {
-     "type": "heading",
-     "text": "Rubber Boot Extension"
-    },
-    {
-     "type": "images",
-     "items": [
+       "h": 300,
+       "link": {
+        "kind": "guide",
+        "path": "two-piece-driveshaft/two-piece-driveshaft-rubber-bot-extension"
+       }
+      },
       {
-       "alt": "1 3 300x300 1",
-       "caption": "",
+       "alt": "Two piece driveshaft bolted to a transmission flange",
+       "caption": "Flange",
        "src": "/img/guides/1-3-300x300-1.webp",
        "w": 300,
-       "h": 300
+       "h": 300,
+       "link": {
+        "kind": "guide",
+        "path": "two-piece-driveshaft-flange-measuring-guideline"
+       }
       }
      ]
-    },
-    {
-     "type": "heading",
-     "text": "Flange"
     }
    ],
    "short": "Measuring a two piece driveshaft"
@@ -1620,7 +1605,7 @@
      "type": "images",
      "items": [
       {
-       "alt": "two piece 3 100",
+       "alt": "Two piece driveshaft from a transmission end yoke to a rear end yoke: lengths A and B",
        "caption": "",
        "src": "/img/guides/two-piece-3-100.webp",
        "w": 1400,
@@ -1648,7 +1633,7 @@
      "type": "images",
      "items": [
       {
-       "alt": "two piece 4 100",
+       "alt": "Two piece driveshaft from a transmission end yoke to a rear flange: lengths A and B",
        "caption": "",
        "src": "/img/guides/two-piece-4-100.webp",
        "w": 1400,
@@ -1684,7 +1669,7 @@
      "type": "images",
      "items": [
       {
-       "alt": "two piece 1 100",
+       "alt": "Two piece driveshaft from a transmission seal to a rear end yoke: lengths A, B and C",
        "caption": "",
        "src": "/img/guides/two-piece-1-100.webp",
        "w": 1400,
@@ -1720,7 +1705,7 @@
      "type": "images",
      "items": [
       {
-       "alt": "two piece 2 100 1",
+       "alt": "Two piece driveshaft from a transmission seal to a rear flange: lengths A, B and C",
        "caption": "",
        "src": "/img/guides/two-piece-2-100-1.webp",
        "w": 1400,
@@ -1764,7 +1749,7 @@
      "type": "images",
      "items": [
       {
-       "alt": "two piece 5 100",
+       "alt": "Two piece driveshaft from a rubber boot extension to a rear end yoke: lengths A and B",
        "caption": "",
        "src": "/img/guides/two-piece-5-100.webp",
        "w": 1400,
@@ -1792,7 +1777,7 @@
      "type": "images",
      "items": [
       {
-       "alt": "two piece 6 100",
+       "alt": "Two piece driveshaft from a rubber boot extension to a rear flange: lengths A and B",
        "caption": "",
        "src": "/img/guides/two-piece-6-100.webp",
        "w": 1400,
@@ -1828,7 +1813,7 @@
      "type": "images",
      "items": [
       {
-       "alt": "two piece 7 100",
+       "alt": "Two piece driveshaft from a transmission flange to a rear end yoke: lengths A and B",
        "caption": "",
        "src": "/img/guides/two-piece-7-100.webp",
        "w": 1400,
@@ -1856,7 +1841,7 @@
      "type": "images",
      "items": [
       {
-       "alt": "two piece 8 100",
+       "alt": "Two piece driveshaft from a transmission flange to a rear flange: lengths A and B",
        "caption": "",
        "src": "/img/guides/two-piece-8-100.webp",
        "w": 1400,
@@ -1888,7 +1873,7 @@
      "type": "images",
      "items": [
       {
-       "alt": "7 1024x512 1",
+       "alt": "One piece driveshaft from a seal or rubber boot extension to an end yoke or flange",
        "caption": "",
        "src": "/img/guides/7-1024x512-1.webp",
        "w": 1024,
@@ -1924,7 +1909,7 @@
      "type": "images",
      "items": [
       {
-       "alt": "8v2 1 1024x512 1",
+       "alt": "One piece driveshaft from an end yoke or flange to an end yoke or flange",
        "caption": "",
        "src": "/img/guides/8v2-1-1024x512-1.webp",
        "w": 1024,
