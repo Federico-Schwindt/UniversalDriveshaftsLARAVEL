@@ -261,7 +261,7 @@ class SeoController extends Controller
             if ($file !== '' && (int) $r->thumb !== 11868 && !str_contains($file, 'placeholder') && !str_contains($file, '1312312312132')) {
                 $image = media_url($uploads . ltrim($file, '/'), 640); // local WebP cache, same URL the product page uses
             }
-            $out[$sku] = ['loc' => '/parts/' . rawurlencode($sku), 'pri' => '0.6', 'freq' => 'weekly',
+            $out[$sku] = ['loc' => part_path($sku), 'pri' => '0.6', 'freq' => 'weekly',
                           'lastmod' => $r->post_modified ? date('Y-m-d', strtotime($r->post_modified)) : null, 'image' => $image];
         }
         return array_values($out);

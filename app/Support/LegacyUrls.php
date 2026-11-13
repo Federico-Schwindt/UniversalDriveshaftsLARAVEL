@@ -99,10 +99,9 @@ class LegacyUrls
         return $sku ? self::page($sku) : null;
     }
 
-    /** A part's page. A slash in a part number (GU7280/4) stays a slash: Apache refuses the encoded one before the app sees it. */
     private static function page(string $sku): string
     {
-        return '/parts/' . str_replace('%2F', '/', rawurlencode($sku));
+        return part_path($sku);
     }
 
     /**

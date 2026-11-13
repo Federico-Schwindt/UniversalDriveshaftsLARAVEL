@@ -30,6 +30,19 @@ class SeoLaunchTest extends TestCase
         $this->assertStringContainsString($sku, $this->h1($this->get('/parts/' . rawurlencode($sku))->assertOk()->getContent()));
     }
 
+    public function test_a_part_number_with_a_slash_has_one_address_in_canonical_and_sitemap(): void
+    {
+        $sku = DB::connection('wp')->table('wp_posts as p')->join('wp_postmeta as s', fn ($j) => $j->on('s.post_id', '=', 'p.ID')->where('s.meta_key', '_sku'))
+            ->where('p.post_type', 'product')->where('p.post_status', 'publish')->where('s.meta_value', 'like', '%/%')->orderBy('p.ID')->value('s.meta_value');
+        if (!$sku) $this->markTestSkipped('no part number with a slash');
+        $path = '/parts/' . str_replace('%2F', '/', rawurlencode($sku));
+        $this->assertSame($path, part_path($sku));
+        $this->get($path)->assertOk()->assertSee('<link rel="canonical" href="' . rtrim(config('app.url'), '/') . $path . '">', false);
+        Cache::forget('uds_sitemap_products');
+        $this->assertStringContainsString('<loc>' . rtrim(config('app.url'), '/') . htmlspecialchars($path, ENT_XML1) . '</loc>', $this->get('/sitemap-products.xml')->getContent());
+        Cache::forget('uds_sitemap_products');
+    }
+
     public function test_categories_are_titled_by_their_search_name_with_their_photo(): void
     {
         $html = $this->get('/shop/driveshaft-tubing/tubing')->assertOk()->getContent();

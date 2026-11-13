@@ -72,13 +72,13 @@
     '@type' => 'ListItem', 'position' => $i + 1,
     'item' => array_filter([
       '@type' => 'Product', 'name' => $p['sku'] . ' ' . \Illuminate\Support\Str::limit($svc->cleanName($p), 80, ''), 'sku' => $p['sku'], 'mpn' => $p['sku'],
-      'url' => $absBase . '/parts/' . rawurlencode($p['sku']),
+      'url' => $absBase . part_path($p['sku']),
       // the logo stands in for parts without a photo: not an image of the product
       'image' => $p['image'] && !str_contains($p['image'], 'uds-logo') ? (str_starts_with($p['image'], 'http') ? $p['image'] : $absBase . $p['image']) : null,
       'brand' => ['@type' => 'Brand', 'name' => $p['brand'] ?: 'UDS'],
       'offers' => ['@type' => 'Offer', 'price' => number_format($p['price'], 2, '.', ''), 'priceCurrency' => 'USD',
         'availability' => 'https://schema.org/' . ($p['stock_status'] === 'outofstock' ? 'OutOfStock' : ($p['stock_status'] === 'onbackorder' ? 'BackOrder' : 'InStock')),
-        'url' => $absBase . '/parts/' . rawurlencode($p['sku'])],
+        'url' => $absBase . part_path($p['sku'])],
     ], fn ($v) => $v !== null),
   ])->all();
 @endphp

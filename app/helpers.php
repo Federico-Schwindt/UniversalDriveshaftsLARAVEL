@@ -8,6 +8,14 @@ if (!function_exists('media_url')) {
     }
 }
 
+if (!function_exists('part_path')) {
+    /** The one address of a part page. A slash in a part number (GU7280/4) stays a slash: Apache refuses the encoded one. */
+    function part_path(string $sku): string
+    {
+        return '/parts/' . str_replace('%2F', '/', rawurlencode($sku));
+    }
+}
+
 if (!function_exists('setting')) {
     function setting(string $key, $default = null) { return \App\Support\Settings::get($key, $default); }
 }

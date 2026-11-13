@@ -15,7 +15,7 @@
 @section('ogtype','product')
 @section('title', $seo['title'])
 @section('desc', $seo['desc'])
-@section('canonical', '/parts/' . rawurlencode($p['sku']))
+@section('canonical', part_path($p['sku']))
 @if(!empty($p['image']))@section('ogimage', str_starts_with($p['image'], 'http') ? $p['image'] : $base . $p['image'])@endif
 
 @push('head')
@@ -103,7 +103,7 @@
   $crumbs = [[__('Home'), $base . '/'], [__('Catalog'), $base . '/shop']];
   if ($group) { $crumbs[] = [__($group['label']), $base . '/shop/' . $group['slug']]; }
   if ($catPath) { $crumbs[] = [\App\Support\PartGlossary::t($cat['name']), $base . $catPath]; }
-  $crumbs[] = [$p['sku'], $base . '/parts/' . rawurlencode($p['sku'])];
+  $crumbs[] = [$p['sku'], $base . part_path($p['sku'])];
   $abs = fn ($u) => str_starts_with($u, 'http') ? $u : $base . $u;
 
   $props = [];
@@ -113,13 +113,13 @@
   }
   $product = array_filter([
     '@type'       => 'Product',
-    '@id'         => $base . '/parts/' . rawurlencode($p['sku']) . '#product',
+    '@id'         => $base . part_path($p['sku']) . '#product',
     'name'        => $p['sku'] . ' ' . ($seo['short'] ?: $displayName),
     'alternateName' => $displayName !== ($seo['short'] ?: $displayName) ? $displayName : null,
     'sku'         => $p['sku'],
     'mpn'         => $p['sku'],
     'productID'   => 'sku:' . $p['sku'],
-    'url'         => $base . '/parts/' . rawurlencode($p['sku']),
+    'url'         => $base . part_path($p['sku']),
     'description' => $seo['desc'],
     'image'       => array_values(array_map($abs, $gallery)) ?: null,
     'brand'       => ['@type' => 'Brand', 'name' => $p['brand'] ?: 'UDS'],
@@ -127,10 +127,10 @@
     'weight'      => $p['weight'] !== '' ? ['@type' => 'QuantitativeValue', 'value' => (float) $p['weight'], 'unitCode' => 'LBR', 'unitText' => 'lb'] : null,
     'additionalProperty' => array_values($props) ?: null,
     'isAccessoryOrSparePartFor' => !empty($xref['application']) ? array_map(fn ($a) => ['@type' => 'Vehicle', 'name' => $a], $xref['application']) : null,
-    'isSimilarTo' => $alts ? array_map(fn ($a) => ['@type' => 'Product', 'name' => $a['sku'], 'sku' => $a['sku'], 'url' => $base . '/parts/' . rawurlencode($a['sku'])], $alts) : null,
+    'isSimilarTo' => $alts ? array_map(fn ($a) => ['@type' => 'Product', 'name' => $a['sku'], 'sku' => $a['sku'], 'url' => $base . part_path($a['sku'])], $alts) : null,
     'offers'      => [
       '@type'           => 'Offer',
-      'url'             => $base . '/parts/' . rawurlencode($p['sku']),
+      'url'             => $base . part_path($p['sku']),
       'price'           => number_format($p['price'], 2, '.', ''),
       'priceCurrency'   => 'USD',
       'availability'    => 'https://schema.org/' . $avail,
