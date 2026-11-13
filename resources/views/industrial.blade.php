@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title', __('Industrial Driveshafts: Custom Built & Balanced | UDS'))
-@section('desc', __('Industrial driveshafts for pumps, compressors, conveyors, mills, generators and test stands, built to your flange and length and balanced in Florida. Business accounts get tier pricing.'))
+@section('desc', __('Industrial driveshafts for pumps, compressors, conveyors, mills, generators and test stands, built to your flange and length and balanced in Florida.'))
 @section('bodyclass','pg')
 @section('content')
 @if(i18n_view('industrial'))

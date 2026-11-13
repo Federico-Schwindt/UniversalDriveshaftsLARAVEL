@@ -812,5 +812,6 @@
     "Question :n": "Pregunta :n",
     "In inches, with the vehicle at ride height. A1 and C1 are both required.": "En pulgadas, con el vehículo a altura normal. A1 y C1 son obligatorias.",
     "Please enter C1 (u-joint center to u-joint center).": "Ingresa C1 (de centro de cruceta a centro de cruceta).",
-    "C1 cannot be longer than A1. Please check both measurements.": "C1 no puede ser mayor que A1. Revisa ambas medidas."
+    "C1 cannot be longer than A1. Please check both measurements.": "C1 no puede ser mayor que A1. Revisa ambas medidas.",
+    "Build a custom one-piece driveshaft online: tell us what it connects to, pick the series and material, enter the length and see the price. Built in Florida.": "Arma en línea un cardán a medida de una pieza. Dinos a qué se conecta, elige la serie y el material, ingresa el largo y ve el precio antes de pedir. Fabricado en Florida."
 }

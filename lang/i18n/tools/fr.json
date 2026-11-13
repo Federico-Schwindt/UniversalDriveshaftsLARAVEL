@@ -812,5 +812,6 @@
     "Question :n": "Question :n",
     "In inches, with the vehicle at ride height. A1 and C1 are both required.": "En pouces, le véhicule étant à sa hauteur de caisse normale. A1 et C1 sont toutes deux obligatoires.",
     "Please enter C1 (u-joint center to u-joint center).": "Veuillez saisir C1 (de centre de croisillon à centre de croisillon).",
-    "C1 cannot be longer than A1. Please check both measurements.": "C1 ne peut pas être plus long que A1. Veuillez vérifier les deux mesures."
+    "C1 cannot be longer than A1. Please check both measurements.": "C1 ne peut pas être plus long que A1. Veuillez vérifier les deux mesures.",
+    "Build a custom one-piece driveshaft online: tell us what it connects to, pick the series and material, enter the length and see the price. Built in Florida.": "Configurez en ligne un arbre de transmission sur mesure d'une seule pièce. Indiquez-nous ce que l'arbre relie, choisissez la série et le matériau, saisissez la longueur et voyez le prix avant de commander. Fabriqué en Floride."
 }

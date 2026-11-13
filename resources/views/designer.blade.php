@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title', __('Custom Driveshaft Online: Any Length, Live Price | UDS'))
-@section('desc', __('Build a custom one-piece driveshaft online. Tell us what the shaft connects to, pick the series and material, enter the length and see the price before you order. Built in Florida.'))
+@section('desc', __('Build a custom one-piece driveshaft online: tell us what it connects to, pick the series and material, enter the length and see the price. Built in Florida.'))
 @section('content')
 <link rel="stylesheet" href="/css/dsb.css?v={{ filemtime(public_path('css/dsb.css')) }}">
 <link rel="stylesheet" href="/css/dsb-plan.css?v={{ filemtime(public_path('css/dsb-plan.css')) }}">

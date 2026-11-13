@@ -41,7 +41,7 @@ class FeedController extends Controller
                         if ($img === '') continue;   // Merchant Center rejects items without an image
                         $items[$p['sku']] = [
                             'id' => self::offerId((int) $p['id']), 'title' => mb_substr($p['name'], 0, 150), 'description' => $desc,
-                            'link' => $base . '/parts/' . rawurlencode($p['sku']),
+                            'link' => $base . part_path($p['sku']),
                             'image_link' => $img ? ($img[0] === '/' ? $base . $img : $img) : '',
                             'availability' => ($p['stock_status'] ?? '') === 'instock' ? 'in_stock' : (($p['stock_status'] ?? '') === 'onbackorder' ? 'backorder' : 'out_of_stock'),
                             'price' => number_format((float) $p['price'], 2, '.', '') . ' USD',

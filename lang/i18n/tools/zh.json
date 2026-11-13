@@ -811,5 +811,6 @@
     "Question :n": "问题 :n",
     "In inches, with the vehicle at ride height. A1 and C1 are both required.": "单位为英寸，车辆处于正常行驶高度。A1 和 C1 均为必填项。",
     "Please enter C1 (u-joint center to u-joint center).": "请输入 C1(万向节中心到万向节中心)。",
-    "C1 cannot be longer than A1. Please check both measurements.": "C1 不能大于 A1。请检查这两个测量值。"
+    "C1 cannot be longer than A1. Please check both measurements.": "C1 不能大于 A1。请检查这两个测量值。",
+    "Build a custom one-piece driveshaft online: tell us what it connects to, pick the series and material, enter the length and see the price. Built in Florida.": "在线定制一体式传动轴。告诉我们传动轴连接的部件,选择系列和材料,输入长度,下单前即可看到价格。佛罗里达制造。"
 }
