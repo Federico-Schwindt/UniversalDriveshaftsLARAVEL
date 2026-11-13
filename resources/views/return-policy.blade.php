@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title', app()->getLocale() === 'es' ? 'Política de devoluciones, reembolsos y garantía | Universal Driveshafts' : __('Return, Refund & Warranty Policy | Universal Driveshafts'))
-@section('desc', app()->getLocale() === 'es' ? 'Devoluciones, cambios, cancelaciones y garantía limitada de 12 meses de Universal Driveshafts: devoluciones de piezas de stock en 14 días con RMA, cómo funcionan los reembolsos, fabricaciones a medida y daños de envío.' : __('Universal Driveshafts returns, exchanges, cancellations and 12-month limited warranty: 14-day returns on stock parts with an RMA, how refunds work, custom builds and shipping damage.'))
+@section('desc', app()->getLocale() === 'es' ? 'Devoluciones, cambios, cancelaciones y garantía de 12 meses: piezas de stock en 14 días con RMA, reembolsos, fabricaciones a medida y daños de envío.' : __('Returns, exchanges, cancellations and our 12-month limited warranty: 14-day returns on stock parts with an RMA, refunds, custom builds and shipping damage.'))
 @section('content')
 @if(app()->getLocale() === 'es')
 <section class="phero"><div class="wrap"><div class="crumb"><a href="/">Inicio</a><span class="sep">/</span><span>Devoluciones y garantía</span></div><div class="accentline"></div>

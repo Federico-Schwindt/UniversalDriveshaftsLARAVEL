@@ -219,13 +219,21 @@ class SeoController extends Controller
     {
         $out = [];
         $catalog = app(CatalogService::class);
+        // a category page changes when one of its products does: lastmod = its newest product's modification
+        $mod = DB::connection('wp')->table('wp_term_relationships as r')
+            ->join('wp_term_taxonomy as tt', fn ($j) => $j->on('tt.term_taxonomy_id', '=', 'r.term_taxonomy_id')->where('tt.taxonomy', 'product_cat'))
+            ->join('wp_terms as t', 't.term_id', '=', 'tt.term_id')
+            ->join('wp_posts as p', fn ($j) => $j->on('p.ID', '=', 'r.object_id')->where('p.post_type', 'product')->where('p.post_status', 'publish'))
+            ->groupBy('t.slug')->selectRaw('t.slug, max(p.post_modified) as m')->pluck('m', 'slug');
+        $day = fn (?string $m) => $m ? date('Y-m-d', strtotime($m)) : null;
         foreach ($catalog->groups() as $g) {
             $full = $catalog->group($g['slug']) ?: [];
+            $subs = array_filter($full['subcategories'] ?? [], fn ($c) => !empty($c['slug']) && $c['slug'] !== 'by-vehicle'); // by-vehicle is listed as a static page
+            $newest = collect($subs)->map(fn ($c) => $mod[$c['slug']] ?? null)->filter()->max();
             // a one-category group only redirects to its category page: list the category, not the redirect
-            if (count($full['subcategories'] ?? []) !== 1) $out[] = ['loc' => '/shop/' . $g['slug'], 'pri' => '0.8', 'freq' => 'weekly'];
-            foreach (($full['subcategories'] ?? []) as $c) {
-                if (empty($c['slug']) || $c['slug'] === 'by-vehicle') continue; // by-vehicle is listed as a static page
-                $out[] = ['loc' => '/shop/' . $g['slug'] . '/' . $c['slug'], 'pri' => '0.7', 'freq' => 'weekly'];
+            if (count($full['subcategories'] ?? []) !== 1) $out[] = ['loc' => '/shop/' . $g['slug'], 'pri' => '0.8', 'freq' => 'weekly', 'lastmod' => $day($newest)];
+            foreach ($subs as $c) {
+                $out[] = ['loc' => '/shop/' . $g['slug'] . '/' . $c['slug'], 'pri' => '0.7', 'freq' => 'weekly', 'lastmod' => $day($mod[$c['slug']] ?? null)];
             }
         }
         return $out;

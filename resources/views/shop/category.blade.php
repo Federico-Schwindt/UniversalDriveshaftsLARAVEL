@@ -38,6 +38,9 @@
 @section('title', $title)
 @section('desc', $desc)
 @section('canonical', $canonical)
+{{-- shared links show the category's photo, not the site card --}}
+@php $ogImg = (string) (collect($siblings)->firstWhere('slug', $cat['slug'])['image'] ?? ''); @endphp
+@if($ogImg !== '' && !str_contains($ogImg, 'uds-logo'))@section('ogimage', str_starts_with($ogImg, 'http') ? $ogImg : $absBase . $ogImg)@endif
 @if($isFiltered)@section('robots', 'noindex,follow')@endif
 
 @push('head')
@@ -70,7 +73,8 @@
     'item' => array_filter([
       '@type' => 'Product', 'name' => $p['sku'] . ' ' . \Illuminate\Support\Str::limit($svc->cleanName($p), 80, ''), 'sku' => $p['sku'], 'mpn' => $p['sku'],
       'url' => $absBase . '/parts/' . rawurlencode($p['sku']),
-      'image' => $p['image'] ? (str_starts_with($p['image'], 'http') ? $p['image'] : $absBase . $p['image']) : null,
+      // the logo stands in for parts without a photo: not an image of the product
+      'image' => $p['image'] && !str_contains($p['image'], 'uds-logo') ? (str_starts_with($p['image'], 'http') ? $p['image'] : $absBase . $p['image']) : null,
       'brand' => ['@type' => 'Brand', 'name' => $p['brand'] ?: 'UDS'],
       'offers' => ['@type' => 'Offer', 'price' => number_format($p['price'], 2, '.', ''), 'priceCurrency' => 'USD',
         'availability' => 'https://schema.org/' . ($p['stock_status'] === 'outofstock' ? 'OutOfStock' : ($p['stock_status'] === 'onbackorder' ? 'BackOrder' : 'InStock')),

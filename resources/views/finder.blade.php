@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', __('Complete driveshafts by vehicle') . ' | Universal Driveshafts')
+@section('title', __('Find your driveshaft by year, make and model') . ' | UDS')
 @section('desc', __('Choose your make, year and model and we narrow the catalog to the complete driveshaft that fits. 4,500+ driveshafts, 1955 to 2026.'))
 @section('bodyclass','pg')
 @section('content')

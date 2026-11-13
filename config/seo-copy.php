@@ -8,7 +8,8 @@
  */
 return [
 
-    // product_cat slug => [type (singular, for product titles), title (the category as people search it, for its <title>),
+    // product_cat slug => [type (singular, for product titles), title (the category as people search it, for its <title>;
+    // from Search Console queries where there are any, 2026-11-04 and 2026-11-13 — without one the title leads with the count),
     // desc (optional meta description, {count} = live count), intro (1-2 sentences of buying guidance)]
     'categories' => [
         'u-joints' => [
@@ -51,30 +52,37 @@ return [
         ],
         'rubber-flex-disc' => [
             'type' => 'Flex Disc',
+            'title' => 'Driveshaft Flex Discs (Guibo)',
             'intro' => 'Rubber flex discs (giubo couplings) connect the driveshaft to the transmission or differential flange on BMW, Mercedes-Benz, Toyota and other import shafts, absorbing small misalignment and damping vibration. Match the bolt-hole count, bolt circle diameter, bolt-hole diameter, centering (pilot) diameter and disc width to the original.',
         ],
         'pto-end-yokes' => [
             'type' => 'PTO End Yoke',
+            'title' => 'PTO End Yokes',
             'intro' => 'PTO end yokes fit power take-off and agricultural drivelines, mostly in the 1000 and 1100 series. Choose by series, then by bore type (round, square, hexagonal or splined), bore size and keyway or set-screw arrangement.',
         ],
         'cv-flange-yokes' => [
             'type' => 'CV Flange Yoke',
+            'title' => 'CV Flange Yokes',
             'intro' => 'A CV flange yoke is the flange end of a double-cardan CV joint: it bolts to the companion flange of the transfer case or axle and carries the centering ball or socket. Match the u-joint series, the bolt circle, bolt-hole diameter and pilot (type and diameter), the center-to-face length and the ball stud diameter.',
         ],
         'tri-quad-prongs' => [
             'type' => 'Tri/Quad Prong',
+            'title' => 'Tri & Quad Prong Flanges',
             'intro' => 'Tri-prong and quad-prong flanges are the three- or four-arm ends that are welded to the driveshaft tube and bolt to a rubber flex disc (giubo), mostly on BMW, Land Rover, Hyundai and other import shafts. Match the bolt circle, the bolt-hole and pilot diameters, the nose-bushing (centering) diameter, the tube outside diameter and wall, the butt diameter and the face-to-weld length.',
         ],
         'splined-sleeves' => [
             'type' => 'Splined Sleeve',
+            'title' => 'Splined Sleeves & Slip Assemblies',
             'intro' => 'A splined sleeve is the internally splined female half of a slip joint that is welded into the driveshaft tube; a yoke shaft slides inside it. Match the spline count and diameter to the yoke shaft it works with, the tube it welds into (butt diameter, tube OD and wall) and the end-to-weld length.',
         ],
         'cv-joint-kit' => [
             'type' => 'CV Joint Kit',
+            'title' => 'CV Joint Kits',
             'intro' => 'A CV joint kit is a constant-velocity joint (mostly Rzeppa ball type, plunging or fixed) for import and AWD propeller shafts, supplied with the parts listed for each kit (gasket, snap ring, boot or cap). Match the outer diameter, the bolt circle with its hole count and size, the spline count and diameter, and the outer and inner race widths to the original joint.',
         ],
         'cv-double-joints-heads' => [
             'type' => 'CV Double Joint Head',
+            'title' => 'Double Cardan CV Heads',
             'intro' => 'A double-cardan CV head is the complete two-u-joint constant-velocity assembly (with its centering ball and socket) that welds to the end of the tube on lifted, 4x4 and high-angle driveshafts. Order by u-joint series, style (flange or slip yoke end), the flange bolt circle and pilot, and the tube it welds to (tube OD and wall, butt diameter) plus the end-to-weld length.',
         ],
         'companion-flanges' => [
@@ -84,18 +92,22 @@ return [
         ],
         'ball-stud-yokes' => [
             'type' => 'Ball Stud Yoke',
+            'title' => 'Ball Stud Yokes',
             'intro' => 'A ball stud yoke is the tube (weld) yoke of a double-cardan joint: it is welded to the driveshaft tube and carries the ball stud that rides in the centering socket. Match the u-joint series, the tube outside diameter and wall, the butt diameter, the center-to-weld length and the ball stud diameter and length to the centering yoke and kit you use.',
         ],
         'h-yokes' => [
             'type' => 'H Yoke',
+            'title' => 'H Yokes',
             'intro' => 'An H yoke (coupling or center yoke) joins two u-joints back to back in a double-cardan joint. Order by the u-joint series on each side, the center-to-center distance between the joints and the swing diameter.',
         ],
         'cv-link-yoks' => [
             'type' => 'CV Link Yoke',
+            'title' => 'CV Link Yokes',
             'intro' => 'A CV link (centering) yoke is the center yoke of a double-cardan CV joint: it links the two u-joints and holds the centering socket that rides on the ball stud. Order the same series as the joints it links and the ball stud diameter it accepts, and check the center-of-joint-to-end length and whether it is greaseable.',
         ],
         'yoke-shafts' => [
             'type' => 'Yoke Shaft',
+            'title' => 'Driveshaft Yoke Shafts',
             'intro' => 'A yoke shaft is the externally splined male half of the slip joint, usually on a short couple assembly, with the u-joint yoke machined on one end; it slides inside a splined sleeve welded in the tube. Match the u-joint series, the spline count, diameter and length, and the center-of-joint-to-end length to the shaft you are rebuilding.',
         ],
         'center-support-bearing' => [
@@ -106,18 +118,22 @@ return [
         ],
         'premade-driveshafts' => [
             'type' => 'Driveshaft',
+            'title' => 'Premade Driveshafts',
             'intro' => 'Ready-to-ship premade driveshafts are built, balanced and listed by vehicle, transmission and length. Check the series, tube diameter and material (steel or aluminum), then confirm the overall length and the end types against the shaft coming out of the truck.',
         ],
         'short-couple-driveshafts' => [
             'type' => 'Short Couple Driveshaft',
+            'title' => 'Short Couple Driveshafts',
             'intro' => 'Short-couple driveshafts are very short assemblies with a slip joint, used between closely spaced components such as transfer case to axle, transmission to divorced transfer case, or between the axles of tandem heavy trucks. Match the u-joint series and the yoke or flange on each end, then the installed (center-to-center) length.',
         ],
         'unwelded-assemblies' => [
             'type' => 'Unwelded Assembly',
+            'title' => 'Unwelded Driveshaft Assemblies',
             'intro' => 'Unwelded assemblies supply the yokes, tube and slip components as a kit for shops that weld and balance in house. Select the series and tube size; cut the tube to your measured length before welding.',
         ],
         'tubing' => [
             'type' => 'DOM Tubing',
+            'title' => 'Driveshaft Tubing',
             'intro' => 'Driveshaft tubing is sold by the foot in DOM steel and 6061 aluminum. Pick the outside diameter and wall thickness your weld yokes are machined for (3.000" × 0.083" and 3.500" × 0.083" are the most common on light trucks); heavier wall and larger OD raise critical speed and torque capacity. Tell us the cut length in the order notes.',
         ],
         // small parts (children of the small-parts category)
@@ -127,18 +143,22 @@ return [
         ],
         'balance-weights' => [
             'type' => 'Balance Weight',
+            'title' => 'Driveshaft Balance Weights',
             'intro' => 'Driveshaft balance weights are welded to the tube during balancing. Choose by weight (ounces or pounds), style and material; stainless weights are used on aluminum tube.',
         ],
         'increase-bushings' => [
             'type' => 'Increase Bushing',
+            'title' => 'Driveshaft Increase Bushings',
             'intro' => 'Increase bushings are adapter rings that let a weld yoke, ball stud yoke or spline made for one tube size be welded into a larger tube (for example 2.5" to 3.0" OD). Match the bushing\'s inside diameter to the yoke\'s butt diameter and its outside diameter to the inside of the new tube, from-tube and to-tube sizes as listed.',
         ],
         'strap-kits' => [
             'type' => 'Strap Kit',
+            'title' => 'U-Joint Strap Kits',
             'intro' => 'Strap kits hold the u-joint bearing caps in a strap-style end yoke. They are series-specific: a 1310 strap will not fit a 1350 yoke. Kits include two straps and four bolts.',
         ],
         'nuts' => [
             'type' => 'Nut',
+            'title' => 'Pinion & Yoke Nuts',
             'intro' => 'Pinion and yoke nuts by thread size and grade. Match the thread diameter and pitch to the shaft; use a new nut when the old one was staked or had a locking insert.',
         ],
         'snap-rings' => [
@@ -155,36 +175,50 @@ return [
         ],
         'cv-ball-kit' => [
             'type' => 'CV Ball Kit',
+            'title' => 'CV Centering Ball Kits',
             'intro' => 'A CV ball (centering) kit rebuilds the ball and socket that keep a double-cardan joint centered; kits include the socket, spring and seals. Order by the ball stud diameter and the socket bore, and choose greaseable or non-greaseable to match your centering yoke.',
         ],
         'dust-cap-press-on-and-threaded' => [
             'type' => 'Dust Cap',
+            'title' => 'Slip Yoke Dust Caps',
             'intro' => 'Slip yoke dust caps keep grit out of the splines. Press-on caps are sized by the yoke boss diameter; threaded caps by the thread size on the yoke. Match the series listed.',
         ],
         'nose-bushings' => [
             'type' => 'Nose Bushing',
+            'title' => 'Driveshaft Nose Bushings',
             'intro' => 'Nose bushings (centering bushings) are pressed into the transmission or differential flange and center the driveshaft nose on flex-disc (giubo) and prong-flange shafts, mostly BMW and other imports. Replace them whenever the shaft comes off. Match the outside diameter, the inside diameter and the height.',
         ],
         'u-bolt-kits' => [
             'type' => 'U-Bolt Kit',
+            'title' => 'Driveshaft U-Bolt Kits',
             'intro' => 'U-bolt kits clamp the u-joint caps into a u-bolt style end yoke. They are series-specific; each kit includes two u-bolts, lock washers and nuts.',
         ],
         'lube-zerk-fittings' => [
             'type' => 'Zerk Fitting',
+            'title' => 'Zerk Grease Fittings',
             'intro' => 'Grease (zerk) fittings for greaseable u-joints and slip yokes, by thread size and angle. Check whether your joint takes a straight or angled fitting.',
         ],
         'hardware' => [
             'type' => 'Hardware',
+            'title' => 'Driveline Hardware',
             'intro' => 'Bolts, washers and miscellaneous driveline hardware by thread size and grade.',
         ],
         'keyway' => [
             'type' => 'Key',
+            'title' => 'PTO Yoke Keys & Keystock',
             'intro' => 'Keys and keystock for keyed PTO bores. Match the key width and length to the keyway in the yoke.',
         ],
         'boot-kits' => [
             'type' => 'Boot Kit',
+            'title' => 'Driveshaft Boot Kits',
             'intro' => 'Boot kits seal a driveshaft\'s slip joint or CV joint against dirt and water and keep the grease in. Match the large and small boot diameters and the length, and use the clamps listed with each kit.',
         ],
+        // no buying copy yet: the <title> only (Search Console 2026-11-13: "drive shaft boot", "driveshaft boot")
+        'boot-clamps' => ['title' => 'Driveshaft Boot Clamps'],
+        'boot-cans-bearing-retainers' => ['title' => 'Boot Cans & Bearing Retainers'],
+        'u-joint-lock-straps-wires' => ['title' => 'U-Joint Lock Straps & Wires'],
+        'u-joint-seal-protectors' => ['title' => 'U-Joint Seal Protectors'],
+        'welch-plugs' => ['title' => 'Welch Plugs'],
     ],
 
     // top-level catalog groups: one-paragraph intro used in the group title/description

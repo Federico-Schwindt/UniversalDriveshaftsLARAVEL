@@ -30,7 +30,10 @@
 .pdp__cart .pdp__ftnote,.pdp__cart .pdp__msg{order:3;flex-basis:100%}
 @media (max-width:560px){.pdp__cart{flex-wrap:wrap}.pdp__cart .btn{min-width:0;flex:1 1 0}.pdp__cart .btn-line{flex-basis:100%}}
 .pdp__sku{font-family:var(--font-m);font-weight:600;font-size:.95rem;letter-spacing:.02em;color:var(--blue);margin:0}
-.pdp h1.pdp__name{font-family:var(--font-h);font-weight:600;font-size:clamp(1.3rem,1.1rem + .8vw,1.7rem);line-height:1.25;letter-spacing:-.01em;color:var(--ink);margin:.3rem 0 0;max-width:none}
+/* the part number is in the h1 with the name: it is what people search a part by */
+.pdp h1.pdp__title{font-size:inherit;margin:0}
+.pdp__title > span{display:block}
+.pdp .pdp__title .pdp__name{font-family:var(--font-h);font-weight:600;font-size:clamp(1.3rem,1.1rem + .8vw,1.7rem);line-height:1.25;letter-spacing:-.01em;color:var(--ink);margin:.3rem 0 0;max-width:none}
 /* specs read like a data sheet: label left, value right, one hairline per row */
 .pdp .uspecs{display:grid;grid-template-columns:1fr;gap:0;margin:0;border-top:1px solid var(--line)}
 .uspecs > div{display:grid;grid-template-columns:minmax(0,42%) minmax(0,1fr);gap:1rem;align-items:baseline;padding:.5rem .1rem;border-bottom:1px solid var(--line);background:none;border-radius:0}
@@ -216,8 +219,7 @@
 
       {{-- "1680-60" is searched as "1680/60" too (Search Console, 2026-11-04): say both, so the page matches either --}}
       @php $skuAlias = preg_match('/^(\d{3,5})-(\d{1,4}[A-Z]?)$/', (string) $p['sku'], $sa) ? $sa[1] . '/' . $sa[2] : null; @endphp
-      <p class="pdp__sku">{{ __('Part No.') }} {{ $p['sku'] }}@if($skuAlias) <span class="muted">({{ __('also written') }} {{ $skuAlias }})</span>@endif</p>
-      <h1 class="pdp__name">{{ $displayName ?: $p['sku'] }}</h1>
+      <h1 class="pdp__title"><span class="pdp__sku">{{ __('Part No.') }} {{ $p['sku'] }}@if($skuAlias) <span class="muted">({{ __('also written') }} {{ $skuAlias }})</span>@endif</span> <span class="pdp__name">{{ $displayName ?: $p['sku'] }}</span></h1>
 
       @php
         // sold by the foot = tubing listed with a 1" length (the price is per foot); fixed-length tubes are not

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', __('Complete driveshafts by vehicle') . ' | Universal Driveshafts')
+@section('title', __('Complete driveshafts by vehicle and part number') . ' | UDS')
 @section('desc', __('Every complete driveshaft we stock, listed by UDS part number with price, description and the vehicles it fits. Or find yours by year, make and model.'))
 @section('canonical','/shop/complete-driveshafts/by-vehicle')
 @if($q !== '' || $data['page'] > 1)@section('robots','noindex,follow')@endif

@@ -812,5 +812,6 @@
     "Question :n": "質問 :n",
     "In inches, with the vehicle at ride height. A1 and C1 are both required.": "単位はインチで、車両を通常の車高にした状態で測定してください。A1とC1はどちらも必須です。",
     "Please enter C1 (u-joint center to u-joint center).": "C1(ユニバーサルジョイントの中心間)を入力してください。",
-    "C1 cannot be longer than A1. Please check both measurements.": "C1はA1より長くできません。両方の寸法をご確認ください。"
+    "C1 cannot be longer than A1. Please check both measurements.": "C1はA1より長くできません。両方の寸法をご確認ください。",
+    "Build a custom one-piece driveshaft online: tell us what it connects to, pick the series and material, enter the length and see the price. Built in Florida.": "1ピースのカスタムプロペラシャフトをオンラインで作成できます。シャフトの接続先をお知らせいただき、シリーズと材質を選び、長さを入力すれば、ご注文前に価格をご確認いただけます。Florida製。"
 }

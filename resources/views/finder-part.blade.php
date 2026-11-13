@@ -20,6 +20,8 @@
 @endphp
 @section('title', $t)
 @section('desc', $d)
+@section('ogtype', 'product')
+@if(!empty($p['images'][0]))@section('ogimage', str_starts_with($p['images'][0], '/') ? rtrim(config('app.url'), '/') . $p['images'][0] : $p['images'][0])@endif
 @push('schema')
 <script type="application/ld+json">{!! json_encode(array_filter([
   '@@context' => 'https://schema.org', '@@type' => 'Product',
@@ -101,7 +103,8 @@
   <div class="crumb"><a href="/">{{ __('Home') }}</a><span class="sep">/</span><a href="/catalog/driveshafts">{{ __('Complete driveshafts') }}</a><span class="sep">/</span><span>{{ $pn }}</span></div>
   <div class="fpp-head">
     <div>
-      <h1><small>{{ __('Complete driveshaft') }}</small>{{ __('Part number') }} {{ $pn }}</h1>
+      {{-- the vehicle it fits is in the h1 too: shafts are searched by year, make and model --}}
+      <h1><small>{{ __('Complete driveshaft') }}@if($app0) · {{ $app0 }}@endif</small> {{ __('Part number') }} {{ $pn }}</h1>
       @if(!empty($fit))<p class="fpp-fit"><x-icon name="check"/> {{ __('Fits your :vehicle', ['vehicle' => $fit]) }}</p>@endif
     </div>
     <div class="fpp-acts">
