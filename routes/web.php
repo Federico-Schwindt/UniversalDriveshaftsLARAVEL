@@ -100,8 +100,8 @@ Route::get('/premade-driveshafts', function (\App\Services\CatalogService $catal
 Route::post('/track-order', [\App\Http\Controllers\ShopController::class, 'track'])->middleware('throttle:forms');
 /* ---- RETIRED SECTIONS (2026-09-10) ---------------------------------------
    The storefront is ecommerce-only now. The custom-driveshaft landing page,
-   the whole /resources library and the public appointment booking were
-   removed; every one of their URLs 301s to the nearest commercial page so no
+   the whole /resources library (its measuring guides came back on 2026-11-13,
+   below) and the public appointment booking were removed; every one of their URLs 301s to the nearest commercial page so no
    existing link, bookmark, ad or search result lands on a 404.
    Backup: /var/www/vhosts/dev.udshafts.com/backups/uds-app-20260910-233643
    -------------------------------------------------------------------------- */
@@ -110,10 +110,11 @@ Route::redirect('/custom-driveshaft-form', '/online-builder', 301);
 Route::redirect('/measuring-your-custom-driveshaft', '/online-builder', 301);
 Route::redirect('/one-piece-driveshaft', '/online-builder', 301);
 Route::redirect('/two-piece-driveshaft', '/online-builder', 301);
-Route::redirect('/common-terms', '/shop', 301);
-Route::redirect('/troubleshooting-guide', '/shop', 301);
-Route::redirect('/resources', '/shop', 301);
-Route::get('/resources/{any}', fn () => redirect('/shop', 301))->where('any', '.*');
+Route::redirect('/common-terms', '/resources/common-terms', 301);
+Route::redirect('/troubleshooting-guide', '/resources', 301);
+// the old measuring guides are back at their old addresses, in the new design (owner, 2026-11-13; App\Support\ResourceGuides)
+Route::get('/resources', [\App\Http\Controllers\ResourcesController::class, 'index']);
+Route::get('/resources/{path}', [\App\Http\Controllers\ResourcesController::class, 'show'])->where('path', '.*');
 Route::redirect('/make-an-appointment', '/contact', 301);
 Route::redirect('/appointment', '/contact', 301);
 Route::get('/appointment/{any}', fn () => redirect('/contact', 301))->where('any', '.*');

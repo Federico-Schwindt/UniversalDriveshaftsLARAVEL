@@ -198,6 +198,10 @@ class SeoController extends Controller
             $file = $this->viewFileFor($loc);
             $out[] = ['loc' => $loc, 'pri' => $pri, 'freq' => $freq, 'lastmod' => $file && is_file($file) ? date('Y-m-d', filemtime($file)) : null];
         }
+        // the old store's measuring guides, back at their old addresses (App\Support\ResourceGuides)
+        $mod = date('Y-m-d', (int) @filemtime(resource_path('data/resource-guides.json')));
+        $out[] = ['loc' => '/resources', 'pri' => '0.5', 'freq' => 'monthly', 'lastmod' => $mod];
+        foreach (\App\Support\ResourceGuides::all() as $g) $out[] = ['loc' => \App\Support\ResourceGuides::url($g['path']), 'pri' => '0.5', 'freq' => 'monthly', 'lastmod' => $mod];
         return $out;
     }
 
