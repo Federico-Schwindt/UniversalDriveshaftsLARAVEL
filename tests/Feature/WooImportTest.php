@@ -155,6 +155,17 @@ class WooImportTest extends TestCase
         }
     }
 
+    public function test_the_import_runs_without_the_staging_snapshot(): void
+    {
+        // Hostinger has no wp_src database: the customers step must fall back to the live export instead of stopping
+        config(['database.connections.wp_src.host' => '127.0.0.1', 'database.connections.wp_src.port' => '1', 'database.connections.wp_src.username' => 'none']);
+        \Illuminate\Support\Facades\DB::purge('wp_src');
+        $cmd = app(\App\Console\Commands\WooImport::class);
+        (fn () => $this->dir = storage_path('app/import'))->call($cmd);
+        $this->assertInstanceOf(\Illuminate\Support\Collection::class, (fn () => $this->hashes())->call($cmd));
+        \Illuminate\Support\Facades\DB::purge('wp_src');
+    }
+
     public function test_imported_completed_order_reads_completed_to_the_customer(): void
     {
         $o = $this->importedOrder(['status' => 'completed']);
