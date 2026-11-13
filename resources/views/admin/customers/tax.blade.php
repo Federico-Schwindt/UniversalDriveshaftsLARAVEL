@@ -23,6 +23,6 @@
     <td data-label="Expires" class="small">{{ $u->tax_cert_expires ? \Carbon\Carbon::parse($u->tax_cert_expires)->format('M j, Y') : '—' }}@if($expired) <span class="badge badge--warn">expired</span>@endif</td>
     <td class="status-cell"><span class="badge {{ $u->tax_exempt_status === 'approved' && !$expired ? 'badge--ok' : ($u->tax_exempt_status === 'pending' ? 'badge--warn' : 'badge--plain') }}">{{ ucfirst($u->tax_exempt_status) }}</span></td>
   </tr>
-  @empty<tr><td colspan="4"><div class="empty">{!! ic('dollar') !!}<b>No certificates yet</b><span>Customers send them from Account → Settings; staff can add one on the customer page.</span></div></td></tr>@endforelse
+  @empty<tr><td colspan="4"><div class="empty">{!! ic('dollar') !!}<b>No certificates yet</b><span>Customers upload them in My account → Sales tax certificate; staff can add one on the customer page.</span></div></td></tr>@endforelse
   </tbody></table></div></div>
 @endsection

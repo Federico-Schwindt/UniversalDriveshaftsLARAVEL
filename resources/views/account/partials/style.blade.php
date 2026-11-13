@@ -172,6 +172,26 @@ a.orow:hover{background:var(--paper-2)}
 /* designs/buy-again/requests pages that keep their own markup */
 .aset-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--acct-gap)}
 
+/* overview: every account section with what waits in it; on phones one list */
+.ahub{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.ahub-i{display:flex;align-items:center;gap:12px;padding:14px 14px 14px 16px;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md,12px);text-decoration:none;color:inherit;min-width:0;transition:border-color .15s}
+.ahub-i:hover{border-color:var(--blue-200)}
+.ahub-i:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.ahub-ic{width:38px;height:38px;flex:none;border-radius:10px;background:var(--blue-050);color:var(--blue-700);display:grid;place-items:center}
+.ahub-ic svg{width:20px;height:20px}
+.ahub-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.ahub-t b{font-size:.94rem;color:var(--ink);line-height:1.25}
+.ahub-t span{font-size:.8rem;color:var(--ink-3);line-height:1.35}
+.ahub-b{flex:none;padding:2px 8px;border-radius:var(--r-sm);font-size:.74rem;font-weight:600;white-space:nowrap;line-height:1.5;background:var(--paper-2);color:var(--ink-2);font-variant-numeric:tabular-nums}
+.ahub-b--blue{background:var(--blue-050);color:var(--blue-700)}
+.ahub-b--ok{background:var(--teal-050);color:var(--teal-ink)}
+.ahub-b--warn{background:var(--warn-bg);color:var(--warn)}
+.ahub-i>svg{width:14px;height:14px;flex:none;color:var(--ink-3)}
+.acct-back{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;margin-bottom:-6px;font-size:.86rem;font-weight:600;color:var(--blue);text-decoration:none}
+.acct-back svg{width:14px;height:14px}
+.acct-back:hover{text-decoration:underline}
+.aset[id]{scroll-margin-top:84px}
+@media (max-width:1180px){.ahub{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:1060px){.alinks{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:960px){
   .acol,.aset-grid{grid-template-columns:1fr}
@@ -197,6 +217,11 @@ a.orow:hover{background:var(--paper-2)}
   .astat b{font-size:1.3rem}
   .astat span{font-size:.76rem}
   .alinks{grid-template-columns:1fr 1fr;gap:8px}
+  .ahub{grid-template-columns:1fr;gap:0;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md,12px);overflow:hidden}
+  .ahub-i{border:0;border-bottom:1px solid var(--line-2);border-radius:0;padding:12px 14px}
+  .ahub-i:last-child{border-bottom:0}
+  .ahub-i:active{background:var(--paper-2)}
+  .ahub-ic{width:34px;height:34px}
   .alink{padding:12px;font-size:.84rem}
   .ohead{display:none}
   .orow{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"no tot" "po st" "dt dt" "trk trk";gap:4px 10px;padding:14px 2px}
@@ -207,7 +232,7 @@ a.orow:hover{background:var(--paper-2)}
   .aset{padding:18px 16px}
   .asteps li{font-size:.72rem}
 }
-@media (prefers-reduced-motion:reduce){.astat,.alink{transition:none}}
+@media (prefers-reduced-motion:reduce){.astat,.alink,.ahub-i{transition:none}}
 
 /* business account (tiers, invoices) */
 .biz-pitch{display:flex;flex-direction:column;align-items:flex-start;gap:14px;max-width:62ch}
