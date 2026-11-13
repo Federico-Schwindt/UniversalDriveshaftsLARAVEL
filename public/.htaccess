@@ -25,10 +25,7 @@
     RewriteCond %{HTTP:x-xsrf-token} .
     RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
 
-    # Redirect Trailing Slashes If Not A Folder...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^ %1 [L,R=301]
+    # A closing slash is answered by the app (CanonicalPath): an old WordPress URL then takes one redirect, not two.
 
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d

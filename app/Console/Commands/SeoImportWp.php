@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Support\LegacyUrls;
 use App\Support\Seo;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -200,6 +201,8 @@ class SeoImportWp extends Command
     private function closest(string $source, ?int $wpId): ?string
     {
         if (!preg_match('#^product/([^/]+)$#', $source, $m)) return null;
+        // a slug the product had before names it exactly (WordPress keeps them in _wp_old_slug)
+        if ($to = LegacyUrls::part($m[1], true)) return $to;
         $tokens = explode('-', preg_replace('/^(uds|spicer|oem|neapco|dana)-/', '', $m[1]));
         for ($n = count($tokens); $n >= 1; $n--) {
             $cand = implode('-', array_slice($tokens, 0, $n));

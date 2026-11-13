@@ -152,31 +152,15 @@ Route::get('/shop', [\App\Http\Controllers\CatalogController::class, 'index']);
 Route::get('/shop/quick-view/{id}', [\App\Http\Controllers\CatalogController::class, 'quickView'])->whereNumber('id');
 Route::get('/shop/alternates/{id}', [\App\Http\Controllers\CatalogController::class, 'alternates'])->whereNumber('id');
 Route::post('/shop/catalog/add', [\App\Http\Controllers\CatalogController::class, 'add'])->middleware('throttle:30,1');
-Route::get('/parts/{sku}', [\App\Http\Controllers\CatalogController::class, 'detail']);
+// two part numbers carry a slash (GU7280/4, D3EU-W/O-T-CAP): the part number is everything after /parts/
+Route::get('/parts/{sku}', [\App\Http\Controllers\CatalogController::class, 'detail'])->where('sku', '.+');
 // Custom Cut Tubing became Driveshaft Tubing (owner, 2026-11): the old group URLs keep their rankings through a 301
 Route::get('/shop/custom-cut-tubing/{cat?}', fn (?string $cat = null) => redirect('/shop/driveshaft-tubing/' . ($cat ?? 'tubing'), 301));
 Route::get('/shop/{group}', [\App\Http\Controllers\CatalogController::class, 'group']);
 Route::get('/shop/{group}/{cat}', [\App\Http\Controllers\CatalogController::class, 'category']);
 // Legacy WooCommerce category URLs -> real shop table (fixed 2026-09-05; was a 'coming soon' placeholder)
-Route::get('/product-category/{path}', function (string $path) {
-    $slug = basename(rtrim($path, '/'));   // nested WooCommerce URLs (/a/b/) resolve by their last segment
-    // a top-level group slug (driveshaft-components, small-parts…) goes straight to its group page
-    if (array_key_exists($slug, config('catalog.groups', []))) return redirect('/shop/' . $slug, 301);
-    $g = null;
-    try { $g = app(\App\Services\CatalogService::class)->groupOf($slug); } catch (\Throwable $e) {}
-    $gs = is_array($g) ? ($g['slug'] ?? ($g['key'] ?? null)) : (is_string($g) ? $g : null);
-    if (!$gs) {
-        foreach (config('catalog.groups', []) as $key => $def) {
-            if (in_array($slug, $def['categories'] ?? [], true)) { $gs = $key; break; }
-        }
-    }
-    if ($gs && $gs !== $slug) return redirect("/shop/{$gs}/{$slug}", 301);
-    // a redirect kept from the old site (admin → SEO) knows a better home than the generic catalog
-    if (($hit = \App\Support\Seo::redirectFor('/product-category/' . $path)) && $hit['target']) return redirect($hit['target'], 301);
-    // a real WooCommerce category that has no shop page of its own: permanent redirect to the catalog; anything else is a 404
-    try { if (app(\App\Services\CatalogService::class)->term($slug)) return redirect('/shop', 301); } catch (\Throwable $e) {}
-    abort(404);
-})->where('path', '[A-Za-z0-9._/-]+');
+Route::get('/product-category/{path}', fn (string $path) => ($to = \App\Support\LegacyUrls::category($path)) ? redirect($to, 301) : abort(404))
+    ->where('path', '[A-Za-z0-9._/-]+');
 Route::get('/product/{slug}', [\App\Http\Controllers\CatalogController::class, 'productBySlug']);
 // Legacy WordPress pages that no longer exist -> nearest page on the new site (301s keep the old inbound links and rankings)
 (function () {
@@ -201,6 +185,7 @@ Route::get('/product/{slug}', [\App\Http\Controllers\CatalogController::class, '
         'my-account' => '/account', 'sitemap' => '/sitemap.xml', 'lets-keep-in-touch' => '/contact', 'thank-you-form-details-received' => '/contact', 'elementor-69216' => '/',
         'universal-driveshafts-inc-return-and-refund-policy' => '/return-policy',
         'view-order-msg' => '/track-order', 'view-order-msg-2' => '/track-order',
+        'order-services' => '/services',
         'return-request-form-3' => '/contact', 'exchange-request-form-3' => '/contact', 'request-form' => '/contact', 'request-form-3' => '/contact', 'product-cancel-request-form-3' => '/contact',
     ];
     foreach ($map as $old => $new) {
