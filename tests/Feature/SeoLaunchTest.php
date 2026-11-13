@@ -30,6 +30,22 @@ class SeoLaunchTest extends TestCase
         $this->assertStringContainsString($sku, $this->h1($this->get('/parts/' . rawurlencode($sku))->assertOk()->getContent()));
     }
 
+    public function test_a_part_whose_title_is_only_its_type_is_named_by_its_series_style_and_lube(): void
+    {
+        // owner, 2026-11-13: "por que los nombres solo Universal Joint? … antes teníamos un nombre más largo y descriptivo"
+        $c = app(\App\Services\CatalogService::class);
+        $p = ['name' => '5-153X UDS Spicer - 5-153X Universal Joint', 'sku' => '5-153X', 'series' => '1310', 'style' => 'OSR', 'specs' => ['Lube' => 'Y']];
+        $this->assertSame('Universal Joint 1310 Series, OSR, Greaseable', $c->cleanName($p));
+        $this->assertSame('Universal Joint Toyota Series, ISR, Sealed', $c->cleanName(['series' => 'TOYOTA', 'style' => 'ISR', 'specs' => ['Lube' => 'N']] + $p));
+        // a title that already describes the part is left alone
+        $this->assertSame('Universal Joint 1310 Series, Lube for Life Premium Non-Greasable', $c->cleanName(['name' => 'Universal Joint 1310 Series, Lube for Life Premium Non-Greasable', 'sku' => '5-1310XU', 'series' => '1310', 'style' => 'OSR']));
+
+        $sku = DB::connection('wp')->table('wp_posts as p')->join('wp_postmeta as s', fn ($j) => $j->on('s.post_id', '=', 'p.ID')->where('s.meta_key', '_sku'))
+            ->where('p.post_type', 'product')->where('p.post_status', 'publish')->where('p.post_title', 'like', '% UDS Spicer - % Universal Joint')->orderBy('p.ID')->value('s.meta_value');
+        if (!$sku) $this->markTestSkipped('no bare Spicer u-joint title');
+        $this->assertMatchesRegularExpression('/Universal Joint \S+ Series/', $this->h1($this->get(part_path($sku))->assertOk()->getContent()));
+    }
+
     public function test_a_part_number_with_a_slash_has_one_address_in_canonical_and_sitemap(): void
     {
         $sku = DB::connection('wp')->table('wp_posts as p')->join('wp_postmeta as s', fn ($j) => $j->on('s.post_id', '=', 'p.ID')->where('s.meta_key', '_sku'))

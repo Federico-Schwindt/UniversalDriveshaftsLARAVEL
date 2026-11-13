@@ -1024,6 +1024,19 @@ class CatalogService
         $name = preg_replace('/\s{2,}/', ' ', $name);
         $name = trim(preg_replace('/^[\s,\-\x{2013}\x{2014}]+|[\s,\-\x{2013}\x{2014}]+$/u', '', $name));
         $name = preg_replace('/\bWeigths\b/', 'Weights', $name);
+        // a bare type ("Universal Joint" on the 106 "UDS Spicer - 5-153X Universal Joint" titles) tells a buyer nothing:
+        // add the series, style and lube from the part's own data, the way the other u-joints are named
+        if ($name !== '' && count(preg_split('/\s+/', $name)) <= 3 && !preg_match('/\d/', $name)) {
+            if (!preg_match('/[a-z]/', $name)) $name = ucwords(strtolower($name));   // "ALUMINUM WELD YOKE"
+            $series = trim((string) ($p['series'] ?? ''));
+            if (preg_match('/^[A-Z]+$/', $series)) $series = ucfirst(strtolower($series));   // "TOYOTA", "KIA"
+            $style = trim((string) ($p['style'] ?? ''));
+            if (preg_match('/^[A-Z]{4,}$/', $style)) $style = ucfirst(strtolower($style));    // "COMBO"; OSR, ISR, WB, HR stay
+            $lube = strtoupper(trim((string) ($p['specs']['Lube'] ?? '')));
+            $extra = array_filter([$style, str_starts_with($lube, 'Y') ? 'Greaseable' : (str_starts_with($lube, 'N') ? 'Sealed' : '')]);
+            if ($series !== '' && stripos($name, $series) === false) $name .= ' ' . $series . ' Series';
+            if ($extra) $name .= ', ' . implode(', ', $extra);
+        }
         // display text: Spanish visitors get the driveline vocabulary in Spanish (never stored)
         return \App\Support\PartGlossary::t($name !== '' ? $name : (string) $p['name']);
     }
