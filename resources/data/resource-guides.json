@@ -1,0 +1,1989 @@
+{
+ "source": "universaldriveshafts.com/resources, live pages of 2026-11-13 (Elementor), converted for the new site",
+ "pages": [
+  {
+   "path": "transmission-slip-yoke",
+   "title": "Transmission Slip Yoke Guide",
+   "parent": null,
+   "desc": "Identify a transmission slip yoke: spline diameter, hub diameter, spline count and length, and outside or inside snap ring style, with pictures.",
+   "blocks": [
+    {
+     "type": "heading",
+     "text": "Guide to identify transmission slip yoke"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "Transmission slip yoke v2 100.jpg",
+       "caption": "",
+       "src": "/img/guides/transmission-slip-yoke-v2-100.webp",
+       "w": 1400,
+       "h": 700
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "text": "Definitions"
+    },
+    {
+     "type": "defs",
+     "items": [
+      {
+       "mark": "A",
+       "text": "Spline Diameter"
+      },
+      {
+       "mark": "B",
+       "text": "Hub Diameter"
+      },
+      {
+       "mark": "C",
+       "text": "Spline Count"
+      },
+      {
+       "mark": "D",
+       "text": "Slip Yoke Length"
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "text": "Outside Snap Ring Style Slip Yoke"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "Outside v2",
+       "caption": "",
+       "link": {
+        "kind": "guide",
+        "path": "transmission-slip-yoke/transmission-slip-yoke-outside-snap-ring-style"
+       },
+       "src": "/img/guides/outside-v2.webp",
+       "w": 1000,
+       "h": 1000
+      }
+     ]
+    },
+    {
+     "type": "link",
+     "kind": "guide",
+     "path": "transmission-slip-yoke/transmission-slip-yoke-outside-snap-ring-style",
+     "text": "Outside Snap Ring Style Slip Yoke"
+    },
+    {
+     "type": "heading",
+     "text": "Inside Snap Ring Style Slip Yoke"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "Inside v2",
+       "caption": "",
+       "link": {
+        "kind": "guide",
+        "path": "transmission-slip-yoke/transmission-slip-yoke-inside-snap-ring-style"
+       },
+       "src": "/img/guides/inside-v2.webp",
+       "w": 1000,
+       "h": 1000
+      }
+     ]
+    },
+    {
+     "type": "link",
+     "kind": "guide",
+     "path": "transmission-slip-yoke/transmission-slip-yoke-inside-snap-ring-style",
+     "text": "Inside Snap Ring Style Slip Yoke"
+    },
+    {
+     "type": "link",
+     "kind": "category",
+     "slug": "end-yokes",
+     "text": "View Full End Yokes Catalog"
+    }
+   ],
+   "short": "Transmission slip yokes"
+  },
+  {
+   "path": "transmission-slip-yoke/transmission-slip-yoke-inside-snap-ring-style",
+   "title": "Transmission Slip Yoke Inside Snap Ring Style",
+   "parent": "transmission-slip-yoke",
+   "desc": "Measure an inside snap ring transmission slip yoke: cap diameter and width between the machined flats, with common u-joint sizes by series.",
+   "blocks": [
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "inside popup",
+       "caption": "",
+       "src": "/img/guides/inside-popup.webp",
+       "w": 1400,
+       "h": 700
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>E.) Cap Diameter:</strong><br>Diameter measured over bearing cap space.</p><p><strong>F.) Width:</strong><br>Distance Measured Between Machined Flats</p>"
+    },
+    {
+     "type": "heading",
+     "text": "Common Inside Snap Ring U-joint Sizes and series"
+    },
+    {
+     "type": "table",
+     "head": [
+      "Series",
+      "Width",
+      "Cap Diameter"
+     ],
+     "rows": [
+      [
+       "7260 CHRYSLER",
+       "2 1/8″ = 2.125",
+       "1 5/64″ = 1.078"
+      ],
+      [
+       "7290 CHRYSLER",
+       "2 5/8″ = 2.625",
+       "1 1/8″ = 1.125"
+      ],
+      [
+       "3R GM",
+       "2 9/16″ = 2.563",
+       "1 1/8″ = 1.125"
+      ]
+     ]
+    },
+    {
+     "type": "link",
+     "kind": "category",
+     "slug": "end-yokes",
+     "text": "View Full End Yokes Catalog"
+    }
+   ]
+  },
+  {
+   "path": "transmission-slip-yoke/transmission-slip-yoke-outside-snap-ring-style",
+   "title": "Transmission Slip Yoke Outside Snap Ring Style",
+   "parent": "transmission-slip-yoke",
+   "desc": "Measure an outside snap ring transmission slip yoke: cap diameter and width over the compressed caps, with common u-joint sizes by series.",
+   "blocks": [
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "Outside snap popup",
+       "caption": "",
+       "src": "/img/guides/outside-snap-popup.webp",
+       "w": 1400,
+       "h": 700
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>E.) Cap Diameter:</strong><br>Diameter measured over bearing cap space.</p><p><strong>F.) Width:</strong><br>Distance measured over compressed bearing cap.</p>"
+    },
+    {
+     "type": "heading",
+     "text": "Common Outside Snap Ring U-joint Sizes and series"
+    },
+    {
+     "type": "table",
+     "head": [
+      "Series",
+      "Width",
+      "Cap Diameter"
+     ],
+     "rows": [
+      [
+       "1210",
+       "2 7/16″ = 2.438",
+       "1 1/16″ = 1.063"
+      ],
+      [
+       "1310",
+       "3 7/32″ = 3.219",
+       "1 1/16″ = 1.063"
+      ],
+      [
+       "1310 FORD*",
+       "3 7/32″ = 3.219",
+       "1 1/8″ = 1.125"
+      ],
+      [
+       "1330",
+       "3 5/8″ = 3.625",
+       "1 1/16″ = 1.063"
+      ],
+      [
+       "1330 FORD*",
+       "3 5/8″ = 3.625",
+       "1 1/8″ = 1.125"
+      ],
+      [
+       "1350",
+       "3 5/8″ = 3.625",
+       "1 1/16″ = 1.063"
+      ],
+      [
+       "1410",
+       "4 3/16 = 4.188",
+       "1 3/16″ = 1.188"
+      ],
+      [
+       "1415**",
+       "4.178",
+       "1 3/16″ = 1.188"
+      ],
+      [
+       "1480",
+       "4 3/16 = 4.188",
+       "1 3/8″ = 1.375"
+      ],
+      [
+       "1485**",
+       "4.178",
+       "1 3/8″ = 1.375"
+      ],
+      [
+       "1550",
+       "4 31/32″ = 4.969",
+       "1 3/8″ = 1.375"
+      ],
+      [
+       "1555**",
+       "4.9464",
+       "1 3/8″ = 1.375"
+      ]
+     ]
+    },
+    {
+     "type": "link",
+     "kind": "category",
+     "slug": "end-yokes",
+     "text": "View Full End Yokes Catalog"
+    }
+   ]
+  },
+  {
+   "path": "flange-yoke",
+   "title": "Flange Yoke Guideline",
+   "parent": null,
+   "desc": "Identify a flange yoke: male flange with an extended pilot or female flange with a recessed pilot hole, bolt circle and hole pattern, with pictures.",
+   "blocks": [
+    {
+     "type": "heading",
+     "text": "Male Flange (Extended Pilot Hole)"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "",
+       "caption": "",
+       "link": {
+        "kind": "guide",
+        "path": "flange-yoke/male-flange-extended-pilot-hole"
+       },
+       "src": "/img/guides/3-e1739859343375.webp",
+       "w": 1000,
+       "h": 658
+      },
+      {
+       "alt": "male222",
+       "caption": "",
+       "link": {
+        "kind": "guide",
+        "path": "flange-yoke/male-flange-extended-pilot-hole"
+       },
+       "src": "/img/guides/male222.webp",
+       "w": 1400,
+       "h": 933
+      }
+     ]
+    },
+    {
+     "type": "link",
+     "kind": "guide",
+     "path": "flange-yoke/male-flange-extended-pilot-hole",
+     "text": "Male Flange Guideline"
+    },
+    {
+     "type": "heading",
+     "text": "Female Flange (Recessed Pilot Hole)"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "",
+       "caption": "",
+       "link": {
+        "kind": "guide",
+        "path": "flange-yoke/flange-yoke-recessed-pilot-hole-female"
+       },
+       "src": "/img/guides/2-e1739859375205.webp",
+       "w": 1000,
+       "h": 818
+      },
+      {
+       "alt": "",
+       "caption": "",
+       "link": {
+        "kind": "guide",
+        "path": "flange-yoke/flange-yoke-recessed-pilot-hole-female"
+       },
+       "src": "/img/guides/1.webp",
+       "w": 1400,
+       "h": 933
+      }
+     ]
+    },
+    {
+     "type": "link",
+     "kind": "guide",
+     "path": "flange-yoke/flange-yoke-recessed-pilot-hole-female",
+     "text": "Female Flange Guideline"
+    },
+    {
+     "type": "heading",
+     "text": "Definitions"
+    },
+    {
+     "type": "defs",
+     "items": [
+      {
+       "mark": "A",
+       "text": "Bolt Circle Diameter"
+      },
+      {
+       "mark": "B",
+       "text": "Are the Holes: Threaded or Drilled Is the Hole Pattern: Square or Rectangular"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "html": "<p><em>* Measure the major diameter (deepest part) inside the slip yoke.<br>** Some slip yokes have blank spaces called blind spots. Count each blind spot as one spline</em></p>"
+    },
+    {
+     "type": "link",
+     "kind": "category",
+     "slug": "flange-yokes",
+     "text": "View Full Flange Yokes Catalog"
+    }
+   ],
+   "short": "Flange yokes"
+  },
+  {
+   "path": "flange-yoke/male-flange-extended-pilot-hole",
+   "title": "Male Flange (Extended Pilot Hole)",
+   "parent": "flange-yoke",
+   "desc": "Measure a male flange yoke with an extended pilot hole, with pictures and a chart of common outside snap ring u-joint sizes by series.",
+   "blocks": [
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "",
+       "caption": "",
+       "src": "/img/guides/3-e1739859343375.webp",
+       "w": 1000,
+       "h": 658
+      },
+      {
+       "alt": "male222",
+       "caption": "",
+       "src": "/img/guides/male222.webp",
+       "w": 1400,
+       "h": 933
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "text": "Common Outside Snap Ring U-joint Sizes and Series"
+    },
+    {
+     "type": "text",
+     "html": "<p><em>* 1310 Ford &amp; 1330 Ford have 1 – </em><em><sup>1</sup>⁄<sub>8</sub>” cap at pinion yoke and 1 – </em><em><sup>1</sup>⁄<sub>16</sub>” cap at driveshaft. </em><br><em>** 1415, 1485, 1555 only found on Chrysler and some GM vehicles with American Axle built driveshafts.</em> </p>"
+    },
+    {
+     "type": "table",
+     "head": [
+      "Series",
+      "Width",
+      "Cap Diameter"
+     ],
+     "rows": [
+      [
+       "1210",
+       "2 7/16″ = 2.438",
+       "1 1/16″ = 1.063"
+      ],
+      [
+       "1310",
+       "3 7/32″ = 3.219",
+       "1 1/16″ = 1.063"
+      ],
+      [
+       "1310 FORD*",
+       "3 7/32″ = 3.219",
+       "1 1/8″ = 1.125"
+      ],
+      [
+       "1330",
+       "3 5/8″ = 3.625",
+       "1 1/16″ = 1.063"
+      ],
+      [
+       "1330 FORD*",
+       "3 5/8″ = 3.625",
+       "1 1/8″ = 1.125"
+      ],
+      [
+       "1350",
+       "3 5/8″ = 3.625",
+       "1 1/16″ = 1.063"
+      ],
+      [
+       "1410",
+       "4 3/16 = 4.188",
+       "1 3/16″ = 1.188"
+      ],
+      [
+       "1415**",
+       "4.178",
+       "1 3/16″ = 1.188"
+      ],
+      [
+       "1480",
+       "4 3/16 = 4.188",
+       "1 3/8″ = 1.375"
+      ],
+      [
+       "1485**",
+       "4.178",
+       "1 3/8″ = 1.375"
+      ],
+      [
+       "1550",
+       "4 31/32″ = 4.969",
+       "1 3/8″ = 1.375"
+      ],
+      [
+       "1555**",
+       "4.9464",
+       "1 3/8″ = 1.375"
+      ]
+     ]
+    },
+    {
+     "type": "link",
+     "kind": "category",
+     "slug": "flange-yokes",
+     "text": "View Full Flange Yokes Catalog"
+    }
+   ]
+  },
+  {
+   "path": "flange-yoke/flange-yoke-recessed-pilot-hole-female",
+   "title": "Female Flange (Recessed Pilot Hole)",
+   "parent": "flange-yoke",
+   "desc": "Measure a female flange yoke with a recessed pilot hole, with pictures and a chart of common u-joint sizes by series.",
+   "blocks": [
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "",
+       "caption": "",
+       "src": "/img/guides/2-e1739859375205.webp",
+       "w": 1000,
+       "h": 818
+      },
+      {
+       "alt": "",
+       "caption": "",
+       "src": "/img/guides/1.webp",
+       "w": 1400,
+       "h": 933
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "text": "Common Outside Snap Ring U-joint Sizes and Series"
+    },
+    {
+     "type": "table",
+     "head": [
+      "Series",
+      "Width",
+      "Cap Diameter"
+     ],
+     "rows": [
+      [
+       "7260 CHRYSLER",
+       "2 1/8″ = 2.125",
+       "1 5/64″ = 1.078"
+      ],
+      [
+       "7290 CHRYSLER",
+       "2 5/8″ = 2.625",
+       "1 1/8″ = 1.125"
+      ],
+      [
+       "3R GM",
+       "2 9/16″ = 2.563",
+       "1 1/8″ = 1.125"
+      ]
+     ]
+    },
+    {
+     "type": "link",
+     "kind": "category",
+     "slug": "flange-yokes",
+     "text": "View Full Flange Yokes Catalog"
+    }
+   ]
+  },
+  {
+   "path": "u-joint",
+   "title": "Universal Joint Guideline",
+   "parent": null,
+   "desc": "Identify your universal joint: outside snap ring or inside snap ring style, with pictures and a measuring guide for each.",
+   "blocks": [
+    {
+     "type": "heading",
+     "text": "Outside Snap Ring Style U Joint"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "",
+       "caption": "",
+       "src": "/img/guides/4.webp",
+       "w": 1000,
+       "h": 1000
+      },
+      {
+       "alt": "",
+       "caption": "",
+       "src": "/img/guides/5.webp",
+       "w": 1000,
+       "h": 1000
+      }
+     ]
+    },
+    {
+     "type": "link",
+     "kind": "guide",
+     "path": "u-joint/universal-joint-olutside-snap-ring-style",
+     "text": "Outside Snap Ring Style Guide"
+    },
+    {
+     "type": "heading",
+     "text": "Inside Snap Ring Style U Joint"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "inside ring v2",
+       "caption": "",
+       "src": "/img/guides/inside-ring-v2.webp",
+       "w": 1000,
+       "h": 1000
+      },
+      {
+       "alt": "",
+       "caption": "",
+       "src": "/img/guides/6.webp",
+       "w": 1000,
+       "h": 1000
+      }
+     ]
+    },
+    {
+     "type": "link",
+     "kind": "guide",
+     "path": "u-joint/universal-joint-inside-snap-ring-style",
+     "text": "Inside Snap Ring Style Guide"
+    },
+    {
+     "type": "link",
+     "kind": "category",
+     "slug": "u-joints",
+     "text": "View Full U-Joints Catalog"
+    },
+    {
+     "type": "link",
+     "kind": "pdf",
+     "text": "Download PDF",
+     "href": "/docs/guides/u-joint-guide.pdf"
+    }
+   ],
+   "short": "Universal joints"
+  },
+  {
+   "path": "u-joint/universal-joint-olutside-snap-ring-style",
+   "title": "Universal Joint Outside Snap Ring Style",
+   "parent": "u-joint",
+   "desc": "Measure an outside snap ring u-joint: width over the compressed caps and cap diameter, with a chart of common sizes and series.",
+   "blocks": [
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "",
+       "caption": "",
+       "src": "/img/guides/4.webp",
+       "w": 1000,
+       "h": 1000
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Width: </strong>U joint: Please compress the caps and measure from outside of cap to outside of cap .</p>"
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>End Yoke:</strong> Please measure from inside of tab to inside of tab, using the picture above for reference, If you do not see a tab as shown, then you have an inside snap ring u joint.</p>"
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Use the picture above for reference</strong></p>"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "",
+       "caption": "",
+       "src": "/img/guides/6.webp",
+       "w": 1000,
+       "h": 1000
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Cap Diameter:</strong><br>U joint: Simply measure the U-Joint cap diameter .<br>End Yoke: Please measure the width of the opening where the cap sits in the yoke. use the picture above for reference</p>"
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Use the picture above for reference</strong></p>"
+    },
+    {
+     "type": "heading",
+     "text": "Common Outside Snap Ring U-joint Sizes and Series"
+    },
+    {
+     "type": "table",
+     "head": [
+      "Series",
+      "Width",
+      "Cap Diameter"
+     ],
+     "rows": [
+      [
+       "1210",
+       "2 7/16″ = 2.438",
+       "1 1/16″ = 1.063"
+      ],
+      [
+       "1310",
+       "3 7/32″ = 3.219",
+       "1 1/16″ = 1.063"
+      ],
+      [
+       "1310 FORD*",
+       "3 7/32″ = 3.219",
+       "1 1/8″ = 1.125"
+      ],
+      [
+       "1330",
+       "3 5/8″ = 3.625",
+       "1 1/16″ = 1.063"
+      ],
+      [
+       "1330 FORD*",
+       "3 5/8″ = 3.625",
+       "1 1/8″ = 1.125"
+      ],
+      [
+       "1350",
+       "3 5/8″ = 3.625",
+       "1 3/16″ = 1.188"
+      ],
+      [
+       "1410",
+       "4 3/16 = 4.188",
+       "1 3/16″ = 1.188"
+      ],
+      [
+       "1415**",
+       "4.178",
+       "1 3/16″ = 1.188"
+      ],
+      [
+       "1480",
+       "4 3/16 = 4.188",
+       "1 3/8″ = 1.375"
+      ],
+      [
+       "1485**",
+       "4.178",
+       "1 3/8″ = 1.375"
+      ],
+      [
+       "1550",
+       "4 31/32″ = 4.969",
+       "1 3/8″ = 1.375"
+      ],
+      [
+       "1555**",
+       "4.9464",
+       "1 3/8″ = 1.375"
+      ]
+     ]
+    },
+    {
+     "type": "link",
+     "kind": "category",
+     "slug": "u-joints",
+     "text": "View Full U-Joints Catalog"
+    },
+    {
+     "type": "link",
+     "kind": "pdf",
+     "text": "Download PDF",
+     "href": "/docs/guides/u-joint-guide.pdf"
+    }
+   ]
+  },
+  {
+   "path": "u-joint/universal-joint-inside-snap-ring-style",
+   "title": "Universal Joint Inside Snap Ring Style",
+   "parent": "u-joint",
+   "desc": "Measure an inside snap ring u-joint: width to the snap ring grooves and cap diameter, with a chart of common sizes and series.",
+   "blocks": [
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "inside ring",
+       "caption": "",
+       "src": "/img/guides/inside-ring.webp",
+       "w": 1001,
+       "h": 1001
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Width: </strong>U Joint: Please measure the distance to the outer edge of the snap ring grooves.</p>"
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>End Yoke:</strong> Please measure from the inside flat of one yoke ear to the inside flat of the other ear</p>"
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Use the picture above for reference</strong></p>"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "",
+       "caption": "",
+       "src": "/img/guides/6.webp",
+       "w": 1000,
+       "h": 1000
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Cap Diameter: </strong>U Joint: Simply measure the U-Joint cap.</p>"
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>End Yoke:</strong> Please measure the width of the opening where the cap sits in the yoke.</p>"
+    },
+    {
+     "type": "heading",
+     "text": "Common Inside Snap Ring U-joint Sizes and Series"
+    },
+    {
+     "type": "table",
+     "head": [
+      "Series",
+      "Width",
+      "Cap Diameter"
+     ],
+     "rows": [
+      [
+       "7260 CHRYSLER",
+       "2 – 1⁄8 (2.125)",
+       "1 – 5⁄64 (1.078)"
+      ],
+      [
+       "7290 CHRYSLER",
+       "2 – 5⁄8 (2.625)",
+       "1 – 1⁄8 (1.125)"
+      ],
+      [
+       "3R GM",
+       "2 – 9⁄16 (2.563)",
+       "1 – 1⁄8 (1.125)"
+      ],
+      [
+       "2R GM",
+       "2.342",
+       "1.00"
+      ]
+     ]
+    },
+    {
+     "type": "link",
+     "kind": "category",
+     "slug": "u-joints",
+     "text": "View Full U-Joints Catalog"
+    }
+   ]
+  },
+  {
+   "path": "end-yoke",
+   "title": "End Yoke Guideline",
+   "parent": null,
+   "desc": "Identify a transfer case or pinion end yoke: spline count, spline and hub diameter, height and through hole, outside or inside snap ring style.",
+   "blocks": [
+    {
+     "type": "heading",
+     "text": "Identify your Transfer Case / Pinion U-Joint Size"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "End Yoke 2 100 1",
+       "caption": "",
+       "src": "/img/guides/end-yoke-2-100-1.webp",
+       "w": 1000,
+       "h": 1000
+      },
+      {
+       "alt": "End Yoke v2 100",
+       "caption": "",
+       "src": "/img/guides/end-yoke-v2-100.webp",
+       "w": 1000,
+       "h": 1000
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "text": "Definitions"
+    },
+    {
+     "type": "defs",
+     "items": [
+      {
+       "mark": "A",
+       "text": "Spline Count"
+      },
+      {
+       "mark": "B",
+       "text": "Spline Outside Diameter (from farthest point to farthest point)"
+      },
+      {
+       "mark": "C",
+       "text": "Hub Outside Diameter"
+      },
+      {
+       "mark": "D",
+       "text": "Overall Height"
+      },
+      {
+       "mark": "E",
+       "text": "Through Hole"
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "text": "Looking for an inside snap ring or outside snap ring style end yoke?"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "Universal Driveshafts",
+       "caption": "",
+       "link": {
+        "kind": "guide",
+        "path": "end-yoke/outside-snap-ring-style-end-yoke"
+       },
+       "src": "/img/guides/end-yoke-v2v2-100-e1738105771902.webp",
+       "w": 990,
+       "h": 990
+      }
+     ]
+    },
+    {
+     "type": "link",
+     "kind": "guide",
+     "path": "end-yoke/outside-snap-ring-style-end-yoke",
+     "text": "Outside Snap Ring Style End Yoke"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "",
+       "caption": "",
+       "link": {
+        "kind": "guide",
+        "path": "end-yoke/inside-snap-ring-style-end-yoke"
+       },
+       "src": "/img/guides/9.webp",
+       "w": 1000,
+       "h": 1000
+      }
+     ]
+    },
+    {
+     "type": "link",
+     "kind": "guide",
+     "path": "end-yoke/inside-snap-ring-style-end-yoke",
+     "text": "Inside Snap Ring Style End Yoke"
+    },
+    {
+     "type": "link",
+     "kind": "category",
+     "slug": "end-yokes",
+     "text": "View Full End Yokes Catalog"
+    }
+   ],
+   "short": "End yokes"
+  },
+  {
+   "path": "end-yoke/inside-snap-ring-style-end-yoke",
+   "title": "Inside Snap Ring Style End Yoke",
+   "parent": "end-yoke",
+   "desc": "Measure an inside snap ring end yoke: width between the yoke ear flats and the cap opening, with common u-joint sizes by series.",
+   "blocks": [
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "inside ring v2",
+       "caption": "",
+       "src": "/img/guides/inside-ring-v2.webp",
+       "w": 1000,
+       "h": 1000
+      },
+      {
+       "alt": "",
+       "caption": "",
+       "src": "/img/guides/6.webp",
+       "w": 1000,
+       "h": 1000
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Width: </strong>measure from the inside flat of one yoke ear to the inside flat of the other ear</p><p><strong>Cap Diameter: </strong>measure the width of the opening where the cap sits in the yoke</p>"
+    },
+    {
+     "type": "heading",
+     "text": "Common Inside Snap Ring U-joint Sizes and Series"
+    },
+    {
+     "type": "table",
+     "head": [
+      "Series",
+      "Width",
+      "Cap Diameter"
+     ],
+     "rows": [
+      [
+       "7260 CHRYSLER",
+       "2 1/8″ = 2.125",
+       "1 5/64″ = 1.078"
+      ],
+      [
+       "7290 CHRYSLER",
+       "2 5/8″ = 2.625",
+       "1 1/8″ = 1.125"
+      ],
+      [
+       "3R GM",
+       "2 9/16″ = 2.563",
+       "1 1/8″ = 1.125"
+      ]
+     ]
+    },
+    {
+     "type": "link",
+     "kind": "category",
+     "slug": "end-yokes",
+     "text": "View Full End Yokes Catalog"
+    }
+   ]
+  },
+  {
+   "path": "end-yoke/outside-snap-ring-style-end-yoke",
+   "title": "Outside Snap Ring Style End Yoke",
+   "parent": "end-yoke",
+   "desc": "Measure an outside snap ring end yoke: width between the tabs and the cap opening, with common u-joint sizes by series.",
+   "blocks": [
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "",
+       "caption": "",
+       "src": "/img/guides/4.webp",
+       "w": 1000,
+       "h": 1000
+      },
+      {
+       "alt": "",
+       "caption": "",
+       "src": "/img/guides/5.webp",
+       "w": 1000,
+       "h": 1000
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Width:</strong> measure from inside of tab to inside of tab. If you do not see a tab as shown, then you have an inside snap ring U-Joint.</p><p><strong>Cap Diameter:</strong> measure the width of the opening where the cap sits in the yoke</p>"
+    },
+    {
+     "type": "heading",
+     "text": "Common Outside Snap Ring U-joint Sizes and Series"
+    },
+    {
+     "type": "table",
+     "head": [
+      "Series",
+      "Width",
+      "Cap Diameter"
+     ],
+     "rows": [
+      [
+       "1210",
+       "2 7/16″ = 2.438",
+       "1 1/16″ = 1.063"
+      ],
+      [
+       "1310",
+       "3 7/32″ = 3.219",
+       "1 1/16″ = 1.063"
+      ],
+      [
+       "1310 FORD*",
+       "3 7/32″ = 3.219",
+       "1 1/8″ = 1.125"
+      ],
+      [
+       "1330",
+       "3 5/8″ = 3.625",
+       "1 1/16″ = 1.063"
+      ],
+      [
+       "1330 FORD*",
+       "3 5/8″ = 3.625",
+       "1 1/8″ = 1.125"
+      ],
+      [
+       "1350",
+       "3 5/8″ = 3.625",
+       "1 3/16″ = 1.188"
+      ],
+      [
+       "1410",
+       "4 3/16 = 4.188",
+       "1 3/16″ = 1.188"
+      ],
+      [
+       "1415**",
+       "4.178",
+       "1 3/16″ = 1.188"
+      ],
+      [
+       "1480",
+       "4 3/16 = 4.188",
+       "1 3/8″ = 1.375"
+      ],
+      [
+       "1485**",
+       "4.178",
+       "1 3/8″ = 1.375"
+      ],
+      [
+       "1550",
+       "4 31/32″ = 4.969",
+       "1 3/8″ = 1.375"
+      ],
+      [
+       "1555**",
+       "4.9464",
+       "1 3/8″ = 1.375"
+      ]
+     ]
+    },
+    {
+     "type": "link",
+     "kind": "category",
+     "slug": "end-yokes",
+     "text": "View Full End Yokes Catalog"
+    }
+   ]
+  },
+  {
+   "path": "companion-yoke",
+   "title": "Companion Yoke Guide",
+   "parent": null,
+   "desc": "Measure a companion yoke with a keyway or splines: outside diameter, bolt circle, pilot bore, bore, hub diameter and overall length.",
+   "blocks": [
+    {
+     "type": "heading",
+     "text": "With Keyway"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "Companion Yoke 1 100 1",
+       "caption": "",
+       "src": "/img/guides/companion-yoke-1-100-1.webp",
+       "w": 1400,
+       "h": 1399
+      },
+      {
+       "alt": "Companion 2 100 1",
+       "caption": "",
+       "src": "/img/guides/companion-2-100-1.webp",
+       "w": 1000,
+       "h": 1000
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "text": "Definitions"
+    },
+    {
+     "type": "defs",
+     "items": [
+      {
+       "mark": "A",
+       "text": "Outside Diameter"
+      },
+      {
+       "mark": "B",
+       "text": "Bolt Circle Diameter"
+      },
+      {
+       "mark": "C",
+       "text": "Pilot Bore Diameter"
+      },
+      {
+       "mark": "D",
+       "text": "Bore Diameter"
+      },
+      {
+       "mark": "E",
+       "text": "Hub Diameter"
+      },
+      {
+       "mark": "F",
+       "text": "Overall Length"
+      },
+      {
+       "mark": "K",
+       "text": "Keyway"
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "text": "Splined Yoke"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "Spline 2 100 1",
+       "caption": "",
+       "src": "/img/guides/spline-2-100-1-e1740031665575.webp",
+       "w": 1400,
+       "h": 840
+      },
+      {
+       "alt": "Spline Companion 100 1",
+       "caption": "",
+       "src": "/img/guides/spline-companion-100-1.webp",
+       "w": 1000,
+       "h": 1000
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "text": "Definitions"
+    },
+    {
+     "type": "defs",
+     "items": [
+      {
+       "mark": "A",
+       "text": "Splines Diameter"
+      },
+      {
+       "mark": "B",
+       "text": "Bolt Circle Diameter"
+      },
+      {
+       "mark": "C",
+       "text": "Pilot Bore Diameter"
+      }
+     ]
+    },
+    {
+     "type": "link",
+     "kind": "category",
+     "slug": "companion-flanges",
+     "text": "View Companion Yokes Catalog"
+    }
+   ],
+   "short": "Companion yokes"
+  },
+  {
+   "path": "common-terms",
+   "title": "Common Terms",
+   "parent": null,
+   "desc": "Driveshaft terms explained: a glossary of the words used for driveshafts, yokes, u-joints and their measurements.",
+   "blocks": [
+    {
+     "type": "table",
+     "head": [
+      "Terms",
+      "Definition"
+     ],
+     "rows": [
+      [
+       "Bearing Plate",
+       "A retainer plate fixed to the back of a round bearing used to position the bearing in the yoke."
+      ],
+      [
+       "Balancing",
+       "A procedure in which the distribution of mass in a rotating body is checked and altered where necessary to ensure that vibration does not occur during operation."
+      ],
+      [
+       "Ball Seat",
+       "A full or segmented angular contact bearing located in a socket that supports and centers the ball stud."
+      ],
+      [
+       "Ball Stud",
+       "A yoke generally used in CV applications which incorporates a stud onto which a ball is mounted"
+      ],
+      [
+       "Brinnelling",
+       "Failure that occurs when the static forces between two curved surfaces in contact result in local yielding of one or both mating members to produce permanent surface discontinuity. Example: Needle roller indents on a u-joint trunnion or trunnions"
+      ],
+      [
+       "Cardan Universal Joint",
+       "A non-constant velocity universal joint consisting of two yokes connected by a cross through four bearings and driveable by external sources."
+      ],
+      [
+       "Center Support",
+       "A rolling bearing element surrounded by rubber, mounted in a bracket configuration used to mount the support to an outside structure."
+      ],
+      [
+       "Centering Socket Yoke",
+       "A yoke assembly that functions as a self-aligning bearing and provides support and a means of centering in double cardan universal joints."
+      ],
+      [
+       "Companion Flange",
+       "A flanged member that attaches a driveline to drivetrain components, typically affixed by some bolt-together method."
+      ],
+      [
+       "Critical Speed",
+       "The speed at which the rotational speed of a shaft coincides with the natural vibration frequency of the shaft, causing a dynamically unstable condition."
+      ],
+      [
+       "Cross and Bearing Kit",
+       "Drive member with four equally spaced trunnions in the same plane and four bearing cups with attaching parts. Also referred to as a universal joint kit or u-joint kit."
+      ],
+      [
+       "Cross Hole",
+       "A through hole located in each ear of a yoke used to locate a round bearing."
+      ],
+      [
+       "Double Cardan Universal Joint",
+       "A near constant velocity universal joint consisting of two trunnion type Cardan universal joints whose trunnion yokes are connected by a coupling yoke or H-yoke with internal supporting and centering means."
+      ],
+      [
+       "Driveline",
+       "An assembly of one or more driveshafts with provisions for axial movement, which transmits torque and/or rotary motion."
+      ],
+      [
+       "Driveshaft",
+       "An assembly of one or two universal joints connected to a solid or tubular shaft member."
+      ],
+      [
+       "Driveshaft Length Center to Center",
+       "The distance between the outermost universal joint centers on a driveshaft."
+      ],
+      [
+       "Drive Train",
+       "Term used for the unit of all components from the Transmission to Rear differential. Also referred to as Power Train."
+      ],
+      [
+       "Ear",
+       "One of two projecting parts of a yoke symmetrically located with respect to the rotational axis."
+      ],
+      [
+       "End Yoke",
+       "A yoke which attaches a driveshaft to another drive train component such as the transmission."
+      ],
+      [
+       "Flange Yoke",
+       "The yoke which attaches the driveshaft assembly to a companion flange."
+      ],
+      [
+       "Flinger",
+       "A protective shield used in front of and behind the bearing and rubber on many center supports and end yokes."
+      ],
+      [
+       "Galling",
+       "Failure that occurs when two sliding surfaces are subjected to such a combination of loads, sliding velocities, temperatures, environments, and lubricants, that massive surface destruction is caused by welding and tearing, plowing, and gouging. Example: Bearing cup/trunnion end galling on a cross and bearing kit."
+      ],
+      [
+       "Glidecote",
+       "The blue, nylon, wear-resistant coating on yoke shafts and tube shafts."
+      ],
+      [
+       "H-Yoke",
+       "A double yoke which connects the two halves of a double cardan universal joint."
+      ],
+      [
+       "Half Round Yoke Cross Hole",
+       "A semicircular hole located on the end of each ear of some end yokes and used to locate a round bearing."
+      ],
+      [
+       "Hub",
+       "The central part of a yoke used for attachment to another member."
+      ],
+      [
+       "Inside Lock-up",
+       "Term referring to either a cross and bearing kit or a yoke that utilizes a snap ring seated in a groove in the bearing cups and located inside the yoke ears to retain the kit in the yoke."
+      ],
+      [
+       "Joint Angle",
+       "The angle described by the intersection of rotational axis of the input and output members of a universal joint and measured on the same plane described by these areas."
+      ],
+      [
+       "Knuckle",
+       "A slange term used when referring to some driveshaft joint parts and components."
+      ],
+      [
+       "Liner",
+       "A sound and vibrational deadening material added to the inside surfaces of a tube."
+      ],
+      [
+       "Midship Stub Shaft.",
+       "A short shaft, generally splined, used in applications requiring more than one driveshaft. It mounts through the center of a support bearing and allows an additional driveshaft component to be fixed."
+      ],
+      [
+       "Outside Lock-Up",
+       "Term referring to either a cross and bearing kit or a yoke that utilizes a retaining ring in a groove near the outside edge of the yoke ear, rested against the outside face of the bearing cup."
+      ],
+      [
+       "Phase/Phase Angle",
+       "The relative positioning of the universal joint yokes on a driveshaft or driveline."
+      ],
+      [
+       "Retaining Ring",
+       "A removable ring used as a shoulder to retain and position a round bearing in a hole."
+      ],
+      [
+       "Ring Groove Round Bearing",
+       "The surface used for positioning a round bearing with a retaining ring. Consists of a round bearing cup with needle rollers designed to ride on a trunnion."
+      ],
+      [
+       "Seal",
+       "A flexible member which prevents the escape of lubricant and the entrance of foreign matter."
+      ],
+      [
+       "Slip Movement",
+       "A permissible length of axial movement."
+      ],
+      [
+       "Slip Stub Shaft",
+       "A short, machined shaft, generally splined, which, when used with a slip yoke allows axial movement."
+      ],
+      [
+       "Slip Yoke",
+       "A yoke which allows axial movement."
+      ],
+      [
+       "Snap Ring",
+       "Same as RETAINING RING."
+      ],
+      [
+       "ContentStrap Bearing Clamp",
+       "A semi circular device that conforms to the bearing profile holding them in place in half round and some DC yokes."
+      ],
+      [
+       "Swaged Tubing",
+       "A tube with one or both ends having a smaller diameter then the middle section."
+      ],
+      [
+       "Swing Diameter",
+       "The maximum diameter of the circular path described by a rotating universal joint."
+      ],
+      [
+       "Thrust End",
+       "The end of a cross trunnion used as a thrust surface."
+      ],
+      [
+       "T.I.R.",
+       "Total Indicator Reading on a specific point thru 1 revolution of a shaft."
+      ],
+      [
+       "Torsional Damper",
+       "A mechanical device, generally an inertia ring, attached to a drivetrain component by means of a rubber inner ring to minimize driveline vibration in addition to balancing."
+      ],
+      [
+       "Trunnion",
+       "One of four projecting journals of a cross."
+      ],
+      [
+       "Tubing",
+       "The tubular connecting member of a driveshaft."
+      ],
+      [
+       "Tube Diameter",
+       "The outside diameter of a tube."
+      ],
+      [
+       "Tube Yoke",
+       "A yoke with a piloting hub for attachment of a tube."
+      ],
+      [
+       "U-Bolt",
+       "A clamping bolt with two parallel threaded legs used to retain a round bearing in certain end yoke designs."
+      ],
+      [
+       "Universal Joint",
+       "A device which can transmit torque and/or rotary motion from one shaft to another at fixed or varying angles of intersection of the shaft areas."
+      ],
+      [
+       "Wall Thickness",
+       "The measurement between the inside and outside diameter of a tube."
+      ],
+      [
+       "Weld Yoke",
+       "Same as tube yoke."
+      ],
+      [
+       "Wing Bearing",
+       "A member with a key and projecting wings used as the bearing base and positioning the thrust end of a cross trunnion."
+      ],
+      [
+       "Yoke Shaft",
+       "A one piece member designed to incorporate a tube yoke, tubing and stub shaft. It is used in close-couple applications and eliminates the need to use tubing."
+      ],
+      [
+       "Zerk",
+       "A lubrication fitting, usually threaded into a driveline component that will allow grease to be injected into the component, but does not allow grease to escape."
+      ]
+     ]
+    }
+   ],
+   "short": "Driveshaft terms"
+  },
+  {
+   "path": "two-piece-driveshaft",
+   "title": "Two Piece Driveshaft Measuring Guide",
+   "parent": null,
+   "desc": "How to measure a two piece driveshaft: pick the transmission output (seal, end yoke, rubber boot extension or flange) and follow its steps.",
+   "blocks": [
+    {
+     "type": "heading",
+     "text": "Select the option below that best matches your application."
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Measurement Instructions</strong>: It is essential to measure the driveshaft length while the vehicle’s axle is in its normal riding position. Ensure the axle is properly supported on safety stands and not suspended.</p><p>This procedure is critical for obtaining accurate measurements.</p>"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "1-6-300×300-1.png",
+       "caption": "",
+       "src": "/img/guides/1-6-300x300-1.webp",
+       "w": 300,
+       "h": 300
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "text": "Seal"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "1 4 300x300 1",
+       "caption": "",
+       "src": "/img/guides/1-4-300x300-1.webp",
+       "w": 300,
+       "h": 300
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "text": "End Yoke"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "1 5 300x300 1",
+       "caption": "",
+       "src": "/img/guides/1-5-300x300-1.webp",
+       "w": 300,
+       "h": 300
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "text": "Rubber Boot Extension"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "1 3 300x300 1",
+       "caption": "",
+       "src": "/img/guides/1-3-300x300-1.webp",
+       "w": 300,
+       "h": 300
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "text": "Flange"
+    }
+   ],
+   "short": "Measuring a two piece driveshaft"
+  },
+  {
+   "path": "two-piece-driveshaft/two-piece-driveshaft-end-yoke",
+   "title": "Two Piece Driveshaft: End Yoke",
+   "parent": "two-piece-driveshaft",
+   "desc": "Measure a two piece driveshaft from an end yoke, to an end yoke or to a flange, with the vehicle at normal ride height.",
+   "blocks": [
+    {
+     "type": "heading",
+     "text": "Two Piece Driveshaft Measuring End Yoke To End Yoke"
+    },
+    {
+     "type": "text",
+     "html": "<p><em><strong>IMPORTANT:</strong> </em><em>Vehicle must be on a level surface with suspension at normal ride height for proper measurements. When measuring to the center bearing, measure to the center of the round or slotted carrier bearing bolt holes. Many carrier mounts are slotted for adjustment.</em></p>"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "two piece 3 100",
+       "caption": "",
+       "src": "/img/guides/two-piece-3-100.webp",
+       "w": 1400,
+       "h": 700
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "text": "DriveShaft Length"
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Measurement (A):<br></strong>from the transmission output end yoke (center of u-joint or flats) to the center of the carrier bearing bolt holes.</p> <p><strong>Measurement (B):<br></strong>Measure from the center of carrier bearing bolt holes to the end yoke (center of u-joint or flats) on the differential.</p>"
+    },
+    {
+     "type": "heading",
+     "text": "Two Piece Driveshaft Measuring End Yoke To Flange"
+    },
+    {
+     "type": "text",
+     "html": "<p><em><strong>IMPORTANT:</strong> </em><em>Vehicle must be on a level surface with suspension at normal ride height for proper measurements. When measuring to the center bearing, measure to the center of the round or slotted carrier bearing bolt holes. Many carrier mounts are slotted for adjustment.</em></p>"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "two piece 4 100",
+       "caption": "",
+       "src": "/img/guides/two-piece-4-100.webp",
+       "w": 1400,
+       "h": 700
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "text": "DriveShaft Length"
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Measurement (A) :</strong><br>Measure from the transmission output end yoke (center of u-joint or flats) to the center of the carrier bearing bolt holes.</p> <p><strong>Measurement (B) :</strong><br>Measure from the center of carrier bearing bolt holes to the face of the flange on the differential.</p>"
+    }
+   ]
+  },
+  {
+   "path": "two-piece-driveshaft/two-piece-driveshaft-measuring-seal",
+   "title": "Two Piece Driveshaft: Seal",
+   "parent": "two-piece-driveshaft",
+   "desc": "Measure a two piece driveshaft from the transmission seal, to an end yoke or to a flange, and the spline extrusion length.",
+   "blocks": [
+    {
+     "type": "heading",
+     "text": "Seal to End yoke"
+    },
+    {
+     "type": "text",
+     "html": "<p><em> <strong>IMPORTANT:</strong> </em><em>Vehicle must be on a level surface with suspension at normal ride height for proper measurements. When measuring to the center bearing, measure to the center of the round or slotted carrier bearing bolt holes. Many carrier mounts are slotted for adjustment.</em></p>"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "two piece 1 100",
+       "caption": "",
+       "src": "/img/guides/two-piece-1-100.webp",
+       "w": 1400,
+       "h": 700
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "text": "DriveShaft Length"
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Measurement (A) – Front Driveshaft Length:</strong><br>Measure from end of rubber seal on the transmission to the center of the carrier bearing bolt holes.</p><p><strong>Measurement (B) – Rear Driveshaft Length:</strong><br>Measure from the center of carrier bearing bolt holes to the end yoke flats (center of ujoint) on the differential.</p>"
+    },
+    {
+     "type": "heading",
+     "text": "Spline Extrusion Length"
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Measurement (C) – Spline Extrusion Length:</strong><br>Measure from rubber seal to end the of the transmission output/spline. If spline is recessed in rubber seal, enter ø.</p>"
+    },
+    {
+     "type": "heading",
+     "text": "Seal To Flange"
+    },
+    {
+     "type": "text",
+     "html": "<p><em><strong>IMPORTANT:</strong> </em><em>Vehicle must be on a level surface with suspension at normal ride height for proper measurements. When measuring to the center bearing, measure to the center of the round or slotted carrier bearing bolt holes. Many carrier mounts are slotted for adjustment.</em></p>"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "two piece 2 100 1",
+       "caption": "",
+       "src": "/img/guides/two-piece-2-100-1.webp",
+       "w": 1400,
+       "h": 700
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "text": "DriveShaft Length"
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Measurement (A) – Front Driveshaft Length:</strong><br>Measure from end of rubber seal on the transmission to the center of the carrier bearing bolt holes.</p><p><strong>Measurement (B) – Rear Driveshaft Length:</strong><br>Measure from the center of carrier bearing bolt holes to the end yoke flats (center of ujoint) on the differential.</p>"
+    },
+    {
+     "type": "heading",
+     "text": "Spline Extrusion Length"
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Measurement (C) – Spline Extrusion Length:</strong><br>Measure from rubber seal to end the of the transmission output/spline. If spline is recessed in rubber seal, enter ø.</p>"
+    }
+   ]
+  },
+  {
+   "path": "two-piece-driveshaft/two-piece-driveshaft-rubber-bot-extension",
+   "title": "Two Piece Driveshaft: Rubber Boot Extension",
+   "parent": "two-piece-driveshaft",
+   "desc": "Measure a two piece driveshaft from a rubber boot extension, to an end yoke or to a flange, with the vehicle at normal ride height.",
+   "blocks": [
+    {
+     "type": "heading",
+     "text": "Two Piece Driveshaft Measuring Rubber Boot Extension to End Yoke"
+    },
+    {
+     "type": "text",
+     "html": "<p><em><strong>IMPORTANT:</strong> </em><em>Vehicle must be on a level surface with suspension at normal ride height for proper measurements. When measuring to the center bearing, measure to the center of the round or slotted carrier bearing bolt holes. Many carrier mounts are slotted for adjustment.</em></p>"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "two piece 5 100",
+       "caption": "",
+       "src": "/img/guides/two-piece-5-100.webp",
+       "w": 1400,
+       "h": 700
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "text": "DriveShaft Length"
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Measurement (A) :</strong><br>Measure from end of rubber boot extension on the transmission to the center of the carrier bearing bolt holes.</p><p><strong>Measurement (B) :</strong><br>Measure from the center of carrier bearing bolt holes to the end yoke flats (center of u-joint or flats) on the differential.</p><p><strong>Measurement (C) :</strong><br>Measure from the end of the rubber boot extension to end the of the transmission output/spline. If spline is recessed in rubber boot Extension, enter ø.</p>"
+    },
+    {
+     "type": "heading",
+     "text": "Two Piece Driveshaft Measuring Rubber Boot Extension to Flange"
+    },
+    {
+     "type": "text",
+     "html": "<p><em><strong>IMPORTANT:</strong> </em><em>Vehicle must be on a level surface with suspension at normal ride height for proper measurements. When measuring to the center bearing, measure to the center of the round or slotted carrier bearing bolt holes. Many carrier mounts are slotted for adjustment.</em></p>"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "two piece 6 100",
+       "caption": "",
+       "src": "/img/guides/two-piece-6-100.webp",
+       "w": 1400,
+       "h": 700
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "text": "DriveShaft Length"
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Measurement (A) :</strong><br>Measure from end of rubber boot extension on the transmission to the center of the carrier bearing bolt holes.</p><p><strong>Measurement (B) :</strong><br>Measure from the center of carrier bearing bolt holes to the flange face on the differential.</p><p><strong>Measurement (C) :</strong><br>Measure from the end of the rubber boot extension to end the of the transmission output/spline. If spline is recessed in rubber boot Extension, enter ø.</p>"
+    }
+   ]
+  },
+  {
+   "path": "two-piece-driveshaft-flange-measuring-guideline",
+   "title": "Two Piece Driveshaft: Flange",
+   "parent": "two-piece-driveshaft",
+   "desc": "Measure a two piece driveshaft from a flange, to an end yoke or to another flange, with the vehicle at normal ride height.",
+   "blocks": [
+    {
+     "type": "heading",
+     "text": "Two Piece Driveshaft Measuring Flange To End Yoke"
+    },
+    {
+     "type": "text",
+     "html": "<p><em><strong>IMPORTANT:</strong> </em><em>Vehicle must be on a level surface with suspension at normal ride height for proper measurements. When measuring to the center bearing, measure to the center of the round or slotted carrier bearing bolt holes. Many carrier mounts are slotted for adjustment.</em></p>"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "two piece 7 100",
+       "caption": "",
+       "src": "/img/guides/two-piece-7-100.webp",
+       "w": 1400,
+       "h": 700
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "text": "DriveShaft Length"
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Measurement (A) :</strong><br>Measure from the transmission output flange face to the center of the carrier bearing bolt holes.</p><p><strong>Measurement (B) :</strong><br>Measure from the center of carrier bearing bolt holes to the flats (center of u-joint or flats) on the end yoke at the differential.</p>"
+    },
+    {
+     "type": "heading",
+     "text": "Two Piece Driveshaft Measuring Flange To Flange"
+    },
+    {
+     "type": "text",
+     "html": "<p><em><strong>IMPORTANT:</strong> </em><em>Vehicle must be on a level surface with suspension at normal ride height for proper measurements. When measuring to the center bearing, measure to the center of the round or slotted carrier bearing bolt holes. Many carrier mounts are slotted for adjustment.</em></p>"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "two piece 8 100",
+       "caption": "",
+       "src": "/img/guides/two-piece-8-100.webp",
+       "w": 1400,
+       "h": 700
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "text": "DriveShaft Length"
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Measurement (A):</strong><br>Measure from the transmission output flange face to the center of the carrier bearing bolt holes.</p><p><strong>Measurement (B) :</strong><br>Measure from the center of carrier bearing bolt holes to the face of the flange on the differential.</p>"
+    }
+   ]
+  },
+  {
+   "path": "one-piece-driveshaft",
+   "title": "One Piece Driveshaft Measuring Guide",
+   "parent": null,
+   "desc": "How to measure a one piece driveshaft for cars, vans, 2WD trucks and 4WD front and rear shafts, for each transmission output type.",
+   "blocks": [
+    {
+     "type": "heading",
+     "text": "Use This Guide To Measure Driveshaft Length For Most: Cars, Vans, 2wd Trucks, And Some 4wd Front And Rear Shafts."
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "7 1024x512 1",
+       "caption": "",
+       "src": "/img/guides/7-1024x512-1.webp",
+       "w": 1024,
+       "h": 512
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Measurement Instructions:</strong> It is essential to measure the driveshaft length while the vehicle’s axle is in its normal riding position. Ensure the axle is properly supported on safety stands and not suspended.</p><p>This procedure is critical for obtaining accurate measurements.</p>"
+    },
+    {
+     "type": "heading",
+     "text": "TRANSMISSION OUTPUT TYPE - SEAL"
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Measurement (A) – DRIVESHAFT LENGTH:</strong><br>Measure from end of rubber seal on the transmission to the flat face of the end yoke or flange on the differential.</p><p><strong>Measurement (B) – SPLINE EXTRUSION LENGTH:</strong><br>Measure from end of rubber seal to end the of the transmission output. If spline is recessed in rubber seal, measurement can be noted as ø</p>"
+    },
+    {
+     "type": "heading",
+     "text": "TRANSMISSION OUTPUT TYPE -RUBBER BOOT EXTENSION"
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Measurement (A) – DRIVESHAFT LENGTH:</strong><br>Measure from end of rubber boot extension on the transmission to the flat face of the end yoke or flange on the differential.</p><p><strong>Measurement (B) – SPLINE EXTRUSION LENGTH:</strong><br>Measure from end of rubber boot extension on the end of transmission output. If spline is recessed in rubber boot extension, enter ø.</p>"
+    },
+    {
+     "type": "heading",
+     "text": "Use This Guide To Measure Driveshaft Length For Most: 4wd Front Shafts And Some 4wd Rear Shafts"
+    },
+    {
+     "type": "images",
+     "items": [
+      {
+       "alt": "8v2 1 1024x512 1",
+       "caption": "",
+       "src": "/img/guides/8v2-1-1024x512-1.webp",
+       "w": 1024,
+       "h": 512
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Measurement Instructions:</strong> It is essential to measure the driveshaft length while the vehicle’s axle is in its normal riding position. Ensure the axle is properly supported on safety stands and not suspended.</p><p>This procedure is critical for obtaining accurate measurements.</p>"
+    },
+    {
+     "type": "heading",
+     "text": "TRANSMISSION OUTPUT TYPE - END YOKE"
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Measurement (A) – DRIVESHAFT LENGTH:</strong><br>Measure from center of u-joint/flats on the end yoke on the transmission output to the face of the end yoke or the face of the flange on the differential input end.</p>"
+    },
+    {
+     "type": "heading",
+     "text": "TRANSMISSION OUTPUT TYPE - FLANGE"
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>Measurement (A) – DRIVESHAFT LENGTH:</strong><br>Measure from the flat of the flange on the transmission output to the center of the u-joint on the end yoke or the face of the flange on the differential input end.</p>"
+    },
+    {
+     "type": "link",
+     "kind": "category",
+     "slug": "end-yokes",
+     "text": "View Full End Yokes Catalog"
+    }
+   ],
+   "short": "Measuring a one piece driveshaft"
+  },
+  {
+   "path": "center-support-bearing-size-chart",
+   "title": "Center Support Bearing Size Chart & Cross-Reference",
+   "parent": null,
+   "desc": "Center support bearing size chart: every carrier bearing we sell by bearing ID, center to base height and mount hole spacing, live price and stock.",
+   "blocks": [
+    {
+     "type": "text",
+     "html": "<p>Use this <strong>center support bearing size chart</strong> to find the exact driveshaft carrier bearing you need by dimension. Every center support bearing (also called a carrier bearing, center bearing, or hanger bearing) below is cross-referenced by its key measurements — <strong>inner diameter (ID)</strong>, <strong>center bearing to base height</strong>, and <strong>center-to-center mount hole spacing</strong> — along with the driveshaft series or application it fits. Click any part number to view details, price, and availability.</p>"
+    },
+    {
+     "type": "text",
+     "html": "<p><strong>How to measure your center support bearing:</strong> measure the <strong>inner diameter (ID)</strong> of the bearing bore where the driveshaft slip stub or midship shaft passes through, the <strong>height</strong> from the center of the bearing to the mounting base, and the <strong>center-to-center distance</strong> between the two mounting bolt holes. Match those three numbers to the chart to confirm the correct replacement.</p>"
+    },
+    {
+     "type": "text",
+     "html": "<p>Need help identifying your bearing? Call us at <strong>(813) 524-6491</strong> or browse the full center support bearing category. We ship nationwide and also build and repair complete driveshafts at our Odessa, FL shop.</p>"
+    },
+    {
+     "type": "bearing-chart"
+    }
+   ],
+   "short": "Center bearing size chart"
+  }
+ ]
+}

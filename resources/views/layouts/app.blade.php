@@ -121,6 +121,11 @@
         <a href="/heavy-duty-driveshafts">{!! __('Heavy duty driveshafts') !!}</a>
         <a href="/custom-off-road-driveshafts">{!! __('Off-road driveshafts') !!}</a>
       </nav>
+      {{-- the old store's measuring guides: only here, in no menu (owner, 2026-11-13) --}}
+      <nav aria-label="{!! __('Measuring guides') !!}">
+        <h2 class="ufoot__h"><a href="/resources">{!! __('Measuring guides') !!}</a></h2>
+        @foreach(\App\Support\ResourceGuides::top() as $rg)<a href="{{ \App\Support\ResourceGuides::url($rg['path']) }}">{{ __($rg['short'] ?? $rg['title']) }}</a>@endforeach
+      </nav>
       <nav aria-label="{!! __('Help') !!}">
         <h2 class="ufoot__h">{!! __('Help') !!}</h2>
         <a href="/track-order">{!! __('Track an order') !!}</a>
