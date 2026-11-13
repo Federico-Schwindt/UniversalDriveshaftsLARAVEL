@@ -19,6 +19,9 @@ return [
 
     'default' => env('DB_CONNECTION', 'sqlite'),
 
+    // `wp` shares mysql's PDO when both name the same database (App\Support\SharedWpConnection): half the connections
+    'share_wp' => (bool) env('DB_SHARE_WP', true),
+
     /*
     |--------------------------------------------------------------------------
     | Database Connections

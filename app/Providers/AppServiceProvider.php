@@ -13,7 +13,8 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        // the catalog's `wp` connection runs on mysql's session when both point at the same database (one connection a request)
+        $this->app->afterResolving('db', fn ($db) => \App\Support\SharedWpConnection::install($db));
     }
 
     public function boot(): void
