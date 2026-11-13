@@ -31,6 +31,7 @@
 
   <h2>4. Imágenes y especificaciones de productos</h2>
   <p>Las fotografías de productos son propiedad de UDS o se utilizan con autorización, y son representativas del tipo de producto; el artículo enviado puede diferir en acabado, marcas, embalaje o detalles menores. Las dimensiones, pesos y especificaciones se recopilan de publicaciones de fabricantes, referencias de la industria y nuestras propias mediciones, y se proporcionan “tal cual” como referencia; no constituyen una garantía. Consulte la Sección 8 de nuestros <a href="/terms">Términos de uso</a>.</p>
+  <p>Las sugerencias de ciudad y la búsqueda por código postal del checkout usan datos de <a href="https://www.geonames.org/" target="_blank" rel="noopener">GeoNames</a>, con licencia <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>.</p>
 
   <h2>5. Aviso de presunta infracción de derechos de autor (DMCA)</h2>
   <p>UDS respeta la propiedad intelectual de terceros y cumple con la Digital Millennium Copyright Act (Ley de Derechos de Autor del Milenio Digital), 17 U.S.C. § 512. Si cree de buena fe que material de este Sitio infringe derechos de autor de los que usted es titular o que controla, envíe una notificación por escrito a nuestro Agente Designado que contenga <b>todos</b> los elementos siguientes (17 U.S.C. § 512(c)(3)):</p>
@@ -88,6 +89,7 @@
 
   <h2>4. Product images and specifications</h2>
   <p>Product photographs are owned by UDS or used with permission and are representative of the product type; the item shipped may differ in finish, markings, packaging or minor detail. Dimensions, weights and specifications are compiled from manufacturer publications, industry references and our own measurements and are provided “as is” for reference; they are not a warranty. See Section 8 of our <a href="/terms">Terms of Use</a>.</p>
+  <p>City suggestions and the ZIP code lookup at checkout use data from <a href="https://www.geonames.org/" target="_blank" rel="noopener">GeoNames</a>, licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>.</p>
 
   <h2>5. Notice of claimed copyright infringement (DMCA)</h2>
   <p>UDS respects the intellectual property of others and complies with the Digital Millennium Copyright Act, 17 U.S.C. § 512. If you believe in good faith that material on this Site infringes a copyright you own or control, send a written notice to our Designated Agent containing <b>all</b> of the following (17 U.S.C. § 512(c)(3)):</p>
