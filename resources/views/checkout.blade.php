@@ -65,7 +65,7 @@
           <div class="full"><label for="co-ba1">{!! __('Street address *') !!}</label><input id="co-ba1" type="text" name="billing_address_1" required data-addr-req value="{{ $bill['a1'] }}" data-gplaces data-addr-group="billing" autocomplete="billing address-line1" placeholder="{!! __('Start typing your address…') !!}"></div>
           <div class="full"><label for="co-ba2">{!! __('Suite / unit (optional)') !!}</label><input id="co-ba2" type="text" name="billing_address_2" autocomplete="billing address-line2" value="{{ $bill['a2'] }}"></div>
           <div><label for="co-bcity">{!! __('City *') !!}</label><input id="co-bcity" type="text" name="billing_city" required data-addr-req autocomplete="billing address-level2" value="{{ $bill['city'] }}" data-geo="city" data-addr-group="billing"></div>
-          <div><label for="billing_state">{!! __('State') !!}</label><input type="text" name="billing_state" value="{{ $bill['state'] }}" id="billing_state" autocomplete="billing address-level1" placeholder="{!! __('e.g. FL') !!}" data-geo="state" data-addr-group="billing"></div>
+          <div><label for="billing_state">{!! __('State') !!}</label><input type="text" name="billing_state" value="{{ $bill['state'] }}" id="billing_state" autocomplete="billing address-level1" data-state-list="billing_country" placeholder="{!! __('e.g. FL') !!}" data-geo="state" data-addr-group="billing"></div>
           <div><label for="co-bzip">{!! __('ZIP code *') !!}</label><input id="co-bzip" type="text" name="billing_postcode" required data-addr-req autocomplete="billing postal-code" value="{{ $bill['zip'] }}" data-geo="zip" data-addr-group="billing"></div>
           <div><label for="billing_country">{!! __('Country *') !!}</label>
             <select name="billing_country" id="billing_country" autocomplete="billing country" data-geo="country" data-addr-group="billing">
@@ -107,7 +107,7 @@
           <div class="full"><label for="co-sa1">{!! __('Street address') !!}</label><input id="co-sa1" type="text" name="shipping_address_1" data-gplaces data-addr-group="shipping" autocomplete="shipping address-line1" placeholder="{!! __('Start typing your address…') !!}"></div>
           <div class="full"><label for="co-sa2">{!! __('Suite / unit') !!}</label><input id="co-sa2" type="text" name="shipping_address_2" autocomplete="shipping address-line2"></div>
           <div><label for="co-scity">{!! __('City') !!}</label><input id="co-scity" type="text" name="shipping_city" data-geo="city" data-addr-group="shipping" autocomplete="shipping address-level2"></div>
-          <div><label for="shipping_state">{!! __('State') !!}</label><input type="text" name="shipping_state" id="shipping_state" placeholder="{!! __('e.g. TX') !!}" data-geo="state" data-addr-group="shipping" autocomplete="shipping address-level1"></div>
+          <div><label for="shipping_state">{!! __('State') !!}</label><input type="text" name="shipping_state" id="shipping_state" data-state-list="shipping_country" placeholder="{!! __('e.g. TX') !!}" data-geo="state" data-addr-group="shipping" autocomplete="shipping address-level1"></div>
           <div><label for="co-szip">{!! __('ZIP code') !!}</label><input id="co-szip" type="text" name="shipping_postcode" data-geo="zip" data-addr-group="shipping" autocomplete="shipping postal-code"></div>
           <div><label for="shipping_country">{!! __('Country') !!}</label><select name="shipping_country" id="shipping_country" autocomplete="shipping country" data-geo="country" data-addr-group="shipping">@foreach(config('countries') as $cc => $cn)<option value="{{ $cc }}" @selected($cc==='US')>{{ $cn }}</option>@endforeach</select></div>
           <div class="full"><button type="button" class="btn btn-ghost btn-sm" id="dropship-cancel">{!! __('Cancel, ship to billing') !!}</button></div>
@@ -525,6 +525,7 @@
       set('shipping_company',d.company); set('shipping_address_1',d.street); set('shipping_address_2',d.unit);
       set('shipping_city',d.city); set('shipping_state',d.state); set('shipping_postcode',d.postcode);
       var cc=document.getElementById('shipping_country'); if(cc)cc.value=d.country||'US';
+      if(window.udsStates)udsStates.sync();   // the state dropdown follows the saved address
       showDrop(true,el.getAttribute('data-kind')||'shipping');
       document.querySelectorAll('.ss-item').forEach(function(x){x.classList.remove('on');}); el.classList.add('on');
     };
@@ -753,6 +754,7 @@
 </script>
 {{-- the Maps key rides on the tag: geo.js fetches Google only when a street field is focused --}}
 <script src="/js/geo.js?v={{ @filemtime(public_path('js/geo.js')) }}" data-gmaps-key="{{ config('uds.gmaps_key') }}"></script>
+@include('partials.state-lists')
 @includeIf('partials.checkout-recovery')   {{-- abandoned-cart capture (recovery agent) --}}
 {{-- funnel: checkout begun, shipping chosen (or kept as offered) and payment submitted, for GA4 and Meta (partials/analytics) --}}
 <script>
