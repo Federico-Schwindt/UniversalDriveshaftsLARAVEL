@@ -891,5 +891,7 @@
  "All account sections": "Todas las secciones de la cuenta",
  "Upload sales certificate": "Subir certificado de impuesto",
  "Florida orders pay sales tax. A shop that resells the parts, or an exempt organization, can upload its Florida certificate and buy tax-free.": "Los pedidos en Florida pagan impuesto de ventas. Un taller que revende las piezas, o una organización exenta, puede subir su certificado de Florida y comprar sin impuesto.",
- "Certificate expired — upload the new one": "Certificado vencido: subí el nuevo"
+ "Certificate expired — upload the new one": "Certificado vencido: subí el nuevo",
+ "Select a state": "Elegí un estado",
+ "Select a province": "Elegí una provincia"
 }

@@ -891,5 +891,7 @@
     "All account sections": "账户全部栏目",
     "Upload sales certificate": "上传销售税证书",
     "Florida orders pay sales tax. A shop that resells the parts, or an exempt organization, can upload its Florida certificate and buy tax-free.": "佛罗里达州订单需缴纳销售税。转售零件的商家或免税机构可上传其佛罗里达州证书，免税购买。",
-    "Certificate expired — upload the new one": "证书已过期，请上传新证书"
+    "Certificate expired — upload the new one": "证书已过期，请上传新证书",
+    "Select a state": "选择州",
+    "Select a province": "选择省份"
 }

@@ -1,7 +1,6 @@
 <?php
-// ISO 3166-1 country list for shipping selects: the United States first (the default), then A to Z, "Other" last.
+// ISO 3166-1 country list for shipping selects: A to Z, "Other" last (the United States stays the default choice).
 return [
-    'US' => 'United States',
     'DZ' => 'Algeria',
     'AR' => 'Argentina',
     'AM' => 'Armenia',
@@ -94,6 +93,7 @@ return [
     'UA' => 'Ukraine',
     'AE' => 'United Arab Emirates',
     'GB' => 'United Kingdom',
+    'US' => 'United States',
     'UY' => 'Uruguay',
     'VE' => 'Venezuela',
     'VN' => 'Vietnam',

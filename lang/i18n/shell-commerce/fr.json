@@ -891,5 +891,7 @@
     "All account sections": "Toutes les rubriques du compte",
     "Upload sales certificate": "Téléverser le certificat",
     "Florida orders pay sales tax. A shop that resells the parts, or an exempt organization, can upload its Florida certificate and buy tax-free.": "Les commandes en Floride paient la taxe de vente. Un atelier qui revend les pièces, ou un organisme exonéré, peut téléverser son certificat de Floride et acheter hors taxe.",
-    "Certificate expired — upload the new one": "Certificat expiré : téléversez le nouveau"
+    "Certificate expired — upload the new one": "Certificat expiré : téléversez le nouveau",
+    "Select a state": "Choisissez un État",
+    "Select a province": "Choisissez une province"
 }
