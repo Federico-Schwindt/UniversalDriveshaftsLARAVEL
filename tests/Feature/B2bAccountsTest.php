@@ -56,7 +56,10 @@ class B2bAccountsTest extends TestCase
         $this->assertSame('processing', $o->status);
         $this->assertSame('PO-7731', $o->po_number);
         $this->assertEquals(round($sub * 0.05, 2), (float) $o->tier_discount);
-        $this->assertEquals(round($sub - $sub * 0.05, 2), (float) $o->total);
+        // a pickup at the shop pays Pasco's 7% Florida tax on the discounted price (App\Support\SalesTax)
+        $net = round($sub - $sub * 0.05, 2);
+        $this->assertEquals(round($net * 1.07 + 1e-9, 2), (float) $o->total);
+        $this->assertEquals(round($net * 0.07 + 1e-9, 2), (float) $o->tax_total);
         $this->assertSame(now('America/New_York')->addDays(20)->toDateString(), $o->terms_due_at);
         $this->assertNull($res['client_secret']);
         Mail::assertSent(Branded::class, fn ($m) => $m->hasTo($u->email));   // invoice orders are confirmed right away

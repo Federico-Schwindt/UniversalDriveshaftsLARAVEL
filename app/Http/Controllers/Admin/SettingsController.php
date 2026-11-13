@@ -41,6 +41,8 @@ class SettingsController extends Controller
                 'shipping.cutoff' => ['Same-day cutoff (Eastern time)', 'text', '14:00', '24-hour time, e.g. 14:00. In-stock orders placed before it on a weekday ship that day; the countdown on product pages, cart and checkout counts down to it.'],
                 'freight.carriers' => ['LTL carriers (pallets)', 'select', 'fedex', 'Which freight carriers checkout offers and the "Book freight" modal books. Prices come live from Warp.', \App\Services\WarpFreightService::CARRIER_MODES],
                 'shipping.signature_over' => ['Require signature over (USD)', 'number', 500, 'Labels for orders above this amount default to signature confirmation.'],
+                'tax.enabled' => ['Charge Florida sales tax', 'bool', true, 'Florida deliveries pay 6% plus the surtax of the county they go to; pickups pay Pasco\'s 7%. Orders shipped out of Florida pay none. Accounts with an approved resale or exemption certificate (customer page) pay none. Rates: Florida DR-15DSS for 2026.'],
+                'tax.shipping' => ['Tax shipping charges in Florida', 'bool', false, 'Off: shipping is a separate line the customer can avoid by picking up, which Florida does not tax (Rule 12A-1.045). Turn it on only if your accountant says so.'],
             ],
             'b2b' => [
                 'b2b.bronze_pct' => ['Bronze discount (%)', 'number', 5, 'Every approved business account starts here.'],

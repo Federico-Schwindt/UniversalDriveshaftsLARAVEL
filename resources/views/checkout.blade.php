@@ -338,6 +338,7 @@
         <tr><td>{!! __('Subtotal') !!}</td><td class="r">${{ number_format($subtotal,2) }}</td></tr>
         <tr id="disc-row" @if(!$coupon && !$b2b) hidden @endif><td>{!! __('Discount') !!} <b id="disc-code">{{ $coupon['code'] ?? ($b2b ? __(':tier account', ['tier' => $b2b['label']]) : '') }}</b></td><td class="r">-$<span id="disc-amt">{{ number_format(max($coupon['discount'] ?? 0, $b2b['amount'] ?? 0),2) }}</span></td></tr>
         <tr><td>{!! __('Est. Shipping') !!}</td><td class="r" id="sum-ship">TBD</td></tr>
+        <tr id="tax-row" hidden><td id="tax-label">{{ __('Sales tax') }}</td><td class="r" id="sum-tax"></td></tr>
         <tr class="grand"><td>{!! __('Total') !!}</td><td class="r" id="sum-total">${{ number_format($subtotal,2) }}</td></tr>
       </table></div>
 
@@ -401,6 +402,20 @@
     var c=coupon?Number(coupon.discount||0):0, t=TIER?Number(TIER.amount):0;
     return t>c?{amt:t,label:TIER.label}:{amt:c,label:coupon?coupon.code:''};
   }
+  /* Florida sales tax (App\Support\SalesTax::amount, same sum): a delivery is taxed as /checkout/shipping-options says,
+     a pickup at the shop's county; an account with a certificate on file sees it exempt */
+  const LINES=@json(array_map(fn ($i) => [(float) $i['price'], (int) $i['qty']], array_values($items)));
+  const TAX_PICKUP=@json($taxPickup), TAX_M=@json(['label' => __('FL sales tax :rate%'), 'exempt' => __('Tax exempt (certificate on file)')], JSON_UNESCAPED_UNICODE);
+  let taxDelivery=null;
+  function taxFor(p,disc,ship){
+    if(!p||p.exempt)return 0;
+    var sub=LINES.reduce(function(a,l){return a+l[0]*l[1];},0); if(sub<=0)return 0;
+    var keep=Math.max(0,sub-disc)/sub, t=0;
+    LINES.forEach(function(l){var u=l[0]*keep; t+=l[1]*(u*p.state+Math.min(u,5000)*p.surtax)/100;});
+    if(p.shipping)t+=ship*p.rate/100;
+    return Math.round((t+1e-9)*100)/100;
+  }
+  function taxLabel(p){return p.exempt?TAX_M.exempt:TAX_M.label.replace(':rate',String(+p.rate.toFixed(2)))+(p.county?' ('+p.county+')':'');}
   const PICKUP='local_pickup', PICKUP_LABEL=@json(config('uds.pickup.label')), PICKUP_HOURS=@json(config('uds.pickup.hours')), PICKUP_PHONE=@json(config('uds.pickup.phone'));
   const SHIP_DATE=document.getElementById('meta-date-v').textContent;
 
@@ -426,7 +441,9 @@
     var freeShip=coupon&&coupon.free_shipping&&!/^warp-|freight/.test(shipId)&&couponShipOk(); // coupons never cover freight (CartService::isFreight), and only ship free in the continental US
     var eff=override?Number(override.shipping):(freeShip?0:shipCost);
     document.getElementById('sum-ship').textContent=shipId?(eff>0?money(eff):M.free):'TBD';
-    var t=override?Number(override.total):Math.max(0,SUBTOTAL-disc)+eff;
+    var tp=shipId===PICKUP?TAX_PICKUP:(shipId?taxDelivery:null), tax=override?Number(override.tax||0):taxFor(tp,disc,eff);
+    var tr=document.getElementById('tax-row'); tr.hidden=!tp; if(tp){document.getElementById('tax-label').textContent=taxLabel(tp);document.getElementById('sum-tax').textContent=money(tax);}
+    var t=override?Number(override.total):Math.max(0,SUBTOTAL-disc)+eff+tax;
     document.getElementById('sum-total').textContent=money(t);
     var pt=document.getElementById('place-total'); if(pt)pt.textContent=money(t);
     var mb=document.getElementById('mbar-total'); if(mb)mb.textContent=money(t);
@@ -540,15 +557,16 @@
     const sel=document.getElementById('ship-select'), note=document.getElementById('ship-note');
     const myToken = ++shipReqToken;
     if (shipAbort) shipAbort.abort();
-    if(!zip){var isUS=!country||country==='US';sel.innerHTML='<option value="">'+(isUS?udsT('Enter your ZIP to load rates…'):udsT('Enter your postal code to load rates…'))+'</option>'+(isUS?'<option value="'+PICKUP+'" data-cost="0">'+PICKUP_LABEL+' — '+udsT('Free')+'</option>':'');shipId='';shipCost=0;totals();pickupUI();return;}
+    if(!zip){taxDelivery=null;var isUS=!country||country==='US';sel.innerHTML='<option value="">'+(isUS?udsT('Enter your ZIP to load rates…'):udsT('Enter your postal code to load rates…'))+'</option>'+(isUS?'<option value="'+PICKUP+'" data-cost="0">'+PICKUP_LABEL+' — '+udsT('Free')+'</option>':'');shipId='';shipCost=0;totals();pickupUI();return;}
     // clear stale options immediately rather than leaving a previous (possibly
     // wrong-country) rate sitting there, selectable, while the new quote loads
     sel.innerHTML='<option value="">'+udsT('Loading rates…')+'</option>';shipId='';shipCost=0;totals();
     note.textContent=udsT('Loading live UPS & FedEx rates…');
     shipAbort = new AbortController();
     fetch('/checkout/shipping-options',{method:'POST',headers:{'X-CSRF-TOKEN':CSRF,'X-Requested-With':'XMLHttpRequest','Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({country,state,zip,street,city,company,delivery}),signal:shipAbort.signal})
-      .then(r=>r.json()).then(({data,carrier_rates,reason,freight,international,ships})=>{
+      .then(r=>r.json()).then(({data,carrier_rates,reason,freight,international,ships,tax})=>{
         if(myToken!==shipReqToken)return; // a newer request has since started — this reply is stale, ignore it
+        taxDelivery=tax||null;
         if(!data||!data.length){sel.innerHTML='<option value="">'+udsT('No rates for this address')+'</option>';note.textContent='';shipId='';shipCost=0;totals();return;}
         document.getElementById('freight-box').hidden=!freight;
         document.getElementById('intl-note').hidden=!international;
@@ -680,7 +698,8 @@
     setTimeout(function(){if(!settled)box.hidden=true;},8000);
     function cents(n){return Math.round(n*100);}
     var expressUS=true;   // the wallet's address decides whether a free-shipping coupon applies (continental US only)
-    function totalWith(rate){var d=discount().amt, free=coupon&&coupon.free_shipping&&expressUS; return Math.max(0,SUBTOTAL-d)+(free?0:rate);}
+    var expressTax=null;  // and whether Florida tax applies
+    function totalWith(rate){var d=discount().amt, free=coupon&&coupon.free_shipping&&expressUS, ship=free?0:rate; return Math.max(0,SUBTOTAL-d)+ship+taxFor(expressTax,d,ship);}
     ece.on('click',function(e){err.textContent='';e.resolve({emailRequired:true,phoneNumberRequired:true,billingAddressRequired:true,shippingAddressRequired:true,allowedShippingCountries:['US'],
       shippingRates:[{id:'pending',displayName:udsT('Enter your address'),amount:0}]});});
     ece.on('shippingaddresschange',function(e){
@@ -690,6 +709,7 @@
         .then(function(r){return r.json();}).then(function(res){
           var list=(res.data||[]).filter(function(o){return o.id!==PICKUP&&!/^warp-|freight/.test(o.id);});
           if(res.freight||!list.length){e.reject();return;}
+          expressTax=res.tax||null;
           list.sort(function(x,y){return x.cost-y.cost;}); rates={}; list.forEach(function(o){rates[o.id]=o;});
           chosen=list[0];
           try{S.elements.update({amount:Math.max(50,cents(totalWith(chosen.cost)))});}catch(x){}

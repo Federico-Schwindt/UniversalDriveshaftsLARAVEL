@@ -23,6 +23,7 @@
       ['orders', 'admin/orders', 'orders', 'Orders', $counts['orders_open'] ?? 0],
       ['customers', 'admin/customers', 'users', 'Customers'],
       ['wholesale', 'admin/wholesale', 'handshake', 'Wholesale', $counts['wholesale_pending'] ?? 0],
+      ['customers', 'admin/tax-exemptions', 'dollar', 'Sales tax', $counts['tax_pending'] ?? 0],
       ['coupons', 'admin/coupons', 'ticket', 'Coupons'],
       ['recovery', 'admin/recovery', 'cart', 'Abandoned carts', $counts['carts_open'] ?? 0],
     ]],

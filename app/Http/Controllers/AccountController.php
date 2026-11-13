@@ -96,6 +96,29 @@ class AccountController extends Controller
             'reauthOk' => !$u->password && time() - (int) session('reauth_at', 0) < self::REAUTH_FOR]);   // code already confirmed: don't ask again
     }
 
+    /**
+     * POST /account/tax-certificate — a Florida resale (DR-13) or exemption certificate. Staff check it and approve it
+     * on the customer page; from then on Florida orders on this account carry no sales tax (App\Support\SalesTax).
+     */
+    public function taxCertificate(Request $r)
+    {
+        $u = Auth::user();
+        $d = $r->validate([
+            'tax_cert_kind' => 'required|in:resale,exempt',
+            'tax_cert_number' => ['required', 'string', 'max:40', 'regex:/^[A-Za-z0-9 .\-]{6,40}$/'],
+            'tax_cert_expires' => 'nullable|date|after:today',
+            'tax_cert_file' => [$u->tax_cert_file ? 'nullable' : 'required', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:8192'],
+        ], [], ['tax_cert_kind' => __('certificate type'), 'tax_cert_number' => __('certificate number'), 'tax_cert_expires' => __('expiration date'), 'tax_cert_file' => __('copy of the certificate')]);
+        $upd = ['tax_cert_kind' => $d['tax_cert_kind'], 'tax_cert_number' => strtoupper(trim($d['tax_cert_number'])),
+            'tax_cert_expires' => $d['tax_cert_expires'] ?? null, 'tax_exempt_status' => 'pending', 'tax_cert_reviewed_at' => null, 'updated_at' => now()];
+        if ($f = $r->file('tax_cert_file')) {
+            $upd['tax_cert_file'] = $f->storeAs('tax-certs', $u->id . '-' . now()->format('YmdHis') . '.' . strtolower($f->extension()), 'local');
+        }
+        DB::table('users')->where('id', $u->id)->update($upd);
+        \Illuminate\Support\Facades\Cache::forget('adm_nav_counts');
+        return back()->with('acct_ok', __('Thanks — your certificate is under review. Once the shop approves it, your Florida orders are tax-free.'));
+    }
+
     /** POST /account/avatar — a DiceBear style + seed picked in the settings picker. */
     public function avatarSave(Request $r)
     {

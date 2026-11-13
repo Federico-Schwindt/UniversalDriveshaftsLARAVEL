@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
  *    (tubing and complete driveshafts never count and are always rated)
  *  - Local pickup in Florida is offered from ANY address, always last and never preselected;
  *    the checkout makes the customer acknowledge it (nothing ships). Was FL-only originally.
- *  - No taxes anywhere (woocommerce_calc_taxes = no).
+ *  - Florida sales tax is added at checkout (App\Support\SalesTax); the old store charged none (woocommerce_calc_taxes = no).
  */
 class CartService
 {

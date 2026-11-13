@@ -122,6 +122,9 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
         Route::get('/customers/{key}', [CustomersController::class, 'show']);
         Route::post('/customers/{id}', [CustomersController::class, 'update'])->whereNumber('id');
         Route::post('/customers/{id}/reset-link', [CustomersController::class, 'resetLink']);
+        Route::post('/customers/{id}/tax', [CustomersController::class, 'tax'])->whereNumber('id');
+        Route::get('/customers/{id}/tax-certificate', [CustomersController::class, 'taxFile'])->whereNumber('id');
+        Route::get('/tax-exemptions', [CustomersController::class, 'taxList']);
     });
     Route::middleware('admin.section:wholesale')->get('/wholesale', [CustomersController::class, 'wholesale']);
 

@@ -252,11 +252,12 @@ class CheckoutRobustnessTest extends TestCase
     public function test_a_changed_total_is_refused_with_the_new_numbers(): void
     {
         $sub = $this->fillCart();
+        $total = round($sub * 1.07 + 1e-9, 2);   // a pickup pays Pasco's 7% Florida tax
         $email = 'total-' . uniqid() . '@example.com';
         $this->place(['email' => $email, 'expected_total' => 1])->assertStatus(409)
-            ->assertJsonPath('code', 'total_changed')->assertJsonPath('totals.total', $sub);
+            ->assertJsonPath('code', 'total_changed')->assertJsonPath('totals.total', $total);
         $this->assertSame(0, DB::table('orders')->where('email', $email)->count());
-        $this->place(['email' => $email, 'expected_total' => (int) round($sub * 100)])->assertOk();
+        $this->place(['email' => $email, 'expected_total' => (int) round($total * 100)])->assertOk();
     }
 
     public function test_cart_add_sells_only_published_products(): void

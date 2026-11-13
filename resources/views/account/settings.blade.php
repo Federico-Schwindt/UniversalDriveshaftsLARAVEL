@@ -107,6 +107,31 @@
     </div>
   </div>
 
+  {{-- Florida sales tax exemption (App\Support\SalesTax) --}}
+  @php $tx = $user->tax_exempt_status; $txExpired = $tx === 'approved' && $user->tax_cert_expires && \Carbon\Carbon::parse($user->tax_cert_expires)->endOfDay()->isPast(); @endphp
+  <div class="aset" id="tax">
+    <div class="aset-l"><h3>{{ __('Florida tax exemption') }}</h3><p>{{ __('Florida orders pay sales tax. A shop that resells the parts, or an exempt organization, can send its Florida certificate and buy tax-free.') }}</p></div>
+    <div>
+      <div class="aset-cur">
+        @if($tx === 'approved' && !$txExpired)<span class="chip chip--ok"><x-icon name="check"/> {{ __('Tax exempt') }}</span> <span class="mono">{{ $user->tax_cert_number }}</span>@if($user->tax_cert_expires) <small>{{ __('until :date', ['date' => \Carbon\Carbon::parse($user->tax_cert_expires)->format('M j, Y')]) }}</small>@endif
+        @elseif($txExpired)<span class="chip chip--warn">{{ __('Certificate expired — send the new one') }}</span>
+        @elseif($tx === 'pending')<span class="chip chip--warn">{{ __('Certificate under review') }}</span>
+        @elseif($tx === 'rejected')<span class="chip chip--warn">{{ __('Certificate not accepted') }}</span>@if($user->tax_cert_note) <small>{{ $user->tax_cert_note }}</small>@endif
+        @endif
+      </div>
+      @if($tx !== 'approved' || $txExpired)
+      @php $tb = $errors; @endphp
+      <form method="POST" action="/account/tax-certificate" class="aform" enctype="multipart/form-data" novalidate>@csrf
+        <div><label for="tx-kind">{{ __('Certificate type') }}</label><select id="tx-kind" name="tax_cert_kind"><option value="resale" @selected(old('tax_cert_kind', $user->tax_cert_kind) !== 'exempt')>{{ __('Florida Annual Resale Certificate (DR-13)') }}</option><option value="exempt" @selected(old('tax_cert_kind', $user->tax_cert_kind) === 'exempt')>{{ __('Consumer\'s Certificate of Exemption') }}</option></select></div>
+        <div><label for="tx-num">{{ __('Certificate number') }}</label><input id="tx-num" type="text" name="tax_cert_number" value="{{ old('tax_cert_number', $user->tax_cert_number) }}" maxlength="40" required @if($tb->has('tax_cert_number')) aria-invalid="true" aria-describedby="tx-num-err" @endif>@if($tb->has('tax_cert_number'))<span class="ferr" id="tx-num-err">{{ $tb->first('tax_cert_number') }}</span>@endif</div>
+        <div><label for="tx-exp">{{ __('Expires') }} <small>{{ __('(optional)') }}</small></label><input id="tx-exp" type="date" name="tax_cert_expires" value="{{ old('tax_cert_expires', $user->tax_cert_expires) }}">@if($tb->has('tax_cert_expires'))<span class="ferr">{{ $tb->first('tax_cert_expires') }}</span>@endif</div>
+        <div><label for="tx-file">{{ __('Copy of the certificate') }} <small>{{ __('PDF or photo, up to 8 MB') }}</small></label><input id="tx-file" type="file" name="tax_cert_file" accept=".pdf,image/jpeg,image/png,image/webp" @if(!$user->tax_cert_file) required @endif>@if($tb->has('tax_cert_file'))<span class="ferr">{{ $tb->first('tax_cert_file') }}</span>@endif</div>
+        <div class="aform-foot"><button type="submit" class="btn btn-ghost">{{ __('Send certificate') }}</button><span class="note">{{ __('Orders shipped outside Florida never pay Florida tax.') }}</span></div>
+      </form>
+      @endif
+    </div>
+  </div>
+
   {{-- wholesale --}}
   <div class="aset">
     <div class="aset-l"><h3>{{ __('Wholesale account') }}</h3><p>{{ __('Shops and resellers can apply for account pricing.') }}</p></div>
