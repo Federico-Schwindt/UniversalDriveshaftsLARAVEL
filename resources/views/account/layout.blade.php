@@ -33,6 +33,10 @@
 <section class="acct-page"><div class="wrap"><div class="acct-shell">
   {{-- the account menu lives under "My account" in the site sidebar (owner, 2026-11): no second menu in the page --}}
   <main class="acct-main" id="acct-main">
+    @if(trim($__env->yieldContent('active')) !== 'dashboard')
+      {{-- every section page leads back to the overview, where all of them are listed --}}
+      <a class="acct-back" href="/account"><x-icon name="arrow-left"/> {{ __('All account sections') }}</a>
+    @endif
     @if(empty($user->email_verified_at))
       <div class="acct-note">
         <x-icon name="mail"/>

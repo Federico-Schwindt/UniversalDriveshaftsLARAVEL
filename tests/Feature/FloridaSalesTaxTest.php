@@ -144,6 +144,10 @@ class FloridaSalesTaxTest extends TestCase
     {
         Storage::fake('local');
         $u = User::query()->create(['name' => 'Shop Owner', 'email' => 'cert-' . uniqid() . '@example.com', 'password' => bcrypt('x' . uniqid())]);
+        // the overview lists every account section, the certificate upload among them
+        $this->actingAs($u)->get('/account')->assertOk()->assertSee('href="/account/settings#tax"', false)->assertSee('Sales tax certificate')
+            ->assertSee('href="/account/buy-again"', false)->assertSee('href="/rma"', false);
+        $this->actingAs($u)->get('/account/settings')->assertOk()->assertSee('Upload sales certificate')->assertSee('All account sections');
         $this->actingAs($u)->post('/account/tax-certificate', ['tax_cert_kind' => 'resale', 'tax_cert_number' => '78-8012345678-9',
             'tax_cert_file' => UploadedFile::fake()->create('dr13.pdf', 120, 'application/pdf')])->assertRedirect();
         $row = DB::table('users')->find($u->id);

@@ -10,10 +10,35 @@
 
 <div class="acct-h"><div><h2 class="t">{{ __('Welcome back, :name', ['name' => $first]) }}</h2><p>{{ __('Your orders, addresses and saved builds in one place.') }}</p></div></div>
 
-<div class="astats">
-  <a class="astat" href="/account/orders"><b>{{ $open }}</b><span>{{ trans_choice('Open order|Open orders', $open) }}</span></a>
-  <a class="astat" href="/account/orders"><b>{{ $orders->count() }}</b><span>{{ trans_choice('Order placed|Orders placed', $orders->count()) }}</span></a>
-  <a class="astat" href="/account/addresses"><b>{{ $addressCount }}</b><span>{{ trans_choice('Saved address|Saved addresses', $addressCount) }}</span></a>
+@php
+  $txOk = (bool) \App\Support\SalesTax::certificate($user);
+  $tx = $user->tax_exempt_status;
+  $txBadge = $txOk ? ['Tax exempt', 'ok'] : ($tx === 'pending' ? ['Under review', 'warn'] : ($tx === 'approved' ? ['Expired', 'warn'] : ($tx === 'rejected' ? ['Not accepted', 'warn'] : null)));
+  $isB2b = ($user->wholesale_status ?? 'none') === 'approved';
+  // every section of the account in one place, with what is waiting in each (owner, 2026-11-13: "so every user finds the tools and sections easily")
+  $sections = [
+    ['/account/orders', 'truck', 'Orders & tracking', 'Status, tracking and invoices', $open ? [trans_choice(':n open|:n open', $open, ['n' => $open]), 'blue'] : null],
+    ['/account/buy-again', 'refresh', 'Buy again', 'Reorder parts you bought before', null],
+    ['/rma', 'returns', 'Returns and RMA', 'Start a return, exchange or cancellation', null],
+    ['/account/addresses', 'pin', 'Addresses', 'Saved ship-to addresses for checkout', $addressCount ? [$addressCount, 'plain'] : null],
+    ['/account/designs', 'sliders', 'Driveshaft designs', 'Builds saved in the online builder', $designs->count() ? [$designs->count(), 'plain'] : null],
+    ['/account/requests', 'mail', 'Custom requests', 'Your custom driveshaft quotes', $requests->count() ? [$requests->count(), 'plain'] : null],
+    ['/account/business', 'storefront', 'Business account', $isB2b ? 'Tier discount, spend and invoices' : 'Shop pricing and Net terms for businesses', $isB2b ? ['Wholesale', 'blue'] : null],
+    ['/account/settings#tax', 'certificate', 'Sales tax certificate', 'Upload your resale certificate to buy tax-free', $txBadge],
+    ['/account/settings', 'lock', 'Profile & security', 'Name, e-mail, password and saved cards', null],
+  ];
+@endphp
+<nav class="ahub" aria-label="{{ __('My account') }}">
+  @foreach($sections as [$href, $icon, $title, $desc, $badge])
+    <a class="ahub-i" href="{{ $href }}"><span class="ahub-ic"><x-icon :name="$icon"/></span><span class="ahub-t"><b>{{ __($title) }}</b><span>{{ __($desc) }}</span></span>@if($badge)<span class="ahub-b ahub-b--{{ $badge[1] }}">{{ is_int($badge[0]) ? $badge[0] : __($badge[0]) }}</span>@endif<x-icon name="caret-right"/></a>
+  @endforeach
+</nav>
+
+<div class="alinks">
+  <a class="alink" href="/shop"><x-icon name="cart"/> {{ __('Shop parts') }}</a>
+  <a class="alink" href="/online-builder"><x-icon name="wrench"/> {{ __('Online builder') }}</a>
+  <a class="alink" href="/quick-order"><x-icon name="gauge"/> {{ __('Quick Order by SKU') }}</a>
+  <a class="alink" href="/contact"><x-icon name="headset"/> {{ __('Talk to a tech') }}</a>
 </div>
 
 @if($last)
@@ -87,11 +112,5 @@
     </div>
   </div>
   @endif
-</div>
-
-<div class="alinks">
-  <a class="alink" href="/online-builder"><x-icon name="wrench"/> {{ __('Online builder') }}</a>
-  <a class="alink" href="/quick-order"><x-icon name="gauge"/> {{ __('Quick Order by SKU') }}</a>
-  <a class="alink" href="/account/requests"><x-icon name="mail"/> {{ __('Custom requests') }}@if($requests->count()) <span class="pill pill-new" style="margin-left:auto">{{ $requests->count() }}</span>@endif</a>
 </div>
 @endsection
