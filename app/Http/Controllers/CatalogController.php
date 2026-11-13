@@ -171,15 +171,8 @@ class CatalogController extends Controller
     /** Resolve a WooCommerce product slug (post_name) to its /parts/{sku} page. */
     public function productBySlug(string $slug)
     {
-        $id = \Illuminate\Support\Facades\DB::connection('wp')->table('wp_posts')
-            ->where('post_type', 'product')->where('post_status', 'publish')
-            ->where('post_name', $slug)->value('ID');
-        if ($id) {
-            $sku = \Illuminate\Support\Facades\DB::connection('wp')->table('wp_postmeta')
-                ->where('post_id', $id)->where('meta_key', '_sku')->max('meta_value');
-            if ($sku) return redirect('/parts/' . urlencode($sku), 301);
-        }
-        abort(404);
+        if ($to = \App\Support\LegacyUrls::part($slug)) return redirect($to, 301);
+        abort(404);   // SeoRedirects then looks for a kept redirect and for a slug the product had before
     }
 
     /** Alternate SKU suggestions for the + hover popover. */
