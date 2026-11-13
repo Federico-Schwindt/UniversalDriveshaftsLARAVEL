@@ -1,36 +1,8 @@
 (function () {
-  var CSRF = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
   function money(n){return Number(n)>0?'$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):T('Call for price');}
-  /* one polite live region for add-to-cart failures (the "!" glyph alone said nothing) */
-  var note=null,noteT;
-  function notify(msg){
-    if(!note){note=document.createElement('div');note.setAttribute('role','alert');note.style.cssText='position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:300;max-width:min(92vw,460px);background:var(--ink,#1b2433);color:#fff;padding:.7rem 1rem;border-radius:10px;font-size:.9rem;box-shadow:0 8px 24px rgba(0,0,0,.2)';document.body.appendChild(note);}
-    note.textContent=msg; note.hidden=false; clearTimeout(noteT); noteT=setTimeout(function(){note.hidden=true;},4200);
-  }
-
-  /* ---------- cart badge ---------- */
-  function bumpCart(count){
-    var b=document.querySelector('[data-cart-count]');
-    if(b){b.textContent=count;b.hidden=false;}
-  }
-  // the + is an icon: keep its markup (textContent is empty) and restore it after the tick, even on fast double taps
-  function flash(btn,ok){
-    if(btn._orig==null)btn._orig=btn.innerHTML;
-    clearTimeout(btn._ft); btn.textContent=ok?'\u2713':'!'; btn.style.filter='brightness(1.15)';
-    btn._ft=setTimeout(function(){btn.innerHTML=btn._orig;btn._orig=null;btn.style.filter='';},900);
-  }
+  /* ---------- add to cart: the same response as every Add button on the site (uds.js udsAdd) ---------- */
   function addToCart(id,qty,btn){
-    return fetch('/shop/catalog/add',{method:'POST',headers:{'X-CSRF-TOKEN':CSRF,'X-Requested-With':'XMLHttpRequest','Content-Type':'application/x-www-form-urlencoded'},
-      body:new URLSearchParams({id:id,qty:qty||1})})
-      .then(function(r){
-        if(r.status===419)return {success:false,error:T('Session expired — reload the page and try again.')};
-        if(r.status===429)return {success:false,error:T('Too many tries — wait a minute and try again.')};
-        return r.json().catch(function(){return {success:false};});
-      }).then(function(d){
-        if(d.success){bumpCart(d.count); if(btn)flash(btn,true);}
-        else { if(btn)flash(btn,false); notify(d.error||T('Could not add to cart. Please try again.')); }
-        return d;
-      }).catch(function(){if(btn)flash(btn,false); notify(T('Network error. Please try again.'));});
+    return window.udsAdd(btn,'/shop/catalog/add',{id:id,qty:qty||1});
   }
 
   /* ---------- stock popover (hover +) ---------- */

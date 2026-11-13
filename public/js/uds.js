@@ -185,6 +185,57 @@
     });
   }
 
+  /* ---------- Add to cart: one response for every add button on the site (owner, 2026-11-13: "los botones de add no son
+     todos iguales ni hacen la misma animación"). A spinner while it is sent, then green with a tick and "Added" for 1.6 s
+     and the cart count bumped; a failure turns it red and says why. Callers pass the button(s), the endpoint, the
+     fields and { quiet } when they show the error themselves; their own extra steps hang off the returned promise, which resolves with the server's answer plus ok. ---------- */
+  var CHECK = '<svg class="i" aria-hidden="true" viewBox="0 0 256 256" fill="currentColor" width="1em" height="1em" focusable="false"><path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"/></svg>';
+  var note = null, noteT;
+  function say(msg) {
+    if (!note) { note = document.createElement('div'); note.className = 'uadd-note'; note.setAttribute('role', 'alert'); document.body.appendChild(note); }
+    note.textContent = msg; note.hidden = false; clearTimeout(noteT); noteT = setTimeout(function () { note.hidden = true; }, 4200);
+  }
+  window.udsAdd = function (btns, url, fields, opts) {
+    var t = window.udsT || function (s) { return s; };
+    var list = [].concat(btns).filter(Boolean);
+    if (list.some(function (b) { return b.classList.contains('uadd-busy'); })) return Promise.resolve({ ok: false, busy: true });
+    list.forEach(function (b) {
+      clearTimeout(b._uaddT);
+      if (b._uaddHtml == null) b._uaddHtml = b.innerHTML;
+      b.innerHTML = b._uaddHtml; b.classList.remove('uadd-done', 'uadd-err'); b.classList.add('uadd-busy'); b.disabled = true; b.setAttribute('aria-busy', 'true');
+    });
+    function settle(cls, ms) {
+      list.forEach(function (b) {
+        var s = b.querySelector('span'), worded = s || b.textContent.trim().length > 1;   // "+" or an icon alone gets the tick alone
+        b.classList.remove('uadd-busy'); b.removeAttribute('aria-busy');
+        if (cls === 'uadd-done') b.innerHTML = CHECK + (worded ? ' <span' + (s && s.className ? ' class="' + s.className + '"' : '') + '>' + t('Added') + '</span>' : '');
+        else b.innerHTML = b._uaddHtml;
+        b.classList.add(cls);
+        b._uaddT = setTimeout(function () { b.classList.remove(cls); b.innerHTML = b._uaddHtml; b._uaddHtml = null; b.disabled = false; }, ms);
+      });
+    }
+    var csrf = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
+    return fetch(url, { method: 'POST', credentials: 'same-origin', headers: { 'X-CSRF-TOKEN': csrf, 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(fields) })
+      .then(function (r) {
+        if (r.status === 419) return { success: false, error: t('Session expired — reload the page and try again.') };
+        if (r.status === 429) return { success: false, error: t('Too many tries — wait a minute and try again.') };
+        return r.json().catch(function () { return { success: false }; });
+      }, function () { return { success: false, error: t('Network error. Please try again.') }; })
+      .then(function (d) {
+        d = d || {};
+        d.ok = !!(d.success && d.added !== 0) || d.added > 0;   // the quick-order endpoint answers success with added: 0 for an unknown part
+        if (d.ok) {
+          var n = d.count != null ? d.count : (d.data && d.data.count);   // /cart/add answers with the mini cart under data
+          if (n != null) document.querySelectorAll('[data-cart-count]').forEach(function (c) { c.textContent = n; c.hidden = false; c.classList.remove('bump'); void c.offsetWidth; c.classList.add('bump'); });
+          settle('uadd-done', 1600);
+        } else {
+          settle('uadd-err', 2400);
+          if (!(opts && opts.quiet)) say(d.error || d.message || t('Could not add to cart. Please try again.'));   // quiet: the page says it in its own spot
+        }
+        return d;
+      });
+  };
+
   function boot() {
     initReveal(); initHeader(); initSidebar(); initInfoPops(); initLangMenus(); initPrefetch(); initPicsAhead();
   }

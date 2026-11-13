@@ -1533,6 +1533,9 @@ body.has-ua{padding-bottom:84px}
 .cartline{display:grid;grid-template-columns:76px minmax(0,1fr) auto;gap:1.1rem;align-items:center;
   padding:1.1rem 1.25rem;transition:opacity var(--dur-2) var(--ease)}
 .cartline + .cartline{border-top:1px solid var(--line-2)}
+.cartline.is-new{animation:cartnew 2.4s var(--ease-out)}   /* a part just added on the cart page (cart.js refresh) */
+@keyframes cartnew{0%,35%{background:var(--ok-bg,#e8f5ee)}100%{background:transparent}}
+@media (prefers-reduced-motion:reduce){.cartline.is-new{animation:none}}
 .cartline.is-busy{opacity:.45;pointer-events:none}
 .cartline__media{width:76px;height:76px;border-radius:var(--r-sm);background:var(--paper-2);
   display:grid;place-items:center;overflow:hidden;flex:none;color:var(--ink-faint)}
@@ -2339,10 +2342,12 @@ body.has-ua{padding-bottom:84px}
 .pdp__sticky-price{font-family:var(--font-m);font-weight:600;font-size:1.15rem;
   font-variant-numeric:tabular-nums;flex:none}
 .pdp__sticky .btn{flex:none;min-height:48px}
-.pdp__added{display:flex;align-items:center;flex-wrap:wrap;gap:.6rem 1rem;margin-top:.9rem;padding:.75rem 1rem;
+/* confirmation line, then View cart + Checkout side by side at the same size */
+.pdp__added{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.75rem;padding:.75rem;
   border:1px solid var(--line);border-left:3px solid var(--ok);border-radius:var(--r-sm);background:var(--paper)}
 .pdp__added[hidden]{display:none}
-.pdp__added-t{display:inline-flex;align-items:center;gap:.4rem;font-weight:600;color:var(--ink);margin-right:auto}
+.pdp__added-t{grid-column:1/-1;display:inline-flex;align-items:center;gap:.4rem;font-weight:600;color:var(--ink)}
+.pdp__added .btn{min-height:44px;padding:.6rem .9rem;white-space:normal;line-height:1.2}   /* "Finaliser la commande" on a 320 px phone */
 .pdp__added-t .i{color:var(--ok)}
 @media (max-width:640px){
   /* price + Add to cart (+ Checkout once added) fill a phone's width; the part number is on the page above */
@@ -2585,14 +2590,18 @@ body.has-ua{padding-bottom:84px}
 .sum-it__cfg{grid-column:1/-1;margin:-.25rem 0 .5rem}
 
 /* ============================================================================
-   ADD-TO-CART FEEDBACK  —  shared by .pdp__cart .btn and the sticky mirror.
-   Reuses the is-busy/is-done language already established on .us-cadd so the
-   whole site says "working" and "done" the same way.
+   ADD-TO-CART FEEDBACK  —  every Add button on the site (uds.js udsAdd): working,
+   added, failed look the same whatever the button's size or place.
    ========================================================================== */
-#pdp-add.is-busy,#pdp-sticky-add.is-busy{opacity:.75;cursor:default}
-#pdp-add.is-busy .i,#pdp-sticky-add.is-busy .i{animation:uspin .7s linear infinite}
-#pdp-add.is-done,#pdp-sticky-add.is-done{--btn-bg:var(--ok);--btn-fg:#fff;box-shadow:none}
-#pdp-add.is-done .i,#pdp-sticky-add.is-done .i{transform:none}
+.uadd-busy{opacity:.75;cursor:default;pointer-events:none}
+.uadd-busy .i{animation:uspin .7s linear infinite}
+.uadd-done,.uadd-done:hover{--btn-bg:var(--ok);--btn-fg:#fff;--btn-bd:var(--ok);background:var(--ok)!important;border-color:var(--ok)!important;color:#fff!important;box-shadow:none}
+.uadd-err,.uadd-err:hover{--btn-bg:var(--err,#b42318);--btn-fg:#fff;--btn-bd:var(--err,#b42318);background:var(--err,#b42318)!important;border-color:var(--err,#b42318)!important;color:#fff!important}
+.uadd-done .i,.uadd-err .i{transform:none;animation:none}
+@media (prefers-reduced-motion:reduce){.uadd-busy .i{animation:none}}
+.uadd-note{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:300;max-width:min(92vw,460px);background:var(--ink,#1b2433);color:#fff;
+  padding:.7rem 1rem;border-radius:10px;font-size:.9rem;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.uadd-note[hidden]{display:none}
 /* cart-count badge: a short pulse so a change register even off to the side */
 [data-cart-count].bump{animation:ucartbump .5s var(--ease)}
 @keyframes ucartbump{0%{transform:scale(1)}35%{transform:scale(1.45)}100%{transform:scale(1)}}
@@ -2610,7 +2619,7 @@ body.has-ua{padding-bottom:84px}
 .pdp__wish:hover{border-color:#e0507a;color:#e0507a}
 .pdp__wish.is-on{border-color:#e0507a;background:#e0507a;color:#fff}
 .pdp__wish.is-busy{opacity:.6;pointer-events:none}
-@media (max-width:480px){.pdp__cart{flex-wrap:wrap}.pdp__wish{flex:none}}
+@media (max-width:480px){.pdp__cart{flex-wrap:wrap}.pdp__wish{flex:none}.pdp__cart .btn{white-space:normal;line-height:1.2;padding-inline:.9rem}}
 
 /* ============================================================================
    WISHLIST TABLE  —  same .ptbl the catalog uses (icon-button "Add" cell,

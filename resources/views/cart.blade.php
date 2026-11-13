@@ -16,14 +16,14 @@
   f.addEventListener('submit',function(e){
     e.preventDefault();
     var v=sku.value.trim(); if(!v){sku.focus();return;}
-    btn.disabled=true; say('');
-    fetch('/quick-order/add',{method:'POST',headers:{'X-CSRF-TOKEN':csrf,'X-Requested-With':'XMLHttpRequest','Content-Type':'application/x-www-form-urlencoded'},
-      body:new URLSearchParams({lines:JSON.stringify([{sku:v,qty:Math.max(1,parseInt(qty.value,10)||1)}])})})
-      .then(function(r){return r.json().catch(function(){return {success:false};});})
-      .then(function(d){
-        if(d.success){location.reload();return;}
-        btn.disabled=false; say(d.error||udsT('Part not found.'),true); sku.select();
-      }).catch(function(){btn.disabled=false;say(udsT('Network error. Please try again.'),true);});
+    say('');
+    // the same response as every Add button (uds.js udsAdd); the part joins the list without a reload (cart.js)
+    window.udsAdd(btn,'/quick-order/add',{lines:JSON.stringify([{sku:v,qty:Math.max(1,parseInt(qty.value,10)||1)}])},{quiet:true}).then(function(d){
+      if(d.busy)return;
+      if(!d.ok){say(d.error||udsT('Part not found.'),true);sku.select();return;}
+      sku.value='';
+      if(window.udsCartRefresh)window.udsCartRefresh(null,1700);else location.reload();   // an empty cart has no list yet: the page is redrawn
+    });
   });
 })();
 </script>
@@ -161,16 +161,6 @@
           </ul>
         </section>
         @endforeach
-        <script>
-        document.addEventListener('click',function(e){
-          var b=e.target.closest('[data-cjob-add]');if(!b)return;
-          b.disabled=true;
-          fetch('/cart/add',{method:'POST',headers:{'X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').content,'X-Requested-With':'XMLHttpRequest','Accept':'application/json','Content-Type':'application/x-www-form-urlencoded'},
-            body:new URLSearchParams({product_id:b.getAttribute('data-cjob-add'),quantity:1})})
-            .then(function(r){return r.json();}).then(function(d){if(d&&d.success!==false){location.reload();}else{b.disabled=false;window.alert((d&&d.error)||'Error');}})
-            .catch(function(){b.disabled=false;});
-        });
-        </script>
         </div>
         @endif
       </div>

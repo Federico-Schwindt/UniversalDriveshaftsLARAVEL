@@ -18,7 +18,7 @@
     elseif (mb_strlen($titleBase . $sfx(' in stock') . ' | UDS') <= 60) $titleBase .= $sfx(' in stock');
   } elseif (!$isFiltered && mb_strlen($titleBase . $sfx(' in stock') . ' | UDS') <= 60) $titleBase .= $sfx(' in stock');
   if (isset($filters['pa_series'])) $titleBase = $catName . ' – ' . ($catSeries[$filters['pa_series']]['name'] ?? strtoupper($filters['pa_series'])) . $sfx(' series');
-  if ($page > 1) $titleBase = ($count ? number_format($count) . ' ' : '') . $catName . $sfx(' – page ') . $page;
+  if ($page > 1) $titleBase = ($searchName ?? (($count ? number_format($count) . ' ' : '') . $catName)) . $sfx(' – page ') . $page;   // page 2 keeps page 1's name
   $title = $titleBase . ' | UDS';
   // description 140–160 from the category copy + live count
   $intro = ($seoCopy['intro'] ?? '') !== '' ? __((string) $seoCopy['intro']) : '';

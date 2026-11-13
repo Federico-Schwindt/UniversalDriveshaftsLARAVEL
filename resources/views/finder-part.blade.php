@@ -226,7 +226,7 @@
 <script>var TT=function(s){return (window.UDS_T||{})[s]||s;};
 (function(){
   var CSRF=document.querySelector('meta[name="csrf-token"]').content, btn=document.getElementById('fpp-add'); if(!btn)return;
-  function add(b){b.disabled=true;fetch('/catalog/driveshafts/add',{method:'POST',headers:{'X-CSRF-TOKEN':CSRF,'X-Requested-With':'XMLHttpRequest','Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({part_number:@json($pn),qty:document.getElementById('fpp-qty').value||1})}).then(function(r){return r.json();}).then(function(d){b.disabled=false;if(d.success){var t=b.textContent;b.textContent='Added';document.querySelectorAll('[data-cart-count]').forEach(function(x){x.textContent=d.count;x.hidden=false;});setTimeout(function(){b.textContent=t;},1500);}else alert(d.message||TT("Could not add this part."));}).catch(function(){b.disabled=false;});}
+  function add(b){window.udsAdd(b,'/catalog/driveshafts/add',{part_number:@json($pn),qty:document.getElementById('fpp-qty').value||1});}   // the same response as every Add button (uds.js udsAdd)
   btn.onclick=function(){add(btn);}; var top=document.querySelector('[data-add-top]'); if(top)top.onclick=function(){add(top);};
 })();
 </script>

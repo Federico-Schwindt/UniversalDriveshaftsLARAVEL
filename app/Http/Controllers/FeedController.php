@@ -23,6 +23,9 @@ class FeedController extends Controller
         $xml = Cache::remember('feed:google:products', 21600, function () use ($catalog) {
             $base = rtrim(config('app.url'), '/');
             $items = [];
+            // Shopping searches are part numbers: the number first, then the page's own name (not the old store's
+            // "1-1510 UDS Universal Joint" or a title without its number)
+            $title = fn (array $p) => mb_substr(trim($p['sku'] . ' ' . html_entity_decode($catalog->cleanNameStored($p))), 0, 150);
             foreach ($catalog->allCategorySlugs() as $slug => $group) {
                 $label = html_entity_decode(optional($catalog->term($slug))->name ?? $slug);
                 $gLabel = config("catalog.groups.$group.label", $group);
@@ -40,7 +43,7 @@ class FeedController extends Controller
                         $img = !empty($live['image']) ? media_url($live['image'], 1200) : ($p['image'] ?: '');
                         if ($img === '') continue;   // Merchant Center rejects items without an image
                         $items[$p['sku']] = [
-                            'id' => self::offerId((int) $p['id']), 'title' => mb_substr($p['name'], 0, 150), 'description' => $desc,
+                            'id' => self::offerId((int) $p['id']), 'title' => $title($p), 'description' => $desc,
                             'link' => $base . part_path($p['sku']),
                             'image_link' => $img ? ($img[0] === '/' ? $base . $img : $img) : '',
                             'availability' => ($p['stock_status'] ?? '') === 'instock' ? 'in_stock' : (($p['stock_status'] ?? '') === 'onbackorder' ? 'backorder' : 'out_of_stock'),

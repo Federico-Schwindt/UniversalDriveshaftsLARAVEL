@@ -84,12 +84,12 @@
       var btn=f.querySelector('button'),qty=Math.max(1,parseInt(f.qty.value,10)||1),sku=f.dataset.sku;
       var url=f.dataset.kind==='driveshaft'?'/catalog/driveshafts/add':'/shop/catalog/add';
       var body=f.dataset.kind==='driveshaft'?{part_number:f.dataset.pn,qty:qty}:{id:f.dataset.id,qty:qty};
-      busy(btn,true);
-      post(url,body).then(function(d){
-        busy(btn,false);
-        if(d&&d.success){bump(d.count);btn.classList.add('is-ok');setTimeout(function(){btn.classList.remove('is-ok');},1400);say(fmt(T.added,{qty:qty,sku:sku}),true);}
-        else say((d&&(d.error||d.message))||fmt(T.addFail,{sku:sku}),false);
-      }).catch(function(){busy(btn,false);say(fmt(T.addFail,{sku:sku}),false);});
+      // the same response as every Add button on the site (uds.js udsAdd), plus this page's own line
+      window.udsAdd(btn,url,body,{quiet:true}).then(function(d){
+        if(d.busy)return;
+        if(d.ok)say(fmt(T.added,{qty:qty,sku:sku}),true);
+        else say(d.error||d.message||fmt(T.addFail,{sku:sku}),false);
+      });
     });
   });
   document.querySelectorAll('[data-ba-reorder]').forEach(function(btn){

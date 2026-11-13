@@ -51,7 +51,7 @@
     if (!data.count) location.reload();
   }
 
-  root.querySelectorAll('.cartline').forEach(function (line) {
+  function bind(line) {
     var key = line.dataset.key;
     var price = Number(line.dataset.price) || 0;
     var qtyEl = line.querySelector('[data-qty]');
@@ -64,7 +64,7 @@
         if (!r || !r.success) return;
         if (q <= 0) { line.remove(); } else { qtyEl.value = q; totalEl.textContent = money(price * q); }
         paint(r.data);
-        if (q <= 0 && r.data && r.data.count && root.querySelector('.cjob')) location.reload();
+        if (q <= 0 && r.data && r.data.count && root.querySelector('.cjob')) refresh(null, 0);
       }).catch(function () { line.classList.remove('is-busy'); });
     }
 
@@ -79,9 +79,42 @@
       post('/cart/remove', { key: key }).then(function (r) {
         line.remove();
         if (r && r.success) paint(r.data);
-        // "Complete the job" was worked out from the old cart: reload so it only offers parts that fit what is left
-        if (r && r.success && r.data && r.data.count && root.querySelector('.cjob')) location.reload();
+        // "Complete the job" was worked out from the old cart: redraw it so it only offers parts that fit what is left
+        if (r && r.success && r.data && r.data.count && root.querySelector('.cjob')) refresh(null, 0);
       }).catch(function () { line.classList.remove('is-busy'); });
+    });
+  }
+  root.querySelectorAll('.cartline').forEach(bind);
+
+  /* A part added on this page ("Complete the job", "Customers also bought", the part-number box) joins the list without
+     a reload (owner, 2026-11-13: "se recarga la página"): totals from the add's answer at once, the new line and the
+     suggestions from a fresh copy of the page; the suggestions wait until the button has shown "Added". */
+  function refresh(data, moreDelay) {
+    if (data) paint(data);
+    var had = {};
+    root.querySelectorAll('.cartline').forEach(function (l) { had[l.dataset.key] = true; });
+    return fetch(location.pathname, { credentials: 'same-origin', headers: { 'Accept': 'text/html' } })
+      .then(function (r) { return r.text(); })
+      .then(function (html) {
+        var doc = new DOMParser().parseFromString(html, 'text/html'), fresh = doc.querySelector('[data-cart]');
+        if (!fresh) { location.reload(); return; }
+        var swap = function (sel) { var a = root.querySelector(sel), b = fresh.querySelector(sel); if (a && b) a.replaceWith(b); };
+        swap('.cartlist'); swap('[data-freebar]');
+        var row = root.querySelector('[data-subtotal]'), rowNew = fresh.querySelector('[data-subtotal]');
+        if (row && rowNew) row.parentNode.replaceWith(rowNew.parentNode);
+        root.querySelectorAll('.cartline').forEach(function (l) { bind(l); if (!had[l.dataset.key]) l.classList.add('is-new'); });
+        root.setAttribute('data-sum', fresh.getAttribute('data-sum'));
+        if (!data) paint({ subtotal: fresh.getAttribute('data-sum'), count: Number((doc.querySelector('[data-cart-count]') || {}).textContent) || 0 });
+        setTimeout(function () { swap('.cartmore'); }, moreDelay || 0);
+      }).catch(function () { location.reload(); });
+  }
+  window.udsCartRefresh = refresh;
+
+  // "Complete the job" / "Customers also bought" under the cart
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-cjob-add]'); if (!b) return;
+    window.udsAdd(b, '/cart/add', { product_id: b.getAttribute('data-cjob-add'), quantity: 1 }).then(function (d) {
+      if (d.ok) refresh(d.data, 1700);
     });
   });
 })();

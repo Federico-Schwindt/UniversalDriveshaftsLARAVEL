@@ -38,6 +38,8 @@ class JsStrings
         'Searching…', 'Search failed — try again.',
         '<b>No parts match “:q”.</b> Check the number against the one stamped on the part, try the series only, or <a href="/catalog/driveshafts">find a complete driveshaft by vehicle</a>.',
         'Showing results for :q', 'Left out, no part mentions it: :words', 'Search', 'Add',
+        // every Add to cart button (uds.js udsAdd)
+        'Added', 'Could not add to cart. Please try again.', 'Session expired — reload the page and try again.', 'Too many tries — wait a minute and try again.',
         'All :n', 'See all results', 'Open category', 'Replaces', 'Add :sku to cart', 'Add to cart', 'See :n result for “:q”', 'See all :n results for “:q”',
         // phone field
         'Search country', 'Number without the country code', ', change country',

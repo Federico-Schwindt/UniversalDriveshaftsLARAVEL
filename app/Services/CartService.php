@@ -83,13 +83,16 @@ class CartService
         if (isset($items[$hash])) {
             $items[$hash]['qty'] = min(999, $items[$hash]['qty'] + max(1, (int) ($item['qty'] ?? 1)));
         } else {
+            // the stored name is the catalog's: a bare "Universal Joint" title gets its series, style and lube from the part (cleanName)
+            $named = ['name' => (string) ($item['name'] ?? ''), 'sku' => (string) ($item['sku'] ?? '')];
+            if (($item['type'] ?? 'product') === 'product' && !empty($item['sku']) && !empty($item['wp_product_id'])) $named = app(CatalogService::class)->productById((int) $item['wp_product_id']) ?: $named;
             $items[$hash] = [
                 'key'           => $hash,
                 'type'          => $item['type'] ?? 'product',
                 'wp_product_id' => $item['wp_product_id'] ?? null,
                 // catalog parts carry the product page's title, not the old store's "UDS 5-1310X …" (the SKU shows beside it)
                 'name'          => ($item['type'] ?? 'product') === 'product' && !empty($item['sku'])
-                    ? (app(CatalogService::class)->cleanNameStored(['name' => (string) $item['name'], 'sku' => (string) $item['sku']]) ?: $item['name']) : $item['name'],
+                    ? (app(CatalogService::class)->cleanNameStored($named) ?: $item['name']) : $item['name'],
                 'sku'           => $item['sku'] ?? '',
                 'image'         => $item['image'] ?? '',
                 'price'         => round((float) $item['price'], 2),

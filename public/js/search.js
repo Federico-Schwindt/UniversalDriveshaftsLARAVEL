@@ -152,23 +152,12 @@
       b.onclick = function(e){
         e.preventDefault(); e.stopPropagation();
         var sku = b.getAttribute('data-add-sku'); if (!sku) return;
-        b.classList.add('is-busy');
-        fetch('/quick-order/add', {method:'POST', headers:{'X-CSRF-TOKEN':csrf(),'X-Requested-With':'XMLHttpRequest','Content-Type':'application/x-www-form-urlencoded'}, body:new URLSearchParams({lines: JSON.stringify([{sku:sku, qty:1}])})})
-          .then(function(r){
-            if (r.status === 419) throw new Error(T('Your session expired — reload the page.'));
-            return r.json().catch(function(){ return {}; });
-          }).then(function(d){
-            b.classList.remove('is-busy');
-            // success only when the server really added the part (a $0 / unknown SKU adds nothing)
-            if (!(d.added > 0)) throw new Error(d.error || T('Something went wrong. Try again.'));
-            b.classList.add('is-done');
-            document.querySelectorAll('[data-cart-count]').forEach(function(c){ if (d.count){ c.textContent = d.count; c.hidden = false; } });
-            setTimeout(function(){ b.classList.remove('is-done'); }, 1200);
-          }).catch(function(err){
-            b.classList.remove('is-busy'); b.classList.add('is-err'); b.title = err.message; b.setAttribute('aria-label', err.message);
-            hint.hidden = false; hint.innerHTML = '<div class="us-none" role="alert">' + esc(err.message) + '</div>';
-            setTimeout(function(){ b.classList.remove('is-err'); }, 2400);
-          });
+        // the same response as every Add button on the site (uds.js udsAdd); the reason for a failure shows in the list
+        window.udsAdd(b, '/quick-order/add', {lines: JSON.stringify([{sku:sku, qty:1}])}, {quiet: true}).then(function(d){
+          if (d.ok || d.busy) return;
+          var msg = d.error || T('Something went wrong. Try again.');
+          hint.hidden = false; hint.innerHTML = '<div class="us-none" role="alert">' + esc(msg) + '</div>';
+        });
       };
     });
   }
