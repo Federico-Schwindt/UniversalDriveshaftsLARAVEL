@@ -5,15 +5,33 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\Admin\CatalogWriter;
 use App\Services\EasyPostLabelService;
+use App\Services\ShipStationLabelService;
 use App\Support\AdminLog;
+use App\Support\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
-/** Buy outbound and return labels for an order without leaving the admin. */
+/** Buy outbound and return labels for an order without leaving the admin, through EasyPost or ShipStation. */
 class LabelsController extends Controller
 {
-    public function __construct(private EasyPostLabelService $ss) {}
+    public const MODES = ['auto' => 'Auto: EasyPost, then ShipStation if EasyPost has no balance', 'easypost' => 'EasyPost only', 'shipstation' => 'ShipStation only'];
+
+    public function __construct(private EasyPostLabelService $ss, private ShipStationLabelService $ssl) {}
+
+    /** Settings → Shipping "Labels are bought with" (owner, 2026-11-14: ShipStation too, or EasyPost first and ShipStation when it has no balance). */
+    public static function mode(?string $asked = null): string
+    {
+        $m = $asked ?: (string) Settings::get('labels.provider', 'auto');
+        return isset(self::MODES[$m]) ? $m : 'auto';
+    }
+
+    /** Which account prices and buys: ShipStation when chosen (or when EasyPost is not set up), EasyPost otherwise. */
+    private function provider(string $mode): string
+    {
+        if ($mode === 'shipstation') return 'shipstation';
+        return $this->ss->enabled() || !$this->ssl->enabled() ? 'easypost' : 'shipstation';
+    }
 
     private function order(int $id): object
     {
@@ -32,11 +50,17 @@ class LabelsController extends Controller
             'length_in' => 'nullable|numeric|min:0|max:300',
             'width_in' => 'nullable|numeric|min:0|max:108',
             'height_in' => 'nullable|numeric|min:0|max:108',
+            'mode' => 'nullable|in:auto,easypost,shipstation',
         ]);
-        return response()->json([
-            'rates' => $this->ss->rates($order, (string) ($d['carrier_code'] ?? ''), $d),
-            'freight' => $this->freightQuotes($order, $d),
-        ]);
+        $provider = $this->provider(self::mode($d['mode'] ?? null));
+        $note = null;
+        if ($provider === 'shipstation') {
+            $rates = $this->ssl->rates($order, (string) ($d['carrier_code'] ?? ''), $d);
+            if (!$this->ssl->enabled()) $note = 'ShipStation is not connected yet: its API key and secret (ShipStation → Settings → Account → API Settings) have to be added on the server.';
+        } else {
+            $rates = array_map(fn ($r) => $r + ['provider' => 'easypost'], $this->ss->rates($order, (string) ($d['carrier_code'] ?? ''), $d));
+        }
+        return response()->json(['rates' => $rates, 'provider' => $provider, 'note' => $note, 'freight' => $this->freightQuotes($order, $d)]);
     }
 
     /**
@@ -76,7 +100,12 @@ class LabelsController extends Controller
             'save_dims' => 'nullable|boolean',
             'notify' => 'nullable|boolean',
             'allow_real' => 'nullable|boolean',
+            'mode' => 'nullable|in:auto,easypost,shipstation',
+            'provider' => 'nullable|in:easypost,shipstation',
+            'service_name' => 'nullable|string|max:120',
         ]);
+        $mode = self::mode($d['mode'] ?? null);
+        $provider = $d['provider'] ?? $this->provider($mode);
         $d['allow_real'] = $r->boolean('allow_real');
         // a real label is real postage on the shop's account: roles with the labels section (staff included)
         if (!($this->ss->testMode() && !$d['allow_real'])) abort_unless(\App\Support\AdminAccess::can('labels'), 403, 'Your admin role can only buy TEST labels.');
@@ -89,13 +118,31 @@ class LabelsController extends Controller
                 $recent = DB::table('shipping_labels')->where('order_id', $order->id)->where('kind', 'outbound')->whereNull('voided_at')->where('created_at', '>=', now()->subMinutes(2))->first();
                 if ($recent) return back()->with('admin_err', 'An outbound label (' . ($recent->tracking_number ?: '#' . $recent->id) . ') was bought for this order under 2 minutes ago. Tick "buy another label anyway" to buy a second one.');
             }
-            $res = $this->ss->buy($order, $d, auth()->id());
+            $fellBack = false;
+            if ($provider === 'shipstation') {
+                $res = $this->ssl->buy($order, $d, auth()->id());
+            } else {
+                $res = $this->ss->buy($order, $d, auth()->id());
+                // Auto: EasyPost has no balance (or its card failed) → the same carrier and service from the ShipStation balance
+                if (!$res['ok'] && !empty($res['funds']) && $mode === 'auto' && $this->ssl->enabled()) {
+                    $box = ['weight_lb' => $d['weight_lb'], 'length_in' => $d['length_in'] ?? 0, 'width_in' => $d['width_in'] ?? 0, 'height_in' => $d['height_in'] ?? 0];
+                    $alt = $this->ssl->equivalent($order, $box, $d['kind'], $d['carrier_code'], $this->ss->serviceName($d['service_code']));
+                    if (!$alt) {
+                        $res['error'] .= ' — ShipStation does not price that same service for this box. Switch "Buy through" to ShipStation and pick one of its rates.';
+                    } else {
+                        $alt = $this->ssl->buy($order, ['carrier_code' => $alt['carrier'], 'service_code' => $alt['serviceCode'], 'service_name' => $alt['serviceName']] + $d, auth()->id());
+                        if ($alt['ok']) { $res = $alt; $fellBack = true; }
+                        else $res['error'] .= ' — ShipStation refused it too: ' . $alt['error'];
+                    }
+                }
+            }
         } finally { $lock->release(); }
         if (!$res['ok']) return back()->with('admin_err', 'Label not created — ' . $res['error']);
         $label = $res['label'];
         AdminLog::record('order.label', ucfirst($label->kind) . ' label ' . ($label->tracking_number ?: '#' . $label->id) . ' on ' . $order->order_number . ($label->is_test ? ' (test)' : ' · ' . money((float) $label->cost)), 'order', (string) $order->id);
 
-        $msg = ucfirst($label->kind) . ' label created' . ($label->tracking_number ? ' · ' . $label->tracking_number : '') . ($label->is_test ? ' (TEST label — no postage charged)' : ' · ' . money((float) $label->cost)) . '.';
+        $msg = ucfirst($label->kind) . ' label created' . ($label->provider === 'shipstation' ? ' through ShipStation' : '') . ($label->tracking_number ? ' · ' . $label->tracking_number : '') . ($label->is_test ? ' (TEST label — no postage charged)' : ' · ' . money((float) $label->cost)) . '.';
+        if ($fellBack) $msg .= ' EasyPost had no balance, so it was paid from the ShipStation balance.';
 
         // An outbound label IS the shipment: put its tracking on the order and tell the customer.
         if ($label->kind === 'outbound' && $label->tracking_number) {
@@ -114,11 +161,9 @@ class LabelsController extends Controller
 
     private function carrierName(string $code): string
     {
-        return match (true) {
-            str_contains($code, 'ups') => 'UPS',
-            str_contains($code, 'fedex') => 'FedEx',
-            str_contains($code, 'dhl') => 'DHL',
-            str_contains($code, 'stamps'), str_contains($code, 'usps') => 'USPS',
+        // "usps" contains "ups": the family check tells them apart (EasyPost slugs and ShipStation codes alike)
+        return match (ShipStationLabelService::family($code)) {
+            'ups' => 'UPS', 'fedex' => 'FedEx', 'dhl' => 'DHL', 'usps' => 'USPS',
             default => strtoupper(explode('_', $code)[0]),
         };
     }
@@ -172,7 +217,7 @@ class LabelsController extends Controller
     {
         $label = DB::table('shipping_labels')->find($labelId);
         abort_unless($label, 404);
-        $res = $this->ss->void($label);
+        $res = $label->provider === 'shipstation' ? $this->ssl->void($label) : $this->ss->void($label);
         if (!$res['ok']) return back()->with('admin_err', 'Void failed — ' . $res['error']);
         $order = DB::table('orders')->find($label->order_id);
         $note = '';

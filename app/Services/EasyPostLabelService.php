@@ -200,7 +200,7 @@ class EasyPostLabelService
         'GroundAdvantage' => 'Ground Advantage',
     ];
 
-    private function serviceName(string $service): string
+    public function serviceName(string $service): string
     {
         if (isset(self::SERVICE_LABELS[$service])) return self::SERVICE_LABELS[$service];
         $name = str_contains($service, '_')
@@ -331,7 +331,7 @@ class EasyPostLabelService
             'rate' => ['id' => $rate['id']],
             'insurance' => !empty($d['insure_value']) ? round((float) $d['insure_value'], 2) : null,
         ], fn ($v) => $v !== null));
-        if (!$buy->successful()) return ['ok' => false, 'error' => $this->errorFrom($buy)];
+        if (!$buy->successful()) return ['ok' => false, 'error' => $this->errorFrom($buy), 'funds' => self::fundsError($buy)];
 
         $pdf = $this->storePdf($order, $kind, $shipmentId, (string) $buy->json('postage_label.label_url'), (string) $buy->json('postage_label.label_file_type'), $test);
 
@@ -359,6 +359,14 @@ class EasyPostLabelService
         AdminLog::record('order.label', ucfirst($kind) . ' label for ' . $order->order_number . ' (' . ($label->tracking_number ?: '—') . ')', 'orders', (string) $order->id);
 
         return ['ok' => true, 'label' => $label];
+    }
+
+    /** EasyPost refused for money (empty wallet, declined card, no payment method), not for the box or the address. */
+    public static function fundsError($r): bool
+    {
+        if (!$r) return false;
+        if ($r->status() === 402) return true;
+        return (bool) preg_match('/insufficient|balance|funds|payment.?method|billing|recharge|credit card|card (was )?declined|wallet/i', (string) json_encode($r->json('error') ?? $r->body()));
     }
 
     /** EasyPost reports failures as {error:{message}}, where message is sometimes a list of field errors. */

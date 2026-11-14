@@ -115,11 +115,14 @@ class OrdersController extends Controller
         $pack = null;
         try { $pack = app(\App\Services\PackingService::class)->packageSummary($items->map(fn ($i) => ['type' => $i->type, 'wp_product_id' => $i->wp_product_id, 'sku' => $i->sku, 'name' => $i->name, 'qty' => $i->qty, 'price' => $i->price, 'meta' => $i->metaArr])->all()); } catch (\Throwable $e) {}
         $ssLabels = app(\App\Services\EasyPostLabelService::class);
+        $ssl = app(\App\Services\ShipStationLabelService::class);
+        $labelMode = \App\Http\Controllers\Admin\LabelsController::mode();
         $labels = DB::table('shipping_labels')->where('order_id', $id)->orderByDesc('id')->get();
         $ship = [
-            'enabled' => $ssLabels->enabled(), 'test' => $ssLabels->testMode(),
+            'enabled' => $ssLabels->enabled() || $ssl->enabled(), 'test' => $ssLabels->testMode(),
             'carriers' => $ssLabels->carriers(),
-            'provider' => 'EasyPost',
+            'provider' => $labelMode === 'shipstation' || !$ssLabels->enabled() ? 'ShipStation' : 'EasyPost',
+            'mode' => $labelMode, 'shipstation' => $ssl->enabled(), 'easypost' => $ssLabels->enabled(),
             // so the label modal can preselect the very service the customer paid for
             'paid_method' => (string) ($order->shipping_method ?? ''),
             'paid_label' => (string) ($order->shipping_label ?? ''),
