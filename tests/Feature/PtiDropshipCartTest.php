@@ -22,8 +22,13 @@ class PtiDropshipCartTest extends TestCase
             public int $address = 0;
             public array $calls = [];
             public string $tracking = '';
+            public array $gone = [];   // numbers PTI no longer lists
             public function configured(): bool { return true; }
-            public function stock(string $part): array { return ['total' => 50, 'can_build' => 0, 'by_store' => []]; }
+            public function stock(string $part): array
+            {
+                if (in_array($part, $this->gone, true)) throw new \RuntimeException('PTI my/instks/instks_by_store_id/: Part not found');
+                return ['total' => 50, 'can_build' => 0, 'by_store' => []];
+            }
             public function cartItems(): array { return array_map(fn ($p, $q) => ['part_number' => $p, 'quantity' => $q, 'price' => '$10.00'], array_keys($this->cart), $this->cart); }
             public function call(string $method, string $path, array $data = []): array
             {
@@ -78,6 +83,31 @@ class PtiDropshipCartTest extends TestCase
         $placed = $ds->place($res['dropship_id'], 'ups_ground', 'UPS Ground', 12.5, '100', '123', false);
         $this->assertTrue($placed['ok'], json_encode($placed));
         $this->assertSame('placed', DB::table('pti_dropships')->where('id', $res['dropship_id'])->value('status'));
+    }
+
+    public function test_a_part_pti_renumbered_ships_under_its_new_number(): void
+    {
+        // owner, 2026-11-14: "PTI did not answer: PTI my/instks/instks_by_store_id/: Part not found" (3502-063 is now 3502-063-01)
+        Mail::fake();
+        $pti = $this->fakePti();
+        $ds = new PtiDropship($pti);
+        $o = $this->order();
+        $item = DB::table('order_items')->where('order_id', $o->id)->first();
+        $old = $item->sku;
+        DB::table('pti_parts')->where('part_number', $old)->update(['related' => json_encode([['number' => "$old-01", 'note' => 'New parts end in -01', 'alias' => false], ['number' => "$old-KIT", 'note' => 'Strap kit', 'alias' => false]])]);
+        $pti->gone = [$old];
+        $res = $ds->prepare($o, [$item->id => 2], $this->ship(), false, 1, [$item->id => 1]);
+        $this->assertTrue($res['ok'], json_encode($res));
+        $this->assertSame(["$old-01" => 2], $pti->cart);
+        $this->assertStringContainsString("no longer lists $old", implode(' ', $res['substitutions']));
+
+        // no newer number either: a clear message, nothing in PTI's cart
+        $pti->cart = []; $pti->gone = [$old, "$old-01"];
+        DB::table('pti_dropships')->where('order_id', $o->id)->update(['status' => 'cancelled']);
+        $res = $ds->prepare($o, [$item->id => 2], $this->ship(), false, 1, [$item->id => 1]);
+        $this->assertFalse($res['ok']);
+        $this->assertStringContainsString("PTI no longer lists $old", $res['error']);
+        $this->assertSame([], $pti->cart);
     }
 
     public function test_tracking_follows_pti_including_a_new_label(): void
