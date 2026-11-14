@@ -97,7 +97,7 @@ class FloridaSalesTaxTest extends TestCase
     private function place(array $extra = [])
     {
         return $this->postJson('/checkout/place', $extra + ['email' => 'tax-' . uniqid() . '@example.com', 'phone' => '(813) 555-0142',
-            'billing_first_name' => 'Alex', 'billing_last_name' => 'Morgan', 'billing_country' => 'US', 'billing_state' => 'GA',
+            'billing_first_name' => 'Alex', 'billing_last_name' => 'Morgan', 'billing_country' => 'US', 'billing_state' => 'FL',   // pickup is Florida-only
             'shipping_method' => 'local_pickup', 'pickup_ack' => 1, 'agree_terms' => 1, 'payment_method' => 'card']);
     }
 

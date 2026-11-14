@@ -62,7 +62,7 @@
   </ul>
 
   <h2>5. Retiro en el local</h2>
-  <p>Elija retiro en el local al finalizar la compra para recoger su pedido en nuestro taller, sin cargo: {{ config('uds.pickup.label') }}. El retiro está disponible para pedidos de EE. UU. Espere nuestro correo electrónico que le avisa que su pedido está listo antes de venir.</p>
+  <p>Elija retiro en el local al finalizar la compra para recoger su pedido en nuestro taller, sin cargo: {{ config('uds.pickup.label') }}. El retiro está disponible solo para pedidos con dirección en Florida. Espere nuestro correo electrónico que le avisa que su pedido está listo antes de venir.</p>
 
   <h2>6. Envíos internacionales</h2>
   <p>Realizamos envíos internacionales por UPS Worldwide y DHL Express a la tarifa cotizada al finalizar la compra, con la documentación aduanera preparada por nosotros. Los pedidos internacionales se envían <b>DAP</b> (entregado en lugar convenido): los aranceles de importación, impuestos, gastos de despacho aduanero y cualquier cargo que aplique el país de destino no están incluidos en nuestro precio y los paga el destinatario al momento de la entrega. Algunos artículos largos o pesados no pueden viajar internacionalmente como paquetes; si su pedido no muestra una tarifa internacional, <a href="/contact">comuníquese con nosotros</a> para obtener una cotización de flete.</p>
@@ -133,7 +133,7 @@
   </ul>
 
   <h2>5. Local pickup</h2>
-  <p>Choose local pickup at checkout to collect your order from our shop at no charge: {{ config('uds.pickup.label') }}. Pickup is available for U.S. orders. Please wait for our e-mail saying your order is ready before coming in.</p>
+  <p>Choose local pickup at checkout to collect your order from our shop at no charge: {{ config('uds.pickup.label') }}. Pickup is available for orders with a Florida address. Please wait for our e-mail saying your order is ready before coming in.</p>
 
   <h2>6. International shipping</h2>
   <p>We ship internationally by UPS Worldwide and DHL Express at the rate quoted at checkout, with the customs paperwork prepared by us. International orders ship <b>DAP</b> (delivered at place): import duties, taxes, customs brokerage and any fees charged by the destination country are not included in our price and are paid by the recipient on delivery. Some long or heavy items cannot travel internationally as parcels; if your order shows no international rate, <a href="/contact">contact us</a> for a freight quote.</p>

@@ -202,7 +202,7 @@ class ShopController extends Controller
         ];
 
         if (self::isPoBox($dest['street'])) {
-            $opts = $country === 'US' && CartService::pickupEnabled() ? [CartService::pickupOption()] : [];
+            $opts = CartService::pickupFor($country, (string) $r->input('state', '')) ? [CartService::pickupOption()] : [];
             return response()->json(['success' => true, 'data' => $opts, 'carrier_rates' => false, 'reason' => 'po_box'] + $meta);
         }
 

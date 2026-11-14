@@ -726,7 +726,7 @@ class ChatbotService
                 'name' => 'prepare_order',
                 'description' => "Step 1 of placing an order for the customer from their CART. Prices the cart for a saved address (address_id from my_account, or \"pickup\"), a shipping option and a payment method, and returns either the choices still needed (shipping options or payment methods) or a full summary to show. Call it repeatedly as the customer chooses. Nothing is charged or ordered.",
                 'input_schema' => $obj([
-                    'address_id' => ['type' => 'string', 'description' => 'address_id from my_account, or "pickup" for local pickup at the shop.'],
+                    'address_id' => ['type' => 'string', 'description' => 'address_id from my_account, or "pickup" for local pickup at the shop (customers with a Florida address only).'],
                     'shipping_option' => ['type' => 'string', 'description' => 'shipping_option id from a previous prepare_order result, or "" to get the options.'],
                     'payment' => ['type' => 'string', 'enum' => ['ask', 'saved_card', 'net_terms', 'pay_link'], 'description' => 'saved_card = charge a card saved on the account; net_terms = invoice (approved business accounts); pay_link = order now, pay by link. ask = not chosen yet, returns the choices.'],
                     'card_id' => ['type' => 'string', 'description' => 'card_id of the saved card when payment is saved_card, else "".'],

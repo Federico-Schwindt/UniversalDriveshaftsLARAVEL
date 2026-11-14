@@ -25,7 +25,7 @@ class AssistantToolsTest extends TestCase
     private function user(array $extra = []): User
     {
         $u = User::query()->create(['name' => 'Alex Morgan', 'email' => 'bot-' . uniqid() . '@example.com', 'password' => bcrypt('x' . uniqid())]);
-        DB::table('users')->where('id', $u->id)->update($extra + ['phone' => '(813) 555-0142']);
+        DB::table('users')->where('id', $u->id)->update($extra + ['phone' => '(813) 555-0142', 'billing_state' => 'FL']);   // a Florida customer: pickup is Florida-only
         if (($extra['wholesale_status'] ?? '') === 'approved') B2bAccounts::evaluate($u->id, false);
         $u = $u->fresh();
         $this->actingAs($u);

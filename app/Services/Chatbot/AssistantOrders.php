@@ -226,6 +226,7 @@ class AssistantOrders
         $addr = $pickup ? $this->address($u, 'profile') : $this->address($u, $shipTo);
         if (!$pickup && !$addr) return ['ready' => false, 'error' => 'Unknown address_id. Use one from my_account (addresses), or "pickup" for local pickup. New addresses are added at /account/addresses.', 'addresses' => $this->addresses($u)];
         if ($pickup && !CartService::pickupEnabled()) return ['ready' => false, 'error' => 'Local pickup is not offered right now.'];
+        if ($pickup && !CartService::pickupFor((string) ($u->billing_country ?: 'US'), (string) $u->billing_state)) return ['ready' => false, 'error' => 'Local pickup is only for customers with a Florida address (the profile address in the account). Offer shipping to one of their saved addresses instead.', 'addresses' => $this->addresses($u)];
         if (!$pickup && ShopController::isPoBox((string) $addr['street'])) return ['ready' => false, 'error' => 'UPS and FedEx cannot deliver to a PO box; ask for a street address.'];
 
         $dest = $pickup ? [] : ['street' => (string) $addr['street'], 'city' => (string) $addr['city'], 'company' => (string) ($addr['company'] ?? ''),

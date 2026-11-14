@@ -8,8 +8,8 @@ use Illuminate\Support\Str;
  * Session cart + the ORIGINAL store's shipping rules (from wp_woocommerce_shipping_zones):
  *  - US: live UPS rates per package (no flat rate since Oct 2026) + free shipping on parts from $1,000
  *    (tubing and complete driveshafts never count and are always rated)
- *  - Local pickup in Florida is offered from ANY address, always last and never preselected;
- *    the checkout makes the customer acknowledge it (nothing ships). Was FL-only originally.
+ *  - Local pickup at the Florida shop is offered to Florida addresses only (owner, 2026-11-14), always last and
+ *    never preselected; the checkout makes the customer acknowledge it (nothing ships).
  *  - Florida sales tax is added at checkout (App\Support\SalesTax); the old store charged none (woocommerce_calc_taxes = no).
  */
 class CartService
@@ -28,6 +28,12 @@ class CartService
     public static function freeMin(): float { return (float) (config('uds.free_shipping_min') ?: self::FREE_SHIPPING_MIN); }
 
     public static function pickupEnabled(): bool { return (bool) setting('pickup.enabled', true); }
+
+    /** Owner, 2026-11-14: "pickup only for florida state" — the address (state code, or the name an old address book kept) must be in Florida. */
+    public static function pickupFor(string $country, string $state): bool
+    {
+        return strtoupper($country ?: 'US') === 'US' && in_array(strtoupper(trim($state)), ['FL', 'FLORIDA'], true) && self::pickupEnabled();
+    }
     public const PICKUP_ID = 'local_pickup';
 
     private const KEY = 'uds_cart';
@@ -220,7 +226,7 @@ class CartService
                     }
                 }
                 $live = $this->withEta($live, $items);
-                if ($country === 'US' && self::pickupEnabled()) $live[] = self::pickupOption();
+                if (self::pickupFor($country, $state)) $live[] = self::pickupOption();
                 return $live;
             }
         }
@@ -230,7 +236,7 @@ class CartService
         if ($zip !== '' && $freeEligible && !$ratedBoxes) {
             $opts[] = ['id' => 'free_shipping', 'label' => 'Free shipping', 'cost' => 0.0];
         }
-        if ($country === 'US' && self::pickupEnabled()) $opts[] = self::pickupOption();   // pickup in Florida only makes sense for U.S. addresses
+        if (self::pickupFor($country, $state)) $opts[] = self::pickupOption();
         return $opts;
     }
 
@@ -363,7 +369,7 @@ class CartService
         return implode(' and ', $parts);
     }
 
-    /** Always offered, always last, never preselected: the customer comes to the shop. */
+    /** Offered to Florida addresses (pickupFor), always last, never preselected: the customer comes to the shop. */
     public static function pickupOption(): array
     {
         return ['id' => self::PICKUP_ID, 'label' => config('uds.pickup.label'), 'cost' => 0.0];
@@ -371,8 +377,8 @@ class CartService
 
     public function shippingCost(string $method, string $country, string $state, string $zip = '', ?array $items = null, array $dest = []): ?array
     {
-        // Pickup needs no carrier call, but only a U.S. address may choose it.
-        if ($method === self::PICKUP_ID) return strtoupper($country ?: 'US') === 'US' && self::pickupEnabled() ? self::pickupOption() : null;
+        // Pickup needs no carrier call, but only a Florida address may choose it.
+        if ($method === self::PICKUP_ID) return self::pickupFor($country, $state) ? self::pickupOption() : null;
         // The price the customer was shown is the price they pay: a quote for this exact cart,
         // address and delivery type, still fresh, is honoured instead of re-quoted at submit —
         // where a carrier repricing would silently change the total, or a carrier hiccup fail
