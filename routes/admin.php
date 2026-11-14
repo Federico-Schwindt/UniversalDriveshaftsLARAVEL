@@ -121,6 +121,8 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
         Route::post('/customers/{email}/note', [CustomersController::class, 'note'])->where('email', '.+@.+');
         Route::get('/customers/{key}', [CustomersController::class, 'show']);
         Route::post('/customers/{id}', [CustomersController::class, 'update'])->whereNumber('id');
+        Route::post('/customers/{id}/addresses', [CustomersController::class, 'addressSave'])->whereNumber('id');
+        Route::post('/customers/{id}/addresses/{aid}/delete', [CustomersController::class, 'addressDelete'])->whereNumber(['id', 'aid']);
         Route::post('/customers/{id}/reset-link', [CustomersController::class, 'resetLink']);
         Route::post('/customers/{id}/tax', [CustomersController::class, 'tax'])->whereNumber('id');
         Route::get('/customers/{id}/tax-certificate', [CustomersController::class, 'taxFile'])->whereNumber('id');

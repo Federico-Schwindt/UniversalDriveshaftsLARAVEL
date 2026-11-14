@@ -100,15 +100,61 @@ class CustomersController extends Controller
         return redirect('/admin/customers/' . $id)->with('admin_ok', 'Customer created' . ($r->boolean('send_welcome') ? ' and welcome e-mail sent.' : '.'));
     }
 
+    /** Add or change one of the customer's saved addresses (the same book they keep under Account → Addresses). */
+    public function addressSave(Request $r, int $id)
+    {
+        $u = DB::table('users')->find($id); abort_unless($u, 404);
+        abort_if(($u->is_admin ?? 0) && \App\Support\AdminAccess::role() !== 'owner', 403);
+        $d = $r->validate(['address_id' => 'nullable|integer', 'kind' => 'nullable|in:shipping,dropship', 'label' => 'nullable|string|max:60', 'name' => 'nullable|string|max:160',
+            'company' => 'nullable|string|max:160', 'street' => 'required|string|max:190', 'unit' => 'nullable|string|max:60', 'city' => 'required|string|max:120',
+            'state' => 'nullable|string|max:60', 'postcode' => 'required|string|max:20', 'country' => 'required|string|size:2', 'phone' => 'nullable|string|max:40']);
+        if (empty($d['name']) && empty($d['company'])) return back()->withInput()->withErrors(['name' => 'Add a contact name or a company.']);
+        $kind = ($d['kind'] ?? 'shipping') === 'dropship' ? 'dropship' : 'shipping';
+        $row = ['label' => $d['label'] ?? null, 'name' => $d['name'] ?? null, 'company' => $d['company'] ?? null, 'street' => $d['street'], 'unit' => $d['unit'] ?? null,
+            'city' => $d['city'], 'state' => $d['state'] ?? null, 'postcode' => $d['postcode'], 'country' => strtoupper($d['country']), 'phone' => $d['phone'] ?? null,
+            'residential' => $r->boolean('residential'), 'kind' => $kind, 'updated_at' => now()];
+        $mine = DB::table('dropship_addresses')->where('user_id', $id);
+        if (!empty($d['address_id'])) {
+            abort_unless((clone $mine)->where('id', $d['address_id'])->exists(), 404);
+            DB::table('dropship_addresses')->where('id', $d['address_id'])->update($row + ($kind === 'dropship' ? ['is_default' => false] : []));
+            $aid = (int) $d['address_id'];
+        } else {
+            $first = $kind === 'shipping' && !(clone $mine)->where('kind', 'shipping')->exists();
+            $aid = DB::table('dropship_addresses')->insertGetId($row + ['user_id' => $id, 'is_default' => $first, 'created_at' => now()]);
+        }
+        if ($kind === 'shipping' && $r->boolean('is_default')) {
+            DB::table('dropship_addresses')->where('user_id', $id)->update(['is_default' => false]);
+            DB::table('dropship_addresses')->where('id', $aid)->update(['is_default' => true]);
+        }
+        AdminLog::record('customer.address', (!empty($d['address_id']) ? 'Address changed' : 'Address added') . " for {$u->email}: {$row['street']}, {$row['city']}", 'customer', $id);
+        return back()->with('admin_ok', !empty($d['address_id']) ? 'Address updated.' : 'Address added.');
+    }
+
+    public function addressDelete(int $id, int $aid)
+    {
+        $u = DB::table('users')->find($id); abort_unless($u, 404);
+        abort_if(($u->is_admin ?? 0) && \App\Support\AdminAccess::role() !== 'owner', 403);
+        $a = DB::table('dropship_addresses')->where('user_id', $id)->where('id', $aid)->first(); abort_unless($a, 404);
+        DB::table('dropship_addresses')->where('id', $aid)->delete();
+        // checkout prefills the default: the newest own address takes over
+        if ($a->is_default && ($next = DB::table('dropship_addresses')->where('user_id', $id)->where('kind', 'shipping')->orderByDesc('id')->value('id'))) DB::table('dropship_addresses')->where('id', $next)->update(['is_default' => true]);
+        AdminLog::record('customer.address', "Address removed for {$u->email}: {$a->street}, {$a->city}", 'customer', $id);
+        return back()->with('admin_ok', 'Address removed.');
+    }
+
     public function update(Request $r, int $id)
     {
         $u = DB::table('users')->find($id); abort_unless($u, 404);
         abort_if(($u->is_admin ?? 0) && \App\Support\AdminAccess::role() !== 'owner', 403);
         $d = $r->validate(['name' => 'required|string|max:120', 'email' => 'required|email|unique:users,email,' . $id, 'phone' => 'nullable|string|max:40', 'company' => 'nullable|string|max:120', 'tags' => 'nullable|string|max:255',
+            'billing_address_1' => 'nullable|string|max:190', 'billing_address_2' => 'nullable|string|max:190', 'billing_city' => 'nullable|string|max:120',
+            'billing_state' => 'nullable|string|max:60', 'billing_postcode' => 'nullable|string|max:20', 'billing_country' => 'nullable|string|size:2',
             'wholesale_status' => 'nullable|in:none,pending,approved', 'wholesale_group' => 'nullable|string|max:60', 'wholesale_discount' => 'nullable|numeric|min:0|max:90',
             'net_terms' => 'nullable', 'credit_limit' => 'nullable|numeric|min:0|max:1000000']);
         if ($u->is_admin) $d['email'] = $u->email;   // admin identities change only in Settings → Users
         $upd = ['name' => $d['name'], 'email' => $d['email'], 'phone' => $d['phone'] ?? null, 'company' => $d['company'] ?? null, 'tags' => $d['tags'] ?? null, 'updated_at' => now()];
+        // the billing address on the account (checkout prefills it); only when the form sent it
+        if ($r->has('billing_address_1')) foreach (['billing_address_1', 'billing_address_2', 'billing_city', 'billing_state', 'billing_postcode', 'billing_country'] as $k) $upd[$k] = $k === 'billing_country' ? strtoupper((string) ($d[$k] ?? '')) ?: null : ($d[$k] ?? null);
         if ($r->has('wholesale_status')) { $w = ['wholesale_status' => $d['wholesale_status'], 'wholesale_group' => $d['wholesale_group'] ?? null, 'wholesale_discount' => $d['wholesale_discount'] ?? 0,
             'net_terms' => $r->boolean('net_terms'), 'credit_limit' => ($d['credit_limit'] ?? '') === '' ? null : $d['credit_limit']];
             // discount / net terms / credit are money decisions: only roles with the wholesale section may change them
