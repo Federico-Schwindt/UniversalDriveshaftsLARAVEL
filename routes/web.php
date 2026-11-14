@@ -47,9 +47,13 @@ Route::post('/fitment-inquiry', function(\Illuminate\Http\Request $r){
             }
         } catch (\Throwable $e) {}
     }
-    $data=$r->except(["_token","g-recaptcha-response"]);
+    $data=$r->except(["_token","g-recaptcha-response","_ft",\App\Support\SpamGuard::FIELD]);
     $data['ts']=now()->toDateTimeString();
     $data['ip']=$r->ip();
+    // bots: kept as status "spam" (Leads → Spam) with no e-mail, and answered like everyone else
+    $spam = \App\Support\SpamGuard::reason($r, trim(($data['first_name'] ?? '').' '.($data['last_name'] ?? '').' '.($data['name'] ?? '').' '.($data['full_name'] ?? '')),
+        (string) ($data['message'] ?? ($data['details'] ?? ($data['additional_info'] ?? ''))));
+    if ($spam) $data['spam'] = $spam;
     \Illuminate\Support\Facades\Storage::append('fitment_inquiries.jsonl', json_encode($data));
     // persist as a lead for the admin panel
     try {
@@ -62,13 +66,15 @@ Route::post('/fitment-inquiry', function(\Illuminate\Http\Request $r){
             'message' => $data['message'] ?? ($data['details'] ?? ($data['additional_info'] ?? null)),
             'data' => json_encode($data),
             'ip' => $data['ip'] ?? null,
+            'status' => $spam ? 'spam' : 'new',
             'created_at' => now(), 'updated_at' => now(),
         ]);
     } catch (\Throwable $e) {}
+    if ($spam) return back()->with('fitment_ok', true);
     // notify the team by email (source names the form)
     try {
         $src = $data['source'] ?? 'website form';
-        $lines = collect($data)->except(['_token','source','ts','ip','sms_consent'])
+        $lines = collect($data)->except(['_token','source','ts','ip','sms_consent','spam'])
             ->filter(fn($v)=>is_scalar($v) && trim((string)$v)!=='')
             ->map(fn($v,$k)=>ucfirst(str_replace('_',' ',$k)).': '.$v)->implode("\n");
         $email = $data['email'] ?? '';

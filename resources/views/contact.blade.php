@@ -37,7 +37,7 @@
 </div>
 @endif
 <form class="fitform" method="POST" action="/fitment-inquiry#fitment">
-        @csrf
+        @csrf{!! \App\Support\SpamGuard::fields() !!}
         <input type="hidden" name="source" value="contact-us">
         @if($dsgSections)<input type="hidden" name="designer_sections" value="{{ $dsgSections }}"><input type="hidden" name="designer_dims" value="{{ http_build_query($dsgDims, '', '&') }}"><input type="hidden" name="designer_url" value="{{ $dsgUrl }}">@endif
         <div><label for="c-first">{{ __('First name') }}</label><input type="text" id="c-first" name="first_name" autocomplete="given-name"></div>

@@ -8,7 +8,7 @@
     </div>
   @else
   <form class="fitform" method="POST" action="/fitment-inquiry#fitment">
-    @csrf
+    @csrf{!! \App\Support\SpamGuard::fields() !!}
     <input type="hidden" name="source" value="{{ request()->path() }}">
     <div><label>{{ __('First Name') }}</label><input type="text" name="first_name" placeholder="{{ __('First Name') }}"></div>
     <div><label>{{ __('Last Name') }}</label><input type="text" name="last_name" placeholder="{{ __('Last Name') }}"></div>
