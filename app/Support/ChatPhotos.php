@@ -15,10 +15,16 @@ use Illuminate\Support\Str;
 class ChatPhotos
 {
     public const MAX_PER_MESSAGE = 3;
+    /** Photos a customer may send in one chat: each one goes back to the model on every later turn. */
+    public const MAX_PER_CONVERSATION = 9;
+    /** Largest image decoded (a 12 MP phone photo is well under it). */
+    public const MAX_PIXELS = 40_000_000;
     public const MAX_PX = 1600;
 
     public static function store(UploadedFile $file, int $conversationId): string
     {
+        $info = @getimagesize($file->getRealPath());
+        if ($info === false || $info[0] * $info[1] > self::MAX_PIXELS) throw new \RuntimeException('That file is not a photo we can read.');
         $path = "chat/$conversationId/" . Str::random(24) . '.jpg';
         $blob = null;
         if (class_exists(\Imagick::class)) {
@@ -48,7 +54,9 @@ class ChatPhotos
     {
         if (!preg_match('#^data:image/(jpeg|png|webp|gif);base64,([A-Za-z0-9+/=\s]+)$#', $dataUrl, $m)) throw new \RuntimeException('Not an image.');
         $bytes = base64_decode(preg_replace('/\s+/', '', $m[2]), true);
-        if ($bytes === false || strlen($bytes) < 100 || @getimagesizefromstring($bytes) === false) throw new \RuntimeException('Not an image.');
+        $info = $bytes === false || strlen($bytes) < 100 ? false : @getimagesizefromstring($bytes);
+        // audit 2026-11-14: a small file can still be a huge image (40k × 40k px); decoding it would exhaust memory
+        if ($info === false || $info[0] * $info[1] > self::MAX_PIXELS) throw new \RuntimeException('Not an image.');
         $tmp = tempnam(sys_get_temp_dir(), 'chatimg');
         file_put_contents($tmp, $bytes);
         try {

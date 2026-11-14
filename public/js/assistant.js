@@ -245,6 +245,7 @@
     var tot = '<dl class="ua-sum__tot"><div><dt>' + esc(T('Subtotal')) + '</dt><dd>' + money(w.subtotal) + '</dd></div>' +
       (w.discount ? '<div class="is-off"><dt>' + esc(w.discount.label) + '</dt><dd>−' + money(Math.abs(w.discount.amount)) + '</dd></div>' : '') +
       '<div><dt>' + esc(w.shipping.label || T('Shipping')) + '</dt><dd>' + (w.shipping.cost ? money(w.shipping.cost) : esc(T('Free'))) + '</dd></div>' +
+      (w.tax ? '<div><dt>' + esc(w.tax.label) + '</dt><dd>' + money(w.tax.amount) + '</dd></div>' : '') +
       '<div class="is-total"><dt>' + esc(T('Total')) + '</dt><dd>' + money(w.total) + '</dd></div></dl>';
     box.appendChild(el('div', '', tot));
     box.appendChild(el('div', 'ua-sum__meta', '<div><small>' + esc(T('Ship to')) + '</small><span>' + esc(w.ship_to) + '</span></div><div><small>' + esc(T('Payment')) + '</small><span>' + esc(w.payment) + '</span></div>' + (w.po ? '<div><small>PO</small><span class="ua-mono">' + esc(w.po) + '</span></div>' : '')));

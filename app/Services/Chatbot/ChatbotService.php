@@ -1242,7 +1242,8 @@ class ChatbotService
 
     private function systemPrompt(User $user, bool $compact = false): string
     {
-        $who = trim(($user->name ?? '') ?: 'the customer');
+        // a name, nothing else: letters, digits and a few marks, 60 characters (it is the customer's own text in the system prompt)
+        $who = Str::limit(trim(preg_replace('/[^\p{L}\p{M}\p{N} .,\'&-]+/u', ' ', (string) ($user->name ?? ''))), 60, '') ?: 'the customer';
         $wholesale = B2bAccounts::approved($user)
             ? ' They have an approved business (B2B) account, tier ' . B2bAccounts::label(B2bAccounts::tierOf($user)) . ': the tier discount is taken off the order total at checkout (catalog prices from the tools do not include it). my_account has the details.'
             : (($user->wholesale_status ?? 'none') === 'pending' ? ' Their business-account application is being reviewed.' : ' They do not have a business account; they can apply (apply_for_business_account).');

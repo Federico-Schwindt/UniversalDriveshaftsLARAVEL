@@ -39,9 +39,10 @@ class ChatsController extends Controller
         $c = $this->conv($id);
         DB::table('chat_conversations')->where('id', $id)->update(['admin_seen_id' => (int) DB::table('chat_messages')->where('conversation_id', $id)->max('id')]);
         $customer = DB::table('users')->find($c->user_id);
-        $orders = $customer ? DB::table('orders')->where(fn ($q) => $q->where('user_id', $customer->id)->orWhere('email', $customer->email))->orderByDesc('id')->limit(8)
+        $mine = fn ($q) => $q->where('user_id', $customer->id)->when($customer->email_verified_at, fn ($w) => $w->orWhere('email', $customer->email));
+        $orders = $customer ? DB::table('orders')->where($mine)->orderByDesc('id')->limit(8)
             ->get(['id', 'order_number', 'total', 'status', 'payment_status', 'created_at', 'tracking_number', 'tracking_carrier', 'shipped_at', 'delivered_at', 'source']) : collect();
-        $stats = $customer ? \App\Support\SalesStats::counted(DB::table('orders')->where(fn ($q) => $q->where('user_id', $customer->id)->orWhere('email', $customer->email)))
+        $stats = $customer ? \App\Support\SalesStats::counted(DB::table('orders')->where($mine))
             ->selectRaw('COUNT(*) n, COALESCE(SUM(total - shipping_total - tax_total - COALESCE(refund_total,0)),0) t, MIN(created_at) first')->first() : null;
         return view('admin.chats.show', ['c' => $c, 'customer' => $customer, 'orders' => $orders, 'stats' => $stats, 'context' => $this->contextFor($c),
             'messages' => $this->bot->transcript($c), 'agent' => $this->bot->agentName($c)]);
@@ -113,7 +114,7 @@ class ChatsController extends Controller
             if ($p) $attach['cards'][] = $this->bot->partRow($p, $u);
         }
         if (!empty($d['tracking_order'])) {
-            $o = DB::table('orders')->where('id', (int) $d['tracking_order'])->where(fn ($q) => $q->where('user_id', $c->user_id)->orWhere('email', $u->email ?? ''))->first();
+            $o = DB::table('orders')->where('id', (int) $d['tracking_order'])->where(fn ($q) => $q->where('user_id', $c->user_id)->when($u?->email_verified_at, fn ($w) => $w->orWhere('email', $u->email)))->first();
             if (!$o) return response()->json(['error' => 'That order is not on this customer\'s account.'], 422);
             $attach['widgets'][] = \App\Services\Chatbot\ChatWidgets::tracking($o);
         }
