@@ -68,6 +68,13 @@ return [
         'inbox' => env('CHATBOT_INBOX', 'inquiry@universaldriveshafts.com'),
     ],
 
+    // ShipStation Custom Store (App\Http\Controllers\ShipStationController): the store's login and the first order it sees
+    'shipstation' => [
+        'store_user' => env('SHIPSTATION_STORE_USER'),
+        'store_password' => env('SHIPSTATION_STORE_PASSWORD'),
+        'since' => env('SHIPSTATION_SINCE', '2026-11-13 21:13:00'),   // the launch (UTC): older orders came through WooCommerce
+    ],
+
     'easypost' => [
         'enabled' => (bool) env('EASYPOST_ENABLED', false),
         'key' => env('EASYPOST_KEY', ''),
