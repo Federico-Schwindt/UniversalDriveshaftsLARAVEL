@@ -16,7 +16,7 @@ class AuthController extends Controller
         // ?redirect=/local/path brings the customer back where they were (designer save, wishlist…)
         $to = (string) $r->query('redirect', '');
         if ($to !== '' && str_starts_with($to, '/') && !str_starts_with($to, '//')) $r->session()->put('url.intended', $to);
-        return view('auth.login', ['googleClient' => config('uds.google_client_id')]);
+        return view('auth.login', ['googleClient' => self::googleClient()]);
     }
 
     public function login(Request $r)
@@ -47,7 +47,7 @@ class AuthController extends Controller
         // "Use a different e-mail" from the code step comes back here: keep the name and phone already typed
         $p = (array) $r->session()->get('pending_registration', []);
         // signed time stamp: a human needs a few seconds to fill the form, a script does not
-        return view('auth.register', ['googleClient' => config('uds.google_client_id'), 'formTs' => encrypt(time()),
+        return view('auth.register', ['googleClient' => self::googleClient(), 'formTs' => encrypt(time()),
             'prefill' => ['name' => $p['name'] ?? '', 'phone' => $p['phone'] ?? '', 'email' => $p['email'] ?? '']]);
     }
 
@@ -177,9 +177,15 @@ class AuthController extends Controller
     }
 
     /** POST /auth/google — Google Identity Services credential (JWT) verification. */
+    /** The Google client id when "Sign in with Google" is switched on (Settings → Storefront; hidden since 2026-11-14, it was not working). */
+    public static function googleClient(): string
+    {
+        return \App\Support\Settings::get('auth.google', false) ? (string) config('uds.google_client_id') : '';
+    }
+
     public function google(Request $r)
     {
-        $clientId = config('uds.google_client_id');
+        $clientId = self::googleClient();
         abort_unless($clientId, 404);
         $token = (string) $r->input('credential');
         $resp = Http::timeout(6)->get('https://oauth2.googleapis.com/tokeninfo', ['id_token' => $token]);
