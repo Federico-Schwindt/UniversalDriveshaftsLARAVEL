@@ -57,6 +57,7 @@ class SettingsController extends Controller
                 'b2b.remind_days' => ['Invoice reminder (days before due)', 'number', 3, 'Overdue notices go the day after the due date and every 7 days after that. Any overdue invoice pauses terms for that customer.'],
             ],
             'storefront' => [
+                'auth.google' => ['"Sign in with Google" button', 'bool', false, 'Shows Google sign-in on the login and register pages (needs GOOGLE_CLIENT_ID on the server). Off since 2026-11-14: it was not working.'],
                 'promo.text' => ['Top bar message', 'text', 'U.S. free shipping on orders over $1,000 (excluding tubes and driveshafts)', ''],
                 'promo.link' => ['Top bar link', 'text', '/shipping-policy', ''],
                 'promo.enabled' => ['Show top bar', 'bool', true, ''],

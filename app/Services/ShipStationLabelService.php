@@ -53,7 +53,7 @@ class ShipStationLabelService
                 $out = [];
                 foreach ((array) $r->json() as $c) {
                     if (empty($c['code'])) continue;
-                    $out[$c['code']] = ['name' => trim((string) ($c['nickname'] ?? '') ?: (string) ($c['name'] ?? $c['code'])), 'balance' => isset($c['balance']) ? (float) $c['balance'] : null, 'funded' => (bool) ($c['requiresFundedAccount'] ?? false)];
+                    $out[$c['code']] = ['name' => trim((string) ($c['name'] ?? '') ?: (string) ($c['nickname'] ?? $c['code'])), 'balance' => isset($c['balance']) ? (float) $c['balance'] : null, 'funded' => (bool) ($c['requiresFundedAccount'] ?? false)];
                 }
                 return $out;
             } catch (\Throwable $e) {
@@ -63,10 +63,13 @@ class ShipStationLabelService
         });
     }
 
-    /** @return array<string,string> code => name */
+    /** @return array<string,string> code => name ("UPS", not the account's nickname, which ShipStation sets to the funding card) */
     public function carriers(): array
     {
-        return array_map(fn ($c) => $c['name'], $this->carrierList());
+        $short = ['ups' => 'UPS', 'fedex' => 'FedEx', 'usps' => 'USPS', 'dhl' => 'DHL Express'];
+        $out = [];
+        foreach ($this->carrierList() as $code => $c) $out[$code] = $short[self::family($code)] ?? $c['name'];
+        return $out;
     }
 
     /** "ups_walleted" → ups, "stamps_com" → usps: the carrier behind a ShipStation code, to match an EasyPost service. */
