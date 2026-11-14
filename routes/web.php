@@ -86,8 +86,8 @@ Route::post('/fitment-inquiry', function(\Illuminate\Http\Request $r){
         \Illuminate\Support\Facades\Mail::raw(
             "New submission from: {$src}\n\n{$lines}\n\nReceived: {$data['ts']} | IP: {$data['ip']}",
             function($m) use ($email, $src, $attachment, $data) {
-                $m->to('Inquiry@universaldriveshafts.com')
-                  ->replyTo(filter_var($email, FILTER_VALIDATE_EMAIL) ? $email : 'Inquiry@universaldriveshafts.com')
+                $m->to(config('uds.inquiry_email'))
+                  ->replyTo(filter_var($email, FILTER_VALIDATE_EMAIL) ? $email : config('uds.inquiry_email'))
                   ->subject('New '.\Illuminate\Support\Str::title(str_replace('-',' ',$src)).' submission'.($attachment ? ' with driveshaft drawing' : ''));
                 if ($attachment) $m->attachData($attachment, 'driveshaft-'.$data['designer_sections'].'.svg', ['mime' => 'image/svg+xml']);
             }
