@@ -31,7 +31,7 @@ class AssistantRobustnessTest extends TestCase
     private function user(array $extra = [], string $provider = 'claude'): User
     {
         $u = User::query()->create(['name' => 'Robin Vega', 'email' => 'bot-' . uniqid() . '@example.com', 'password' => bcrypt('x' . uniqid())]);
-        DB::table('users')->where('id', $u->id)->update($extra + ['phone' => '(813) 555-0142']);
+        DB::table('users')->where('id', $u->id)->update($extra + ['phone' => '(813) 555-0142', 'billing_state' => 'FL']);   // a Florida customer: pickup is Florida-only
         $u = $u->fresh();
         $this->actingAs($u);
         $this->bot = app(ChatbotService::class);

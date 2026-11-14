@@ -54,7 +54,7 @@
   </ul>
 
   <h2>5. Local pickup</h2>
-  <p>Choose local pickup at checkout to collect your order from our shop at no charge: {{ config('uds.pickup.label') }}. Pickup is available for U.S. orders. Please wait for our e-mail saying your order is ready before coming in.</p>
+  <p>Choose local pickup at checkout to collect your order from our shop at no charge: {{ config('uds.pickup.label') }}. Pickup is available for orders with a Florida address. Please wait for our e-mail saying your order is ready before coming in.</p>
 
   <h2>6. International shipping</h2>
   <p>We ship internationally by UPS Worldwide and DHL Express at the rate quoted at checkout, with the customs paperwork prepared by us. International orders ship <b>DAP</b> (delivered at place): import duties, taxes, customs brokerage and any fees charged by the destination country are not included in our price and are paid by the recipient on delivery. Some long or heavy items cannot travel internationally as parcels; if your order shows no international rate, <a href="/contact">contact us</a> for a freight quote.</p>

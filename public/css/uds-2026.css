@@ -1722,12 +1722,10 @@ body.has-ua{padding-bottom:84px}
 .co-pickup__head svg{color:var(--warn);font-size:1.2em;flex:none}
 .co-pickup p{margin:0 0 .6rem}
 .co-pickup a{color:var(--blue);font-weight:600}
-.co-pickup__far{display:flex;gap:.6rem;align-items:flex-start;padding:.7rem .8rem;border-radius:var(--r-sm);background:var(--err-bg);border:1px solid var(--err-line);color:var(--ink)}
-.co-pickup__far svg{color:var(--err);flex:none;margin-top:.15em}
 .co-pickup .co-pickup__ack{background:#fff;margin-top:.4rem}
 .co-pickup__payflag{display:flex;gap:.6rem;align-items:flex-start;margin-top:.75rem;padding:.75rem .85rem;border-radius:var(--r-sm);background:var(--warn-bg);border:1px solid #ead9b5;font-size:.88rem;color:var(--ink-2);line-height:1.55}
 .co-pickup__payflag svg{color:var(--warn);flex:none;margin-top:.15em}
-.co-pickup[hidden],.co-pickup__far[hidden],.co-pickup__payflag[hidden]{display:none}
+.co-pickup[hidden],.co-pickup__payflag[hidden]{display:none}
 
 /* ---- payment ---- */
 .pay-brands{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.9rem}

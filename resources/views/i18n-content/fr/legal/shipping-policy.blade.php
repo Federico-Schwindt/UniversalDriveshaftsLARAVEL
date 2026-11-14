@@ -54,7 +54,7 @@
   </ul>
 
   <h2>5. Retrait en magasin</h2>
-  <p>Sélectionnez le retrait en magasin lors du paiement pour récupérer votre commande dans notre atelier sans frais : {{ config('uds.pickup.label') }}. Le retrait est disponible pour les commandes aux États-Unis. Veuillez attendre notre e-mail confirmant que votre commande est prête avant de vous présenter.</p>
+  <p>Sélectionnez le retrait en magasin lors du paiement pour récupérer votre commande dans notre atelier sans frais : {{ config('uds.pickup.label') }}. Le retrait est réservé aux commandes avec une adresse en Floride. Veuillez attendre notre e-mail confirmant que votre commande est prête avant de vous présenter.</p>
 
   <h2>6. Expédition internationale</h2>
   <p>Nous expédions à l'international par UPS Worldwide et DHL Express au tarif indiqué lors du paiement, les documents douaniers étant préparés par nos soins. Les commandes internationales sont expédiées en mode <b>DAP</b> (rendu au lieu de destination) : les droits de import, taxes, frais de dédouanement et tous frais facturés par le pays de destination ne sont pas inclus dans notre prix et sont payés par le destinataire à la livraison. Certains articles longs ou lourds ne peuvent pas voyager à l'international sous forme de colis ; si votre commande n'affiche aucun tarif international, <a href="/contact">contactez-nous</a> pour obtenir un devis de transport.</p>

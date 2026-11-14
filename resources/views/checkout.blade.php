@@ -140,7 +140,6 @@
           {{-- the shop's address is private: it is fetched only once the customer picks local pickup (owner, 2026-10-24) --}}
           <p>{!! __('Pick up at') !!} <b id="pickup-addr">…</b> (<a id="pickup-map" href="#" target="_blank" rel="noopener nofollow">{!! __('map') !!}</a>).<br>
              {!! __('Pickup hours:') !!} <b>{{ config('uds.pickup.hours') }}</b>{!! __('. Need a different time? Call') !!} <a href="{{ config('uds.pickup.phone_href') }}">{{ config('uds.pickup.phone') }}</a> {!! __('first so we can confirm and have your parts ready.') !!}</p>
-          <p id="pickup-far" class="co-pickup__far" hidden><x-icon name="warning"/> <span>{!! __('Your address is in') !!} <b id="pickup-far-state"></b>{!! __('. Only choose pickup if you will come to Florida in person. If you need these parts delivered, pick a shipping method above instead.') !!}</span></p>
           <label class="co-agree co-pickup__ack"><input type="checkbox" name="pickup_ack" value="1" id="pickup-ack" aria-describedby="pickup-msg"><span>{!! __('I understand I am picking this order up in person at our shop, and that it will not be shipped to any address.') !!}</span></label>
           <div class="co-coupon-err" id="pickup-msg" aria-live="polite"></div>
         </div>
@@ -557,7 +556,7 @@
     const sel=document.getElementById('ship-select'), note=document.getElementById('ship-note');
     const myToken = ++shipReqToken;
     if (shipAbort) shipAbort.abort();
-    if(!zip){taxDelivery=null;var isUS=!country||country==='US';sel.innerHTML='<option value="">'+(isUS?udsT('Enter your ZIP to load rates…'):udsT('Enter your postal code to load rates…'))+'</option>'+(isUS?'<option value="'+PICKUP+'" data-cost="0">'+PICKUP_LABEL+' — '+udsT('Free')+'</option>':'');shipId='';shipCost=0;totals();pickupUI();return;}
+    if(!zip){taxDelivery=null;var isUS=!country||country==='US';sel.innerHTML='<option value="">'+(isUS?udsT('Enter your ZIP to load rates…'):udsT('Enter your postal code to load rates…'))+'</option>'+(pickupFor(country,state)?'<option value="'+PICKUP+'" data-cost="0">'+PICKUP_LABEL+' — '+udsT('Free')+'</option>':'');shipId='';shipCost=0;totals();pickupUI();return;}
     // clear stale options immediately rather than leaving a previous (possibly
     // wrong-country) rate sitting there, selectable, while the new quote loads
     sel.innerHTML='<option value="">'+udsT('Loading rates…')+'</option>';shipId='';shipCost=0;totals();
@@ -590,21 +589,16 @@
   document.getElementById('pickup-ack').addEventListener('change',function(){inlineMsg('pickup-msg','');this.closest('.co-agree').style.outline='';});
   document.getElementById('agree-terms').addEventListener('change',function(){inlineMsg('terms-msg','');this.closest('.co-agree').style.outline='';});
 
-  /* local pickup: notice + acknowledgement, out-of-state warning, pay-at-pickup option */
+  /* local pickup: Florida addresses only (owner, 2026-11-14; CartService::pickupFor says the same) */
+  function pickupFor(cc,st){st=(st||'').trim().toUpperCase();return (!cc||cc==='US')&&(st==='FL'||st==='FLORIDA');}
+  /* local pickup: notice + acknowledgement, pay-at-pickup option */
   function pickupUI(){
-    var on=shipId===PICKUP, box=document.getElementById('pickup-box'), far=document.getElementById('pickup-far');
+    var on=shipId===PICKUP, box=document.getElementById('pickup-box');
     if(on&&!window._pickupInfo){window._pickupInfo=1;fetch('/checkout/pickup-info',{headers:{'Accept':'application/json'}}).then(function(r){return r.json();}).then(function(d){var a=document.getElementById('pickup-addr'),m=document.getElementById('pickup-map');if(a&&d.address)a.textContent=d.address;if(m&&d.maps)m.href=d.maps;}).catch(function(){window._pickupInfo=0;});}
     box.hidden=!on;
     // local pickup needs no street / city / ZIP (the server's required_unless says the same)
     form.querySelectorAll('[data-addr-req]').forEach(function(f){f.required=!on;});
-    if(on){
-      var diff=document.getElementById('ship-diff').checked;
-      var st=((diff?document.getElementById('shipping_state'):document.getElementById('billing_state')).value||'').trim().toUpperCase();
-      var cc=(diff?document.getElementById('shipping_country'):document.getElementById('billing_country')).value||'US';
-      var isFL=cc==='US'&&(st==='FL'||st==='FLORIDA');
-      far.hidden=isFL||!st;
-      document.getElementById('pickup-far-state').textContent=st+(cc!=='US'?' ('+cc+')':'');
-    }else{document.getElementById('pickup-ack').checked=false;}
+    if(!on)document.getElementById('pickup-ack').checked=false;
     document.getElementById('meta-from-l').textContent=on?udsT('Pick up at'):udsT('Shipping From');
     document.getElementById('meta-date-l').textContent=on?udsT('Pickup hours'):udsT('Est. Ship Date');
     document.getElementById('meta-date-v').textContent=on?PICKUP_HOURS:SHIP_DATE;
