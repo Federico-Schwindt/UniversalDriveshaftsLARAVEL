@@ -48,7 +48,8 @@ class RecoveryMailer
         $q += ['title' => 'Quote request', 'preheader' => ''];
         $shop = $this->send('emails.recovery.quote-shop', ['q' => $q, 'title' => 'Quote request ' . $q['sku'], 'preheader' => $q['vehicle'] ?: ''], $to,
             'Quote request: ' . $q['sku'] . ($q['vehicle'] ? ' for ' . $q['vehicle'] : ''), $q['email']);
-        $cust = $this->send('emails.recovery.quote-customer', ['q' => $q, 'title' => 'We have your quote request', 'preheader' => 'A driveline tech will price ' . $q['sku'] . ' and get back to you.'], $q['email'],
+        // the form is anonymous: at most 3 acknowledgements a day to one address, so it can't be used to mail-bomb a stranger
+        $cust = !\Illuminate\Support\Facades\RateLimiter::attempt('quote-ack:' . sha1(strtolower($q['email'])), 3, fn () => true, 86400) ? false : $this->send('emails.recovery.quote-customer', ['q' => $q, 'title' => 'We have your quote request', 'preheader' => 'A driveline tech will price ' . $q['sku'] . ' and get back to you.'], $q['email'],
             'Your quote request for ' . $q['sku'] . ' — Universal Driveshafts');
         return ['shop' => $shop, 'customer' => $cust];
     }

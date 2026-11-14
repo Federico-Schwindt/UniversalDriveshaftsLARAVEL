@@ -91,13 +91,13 @@ class Rma
      */
     public static function refusal(string $type, ?object $order, string $typed = ''): ?string
     {
-        if ($type === 'cancel') return null;
         $phone = config('uds.pickup.phone');
         if (!$order) {
             return $typed === ''
                 ? __('Please enter your order number. It is in the subject line of your confirmation e-mail. No order number? Call us at :phone.', ['phone' => $phone])
                 : __('We could not find order :n. Check the number in your confirmation e-mail, or call us at :phone.', ['n' => $typed, 'phone' => $phone]);
         }
+        if ($type === 'cancel') return null;
         $ends = self::windowEnds($order);
         if ($ends && now()->gt($ends)) {
             return __('Returns and exchanges can be requested within :days days of delivery. For order :n that time ended on :date. For a warranty claim on a defective part, call us at :phone.',

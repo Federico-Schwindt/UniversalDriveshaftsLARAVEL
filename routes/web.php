@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 /* ---- SEO: robots and sitemap are served by the app so they can react to the
    environment and to the live catalogue. --------------------------------- */
 // Driveshaft designer (port of the supplier's tool, with permission): draw, dimension, print
-Route::get('/media/{w}/{key}.webp', [\App\Http\Controllers\MediaController::class, 'show'])->where(['w' => '\d+', 'key' => '[A-Za-z0-9_-]+']);
+Route::get('/media/{w}/{key}.webp', [\App\Http\Controllers\MediaController::class, 'show'])->where(['w' => '\d+', 'key' => '[A-Za-z0-9_-]+'])->middleware('throttle:240,1');   // cached files are served as static; only cold misses reach here
 Route::get('/driveshaft-designer', [\App\Http\Controllers\DesignerController::class, 'page']);
 Route::get('/driveshaft-designer/svg/{sections}', [\App\Http\Controllers\DesignerController::class, 'svg'])->where('sections', '[A-Z0-9+]+')->middleware('throttle:30,1');
 Route::post('/driveshaft-designer/save', [\App\Http\Controllers\DesignerController::class, 'save'])->middleware('throttle:forms');

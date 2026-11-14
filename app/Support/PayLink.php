@@ -119,9 +119,13 @@ class PayLink
             \Illuminate\Support\Facades\Log::warning("payment short for {$fresh->order_number}: " . ($intent['id'] ?? '') . " received {$got} cents");
             return false;
         }
+        // checked before the row flips: money for an order whose coupon hold lapsed (paid late, straight through its
+        // checkout intent) is still taken, but the shop is told the code went past its limit
+        $couponOk = app(\App\Services\CouponService::class)->stillHolds($fresh);
         // the webhook, the pay page and the checkout return can all arrive at once: only the request whose
         // update actually flips the row goes on to record, e-mail and notify
         $changed = DB::table('orders')->where('id', $fresh->id)
+            ->where('total', $fresh->total)->where('refund_total', $fresh->refund_total)   // a re-price in between voids the check above
             ->where(fn ($q) => $q->where('payment_status', '!=', 'paid')->orWhereNull('payment_status'))
             ->update(array_filter([
                 'payment_status' => 'paid', 'paid_at' => now(), 'payment_method' => $method,
@@ -130,6 +134,7 @@ class PayLink
             ], fn ($v) => $v !== null));
         if (!$changed) return true;
         OrderEvents::record($fresh, 'paid', 'Payment confirmed', $detail, true);
+        if (!$couponOk) OrderEvents::record($fresh, 'coupon_over_limit', 'Coupon used past its limit', "Paid late with {$fresh->coupon_code}: the code's usage limit was reached meanwhile. Review the discount.", true);
         if (in_array($fresh->status, ['pending', 'failed'], true)) OrderEvents::record($fresh, 'processing', 'In production / packing', null, true);
         // a card order's coupon, "order received" text and CRM sync wait for the money (see ShopController::placeOrder)
         if (OrderEvents::has($fresh, 'notify:placed:deferred')) self::placedNotices(DB::table('orders')->find($fresh->id) ?: $fresh);

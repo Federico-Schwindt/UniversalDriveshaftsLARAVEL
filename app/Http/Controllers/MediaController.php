@@ -58,6 +58,8 @@ class MediaController extends Controller
     public static function ensure(int $w, string $key): array
     {
         $src = base64_decode(strtr($key, '-_', '+/'), true);
+        // one key per picture: a non-canonical encoding or a padded path (//, /./) would mint a new cached file per variant
+        if ($src === false || rtrim(strtr(base64_encode($src), '+/', '-_'), '=') !== $key || preg_match('#(?<!:)//|/\./|\\\\|[?\#]#', $src)) return [null, null, false];
         if ($src) $src = \App\Support\WpUploads::localPath($src) ?? $src;   // keys minted before the mirror existed
         $local = $src && $src[0] === '/' && !str_contains($src, '..') && array_filter(self::LOCAL, fn ($d) => str_starts_with($src, $d)) && is_file(public_path($src));
         // once the catalog is local (catalog:detach) a picture missing from the mirror is a 404, never a fetch from the old site

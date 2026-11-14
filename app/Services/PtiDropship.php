@@ -172,6 +172,10 @@ class PtiDropship
 
     public function shipTo(object $order): array
     {
+        if (!$order->ship_to_different) {   // the rate was quoted to the billing address: stray shipping_* fields don't redirect the parcel
+            $order = clone $order;
+            foreach (['first_name', 'last_name', 'company', 'address_1', 'address_2', 'city', 'state', 'postcode', 'country', 'phone'] as $f) $order->{"shipping_$f"} = null;
+        }
         $name = trim(($order->shipping_first_name ?? '') . ' ' . ($order->shipping_last_name ?? '')) ?: trim(($order->billing_first_name ?? '') . ' ' . ($order->billing_last_name ?? ''));
         $company = trim((string) ($order->shipping_company ?? '')) ?: ($order->ship_to_different ? '' : trim((string) ($order->billing_company ?? '')));
         return [
