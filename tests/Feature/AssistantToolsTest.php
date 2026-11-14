@@ -138,7 +138,16 @@ class AssistantToolsTest extends TestCase
         $this->assertSame('none', $a['business_account']['status']);
         $this->assertArrayHasKey('how_to_apply', $a['business_account']);
 
-        $r = $this->tool($u, 'apply_for_business_account', ['business_name' => 'Morgan Fleet Repair', 'business_type' => 'repair shop', 'tax_id' => '', 'volume' => '$3,000', 'notes' => '']);
+        $apply = ['business_name' => 'Morgan Fleet Repair', 'business_type' => 'repair shop', 'tax_id' => '', 'volume' => '$3,000', 'notes' => ''];
+        $this->say('apply for a business account for Morgan Fleet Repair');
+        // the first call files nothing: the customer sees the application and says yes in a new message
+        $r = $this->tool($u, 'apply_for_business_account', $apply);
+        $this->assertFalse($r['filed']);
+        $this->assertSame('Morgan Fleet Repair', $r['confirm']['business_name']);
+        $this->assertFalse($this->tool($u, 'apply_for_business_account', $apply)['filed'], 'not in the same reply');
+        $this->assertSame('none', DB::table('users')->where('id', $u->id)->value('wholesale_status'));
+        $this->say('yes');
+        $r = $this->tool($u, 'apply_for_business_account', $apply);
         $this->assertTrue($r['filed']);
         $this->assertSame('pending', DB::table('users')->where('id', $u->id)->value('wholesale_status'));
         $this->assertTrue(DB::table('leads')->where('email', $u->email)->where('source', 'wholesale-application')->exists());

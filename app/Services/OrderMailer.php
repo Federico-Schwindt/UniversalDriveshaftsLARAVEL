@@ -44,11 +44,25 @@ class OrderMailer
             'preheader' => 'Order ' . $order->order_number . ' · $' . number_format($order->total, 2) . ($unpaid ? ($terms ? ' · invoice on terms' : ' · payment pending') : '')];
         try { Mailer::send($order->email, "Order {$order->order_number} confirmed — Universal Driveshafts", 'emails.order.confirmation', $data, ['replyTo' => [config('uds.email')]]); } catch (\Throwable $e) { report($e); }
         if (!\App\Support\Settings::get('notify.new_order', true)) return;
-        try {
-            Mailer::send(config('uds.email'), "New order {$order->order_number} — \$" . number_format($order->total, 2) . ($pickup ? ' · PICKUP' : ''), 'emails.order.shop',
-                ['order' => $order, 'items' => $items, 'hero' => ['kicker' => 'New order', 'title' => $order->order_number . ' · $' . number_format($order->total, 2), 'text' => trim($order->billing_first_name . ' ' . $order->billing_last_name) . ($order->billing_company ? ' · ' . $order->billing_company : '') . ' · ' . ($order->shipping_label ?: '')], 'preheader' => count($items) . ' line(s)'],
-                ['replyTo' => [$order->email, trim($order->billing_first_name . ' ' . $order->billing_last_name)]]);
-        } catch (\Throwable $e) { report($e); }
+        // one message per address: a mailbox that refuses it must not keep the copy from the others
+        foreach (self::shopRecipients() as $to) {
+            try {
+                Mailer::send($to, "New order {$order->order_number} — \$" . number_format($order->total, 2) . ($pickup ? ' · PICKUP' : ''), 'emails.order.shop',
+                    ['order' => $order, 'items' => $items, 'hero' => ['kicker' => 'New order', 'title' => $order->order_number . ' · $' . number_format($order->total, 2), 'text' => trim($order->billing_first_name . ' ' . $order->billing_last_name) . ($order->billing_company ? ' · ' . $order->billing_company : '') . ' · ' . ($order->shipping_label ?: '')], 'preheader' => count($items) . ' line(s)'],
+                    ['replyTo' => [$order->email, trim($order->billing_first_name . ' ' . $order->billing_last_name)], 'locale' => 'en']);
+            } catch (\Throwable $e) { report($e); }
+        }
+    }
+
+    /**
+     * Who gets the shop's copy of a new order: the orders e-mail (Settings → Store) plus the addresses in Settings →
+     * Notifications "Also send new-order e-mails to" (owner, 2026-11-14: modi@, the owner's own and info@udshafts.com).
+     */
+    public static function shopRecipients(): array
+    {
+        $extra = preg_split('/[\s,;]+/', (string) \App\Support\Settings::get('notify.new_order_cc', ''), -1, PREG_SPLIT_NO_EMPTY);
+        $all = array_merge([(string) config('uds.email')], array_filter($extra, fn ($e) => filter_var($e, FILTER_VALIDATE_EMAIL)));
+        return array_values(array_unique(array_filter(array_map(fn ($e) => strtolower(trim($e)), $all))));
     }
 
     /** "Your order has shipped" — the one shipped e-mail, whichever path marked it shipped. */

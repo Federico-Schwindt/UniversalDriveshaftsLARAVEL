@@ -647,7 +647,7 @@ class ChatbotService
             ],
             [
                 'name' => 'start_return',
-                'description' => 'Open a return, exchange or cancellation request (RMA) for one of the customer\'s own orders. It is filed with the shop, the customer gets an e-mail with the reference, and staff reply with instructions. Only call it after the customer has told you the order, the part and the reason and has said yes to filing it.',
+                'description' => 'Open a return, exchange or cancellation request (RMA) for one of the customer\'s own orders. It is filed with the shop, the customer gets an e-mail with the reference, and staff reply with instructions. Get the order, the part and the reason first. The first call files nothing: it returns the request (confirm) to show the customer; call it again with the same order, part, type and reason only after they reply yes in a new message.',
                 'input_schema' => $obj([
                     'order_number' => ['type' => 'string', 'description' => 'The order the part came from.'],
                     'type' => ['type' => 'string', 'enum' => ['return', 'exchange', 'cancel'], 'description' => 'return = send back for a refund, exchange = swap for another part, cancel = cancel an order not shipped yet.'],
@@ -712,7 +712,7 @@ class ChatbotService
             ],
             [
                 'name' => 'apply_for_business_account',
-                'description' => 'File a business (B2B / wholesale) account application for the customer: shops, fleets, resellers and builders get tier pricing (Bronze, Silver, Gold) and can be offered Net terms. Ask for the business name first (type, tax ID and monthly volume help), confirm, then call it. The shop reviews it and e-mails them.',
+                'description' => 'File a business (B2B / wholesale) account application for the customer: shops, fleets, resellers and builders get tier pricing (Bronze, Silver, Gold) and can be offered Net terms. Ask for the business name first (type, tax ID and monthly volume help). The first call files nothing: it returns the application (confirm) to show the customer; call it again with the same business name only after they reply yes in a new message. The shop reviews it and e-mails them.',
                 'input_schema' => $obj([
                     'business_name' => ['type' => 'string', 'description' => 'Legal or trading name of the business.'],
                     'business_type' => ['type' => 'string', 'description' => 'e.g. repair shop, fleet, reseller, fabricator; "" if not said.'],
@@ -885,9 +885,35 @@ class ChatbotService
             $v = Str::limit(trim((string) ($in[$k] ?? '')), $max, '');
             if ($v !== '') $d[$k] = $v;
         }
+        $ask = $this->customerSaidYes('apply_for_business_account', ['business_name' => $name] + array_intersect_key($d, array_flip(['business_type', 'tax_id', 'volume'])), ['business_name' => mb_strtolower($name)]);
+        if ($ask) return $ask;
         $d['notes'] = trim(($d['notes'] ?? '') . ' (filed through UDS Assistant)');
         \App\Http\Controllers\AccountController::submitWholesale($user, $d, request()->ip());
         return ['filed' => true, 'next' => 'The shop reviews it (usually within one business day) and e-mails ' . $user->email . '. Once approved they get Bronze pricing at once, and can be offered Net terms.'];
+    }
+
+    /**
+     * A return or a business application e-mails the customer and the shop, so like place_order it waits for the
+     * customer's own yes (audit 2026-11-14), not just the model's word: the first call stores what would be filed and
+     * returns it to show; a later call with the same request goes through only when the customer's first message after
+     * it is a plain yes. Returns null when it may go ahead, else the answer for the model.
+     */
+    private function customerSaidYes(string $tool, array $show, ?array $same = null): ?array
+    {
+        if (!$this->conv) return ['filed' => false, 'error' => 'No conversation.'];
+        $key = "assistant_confirm:{$this->conv->id}:{$tool}";
+        $sig = md5(json_encode($same ?? $show));
+        $cur = $this->lastCustomerMessage();
+        $d = \Illuminate\Support\Facades\Cache::get($key);
+        if ($d && $d['sig'] === $sig && $cur > $d['after']
+            && AssistantOrders::saysYes((string) DB::table('chat_messages')->where('id', $cur)->value('display'))
+            && DB::table('chat_messages')->where('conversation_id', $this->conv->id)->where('role', 'user')->whereNotNull('display')->where('id', '>', $d['after'])->where('id', '<=', $cur)->count() === 1) {
+            \Illuminate\Support\Facades\Cache::forget($key);
+            return null;
+        }
+        \Illuminate\Support\Facades\Cache::put($key, ['sig' => $sig, 'after' => $cur], now()->addMinutes(20));
+        return ['filed' => false, 'confirm' => $show,
+            'next' => 'Nothing is filed yet. Show the customer exactly this and ask them to reply yes. Call this tool again with the same details only after they confirm in a NEW message; it will not go through in this same reply.'];
     }
 
     private function toolPlace(User $user): array
@@ -1181,6 +1207,8 @@ class ChatbotService
         // one open request per order and part is enough
         $dup = DB::table('rma_requests')->where('email', $user->email)->where('order_number', $o->order_number)->where('product', $line ? "{$line->sku} — {$line->name}" : 'Whole order')->whereNotIn('status', ['closed', 'rejected', 'completed'])->first();
         if ($dup) return ['filed' => false, 'already_open' => $dup->ref, 'note' => "There is already an open request {$dup->ref} for this; the shop will reply by e-mail."];
+        $ask = $this->customerSaidYes('start_return', ['type' => $type, 'order_number' => $o->order_number, 'part' => $line ? "{$line->sku} — {$line->name}" : 'Whole order', 'reason' => (string) ($in['reason'] ?? 'Other')]);
+        if ($ask) return $ask;
         $ref = \App\Http\Controllers\RmaController::createRequest([
             'type' => $type, 'order_number' => $o->order_number, 'name' => $user->name ?: $user->email, 'email' => $user->email, 'phone' => $user->phone ?? null,
             'product' => $line ? "{$line->sku} — {$line->name}" : 'Whole order', 'reason' => (string) ($in['reason'] ?? 'Other'),

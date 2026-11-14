@@ -49,10 +49,10 @@
 @if($dsgDims)Measurements: @foreach($dsgDims as $k => $v){{ $k }}={{ $v }} @endforeach
 @endif
 @endif</textarea></div>
-        <div class="full"><label class="consent">
+        @if(\App\Services\SmsService::on())<div class="full"><label class="consent">
           <input type="checkbox" name="sms_consent" value="yes">
           <span>{!! __('By checking this box, I agree to receive SMS messages about Customer Services/Support from Universal Driveshafts LLC at the phone number provided above. The SMS frequency may vary. Data rates may apply. Reply HELP for assistance. Reply STOP to opt-out of receiving SMS messages. Check our :link.', ['link' => '<a href="/privacy-policy">' . e(__('Privacy Policy')) . '</a>']) !!}</span>
-        </label></div>
+        </label></div>@endif
         <button type="submit">{{ __('Send message') }}</button>
       </form>
       @endif

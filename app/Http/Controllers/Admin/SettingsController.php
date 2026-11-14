@@ -87,7 +87,9 @@ class SettingsController extends Controller
                 'reviews.google_profile_url' => ['Link to your Google reviews', 'text', \App\Support\ReviewRequests::PROFILE_URL, 'Where the badge opens. Default: the reviews of the listing the old website pointed at.'],
             ],
             'notifications' => [
+                'notify.sms' => ['Text messages (SMS)', 'bool', false, 'Off: the site sends no texts and shows no SMS checkboxes; customers and the shop get e-mails only. On also needs Twilio.'],
                 'notify.new_order' => ['E-mail the shop on every new order', 'bool', true, ''],
+                'notify.new_order_cc' => ['Also send new-order e-mails to', 'text', '', 'Comma-separated addresses that get their own copy of every new-order e-mail, besides the orders e-mail.'],
                 'notify.sms_shop' => ['Text the shop on new orders', 'bool', false, 'Needs Twilio enabled.'],
                 'notify.sms_shop_number' => ['Shop mobile for texts', 'text', '', ''],
                 'notify.low_stock' => ['Weekly low-stock report', 'bool', true, ''],

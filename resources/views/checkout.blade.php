@@ -49,7 +49,7 @@
         <div class="cogrid" data-geo-noip>
           <div><label for="co-email">{!! __('Email address *') !!}</label><input id="co-email" type="email" name="email" required autocomplete="email" value="{{ $authUser->email ?? '' }}" placeholder="{!! __('you@email.com') !!}"></div>
           <div><label for="co-phone">{!! __('Phone / mobile *') !!}</label><input id="co-phone" type="tel" name="phone" required autocomplete="tel" value="{{ $authUser->phone ?? '' }}" placeholder="{!! __('Mobile number') !!}">
-            <label class="co-agree" style="display:flex;align-items:flex-start;gap:.5rem;margin:.55rem 0 0;font-weight:400;font-size:.82rem;text-transform:none;letter-spacing:0"><input type="checkbox" name="sms_opt_in" value="1" id="sms-opt-in"><span>{!! __('Text me order updates (shipping and delivery). Msg &amp; data rates may apply.') !!}</span></label></div>
+            @if(\App\Services\SmsService::on())<label class="co-agree" style="display:flex;align-items:flex-start;gap:.5rem;margin:.55rem 0 0;font-weight:400;font-size:.82rem;text-transform:none;letter-spacing:0"><input type="checkbox" name="sms_opt_in" value="1" id="sms-opt-in"><span>{!! __('Text me order updates (shipping and delivery). Msg &amp; data rates may apply.') !!}</span></label>@endif</div>
           @php
             // saved on the account (Addresses); falls back to the default shipping address
             $bill = ['a1' => '', 'a2' => '', 'city' => '', 'state' => '', 'zip' => '', 'cc' => 'US', 'co' => $authUser->company ?? ''];

@@ -224,6 +224,7 @@ class CheckinBridgeTest extends TestCase
 
     public function test_station_progress_reaches_the_customer_in_the_stores_words(): void
     {
+        \App\Support\Settings::set('notify.sms', true);   // texts are off on the site since 2026-11-14; this checks them when on
         $sms = $this->spy(SmsService::class);
         $order = $this->order([$this->custom()], ['sms_opt_in' => 1]);
         $job = array_key_first(CheckinBridge::send((int) $order->id));
