@@ -24,7 +24,9 @@ class PtiDewatermark extends Command
     protected $signature = 'pti:dewatermark {--set=all : parts, shafts, all (= parts + shafts) or uploads (clean only)}
         {--only= : comma-separated file names (or dir/file) to process} {--limit=0 : stop after N photos written}
         {--dry-run : only score the photos} {--grey= : override the template grey} {--no-backup : do not keep PTI originals}
-        {--out= : review mode: write the results to this folder, nothing in public/ changes}';
+        {--out= : review mode: write the results to this folder, nothing in public/ changes}
+        {--white= : background level the mark is looked for on (default 247; ~200 for the grey-background shots)}
+        {--force : the photos carry the PTI mark even if it cannot be scored (wood, floor or other busy backgrounds)}';
     protected $description = "Replace PTI's watermark on PTI photos with the UDS logo in the middle (no AI, the part is not redrawn)";
 
     private const SETS = [
@@ -78,7 +80,7 @@ class PtiDewatermark extends Command
             $grey = $this->option('grey') !== null ? (float) $this->option('grey') : (float) ($cfg['grey'] ?? 40);
             [$M, $band] = $this->template("$base/$set.png", (float) ($cfg['scale'] ?? 1));
             $minScore = (float) ($cfg['min_score'] ?? 0.2);
-            $this->opt = ['white' => (int) ($cfg['white'] ?? 247), 'fit' => (bool) ($cfg['fit_strength'] ?? false), 'min_k' => (float) ($cfg['min_k'] ?? 0.02), 'polish' => (bool) ($cfg['polish'] ?? true)];
+            $this->opt = ['white' => (int) ($this->option('white') ?? $cfg['white'] ?? 247), 'fit' => (bool) ($cfg['fit_strength'] ?? false), 'min_k' => (float) ($cfg['min_k'] ?? 0.02), 'polish' => (bool) ($cfg['polish'] ?? true)];
             $brand = self::SETS[$set]['brand'];
 
             $files = glob(public_path(self::SETS[$set]['glob']), GLOB_BRACE) ?: [];
@@ -195,7 +197,7 @@ class PtiDewatermark extends Command
             $sdm += $d * $m; $smm += $m * $m; $sdd += $d * $d;
         }
         $score = $smm && $sdd ? $sdm / sqrt($smm * $sdd) : 0;
-        if ($score < $minScore) return ['no_mark', null, $score, 0];
+        if ($score < $minScore && !$this->option('force')) return ['no_mark', null, $score, 0];
         // photos whose background was lightened after stamping carry a faded copy of the mark: measure how much
         $k = $this->opt['fit'] ? ($smm ? $sdm / $smm : 0) : 1.0;
         if ($k < $this->opt['min_k']) return ['no_mark', null, $score, $k];
