@@ -33,6 +33,9 @@ class DesignerController extends Controller
     /** Middle sections that are not a two-piece center: end pieces, boots and a broken image (owner, 2026-10-25). */
     private const HIDDEN_CENTER = ['71Q', '71RQ', '72', '72R', '73'];
 
+    /** Front sections not offered for a one-piece shaft (owner, 2026-11-14). Drawings already made with them still open. */
+    public const HIDDEN_FRONT_ONE_PIECE = ['10Q', '09Q', '13', '16', '24', '27', '28', '30', '47Q', '41', '43', '44', '48'];
+
     private function catalog(): array
     {
         static $c = null;
@@ -85,7 +88,8 @@ class DesignerController extends Controller
         return view('designer-tool', [
             'style' => $style, 'codes' => $codes, 'sections' => implode('+', $codes), 'complete' => $complete,
             'nextLocation' => $next,
-            'options' => $next ? array_map(fn ($f) => basename($f, '.svg'), $catalog[$next]) : [],
+            'options' => $next ? array_values(array_filter(array_map(fn ($f) => basename($f, '.svg'), $catalog[$next]),
+                fn ($code) => !($style === 1 && $next === 'left' && in_array($code, self::HIDDEN_FRONT_ONE_PIECE, true)))) : [],
             'locationLabel' => ['left' => 'Front', 'center' => 'Middle', 'right' => 'Rear'][$next] ?? null,
             'store' => config('uds.stores')[0],
         ]);
