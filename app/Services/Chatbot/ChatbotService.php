@@ -1507,6 +1507,7 @@ TXT;
     {
         $u = $msg->usage ?? null;
         if (!$u) return;
+        try { \App\Support\AssistantBudget::record((string) ($msg->model ?? config('services.anthropic.model')), $u); } catch (\Throwable $e) { report($e); }
         DB::table('chat_conversations')->where('id', $conv->id)->update([
             'input_tokens' => DB::raw('input_tokens + ' . (int) (($u->inputTokens ?? 0) + ($u->cacheReadInputTokens ?? 0) + ($u->cacheCreationInputTokens ?? 0))),
             'output_tokens' => DB::raw('output_tokens + ' . (int) ($u->outputTokens ?? 0)),

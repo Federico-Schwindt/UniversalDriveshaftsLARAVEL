@@ -13,6 +13,8 @@ return [
     'google_ads' => env('GOOGLE_ADS_ID', '18204111895'),
     'fb_pixel' => env('FB_PIXEL_ID', '1092382942820747'),
     'recaptcha_enabled' => env('RECAPTCHA_ENABLED', false),
+    // admin sign-in needs a code e-mailed to the admin (AdminTwoFactor); off only in the test suite
+    'admin_2fa' => (bool) env('ADMIN_2FA', true),
     'recaptcha_site' => env('RECAPTCHA_SITE', ''),
     'recaptcha_secret' => env('RECAPTCHA_SECRET', ''),
 

@@ -81,6 +81,10 @@ class ChatbotController extends Controller
         if (!$human && !$staff && $this->leftToday($u->id) <= 0) {
             return response()->json(['error' => "You've reached today's limit for the assistant. Use \"Talk to a person\" or call (813) 524-6491."], 429);
         }
+        // the whole site's daily API budget (AssistantBudget), admins included: it is real money
+        if (!$human && \App\Support\AssistantBudget::exhausted()) {
+            return response()->json(['error' => "The assistant is taking a break until tomorrow. Use \"Talk to a person\" or call (813) 524-6491 and we'll help you right away."], 429);
+        }
 
         if (!$human && !$staff && (int) $conv->turns >= (int) config('services.anthropic.max_turns', 30)) {
             return response()->json(['error' => 'This chat is getting long. Start a new chat to keep going.', 'restart' => true], 409);
@@ -314,6 +318,6 @@ class ChatbotController extends Controller
         $used = DB::table('chat_messages as m')->join('chat_conversations as c', 'c.id', '=', 'm.conversation_id')
             ->where('c.user_id', $userId)->where('m.role', 'user')->whereNotNull('m.display')
             ->where('m.created_at', '>=', now()->startOfDay())->count();
-        return max(0, (int) config('services.anthropic.per_day', 60) - $used);
+        return max(0, (int) \App\Support\Settings::get('assistant.per_day', 10) - $used);
     }
 }

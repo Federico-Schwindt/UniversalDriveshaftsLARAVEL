@@ -304,6 +304,12 @@ Route::get('/vehicles/models', function(\Illuminate\Http\Request $r){
     });
     return response()->json(['models'=>$models]);
 });
+// the admin's e-mailed sign-in code (AdminTwoFactor), before anything under /admin
+Route::middleware('auth')->group(function () {
+    Route::get('/admin/verify', [\App\Http\Controllers\AdminTwoFactorController::class, 'show']);
+    Route::post('/admin/verify', [\App\Http\Controllers\AdminTwoFactorController::class, 'verify'])->middleware('throttle:login');
+    Route::post('/admin/verify/send', [\App\Http\Controllers\AdminTwoFactorController::class, 'send'])->middleware('throttle:login');
+});
 require __DIR__ . '/admin.php';
 
 Route::post('/newsletter', [\App\Http\Controllers\NewsletterController::class, 'subscribe'])->middleware('throttle:forms');
