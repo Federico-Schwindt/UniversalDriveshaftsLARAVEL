@@ -232,7 +232,15 @@ class PtiDropship
             }
             // 2) live stock at PTI for that exact part, else a stocked alternate with the same measurements
             $part = $l['pti_part']; $cost = $l['pti_cost'];
-            $st = $this->pti->stock($part);
+            $st = $this->stockOrNull($part);
+            if ($st === null) {
+                // PTI no longer lists the number (3502-063 → 3502-063-01, owner 2026-11-14): its newer number for the same part
+                $new = $this->successor($part, $qty);
+                if (!$new) { $noStock[] = ['sku' => $l['sku'], 'part' => $part, 'qty' => $qty, 'stock' => 0, 'gone' => true]; continue; }
+                $subs[] = "{$l['sku']}: PTI no longer lists {$part}; using its new number {$new['part_number']} (same part, {$new['stock']} on hand)";
+                $send[] = ['item_id' => $l['item_id'], 'part_number' => $new['part_number'], 'qty' => $qty, 'cost' => $new['cost'] ?? $cost, 'sku' => $l['sku'], 'replaces' => $part];
+                continue;
+            }
             if ($st['total'] + $st['can_build'] < $qty) {
                 $alt = $l['wp_product_id'] ? $this->alternate($part, (int) $l['wp_product_id'], $qty) : null;
                 if (!$alt) { $noStock[] = ['sku' => $l['sku'], 'part' => $part, 'qty' => $qty, 'stock' => $st['total']]; continue; }
@@ -245,7 +253,7 @@ class PtiDropship
         if ($blocked || $noStock) {
             $msg = [];
             if ($blocked) $msg[] = "Measurements don't prove it's the same part — check and tick \"send anyway\" if it is: " . implode(' | ', $blocked);
-            if ($noStock) $msg[] = 'No stock at PTI and no alternate with the same measurements (the shop was e-mailed): ' . implode(', ', array_map(fn ($n) => "{$n['sku']} (PTI {$n['part']}, need {$n['qty']}, have {$n['stock']})", $noStock)) . '. Set those lines to 0 to dropship the rest.';
+            if ($noStock) $msg[] = 'No stock at PTI and no alternate with the same measurements (the shop was e-mailed): ' . implode(', ', array_map(fn ($n) => !empty($n['gone']) ? "{$n['sku']} (PTI no longer lists {$n['part']} and names no stocked new number)" : "{$n['sku']} (PTI {$n['part']}, need {$n['qty']}, have {$n['stock']})", $noStock)) . '. Set those lines to 0 to dropship the rest.';
             return ['ok' => false, 'error' => implode("\n\n", $msg)];
         }
         if (!$send) return ['ok' => false, 'error' => 'Pick at least one line PTI sells.'];
@@ -321,6 +329,37 @@ class PtiDropship
     }
 
     /** A PTI "Alt Part" for $part that has $qty on hand AND the same measurements as our product. */
+    /** PTI's stock for a part, or null when PTI does not know the number any more ("Part not found"). */
+    private function stockOrNull(string $part): ?array
+    {
+        try {
+            return $this->pti->stock($part);
+        } catch (\RuntimeException $e) {
+            if (stripos($e->getMessage(), 'not found') !== false) return null;
+            throw $e;
+        }
+    }
+
+    /**
+     * The number PTI moved a part to ("New parts end in -01", "Same part, different supplier"), from what pti:sync kept of
+     * its related parts (PtiXref decides which relations mean the same part), when PTI stocks enough of it.
+     */
+    private function successor(string $part, int $qty): ?array
+    {
+        $related = json_decode((string) DB::table('pti_parts')->where('part_number', $part)->value('related'), true) ?: [];
+        $seen = [];
+        foreach ($related as $rel) {
+            $pn = (string) ($rel['number'] ?? '');
+            if ($pn === '' || strcasecmp($pn, $part) === 0 || isset($seen[$pn]) || !\App\Support\PtiXref::interchangeable($rel)) continue;
+            $seen[$pn] = true;
+            $st = $this->stockOrNull($pn);
+            if (!$st || $st['total'] + $st['can_build'] < $qty) continue;
+            $info = $this->pti->call('GET', 'my/parts/part/' . rawurlencode($pn))['part'] ?? [];
+            return ['part_number' => $pn, 'stock' => $st['total'], 'cost' => ((float) str_replace(['$', ','], '', (string) ($info['price'] ?? ''))) ?: null];
+        }
+        return null;
+    }
+
     private function alternate(string $part, int $wpProductId, int $qty): ?array
     {
         $info = $this->pti->call('GET', 'my/parts/part/' . rawurlencode($part))['part'] ?? [];
