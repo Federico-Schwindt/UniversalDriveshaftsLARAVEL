@@ -89,9 +89,13 @@ class AdminHardeningTest extends TestCase
         $o = $this->order(['email' => $c->email, 'user_id' => $c->id]);
         DB::table('customer_notes')->insert(['email' => $c->email, 'author_id' => null, 'body' => 'note', 'created_at' => now()]);
         $new = 'moved-' . uniqid() . '@example.test';
-        $this->as($this->admin('staff'))->post("/admin/customers/{$c->id}", ['name' => $c->name, 'email' => $new])->assertRedirect();
+        // staff can reset a password, so an e-mail change by staff would hand them the account (2026-11-14 review)
+        $this->as($this->admin('staff'))->post("/admin/customers/{$c->id}", ['name' => $c->name, 'email' => $new])->assertForbidden();
+        $this->assertSame($c->email, DB::table('users')->where('id', $c->id)->value('email'));
+        $this->as($this->admin('manager'))->post("/admin/customers/{$c->id}", ['name' => $c->name, 'email' => $new])->assertRedirect();
         $this->assertSame($new, DB::table('orders')->where('id', $o->id)->value('email'));
         $this->assertSame(1, DB::table('customer_notes')->where('email', $new)->count());
+        Mail::assertSent(\App\Mail\Branded::class, fn ($m) => $m->hasTo($c->email));   // the old address hears about it
     }
 
     public function test_staff_blocked_from_money_export_and_catalog_write_routes(): void
