@@ -22,7 +22,7 @@ use Illuminate\Console\Command;
 class PtiDewatermark extends Command
 {
     protected $signature = 'pti:dewatermark {--set=all : parts, shafts, all (= parts + shafts) or uploads (clean only)}
-        {--only= : comma-separated file names (or dir/file) to process} {--limit=0 : stop after N photos written}
+        {--only= : comma-separated file names (or dir/file) to process, or @file with one per line} {--limit=0 : stop after N photos written}
         {--dry-run : only score the photos} {--grey= : override the template grey} {--no-backup : do not keep PTI originals}
         {--out= : review mode: write the results to this folder, nothing in public/ changes}
         {--white= : background level the mark is looked for on (default 247; ~200 for the grey-background shots)}
@@ -67,7 +67,8 @@ class PtiDewatermark extends Command
         $mfile = "$base/manifest.json";
         $this->manifest = is_file($mfile) ? (json_decode((string) file_get_contents($mfile), true) ?: []) : [];
         $this->loadBrand("$base/brand.json");
-        $only = array_filter(array_map('trim', explode(',', (string) $this->option('only'))));
+        $only = (string) $this->option('only');
+        $only = array_filter(array_map('trim', str_starts_with($only, '@') ? (file(substr($only, 1), FILE_IGNORE_NEW_LINES) ?: []) : explode(',', $only)));
         $limit = (int) $this->option('limit');
         $review = (string) $this->option('out');
         $dry = (bool) $this->option('dry-run');
@@ -114,7 +115,7 @@ class PtiDewatermark extends Command
                         // new or replaced photo: remove PTI's mark when it carries it, then stamp ours
                         [$state, $clean, $score, $k] = $this->clean($file, $M, $band, $grey, $minScore);
                         $stats[$state === 'cleaned' ? 'pti_mark_removed' : 'no_pti_mark']++;
-                        if ($dry) continue;
+                        if ($dry) { if ($this->output->isVerbose() && $state === 'cleaned') { $this->newLine(); $this->line(sprintf('%s %s score %.3f strength %.3f', $rel, $state, $score, $k)); } continue; }
                         $img = $clean ?? new \Imagick($file);
                         if ($review) { $this->review($review, $rel, $brand ? $this->stamp(clone $img) : $img); $written++; }
                         elseif ($brand) {
