@@ -14,6 +14,7 @@ class SettingsController extends Controller
     /** [min, max] for numeric settings; anything not listed is 0 … 10,000,000. */
     private const BOUNDS = [
         'shipping.free_min' => [0, 100000], 'shipping.handling_days' => [0, 30], 'shipping.signature_over' => [0, 100000],
+        'assistant.daily_budget' => [0, 1000], 'assistant.per_day' => [1, 500],
         'b2b.bronze_pct' => [0, 50], 'b2b.silver_pct' => [0, 50], 'b2b.gold_pct' => [0, 50],
         'b2b.silver_min' => [0, 1000000], 'b2b.gold_min' => [0, 1000000],
         'b2b.terms_days' => [1, 120], 'b2b.credit_limit' => [0, 1000000], 'b2b.remind_days' => [0, 60],
@@ -73,6 +74,8 @@ class SettingsController extends Controller
             'assistant' => [
                 'assistant.enabled' => ['Turn on UDS Assistant (beta)', 'bool', false, 'The AI chat for signed-in customers, bottom-right of every storefront page.'],
                 'assistant.provider' => ['AI that answers', 'select', 'claude', 'Claude needs Anthropic API credits (about 1–3 US cents a message). Gemini runs on the Google AI Studio key. OpenRouter and Groq use open models with free tiers. Switching starts a fresh chat for everyone.', ['claude' => 'Claude (Anthropic)', 'gemini' => 'Gemini (Google AI Studio)', 'openrouter' => 'OpenRouter (free models)', 'groq' => 'Groq (fast open models)']],
+                'assistant.daily_budget' => ['Daily API budget (USD)', 'number', 30, 'The assistant stops answering for the rest of the day (Eastern) once its Claude API cost reaches this, and the shop gets one e-mail. Spent today: $' . number_format(\App\Support\AssistantBudget::spentToday(), 2) . '. 0 = no budget.'],
+                'assistant.per_day' => ['Messages per customer per day', 'number', 10, 'Questions one customer can ask the assistant in a day. Admins are not limited, and neither are chats a person has taken over.'],
                 'assistant.voice_replies' => ['Voice-note answers', 'select', 'auto', 'Needs the ElevenLabs key. Auto: short, simple answers arrive as a voice note (played right away when the customer spoke); anything with lists, links or several numbers stays text with a Listen button. Every answer uses ElevenLabs characters.', ['auto' => 'Auto: short answers as voice notes', 'spoken' => 'Only when the customer sent a voice message', 'off' => 'Never (text with a Listen button)']],
                 'assistant.groq_models' => ['Groq models', 'text', 'openai/gpt-oss-120b, qwen/qwen3.8-27b, openai/gpt-oss-20b', 'Only used with Groq. Tried in this order; the next one answers when one is busy or rate-limited.'],
                 'assistant.openrouter_models' => ['OpenRouter models', 'text', 'openrouter/free, google/gemma-4-31b-it:free, nvidia/nemotron-3-super-120b-a12b:free', 'Only used with OpenRouter. Tried in this order: when one is busy or rate-limited OpenRouter moves to the next. "openrouter/free" picks a free model that supports tools. A free account allows 50 requests a day; adding $10 of credit raises it to 1,000.'],

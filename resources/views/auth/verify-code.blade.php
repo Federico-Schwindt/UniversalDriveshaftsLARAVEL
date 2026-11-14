@@ -31,13 +31,14 @@
   <div class="otp-card">
     @if($purpose === 'register')<div class="otp-steps" aria-hidden="true"><span>{{ __('Details') }}</span><span class="on">{{ __('Verify e-mail') }}</span><span>{{ __('Done') }}</span></div>@endif
     <div class="otp-ic"><x-icon name="mail"/></div>
-    <h1>{{ $purpose === 'email' ? __('Confirm your new e-mail') : __('Check your e-mail') }}</h1>
+    <h1>{{ $purpose === 'email' ? __('Confirm your new e-mail') : ($purpose === 'admin' ? 'Admin sign-in code' : __('Check your e-mail')) }}</h1>
     <p class="sub">{!! __('We sent a 6-digit code to <b>:email</b>. Enter it below to continue. It expires in 10 minutes.', ['email' => e($masked)]) !!}</p>
     @if(session('code_sent'))<div class="otp-ok" role="status">{{ session('code_sent') }}</div>@endif
     <form method="POST" action="{{ $action }}" id="otp-form">@csrf
       <label for="otp" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">{{ __('Verification code') }}</label>
       <input id="otp" class="otp-in" name="code" type="text" inputmode="numeric" pattern="[0-9 ]*" maxlength="7" autocomplete="one-time-code" autofocus required placeholder="••••••" @if($errors->has('code')) aria-invalid="true" aria-describedby="otp-err" @endif>
       @error('code')<p class="otp-err" id="otp-err" role="alert">{{ $message }}</p>@enderror
+      @if($purpose === 'admin')<label style="display:flex;gap:8px;align-items:center;margin-top:14px;font-size:.9rem"><input type="checkbox" name="trust" value="1"> Trust this computer for 30 days</label>@endif
       <button class="btn btn-primary btn-block" type="submit">{{ $purpose === 'register' ? __('Verify and create account') : __('Verify') }} <x-icon name="arrow-right"/></button>
     </form>
     <p class="otp-tip">{{ __('Not in your inbox? Check spam or promotions — it comes from Universal Driveshafts.') }}</p>

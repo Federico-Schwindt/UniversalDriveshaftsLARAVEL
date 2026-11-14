@@ -67,6 +67,7 @@ class EmailOtp
             'email' => 'Enter this code to confirm the new e-mail address on your Universal Driveshafts account.',
             'verify' => 'Enter this code to confirm the e-mail address on your Universal Driveshafts account.',
             'reauth' => 'Enter this code to confirm it is you before changing the sign-in details of your Universal Driveshafts account.',
+            'admin' => 'Enter this code to sign in to the Universal Driveshafts admin. If you did not just sign in, change your password.',
         ][$purpose] ?? 'Enter this code to continue.';
         if ($locale && $locale !== 'en') $intro = __($intro, [], $locale);   // newer intros live in lang/i18n/account; Mailer leaves translated text alone
         $digits = implode('', array_map(fn ($d) => '<span style="display:inline-block;width:38px;margin:0 3px;padding:10px 0;border:1px solid #d4dae6;border-radius:8px;background:#f6f8fc;font:700 26px/1 Menlo,Consolas,monospace;color:#0b2455;text-align:center;">' . $d . '</span>', str_split($code)));
