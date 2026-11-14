@@ -15,7 +15,7 @@
     </tr>
   </table>
   <p style="margin:26px 0 24px;text-align:center;"><a href="{{ $part['url'] }}" style="display:inline-block;background:#1246ab;color:#ffffff;text-decoration:none;font-family:Poppins,Helvetica,Arial,sans-serif;font-weight:600;font-size:16px;padding:15px 30px;border-radius:999px;">{{ __('View and order') }} &rarr;</a></p>
-  <p style="margin:0;font-size:14px;line-height:1.6;color:#3a4557;">{!! __('Orders placed before 2pm EST on a weekday ship the same day, or pick it up at the counter (:hours). Questions: :phone.', ['hours' => e(__(config('uds.pickup.hours'))), 'phone' => '<a href="tel:+18135246491" style="color:#1246ab;font-weight:600;">(813) 524-6491</a>']) !!}</p>
+  <p style="margin:0;font-size:14px;line-height:1.6;color:#3a4557;">{!! __('Most orders placed before 2 pm EST on a weekday ship the same day, or pick it up at the counter (:hours). Questions: :phone.', ['hours' => e(__(config('uds.pickup.hours'))), 'phone' => '<a href="tel:+18135246491" style="color:#1246ab;font-weight:600;">(813) 524-6491</a>']) !!}</p>
 @endsection
 @section('footer')
   {{ __('One-time notice for the part you subscribed to on universaldriveshafts.com. No newsletter, nothing else follows.') }}

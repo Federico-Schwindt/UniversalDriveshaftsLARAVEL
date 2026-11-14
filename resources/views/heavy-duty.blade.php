@@ -12,7 +12,7 @@
     <h1>Heavy duty driveshafts for class 6 to 8 trucks</h1>
     <div class="btn-row"><a href="/online-builder" class="btn btn-primary btn-sm"><x-icon name="wrench"/> Build a heavy duty shaft</a><a href="/shop/complete-driveshafts/certifed-driveshafts" class="btn btn-ghost btn-sm">Certified take-offs in stock</a></div>
   </div>
-  <p class="pagehead__sub">Dump, refuse, mixer, tractor: 1550 to 1810 and SPL 170 / 250 series, built and balanced in house. Twelve series in the heavy duty builder; stock orders placed before 2pm EST ship the same day.</p>
+  <p class="pagehead__sub">Dump, refuse, mixer, tractor: 1550 to 1810 and SPL 170 / 250 series, built and balanced in house. Twelve series in the heavy duty builder; most stock orders ship the same day when placed before 2 pm EST.</p>
 </div>
 
 <section class="catsec"><div class="wrap">

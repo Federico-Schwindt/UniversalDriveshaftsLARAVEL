@@ -12,7 +12,7 @@
     <h1>PTO and agricultural driveshafts</h1>
     <div class="btn-row"><a href="/shop/driveshaft-components/pto-end-yokes" class="btn btn-primary btn-sm"><x-icon name="package"/> Shop PTO end yokes</a><a href="/online-builder" class="btn btn-ghost btn-sm"><x-icon name="wrench"/> Build a complete shaft</a></div>
   </div>
-  <p class="pagehead__sub">PTO end yokes, u-joints and slip assemblies in stock for the mower, the baler or the spreader, and complete shafts built to the tractor and the implement. Stock orders placed before 2pm EST ship the same day.</p>
+  <p class="pagehead__sub">PTO end yokes, u-joints and slip assemblies in stock for the mower, the baler or the spreader, and complete shafts built to the tractor and the implement. Most stock orders ship the same day when placed before 2 pm EST.</p>
 </div>
 
 <section class="catsec"><div class="wrap">

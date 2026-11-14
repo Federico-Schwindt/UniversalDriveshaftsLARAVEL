@@ -893,5 +893,12 @@
     "Florida orders pay sales tax. A shop that resells the parts, or an exempt organization, can upload its Florida certificate and buy tax-free.": "フロリダ州の注文には売上税がかかります。部品を再販する事業者や免税団体は、フロリダ州の証明書をアップロードすると非課税で購入できます。",
     "Certificate expired — upload the new one": "証明書の期限切れ：新しい証明書をアップロードしてください",
     "Select a state": "州を選択",
-    "Select a province": "州・準州を選択"
+    "Select a province": "州・準州を選択",
+    "U-joints, yokes, center support bearings, flanges and tubing from 1310 to 1810 series. Most stock parts ship the same day when ordered before 2 pm EST.": "1310から1810シリーズまでのユニバーサルジョイント、ヨーク、センターサポートベアリング、フランジ、チューブ。在庫品の多くは、EST午後2時までのご注文で当日発送いたします。",
+    "UPS & FedEx": "UPS・FedEx",
+    "live rates": "リアルタイム送料",
+    "Most stock parts ship same day before :time EST": "在庫品の多くは :time（EST）までのご注文で当日発送",
+    "Most stock parts ship same day before 2pm EST": "在庫品の多くは午後2時（EST）までのご注文で当日発送",
+    "Most stock parts ship the same day when ordered before :time EST; processing times may vary.": "在庫品の多くは :time（EST）までのご注文で当日発送いたします。処理時間は前後する場合があります。",
+    "U.S. parts orders in the lower 48": "米国本土48州への部品ご注文"
 }

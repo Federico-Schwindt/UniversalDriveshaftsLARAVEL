@@ -4,7 +4,7 @@
     <h1>动力输出轴（PTO）与农业传动轴</h1>
     <div class="btn-row"><a href="/shop/driveshaft-components/pto-end-yokes" class="btn btn-primary btn-sm"><x-icon name="package"/> 查看 PTO 端叉</a><a href="/online-builder" class="btn btn-ghost btn-sm"><x-icon name="wrench"/> 组装完整传动轴</a></div>
   </div>
-  <p class="pagehead__sub">现货供应适用于割草机、打捆机或撒肥机的 PTO 端叉、万向节和滑动总成，也可按拖拉机和农具的尺寸定制完整传动轴。东部标准时间（EST）下午 2 点前下达的现货订单当天发货。</p>
+  <p class="pagehead__sub">现货供应适用于割草机、打捆机或撒肥机的 PTO 端叉、万向节和滑动总成，也可按拖拉机和农具的尺寸定制完整传动轴。东部标准时间（EST）下午 2 点前下达的现货订单大多可当天发货，但处理时间可能因订单量而有所不同。</p>
 </div>
 
 <section class="catsec"><div class="wrap">

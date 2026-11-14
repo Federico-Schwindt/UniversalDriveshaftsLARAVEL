@@ -254,5 +254,7 @@
  "We added store credit to your account.": "Agregamos crédito en la tienda a tu cuenta.",
  "Your part is repaired and on its way back to you.": "Tu pieza está reparada y va de vuelta hacia ti.",
  "Your order is cancelled.": "Tu pedido está cancelado.",
- "Your request is closed. Thank you for your patience.": "Tu solicitud está cerrada. Gracias por tu paciencia."
+ "Your request is closed. Thank you for your patience.": "Tu solicitud está cerrada. Gracias por tu paciencia.",
+ "<b style=\"color:#0b1a33;\">Ready to ship from Florida.</b> Most in-stock parts ship the same day when ordered before 2 pm EST on a weekday; processing times may vary. Prefer to collect? Choose <b>local pickup</b> at checkout, :hours.": "<b style=\"color:#0b1a33;\">Listo para enviar desde Florida.</b> La mayoría de las piezas en stock pedidas antes de las 2 p. m. (EST) en día hábil salen el mismo día; los tiempos de procesamiento pueden variar. ¿Prefieres retirarlo? Elige <b>retiro en tienda</b> al pagar, :hours.",
+ "Most orders placed before 2 pm EST on a weekday ship the same day, or pick it up at the counter (:hours). Questions: :phone.": "La mayoría de los pedidos hechos antes de las 2 p. m. (EST) en día hábil salen el mismo día, o retíralo en el mostrador (:hours). Consultas: :phone."
 }

@@ -10,7 +10,7 @@
     <h1>{{ __('Premade driveshafts, assembled and balanced') }}</h1>
     <div class="btn-row"><a href="/catalog/driveshafts" class="btn btn-primary btn-sm"><x-icon name="car"/> {{ __('Find yours by vehicle') }}</a><a href="/shop/complete-driveshafts/premade-driveshafts" class="btn btn-ghost btn-sm">{{ __('Shop all') }} {{ $total }} {{ __('premade') }}</a></div>
   </div>
-  <p class="pagehead__sub">{{ __('Common fitments built ahead of time so you are not waiting on a custom shaft. Every one is balanced in our shop and packed the day you order. Stock orders placed before 2pm EST ship the same day.') }}</p>
+  <p class="pagehead__sub">{{ __('Common fitments built ahead of time so you are not waiting on a custom shaft. Every one is balanced in our shop and ready to pack. Most stock orders ship the same day when placed before 2 pm EST.') }}</p>
 </div>
 
 <section class="catsec"><div class="wrap">
@@ -43,7 +43,7 @@
   <div class="pg-opts">
     <div class="pg-opt">
       <h3>{{ __('Premade: factory-length replacement') }}</h3>
-      <ul class="pg-checks"><li>{{ __('Balanced, boxed, on the shelf') }}</li><li>{{ __('Ships same day on stock') }}</li><li>{{ __('Best price for an OEM fitment') }}</li><li>{{ __('Returnable if it does not fit') }}</li></ul>
+      <ul class="pg-checks"><li>{{ __('Balanced, boxed, on the shelf') }}</li><li>{{ __('Ready to ship from Florida') }}</li><li>{{ __('Best price for an OEM fitment') }}</li><li>{{ __('Returnable if it does not fit') }}</li></ul>
       <a href="/shop/complete-driveshafts/premade-driveshafts" class="btn btn-primary btn-sm">{{ __('Shop premade') }}</a>
     </div>
     <div class="pg-opt">
@@ -60,7 +60,7 @@
   @include('partials.faq', ['faqs' => [
     ['How do I know if I need a driveshaft replacement?', 'Vibration that changes with speed, a clunk when you shift into gear, or play in the u-joints are the usual signs. If the tube is dented or the slip yoke is worn, replace the shaft rather than the joints.'],
     ['Is a premade driveshaft as good as a custom one?', 'For a stock vehicle, yes: it is the same assembly and balancing process, built ahead of time to the factory length. Custom makes sense when the vehicle is lifted, swapped or the length is non-standard.'],
-    ['How long does shipping take?', 'Stock orders placed before 2pm EST ship the same day from Florida. Most of the U.S. sees the shaft in 2 to 5 business days by ground.'],
+    ['How long does shipping take?', 'Most stock orders ship the same day when placed before 2 pm EST, though processing times may vary with order volume. Most of the U.S. sees the shaft in 2 to 5 business days by ground.'],
     ['What if it does not fit?', 'Unused premade shafts can be returned under the return policy. Measure twice: the part page lists the overall length and the yoke series.'],
   ]])
   </div>

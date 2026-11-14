@@ -8,8 +8,8 @@
   if (mb_strlen($title) > 60) $title = $name . ' Series Driveshaft Parts: U-Joints, Yokes | UDS';
   if (mb_strlen($title) > 60) $title = $name . ' Series Driveshaft Parts | UDS';
   $dims = $s['cap'] ? ' Nominal ' . $s['cap'] . ' caps' . ($s['width'] ? ' × ' . $s['width'] . ' wide' : '') . '.' : '';
-  $desc = number_format($total) . ' ' . $name . ' series driveshaft parts in stock: ' . implode(', ', array_map('strtolower', array_slice($catNames, 0, 4))) . '.' . $dims . ' Ships same day from Florida.';
-  if (mb_strlen($desc) > 160) $desc = number_format($total) . ' ' . $name . ' series driveshaft parts in stock: ' . implode(', ', array_map('strtolower', array_slice($catNames, 0, 3))) . '.' . $dims . ' Ships same day from Florida.';
+  $desc = number_format($total) . ' ' . $name . ' series driveshaft parts in stock: ' . implode(', ', array_map('strtolower', array_slice($catNames, 0, 4))) . '.' . $dims . ' Ships from Florida.';
+  if (mb_strlen($desc) > 160) $desc = number_format($total) . ' ' . $name . ' series driveshaft parts in stock: ' . implode(', ', array_map('strtolower', array_slice($catNames, 0, 3))) . '.' . $dims . ' Ships from Florida.';
   if (mb_strlen($desc) > 160) $desc = rtrim(mb_substr($desc, 0, 157), ' ,.;') . '...';
   $others = array_values(array_filter($all, fn ($x) => $x['slug'] !== $s['slug']));
   $hero = null;
@@ -19,7 +19,7 @@
   $faq = [];
   if ($s['cap']) $faq[] = [__('What size is a :name series u-joint?', ['name' => $name]), __('A :name series universal joint has :cap diameter bearing caps', ['name' => $name, 'cap' => $s['cap']]) . ($s['width'] ? __(' and measures :w from snap ring to snap ring (outside of cap to outside of cap)', ['w' => $s['width']]) : '') . __('. These are nominal figures; measure the caps on your old joint with a caliper to confirm the series.')];
   if ($sameCap) $faq[] = [__('Is the :name series the same as the :others?', ['name' => $name, 'others' => implode(__(' or '), array_column($sameCap, 'name'))]), __('No. The :name and :others series share the same :cap cap diameter but differ in width, so their yokes are not interchangeable. Use a conversion u-joint when you need to join a :name yoke to a yoke from a different series.', ['name' => $name, 'others' => implode(', ', array_column($sameCap, 'name')), 'cap' => $s['cap']])];
-  if ($cats) $faq[] = [__('Which :name series parts does UDS stock?', ['name' => $name]), __(':n :name series parts across :c categories: ', ['n' => number_format($total), 'name' => $name, 'c' => count($cats)]) . implode(', ', array_map(fn ($c) => $c['total'] . ' ' . mb_strtolower(\App\Support\PartGlossary::t($c['cat']['name'])), array_slice($cats, 0, 6))) . (count($cats) > 6 ? __(' and more') : '') . __('. Everything listed in stock ships the same day from Florida when ordered before 2pm EST.')];
+  if ($cats) $faq[] = [__('Which :name series parts does UDS stock?', ['name' => $name]), __(':n :name series parts across :c categories: ', ['n' => number_format($total), 'name' => $name, 'c' => count($cats)]) . implode(', ', array_map(fn ($c) => $c['total'] . ' ' . mb_strtolower(\App\Support\PartGlossary::t($c['cat']['name'])), array_slice($cats, 0, 6))) . (count($cats) > 6 ? __(' and more') : '') . __('. Most parts listed in stock ship the same day from Florida when ordered before 2 pm EST.')];
   $faq[] = [__('How do I match :name series parts on a driveshaft?', ['name' => $name]), __('Every u-joint on the shaft must match the yokes it sits in: a :name series joint needs :name series weld yokes, slip yokes, end yokes or flange yokes', ['name' => $name]) . ($s['cap'] ? __(' (:cap cap bores)', ['cap' => $s['cap']]) : '') . __('. Mixed-series shafts use a conversion joint with a different cap size on each axis.')];
 
   $listItems = []; $pos = 0;

@@ -254,5 +254,7 @@
     "Your verification code: :code": "您的验证码：:code",
     "Your wholesale account is approved": "您的批发账户已获批",
     "order status page": "订单状态页面",
-    "Return address: Universal Driveshafts, :address": "退货地址：Universal Driveshafts，:address"
+    "Return address: Universal Driveshafts, :address": "退货地址：Universal Driveshafts，:address",
+    "<b style=\"color:#0b1a33;\">Ready to ship from Florida.</b> Most in-stock parts ship the same day when ordered before 2 pm EST on a weekday; processing times may vary. Prefer to collect? Choose <b>local pickup</b> at checkout, :hours.": "<b style=\"color:#0b1a33;\">从佛罗里达州发货。</b>工作日美东标准时间（EST）下午 2 点前订购的现货大多当天发出；处理时间可能有所不同。想要自提？请在结账时选择<b>当地自提</b>，:hours。",
+    "Most orders placed before 2 pm EST on a weekday ship the same day, or pick it up at the counter (:hours). Questions: :phone.": "工作日美东标准时间（EST）下午 2 点前的订单大多当天发货，也可到店自提（:hours）。如有疑问：:phone。"
 }

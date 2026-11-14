@@ -168,7 +168,6 @@
       @if($p['can_buy'])
       <div class="fpp-buy"><input type="number" id="fpp-qty" value="1" min="1" max="20" aria-label="{{ __('Quantity') }}"><button class="btn btn-primary btn-lg" type="button" id="fpp-add" style="flex:1">{{ __('Add to cart') }}</button></div>
       @endif
-      <x-google-rating variant="card"/>
       <p class="fpp-more">{{ __('Lead time is confirmed by our team when you order. Questions about fit: (813) 524-6491.') }}</p>
     </div>
   </div>

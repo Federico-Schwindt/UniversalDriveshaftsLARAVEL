@@ -1106,7 +1106,7 @@ class CatalogService
         if ($catSlug === 'u-joints' && $greaseable !== null && !in_array('Lube', array_keys($specs))) $pairs[] = $greaseable ? 'greaseable' : 'sealed, lube for life';
         $st = $p['stock_status'] ?? 'instock';
         $stockLine = $st === 'outofstock' ? 'Call for availability; ships from Florida.' : ($st === 'onbackorder' ? 'Ships from Florida; call for lead time.'
-            : (($p['stock_source'] ?? null) === 'supplier' ? 'Available from our supplier; call for a ship date.' : 'In stock, ships same day from Florida.'));
+            : (($p['stock_source'] ?? null) === 'supplier' ? 'Available from our supplier; call for a ship date.' : 'In stock in Florida.'));
         // returns: 14 days with an RMA (return-policy page); the prepaid label is only for our own errors
         $tails = ['Free shipping on parts orders over $' . number_format((float) config('uds.free_shipping_min', 150)) . '.', 'Fitment help: (813) 524-6491.', '14-day returns with an RMA.'];
         $build = function (int $n) use ($lead, $pairs, $stockLine) {
@@ -1567,8 +1567,8 @@ class CatalogService
         }
         if (($p['stock_status'] ?? '') === 'instock' && ($p['stock'] ?? 0) > 0) {
             $faq[] = [__('Is :sku in stock?', ['sku' => $sku]), $p['stock'] == 1
-                ? __('Yes. :n is in stock in Florida. Orders placed before 2pm EST on a weekday ship the same day.', ['n' => stock_label($p['stock'])])
-                : __('Yes. :n are in stock in Florida. Orders placed before 2pm EST on a weekday ship the same day.', ['n' => stock_label($p['stock'])])];
+                ? __('Yes. :n is in stock in Florida. Most stock orders placed before 2 pm EST on a weekday ship the same day.', ['n' => stock_label($p['stock'])])
+                : __('Yes. :n are in stock in Florida. Most stock orders placed before 2 pm EST on a weekday ship the same day.', ['n' => stock_label($p['stock'])])];
         }
         return array_slice($faq, 0, 4);
     }

@@ -32,7 +32,7 @@
   <div class="wrap hm-top__grid">
   <div class="hm-intro">
     <h1>{!! __('Driveshaft parts and complete driveshafts') !!}</h1>
-    <p>{!! __('U-joints, yokes, center support bearings, flanges and tubing from 1310 to 1810 series. Stock orders placed by 2 pm EST ship the same day.') !!}</p>
+    <p>{!! __('U-joints, yokes, center support bearings, flanges and tubing from 1310 to 1810 series. Most stock parts ship the same day when ordered before 2 pm EST.') !!}</p>
     <div class="hm-intro__cta">
       <a class="btn btn-primary btn-lg" href="/shop/driveshaft-components">{!! __('Shop components') !!}</a>
       <a class="btn btn-lg hm-btn-light" href="/online-builder"><x-icon name="wrench"/> {!! __('Build a driveshaft') !!}</a>
@@ -40,7 +40,7 @@
     <ul class="hm-intro__facts">
       <li><b>{{ number_format($udsCatalog['parts']) }}</b> {!! __('parts in stock') !!}</li>
       <li><b>1310–1810</b> {!! __('series') !!}</li>
-      <li><b>{!! __('Same day') !!}</b> {!! __('shipping by 2 pm EST') !!}</li>
+      <li><b>{{ __('UPS & FedEx') }}</b> {{ __('live rates') }}</li>
     </ul>
   </div>
   <form class="hm-finder" id="n-vehicle" action="/catalog/driveshafts" method="get" autocomplete="off">
@@ -99,7 +99,7 @@
 {{-- 4. Why order here: four facts, one line each --}}
 <section class="hm-sec"><div class="wrap">
   <ul class="hm-trust">
-    <li><x-icon name="truck"/><div><b>{{ __('Free shipping over :amount', ['amount' => '$'.number_format(config('uds.free_shipping_min'))]) }}</b><span>{!! __('U.S. parts orders, same-day dispatch') !!}</span></div></li>
+    <li><x-icon name="truck"/><div><b>{{ __('Free shipping over :amount', ['amount' => '$'.number_format(config('uds.free_shipping_min'))]) }}</b><span>{!! __('U.S. parts orders in the lower 48') !!}</span></div></li>
     <li><x-icon name="factory"/><div><b>{!! __('Built in the USA') !!}</b><span>{!! __('Assembled and balanced in Florida') !!}</span></div></li>
     <li><x-icon name="headset"/><div><b>{!! __('Talk to a driveline tech') !!}</b><span><a href="tel:18135246491">(813) 524-6491</a></span></div></li>
     <li><x-icon name="returns"/><div><b>{!! __('14-day returns') !!}</b><span><a href="/return-policy">{!! __('Returns and warranty') !!}</a></span></div></li>

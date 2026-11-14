@@ -4,7 +4,7 @@
     <h1>适用于 6 至 8 级卡车的重型传动轴</h1>
     <div class="btn-row"><a href="/online-builder" class="btn btn-primary btn-sm"><x-icon name="wrench"/> 定制重型传动轴</a><a href="/shop/complete-driveshafts/certifed-driveshafts" class="btn btn-ghost btn-sm">现货认证拆车传动轴</a></div>
   </div>
-  <p class="pagehead__sub">自卸车、垃圾收集车、搅拌车、牵引车:1550 至 1810 系列以及 SPL 170 / 250,均在我们的车间制造并做动平衡。重型“定制传动轴”提供十二个系列;东部标准时间（EST）下午 2 点前下单的现货订单当天发货。</p>
+  <p class="pagehead__sub">自卸车、垃圾收集车、搅拌车、牵引车:1550 至 1810 系列以及 SPL 170 / 250,均在我们的车间制造并做动平衡。重型“定制传动轴”提供十二个系列;东部标准时间（EST）下午 2 点前下单的现货订单大多可当天发货,但处理时间可能因订单量而有所不同。</p>
 </div>
 
 <section class="catsec"><div class="wrap">
@@ -14,7 +14,7 @@
         <li><b>按扭矩匹配系列</b><span>大多数 7 级和 8 级应用选用 1610 和 1710;扭矩和重量要求更高时选用 1810 和 SPL 250。我们会根据您现有的万向节叉来确认系列。</span></li>
         <li><b>传动轴管按长度选型</b><span>传动轴越长,就需要越大、越厚的传动轴管,才能保持在临界转速之上。“定制传动轴”会在报价前,根据您的长度和材质核对传动轴管的外径。</span></li>
         <li><b>在我们车间做动平衡</b><span>每根传动轴,无论是全新的还是认证拆车件,在上架或装箱之前都会在我们的机器上做动平衡。</span></li>
-        <li><b>认证拆车传动轴</b><span>取自低里程卡车的传动轴,逐个十字轴检查,重新做动平衡,并标注系列和长度。包括 SPL 170、SPL 250、1710 和 1810。价格低于全新件,下单当天即可发货;大多数可以截短或更换万向节叉。<a href="/shop/complete-driveshafts/certifed-driveshafts">查看认证传动轴</a></span></li>
+        <li><b>认证拆车传动轴</b><span>取自低里程卡车的传动轴,逐个十字轴检查,重新做动平衡,并标注系列和长度。包括 SPL 170、SPL 250、1710 和 1810。价格低于全新件,东部标准时间（EST）下午 2 点前下单通常可当天发货;大多数可以截短或更换万向节叉。<a href="/shop/complete-driveshafts/certifed-driveshafts">查看认证传动轴</a></span></li>
       </ul>
       <div class="pg-call" style="margin-top:1rem">
         <p><b>您有不止一辆卡车吗?</b> 提供批发价格、采购订单付款,并可直接发货到您的场站。</p>

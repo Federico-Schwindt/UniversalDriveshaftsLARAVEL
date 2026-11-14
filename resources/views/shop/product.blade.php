@@ -292,7 +292,6 @@
         <li><x-icon name="returns"/><span>{{ __('14-day returns') }}</span></li>
         <li><x-icon name="headset"/><span>{{ __('Fitment help:') }} <a href="tel:18135246491">(813) 524-6491</a></span></li>
       </ul>
-      <x-google-rating variant="compact" class="pdp__rating"/>
     </div>
   </div>
 

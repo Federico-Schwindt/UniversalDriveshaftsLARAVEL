@@ -254,5 +254,7 @@
     "Your verification code": "Votre code de vérification",
     "Your verification code: :code": "Votre code de vérification : :code",
     "Your wholesale account is approved": "Votre compte professionnel a été approuvé",
-    "order status page": "page de statut de la commande"
+    "order status page": "page de statut de la commande",
+    "<b style=\"color:#0b1a33;\">Ready to ship from Florida.</b> Most in-stock parts ship the same day when ordered before 2 pm EST on a weekday; processing times may vary. Prefer to collect? Choose <b>local pickup</b> at checkout, :hours.": "<b style=\"color:#0b1a33;\">Prêt à être expédié depuis la Floride.</b> La plupart des pièces en stock commandées avant 14 h (EST) en semaine sont expédiées le jour même ; les délais de traitement peuvent varier. Vous préférez récupérer votre commande ? Choisissez le <b>retrait sur place</b> lors du paiement, :hours.",
+    "Most orders placed before 2 pm EST on a weekday ship the same day, or pick it up at the counter (:hours). Questions: :phone.": "La plupart des commandes passées avant 14 h (EST) en semaine sont expédiées le jour même, ou retirez-la au comptoir (:hours). Questions : :phone."
 }

@@ -5,7 +5,7 @@
   $gLabel = __($group['label']);
   $gTitle = __(':group: :n parts in :c categories', ['group' => $gLabel, 'n' => number_format($gCount), 'c' => $gCats]) . ' | UDS';
   if (mb_strlen($gTitle) > 60) $gTitle = __(':group: :n parts in stock', ['group' => $gLabel, 'n' => number_format($gCount)]) . ' | UDS';
-  $gDesc = __((string) (config('seo-copy.groups.' . $group['slug']) ?: $group['blurb'])) . ' ' . __(':n parts in stock, ships same day from Florida.', ['n' => number_format($gCount)]);
+  $gDesc = __((string) (config('seo-copy.groups.' . $group['slug']) ?: $group['blurb'])) . ' ' . __(':n parts in stock, ships from Florida.', ['n' => number_format($gCount)]);
   if (mb_strlen($gDesc) > 160) $gDesc = rtrim(mb_substr($gDesc, 0, 157), ' ,.;') . '...';
 @endphp
 @section('title', $gTitle)

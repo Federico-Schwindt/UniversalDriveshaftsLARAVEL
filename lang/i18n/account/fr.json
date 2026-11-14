@@ -720,5 +720,7 @@
     "previous store": "magasin précédent",
     "qty :n": "qté :n",
     "saved :date": "enregistré le :date",
-    "there": "bonjour"
+    "there": "bonjour",
+    "Most stock parts ship the same day when ordered before 2 pm EST, though processing times may vary with order volume. Custom and new driveshafts take up to 5 business days to process. You receive the UPS or FedEx tracking number by e-mail and text.": "La plupart des pièces en stock sont expédiées le jour même pour toute commande passée avant 14 h (EST), bien que les délais de traitement puissent varier selon le volume de commandes. Les arbres de transmission neufs ou sur mesure demandent jusqu'à 5 jours ouvrés de traitement. Vous recevez le numéro de suivi UPS ou FedEx par e-mail et par SMS.",
+    "Most stock parts ship the same day; custom and new driveshafts take up to 5 business days to process.": "La plupart des pièces en stock partent le jour même ; les arbres neufs ou sur mesure demandent jusqu'à 5 jours ouvrés de traitement."
 }

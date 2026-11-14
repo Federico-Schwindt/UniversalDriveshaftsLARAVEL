@@ -823,5 +823,12 @@
     "Max. joint angle": "Ángulo máx. de junta",
     "Vehicles this bearing is listed for": "Vehículos en los que va este rodamiento",
     ":n model|:n models": ":n modelo|:n modelos",
-    "From the complete driveshafts listed for these vehicles. Confirm the bearing ID and the mount dimensions above before you order.": "Según los cardanes completos de estos vehículos. Confirma el diámetro interior del rodamiento y las medidas del soporte antes de comprar."
+    "From the complete driveshafts listed for these vehicles. Confirm the bearing ID and the mount dimensions above before you order.": "Según los cardanes completos de estos vehículos. Confirma el diámetro interior del rodamiento y las medidas del soporte antes de comprar.",
+    "Common fitments built ahead of time so you are not waiting on a custom shaft. Every one is balanced in our shop and ready to pack. Most stock orders ship the same day when placed before 2 pm EST.": "Aplicaciones comunes fabricadas por adelantado para que no esperes un cardán a medida. Cada uno se balancea en nuestro taller y queda listo para empacar. La mayoría de los pedidos en existencia salen el mismo día si se hacen antes de las 2 p. m. EST.",
+    "Ready to ship from Florida": "Listo para enviar desde Florida",
+    ":n parts in stock, ships from Florida.": ":n piezas en existencia, envío desde Florida.",
+    "Yes. :n is in stock in Florida. Most stock orders placed before 2 pm EST on a weekday ship the same day.": "Sí. Hay :n en existencia en Florida. La mayoría de los pedidos hechos antes de las 2 p. m. EST en día hábil salen el mismo día.",
+    "Yes. :n are in stock in Florida. Most stock orders placed before 2 pm EST on a weekday ship the same day.": "Sí. Hay :n en existencia en Florida. La mayoría de los pedidos hechos antes de las 2 p. m. EST en día hábil salen el mismo día.",
+    ". Most parts listed in stock ship the same day from Florida when ordered before 2 pm EST.": ". La mayoría de lo que aparece en existencia sale el mismo día desde Florida si lo pides antes de las 2 p. m. EST.",
+    ", ships from Florida. ": ", envío desde Florida. "
 }
