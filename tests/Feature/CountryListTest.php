@@ -10,17 +10,19 @@ use Tests\TestCase;
  */
 class CountryListTest extends TestCase
 {
-    public function test_countries_are_alphabetical_and_all_real(): void
+    public function test_countries_are_alphabetical_real_and_never_embargoed(): void
     {
         $c = config('countries');
         $names = array_values($c);
         $sorted = $names;
-        sort($sorted, SORT_STRING);
+        usort($sorted, fn ($a, $b) => strcasecmp(\Illuminate\Support\Str::ascii($a), \Illuminate\Support\Str::ascii($b)));   // Åland with the A's
         $this->assertSame($sorted, $names);
-        $this->assertCount(96, $c);
+        $this->assertCount(233, $c);
         $this->assertArrayHasKey('US', $c);
         // no "Other": the carriers cannot quote it, so a customer picking it could not check out
         foreach (array_keys($c) as $code) $this->assertMatchesRegularExpression('/^[A-Z]{2}$/', $code);
+        // never the U.S. embargoes or where the carriers stopped (Belarus, Russia); the U.S. territories are states
+        foreach (['CU', 'IR', 'KP', 'SY', 'BY', 'RU', 'GU', 'VI'] as $code) $this->assertArrayNotHasKey($code, $c);
     }
 
     public function test_state_lists_are_alphabetical_and_keyed_by_the_code_the_carriers_use(): void
