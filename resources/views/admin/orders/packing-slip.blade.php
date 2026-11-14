@@ -1,31 +1,37 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><title>Packing slip {{ $order->order_number }}</title>
+{{-- 4" × 6" thermal label stock (owner, 2026-11-14) --}}
 <style>
-body{font:13px/1.45 -apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#141b28;margin:0;padding:28px}
-.top{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #1246ab;padding-bottom:14px;margin-bottom:18px}
-h1{font-size:22px;margin:0;color:#1246ab}h1 small{display:block;font-size:11px;color:#5c6879;letter-spacing:2px;font-weight:600}
-.meta{text-align:right}.meta b{font-size:18px;font-family:ui-monospace,Menlo,monospace}
-.cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}.h{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#8a94a6;font-weight:700;margin-bottom:4px}
-table{width:100%;border-collapse:collapse}th{text-align:left;background:#f1f4fa;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;padding:8px}td{padding:9px 8px;border-bottom:1px solid #e4e8f0;vertical-align:top}
-.logo{display:block;height:40px;width:auto;margin-bottom:6px}.ph{width:64px;height:64px;object-fit:contain;border:1px solid #e4e8f0;border-radius:6px;background:#fff;display:block}.ph--none{background:#f1f4fa}
-.qty{font-size:20px;font-weight:800;text-align:center;width:60px}.chk{width:26px;height:26px;border:2px solid #cfd6e3;border-radius:5px;display:inline-block}
-.warn{background:#fdf3e2;border:1px solid #f1d9a5;padding:10px 12px;border-radius:8px;margin-bottom:14px}
-.box{border:1px solid #e4e8f0;border-radius:8px;padding:10px 12px;margin-top:14px;font-size:12px}
-.foot{margin-top:26px;font-size:11px;color:#5c6879;text-align:center}
-@media print{body{padding:10px}}
+@page{size:4in 6in;margin:.16in}
+*{box-sizing:border-box}
+body{font:9.5px/1.35 -apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#000;margin:0;padding:0;width:3.68in}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;border-bottom:2px solid #000;padding-bottom:5px;margin-bottom:6px}
+.logo{display:block;height:20px;width:auto;margin-bottom:2px}.kick{font-size:8px;letter-spacing:1.5px;font-weight:700}
+.meta{text-align:right;line-height:1.3}.meta b{font-size:12px;font-family:ui-monospace,Menlo,monospace}
+.h{font-size:7px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:#444;margin-bottom:1px}
+.to{font-size:10.5px;line-height:1.3;margin-bottom:4px}.bill{font-size:8.5px;color:#333;margin-bottom:6px}
+table{width:100%;border-collapse:collapse}th{text-align:left;font-size:7px;letter-spacing:.8px;text-transform:uppercase;padding:3px 3px;border-bottom:1px solid #000}
+td{padding:4px 3px;border-bottom:1px solid #ccc;vertical-align:top}tr{break-inside:avoid;page-break-inside:avoid}
+.chk{width:12px;height:12px;border:1.5px solid #000;border-radius:2px;display:inline-block}
+.ph{width:34px;height:34px;object-fit:contain;display:block}.ph--none{display:block;width:34px;height:34px;background:#eee}
+.qty{font-size:14px;font-weight:800;text-align:center;width:26px}.sku{font-family:ui-monospace,Menlo,monospace;font-size:9px}
+.cfg{margin-top:2px;font-size:8px;color:#333}
+.warn{border:1.5px solid #000;padding:4px 6px;margin-bottom:6px;font-size:9.5px}
+.box{border:1px solid #999;padding:4px 6px;margin-top:6px;font-size:8.5px}
+.foot{margin-top:8px;font-size:7.5px;color:#444;text-align:center}
+@media screen{body{margin:16px auto;padding:.16in;width:4in;min-height:6in;box-shadow:0 0 0 1px #ccc}}
 </style></head><body onload="window.print()">
-<div class="top"><div><img class="logo" src="{{ url('/img/email/logo.png') }}" alt="Universal Driveshafts"><h1><small>PACKING SLIP</small></h1><div style="margin-top:6px;color:#5c6879">Florida, USA<br>{{ config('uds.phone', config('uds.pickup.phone')) }} · {{ config('uds.email') }}</div></div>
+<div class="top"><div><img class="logo" src="{{ url('/img/email/logo.png') }}" alt="Universal Driveshafts"><div class="kick">PACKING SLIP</div><div>{{ config('uds.phone', config('uds.pickup.phone')) }}</div></div>
 <div class="meta"><b>{{ $order->order_number }}</b><br>{{ \Carbon\Carbon::parse($order->created_at)->format('M j, Y') }}@if($order->po_number)<br>PO {{ $order->po_number }}@endif<br>{{ $order->shipping_label }}</div></div>
-@if($order->shipping_method===\App\Services\CartService::PICKUP_ID)<div class="warn"><b>LOCAL PICKUP — DO NOT SHIP.</b>@if($order->payment_method==='pay_at_pickup') Collect {{ money($order->total) }} at pickup. @endif</div>@endif
+@if($order->shipping_method===\App\Services\CartService::PICKUP_ID)<div class="warn"><b>LOCAL PICKUP — DO NOT SHIP.</b>@if($order->payment_method==='pay_at_pickup') Collect {{ money($order->total) }} at pickup.@endif</div>@endif
 @if($order->ship_instructions || $order->signature_required)<div class="warn">@if($order->signature_required)<b>Signature required.</b> @endif{{ $order->ship_instructions }}</div>@endif
 @php $s = $order->ship_to_different ? 'shipping' : 'billing'; @endphp
-<div class="cols">
-  <div><div class="h">Ship to</div><b>{{ $order->{$s.'_first_name'} }} {{ $order->{$s.'_last_name'} }}</b>@if($order->billing_company)<br>{{ $order->billing_company }}@endif<br>{{ $order->{$s.'_address_1'} }} {{ $order->{$s.'_address_2'} }}<br>{{ $order->{$s.'_city'} }}, {{ $order->{$s.'_state'} }} {{ $order->{$s.'_postcode'} }} {{ $order->{$s.'_country'} ?: $order->billing_country }}<br>{{ $order->phone }}</div>
-  <div><div class="h">Bill to</div>{{ $order->billing_first_name }} {{ $order->billing_last_name }}<br>{{ $order->billing_address_1 }}<br>{{ $order->billing_city }}, {{ $order->billing_state }} {{ $order->billing_postcode }}<br>{{ $order->email }}</div>
-</div>
-<table><thead><tr><th style="width:30px"></th><th style="width:72px"></th><th>Qty</th><th>Item</th><th>SKU</th></tr></thead><tbody>
-@foreach($items as $it)<tr><td><span class="chk"></span></td><td>@if(!empty($thumbs[$it->wp_product_id]))<img class="ph" src="{{ $thumbs[$it->wp_product_id] }}" alt="">@else<span class="ph ph--none"></span>@endif</td><td class="qty">{{ $it->qty }}</td><td><b>{{ $it->name }}</b>@if(!empty($it->metaArr['summary']))<br><span style="color:#1f9e88">{{ $it->metaArr['summary'] }}</span>@endif @if(!empty($it->metaArr['config']))<div style="margin-top:4px;font-size:11.5px;color:#3a4557">@foreach(\App\Support\BuildConfig::rows($it->metaArr['config']) as $rw){{ $rw['label'] }}: <b>{{ $rw['value'] }}</b>@if(!$loop->last) · @endif @endforeach</div>@endif</td><td style="font-family:ui-monospace,Menlo,monospace">{{ $it->sku }}</td></tr>@endforeach
+<div class="h">Ship to</div>
+<div class="to"><b>{{ $order->{$s.'_first_name'} }} {{ $order->{$s.'_last_name'} }}</b>@if($order->billing_company)<br>{{ $order->billing_company }}@endif<br>{{ $order->{$s.'_address_1'} }} {{ $order->{$s.'_address_2'} }}<br>{{ $order->{$s.'_city'} }}, {{ $order->{$s.'_state'} }} {{ $order->{$s.'_postcode'} }} {{ $order->{$s.'_country'} ?: $order->billing_country }}@if($order->phone)<br>{{ $order->phone }}@endif</div>
+<div class="bill"><b>Bill to:</b> {{ $order->billing_first_name }} {{ $order->billing_last_name }} · {{ $order->billing_city }}, {{ $order->billing_state }} · {{ $order->email }}</div>
+<table><thead><tr><th style="width:16px"></th><th style="width:38px"></th><th>Qty</th><th>Item</th></tr></thead><tbody>
+@foreach($items as $it)<tr><td><span class="chk"></span></td><td>@if(!empty($thumbs[$it->wp_product_id]))<img class="ph" src="{{ $thumbs[$it->wp_product_id] }}" alt="">@else<span class="ph--none"></span>@endif</td><td class="qty">{{ $it->qty }}</td><td><span class="sku">{{ $it->sku }}</span><br><b>{{ $it->name }}</b>@if(!empty($it->metaArr['summary']))<br>{{ $it->metaArr['summary'] }}@endif @if(!empty($it->metaArr['config']))<div class="cfg">@foreach(\App\Support\BuildConfig::rows($it->metaArr['config']) as $rw){{ $rw['label'] }}: <b>{{ $rw['value'] }}</b>@if(!$loop->last) · @endif @endforeach</div>@endif</td></tr>@endforeach
 </tbody></table>
 @if($pack)<div class="box"><b>{{ $pack['packages'] }} package{{ $pack['packages']==1?'':'s' }}</b> · {{ rtrim(rtrim(number_format($pack['weight_lb'],1),'0'),'.') }} lb total — @foreach($pack['boxes'] as $b){{ $b['kind'] ?? 'box' }} {{ rtrim(rtrim(number_format($b['weight'] ?? 0,1),'0'),'.') }} lb @if(!$loop->last), @endif @endforeach</div>@endif
 @if($order->customer_note)<div class="box"><b>Customer note:</b> {{ $order->customer_note }}</div>@endif
-<div class="foot">Thank you for your order! Questions: {{ config('uds.phone', config('uds.pickup.phone')) }} · Returns within 14 days with RMA — see universaldriveshafts.com/returns</div>
+<div class="foot">Thank you for your order! {{ config('uds.phone', config('uds.pickup.phone')) }} · Returns within 14 days with an RMA: universaldriveshafts.com/returns</div>
 </body></html>
