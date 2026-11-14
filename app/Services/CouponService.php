@@ -137,6 +137,20 @@ class CouponService
             ->when($exceptOrder, fn ($q) => $q->where('id', '!=', $exceptOrder));
     }
 
+    /**
+     * May this unpaid card order still be paid at its discounted total? Once its hold lapsed, other checkouts may have
+     * taken the code's last uses meanwhile; an order still inside its hold (or with no code) is always fine.
+     */
+    public function stillHolds(object $order): bool
+    {
+        if (!$order->coupon_code || $order->payment_method !== 'stripe') return true;
+        if ($order->updated_at && \Illuminate\Support\Carbon::parse($order->updated_at)->gt(now()->subMinutes(self::HOLD_MINUTES))) return true;
+        $c = DB::table('coupons')->whereRaw('LOWER(code) = ?', [strtolower($order->coupon_code)])->first();
+        if (!$c || !$c->active) return false;
+        if ($c->usage_limit !== null && $this->taken($c, (int) $order->id) >= $c->usage_limit) return false;
+        return $c->per_customer_limit === null || $this->customerUses($c, $order->email, (int) $order->id) < (int) $c->per_customer_limit;
+    }
+
     public function markUsed(string $code): void
     {
         DB::table('coupons')->whereRaw('LOWER(code) = ?', [strtolower($code)])->increment('used_count');

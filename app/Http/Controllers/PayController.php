@@ -33,6 +33,10 @@ class PayController extends Controller
         $order = $this->order($number, $token);
         if (!PayLink::payable($order)) return response()->json(['error' => 'This order has no balance due.'], 422);
         $state = PayLink::existingState($order);
+        // a pay link opened long after checkout must not let a limited coupon be spent past its limit
+        if ($state !== 'succeeded' && !app(\App\Services\CouponService::class)->stillHolds($order)) {
+            return response()->json(['error' => 'The coupon on this order is no longer available. Please call (813) 524-6491 and we will update the order for you.'], 409);
+        }
         if ($state === 'succeeded') return response()->json(['paid' => true, 'redirect' => OrderEvents::statusUrl($order, false) . '?paid=1']);
         if ($state === 'processing') return response()->json(['error' => 'A payment for this order is already being processed. Please check back in a few minutes — you have not been charged twice.'], 409);
         $pi = PayLink::intent($order);

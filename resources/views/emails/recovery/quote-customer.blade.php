@@ -7,8 +7,6 @@
     <tr><td style="padding:16px 18px;font-size:14px;line-height:1.7;color:#3a4557;">
       <b style="color:#0b1a33;">{{ __('Part number:') }}</b> <span style="font-family:'IBM Plex Mono',Menlo,monospace;">{{ $q['sku'] }}</span><br>
       @if($q['description'])<b style="color:#0b1a33;">{{ __('Description:') }}</b> {{ $q['description'] }}<br>@endif
-      @if($q['vehicle'])<b style="color:#0b1a33;">{{ __('Vehicle:') }}</b> {{ $q['vehicle'] }}<br>@endif
-      @if($q['note'])<b style="color:#0b1a33;">{{ __('Your note:') }}</b> {{ $q['note'] }}<br>@endif
     </td></tr>
   </table>
   @if($q['url'])<p style="margin:18px 0 0;font-size:14px;"><a href="{{ $q['url'] }}" style="color:#1246ab;">{{ __('Part page on our site') }} &rarr;</a></p>@endif

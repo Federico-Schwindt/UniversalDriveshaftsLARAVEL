@@ -116,6 +116,7 @@ class CustomersController extends Controller
             $changed = array_filter($w, fn ($v, $k) => $norm($k, $v) !== $norm($k, $u->$k ?? null), ARRAY_FILTER_USE_BOTH);
             if ($changed) { abort_unless(\App\Support\AdminAccess::can('wholesale'), 403, 'Only managers can change wholesale pricing, net terms or credit.'); $upd += $w; } }
         $emailChanged = strcasecmp($d['email'], $u->email) !== 0;
+        abort_if($emailChanged && !\App\Support\AdminAccess::can('wholesale'), 403, 'Only managers can change a customer\'s e-mail.');
         DB::transaction(function () use ($id, $upd, $u, $d, $emailChanged) {
             DB::table('users')->where('id', $id)->update($upd);
             // orders, notes and carts are keyed by e-mail — move them with the account so history is not orphaned
@@ -124,7 +125,15 @@ class CustomersController extends Controller
                 foreach (['customer_notes', 'abandoned_carts', 'stock_alerts'] as $t) DB::table($t)->where('email', $u->email)->update(['email' => $d['email']]);
             }
         });
-        if ($emailChanged) AdminLog::record('customer.email', "E-mail changed {$u->email} → {$d['email']}", 'customer', $id, ['old' => $u->email, 'new' => $d['email']]);
+        if ($emailChanged) {
+            AdminLog::record('customer.email', "E-mail changed {$u->email} → {$d['email']}", 'customer', $id, ['old' => $u->email, 'new' => $d['email']]);
+            // same notice as a customer's own change (AccountController), so a move nobody asked for does not go unnoticed
+            try {
+                \App\Support\Mailer::simple($u->email, 'Your account e-mail was changed', ['kicker' => 'Account security', 'title' => 'Your account e-mail was changed.',
+                    'intro' => 'The e-mail on your Universal Driveshafts account was changed to ' . \App\Support\EmailOtp::mask($d['email']) . '. Order confirmations and tracking now go there.',
+                    'after' => ['If you did not ask for this change, call us right away at (813) 524-6491 or reply to this e-mail.'], 'signoff' => false], ['locale' => $u->locale ?: null]);
+            } catch (\Throwable $e) { report($e); }
+        }
         if (($upd['wholesale_status'] ?? null) === 'approved' && $u->wholesale_status !== 'approved') {
             // start at the tier this month (or last month) already earns; Bronze for a new account
             $tier = \App\Services\B2bAccounts::evaluate($id, false, 'Account approved') ?? 'bronze';

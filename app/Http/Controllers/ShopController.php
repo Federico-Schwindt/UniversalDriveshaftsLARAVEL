@@ -614,7 +614,7 @@ class ShopController extends Controller
         $email = trim((string) $r->input('order_email'));
         $order = DB::table('orders')
             ->where(function ($q) use ($number) {
-                $q->where('order_number', $number)->orWhere('order_number', 'UDS-' . $number)->orWhere('id', (int) $number);
+                $q->where('order_number', $number)->orWhere('order_number', 'UDS-' . $number);
             })
             ->whereRaw('LOWER(email) = ?', [strtolower($email)])
             ->first();
