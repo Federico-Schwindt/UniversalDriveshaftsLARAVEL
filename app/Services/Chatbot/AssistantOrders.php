@@ -8,6 +8,7 @@ use App\Services\B2bAccounts;
 use App\Services\CartService;
 use App\Support\OrderEvents;
 use App\Support\PayLink;
+use App\Support\SalesTax;
 use App\Support\StripeCards;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +30,8 @@ class AssistantOrders
     /** A typed confirmation: short, affirmative (en / es / fr), and without a "no" / "wait" / "change" in it. */
     private const YES = "/(?<!\\p{L})(yes|yep|yeah|sure|ok|okay|confirm|confirmed|place it|go ahead|s[ií]|dale|confirmo|oui|d'accord)(?!\\p{L})/iu";
     private const NOT = "/(?<!\\p{L})(no|not|nope|don't|dont|wait|change|cancel|cambia|cambiar|espera|non|attends|annule)(?!\\p{L})/iu";
+    /** Words that may come with a yes without changing it ("ok, place the order please"). Anything else is a condition. */
+    private const FILLER = "/(?<!\\p{L})(please|pls|thanks|thank you|thx|do it|place (?:the |my )?order|order it|go for it|let'?s do it|sounds good|looks good|all good|perfect|great|good|correct|right|now|por favor|gracias|hacelo|hazlo|haz el pedido|perfecto|correcto|listo|bien|merci|s'il (?:te|vous) pla[iî]t|parfait|allez-y|vas-y|c'est bon|exact|exacto)(?!\\p{L})/iu";
     /** Same cart ordered again this soon is more likely a repeat than a second order. */
     private const REPEAT_MINUTES = 10;
 
@@ -175,11 +178,13 @@ class AssistantOrders
         else Cache::forget($key);
     }
 
-    /** Is this customer line a clear yes (and not "yes but change…")? */
+    /** Is this customer line a clear yes, and only that (not "yes but change…", not "yes, and add 10 more", not "ok, use my other card")? */
     public static function saysYes(string $text): bool
     {
         $t = trim($text);
-        return $t !== '' && mb_strlen($t) <= 60 && preg_match(self::YES, $t) && !preg_match(self::NOT, $t);
+        if ($t === '' || mb_strlen($t) > 60 || !preg_match(self::YES, $t) || preg_match(self::NOT, $t)) return false;
+        // audit 2026-11-14: a yes with anything more in it is a request, so the summary is shown again instead of placed
+        return !preg_match('/\p{L}{2,}/u', preg_replace([self::YES, self::FILLER], ' ', $t));
     }
 
     private function recentKey(int $userId): string
@@ -248,7 +253,9 @@ class AssistantOrders
 
         $subtotal = $this->cart->subtotal();
         [$tier, $pct, $tierAmt] = B2bAccounts::discount($u, $subtotal);
-        $total = round(max(0, $subtotal - $tierAmt) + (float) $ship['cost'], 2);
+        // Florida sales tax exactly as checkout charges it: Florida deliveries and pickups, unless a certificate is on file
+        [$taxProfile, $tax] = $this->tax($u, $pickup, $addr, $tierAmt, (float) $ship['cost']);
+        $total = round(max(0, $subtotal - $tierAmt) + (float) $ship['cost'] + $tax, 2);
 
         $pay = (string) ($in['payment'] ?? '');
         $cards = $this->cards($u);
@@ -278,7 +285,7 @@ class AssistantOrders
             'address_id' => $pickup ? 'pickup' : $shipTo, 'pickup' => $pickup, 'ship' => ['id' => $ship['id'], 'label' => $ship['label'], 'cost' => (float) $ship['cost']],
             'dest' => $dest, 'payment' => $pay, 'card' => $card['id'] ?? null,
             'po' => Str::limit(trim((string) ($in['po_number'] ?? '')), 80, ''), 'note' => Str::limit(trim((string) ($in['note'] ?? '')), 500, ''),
-            'subtotal' => $subtotal, 'tier' => $tier, 'tier_amt' => $tierAmt, 'total' => $total,
+            'subtotal' => $subtotal, 'tier' => $tier, 'tier_amt' => $tierAmt, 'tax' => $tax, 'tax_profile' => $taxProfile, 'total' => $total,
         ];
         Cache::put($this->draftKey($conv->id), $draft, now()->addMinutes(self::DRAFT_MINUTES));
 
@@ -287,11 +294,20 @@ class AssistantOrders
             'subtotal_usd' => $subtotal,
             'business_discount' => $tier ? ['tier' => B2bAccounts::label($tier), 'amount_usd' => -$tierAmt] : null,
             'shipping' => ['method' => $ship['label'], 'cost_usd' => (float) $ship['cost'], 'eta' => $chosen['eta'] ?? null],
+            'sales_tax' => $taxProfile ? ['label' => ($taxProfile['exempt'] ?? false) ? __('Tax exempt (certificate on file)') : SalesTax::label($taxProfile), 'amount_usd' => $tax] : null,
             'ship_to' => $pickup ? 'Local pickup at the shop in Florida (address and hours are in the confirmation e-mail)' : trim(implode(', ', array_filter([trim($addr['first'] . ' ' . $addr['last']), $addr['company'], $addr['street'], $addr['unit'], $addr['city'], trim($addr['state'] . ' ' . $addr['zip']), $addr['country']]))),
             'payment' => match ($pay) { 'saved_card' => 'Charge ' . $card['label'], 'net_terms' => 'Invoice, Net ' . B2bAccounts::termsDays() . ' (due ' . now('America/New_York')->addDays(B2bAccounts::termsDays())->format('M j, Y') . ')', default => 'Payment link by e-mail and here in the chat' },
             'po_number' => $draft['po'] ?: null,
             'total_usd' => $total,
         ], 'next' => 'The chat shows this summary as a card with Yes / Change buttons: say one short line asking them to check it and tap Yes (or reply yes). Call place_order only after they confirm in a NEW message; it will not work in this same reply.'];
+    }
+
+    /** [profile, amount] of Florida sales tax for this cart, the way checkout works it out (App\Support\SalesTax). */
+    private function tax(User $u, bool $pickup, ?array $addr, float $discount, float $shipping): array
+    {
+        $profile = $pickup ? SalesTax::profile('US', 'FL', '', true, $u)
+            : SalesTax::profile((string) ($addr['country'] ?? 'US'), (string) ($addr['state'] ?? ''), (string) ($addr['zip'] ?? ''), false, $u);
+        return [$profile, SalesTax::amount($profile, $this->cart->items(), $discount, $shipping)];
     }
 
     /** Place the prepared order. $lastUserMsgId = id of the customer's newest message in this conversation. */
@@ -311,6 +327,11 @@ class AssistantOrders
             $tap = (string) Cache::get($key . ':ok', '');
             $byTap = $tap !== '' && !empty($d['nonce']) && hash_equals((string) $d['nonce'], $tap);
             $typed = self::saysYes((string) DB::table('chat_messages')->where('id', $lastUserMsgId)->where('conversation_id', $conv->id)->value('display'));
+            // audit 2026-11-14: and it answers the summary — the customer's first line after it, not an "ok thanks" further on
+            if (!$byTap && $typed && DB::table('chat_messages')->where('conversation_id', $conv->id)->where('role', 'user')->whereNotNull('display')
+                    ->where('id', '>', $d['after'])->where('id', '<=', $lastUserMsgId)->count() !== 1) {
+                return ['placed' => false, 'error' => 'Other messages came between the summary and this yes. Call prepare_order again so the customer sees the current summary, and place it only when they confirm that one.'];
+            }
             if (!$byTap && !$typed) return ['placed' => false, 'error' => 'The customer has not clearly confirmed this summary (their last message is not a plain yes). Ask them to tap Yes on the summary or reply yes; if they want changes, make them and call prepare_order again.'];
             if ($d['cart'] !== $this->cartHash()) { Cache::forget($key); return ['placed' => false, 'error' => 'The cart changed since the summary. Call prepare_order again and show the new summary.']; }
             if (empty($d['repeat_ok']) && ($same = $this->recentSame($u))) { Cache::forget($key); return ['placed' => false, 'error' => "Order {$same['order_number']} with exactly this cart was just placed. Ask the customer whether they want a second identical order before preparing it again."]; }
@@ -322,6 +343,10 @@ class AssistantOrders
                 $ship = $this->cart->shippingCost($d['ship']['id'], (string) $addr['country'], strtoupper((string) $addr['state']), (string) $addr['zip'], null, $d['dest']);
                 if (!$ship || abs((float) $ship['cost'] - $d['ship']['cost']) > 0.01) { Cache::forget($key); return ['placed' => false, 'error' => 'The shipping price changed. Call prepare_order again and show the new total.']; }
             }
+            if ($d['pickup'] && !CartService::pickupFor((string) ($u->billing_country ?: 'US'), (string) $u->billing_state)) { Cache::forget($key); return ['placed' => false, 'error' => 'Local pickup is not available for this order any more. Call prepare_order again with a shipping address.']; }
+            if (abs(B2bAccounts::discount($u, (float) $d['subtotal'])[2] - (float) $d['tier_amt']) > 0.01) { Cache::forget($key); return ['placed' => false, 'error' => 'The business discount on this account changed. Call prepare_order again and show the new total.']; }
+            // the tax too: a certificate approved or expired since the summary changes it
+            if (abs($this->tax($u, $d['pickup'], $addr, (float) $d['tier_amt'], (float) $d['ship']['cost'])[1] - (float) ($d['tax'] ?? 0)) > 0.01) { Cache::forget($key); return ['placed' => false, 'error' => 'The sales tax on this order changed. Call prepare_order again and show the new total.']; }
             if ($d['payment'] === 'net_terms' && !B2bAccounts::terms($u, $d['total'])[0]) return ['placed' => false, 'error' => 'Paying by invoice is not available for this order any more; ask for another payment method.'];
 
             $order = $this->create($u, $d, $addr);
@@ -375,7 +400,12 @@ class AssistantOrders
                 'shipping_postcode' => $shipDiff ? $addr['zip'] : null, 'shipping_country' => $shipDiff ? $addr['country'] : null,
                 'shipping_method' => $d['ship']['id'], 'shipping_label' => $d['ship']['label'],
                 'freight_delivery' => CartService::isFreight((string) $d['ship']['id']) ? ($d['dest']['delivery'] ?? 'residential') : null,
-                'subtotal' => $d['subtotal'], 'shipping_total' => $d['ship']['cost'], 'discount_total' => $d['tier_amt'], 'total' => $d['total'],
+                'subtotal' => $d['subtotal'], 'shipping_total' => $d['ship']['cost'], 'discount_total' => $d['tier_amt'],
+                // where the Florida tax went, for the DR-15 return (the same columns checkout fills)
+                'tax_total' => $d['tax'] ?? 0, 'tax_county' => $d['tax_profile']['county'] ?? null, 'tax_rate' => $d['tax_profile']['rate'] ?? null,
+                'taxable_total' => !empty($d['tax_profile']) ? round(max(0, $d['subtotal'] - $d['tier_amt']) + ($d['tax_profile']['shipping'] ? $d['ship']['cost'] : 0), 2) : null,
+                'tax_exempt_cert' => ($d['tax_profile']['exempt'] ?? false) ? ($u->tax_cert_number ?: 'on file') : null,
+                'total' => $d['total'],
                 'customer_note' => $d['note'] ?: null, 'po_number' => $d['po'] ?: null,
                 'ip' => request()?->ip(), 'created_at' => now(), 'updated_at' => now(),
             ]);

@@ -30,6 +30,7 @@ class KnowledgeBase
         '/wholesale' => 'Wholesale and trade accounts',
         '/contact' => 'Contact',
         '/return-policy' => 'Returns, refunds and limited warranty',
+        '/shipping-policy' => 'Shipping policy: carriers, processing times, free shipping, freight, pickup, international',
         '/terms' => 'Terms of use and conditions of sale',
         '/shop' => 'Parts catalog overview',
     ];
@@ -107,6 +108,8 @@ class KnowledgeBase
             'Parts phone: ' . ($u['phone_parts'] ?? '') . '. OEM / custom driveshaft phone: ' . ($u['phone_oem'] ?? '') . '. E-mail: ' . ($u['email'] ?? '') . '.',
             !empty($u['pickup']['label']) ? 'Local pickup: free, for Florida addresses only, ' . ($u['pickup']['hours'] ?? 'Monday to Friday, 3 to 5 pm') . '. Choose it at checkout; the address is shown there.' : null,
             'Free shipping: U.S. orders over $' . number_format(CartService::freeMin()) . ' ship free by ground, but tubing and complete driveshafts never count toward it and never ship free. A palletised (freight) order never ships free.',
+            // owner, 2026-11-14: no flat same-day promise anywhere; the boss's wording
+            'Processing time: most stock parts ship the same day when ordered before ' . CartService::cutoffLabel() . ' EST, though processing times may vary with order volume; the customer gets a shipping confirmation e-mail. Custom and new driveshafts take up to 5 business days to process. Never promise or guarantee a ship date.',
             'Parcel shipping: boxes ship by UPS or FedEx (ground and air) at live rates shown at checkout. The shop does not ship USPS.',
             'Freight (LTL) shipping: orders of five or more tubes or complete driveshafts, 100 lb or more, or any piece longer than 108 inches ship strapped to a pallet by LTL truck freight. Freight is NOT shipped by UPS or FedEx parcel service and is not "UPS/FedEx freight": it is quoted live at checkout from ' . \App\Services\WarpFreightService::carrierSummary() . '. At checkout the customer picks the delivery type (business with a loading dock, business without a dock so the truck brings a liftgate, or a home), which changes the price. The carrier calls ahead to schedule; someone must be there to sign and should note any visible damage on the delivery receipt. Freight never ships free and free-shipping coupons do not cover it.',
             'Online tools: /online-builder (build a driveshaft to your measurements), /driveshaft-designer (draw and dimension a shaft), the vehicle finder (driveshafts by year, make and model).',

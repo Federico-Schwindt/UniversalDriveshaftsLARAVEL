@@ -85,6 +85,12 @@ class ChatbotController extends Controller
         if (!$human && !$staff && (int) $conv->turns >= (int) config('services.anthropic.max_turns', 30)) {
             return response()->json(['error' => 'This chat is getting long. Start a new chat to keep going.', 'restart' => true], 409);
         }
+        if ($files && !$staff) {
+            $sent = DB::table('chat_messages')->where('conversation_id', $conv->id)->whereNotNull('photos')->pluck('photos')->sum(fn ($p) => count(json_decode((string) $p, true) ?: []));
+            if ($sent + count($files) > \App\Support\ChatPhotos::MAX_PER_CONVERSATION) {
+                return response()->json(['error' => 'This chat already has ' . $sent . ' photos. Start a new chat to send more.', 'restart' => true], 409);
+            }
+        }
         // the same line over and over is a script, not a customer
         $recent = DB::table('chat_messages')->where('conversation_id', $conv->id)->where('role', 'user')->whereNotNull('display')->orderByDesc('id')->limit(3)->pluck('display')->all();
         if (count($recent) === 3 && count(array_unique(array_map('mb_strtolower', array_merge($recent, [$text])))) === 1) {
@@ -175,7 +181,7 @@ class ChatbotController extends Controller
     public function photo(Request $r, int $message, int $n)
     {
         $m = DB::table('chat_messages as m')->join('chat_conversations as c', 'c.id', '=', 'm.conversation_id')->where('m.id', $message)->first(['m.photos', 'c.user_id']);
-        abort_unless($m && ((int) $m->user_id === (int) $r->user()->id || $r->user()->is_admin), 404);
+        abort_unless($m && ((int) $m->user_id === (int) $r->user()->id || self::chatStaff($r)), 404);
         $path = (json_decode((string) $m->photos, true) ?: [])[$n] ?? null;
         abort_unless($path && \Illuminate\Support\Facades\Storage::disk('local')->exists($path), 404);
         return response()->file(\Illuminate\Support\Facades\Storage::disk('local')->path($path), ['Content-Type' => 'image/jpeg', 'Cache-Control' => 'private, max-age=86400']);
@@ -189,7 +195,7 @@ class ChatbotController extends Controller
     {
         $m = DB::table('chat_messages as m')->join('chat_conversations as c', 'c.id', '=', 'm.conversation_id')->where('m.id', $message)
             ->first(['m.id', 'm.role', 'm.display', 'm.audio', 'm.conversation_id', 'c.user_id']);
-        abort_unless($m && ((int) $m->user_id === (int) $r->user()->id || $r->user()->is_admin), 404);
+        abort_unless($m && ((int) $m->user_id === (int) $r->user()->id || self::chatStaff($r)), 404);
         $disk = \Illuminate\Support\Facades\Storage::disk('local');
         $path = $m->audio;
         if (!$path || !$disk->exists($path)) {
@@ -211,6 +217,12 @@ class ChatbotController extends Controller
             }
         }
         return response()->file($disk->path($path), ['Content-Type' => \App\Support\ChatVoice::mime($path), 'Cache-Control' => 'private, max-age=86400']);
+    }
+
+    /** Staff whose role opens the assistant chats (AdminAccess section "chats"), not any staff account. */
+    private static function chatStaff(Request $r): bool
+    {
+        return (bool) $r->user()->is_admin && \App\Support\AdminAccess::can('chats', $r->user());
     }
 
     /** Past chats from the last HISTORY_DAYS days, newest first (the open one included). */

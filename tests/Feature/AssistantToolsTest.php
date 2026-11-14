@@ -76,7 +76,8 @@ class AssistantToolsTest extends TestCase
 
         $r = $this->prepare($u, 'net_terms', ['po_number' => 'PO-55']);
         $this->assertTrue($r['ready']);
-        $this->assertEquals(round($sub - round($sub * 0.05, 2), 2), $r['summary']['total_usd']);
+        $net = round($sub - round($sub * 0.05, 2), 2);
+        $this->assertEqualsWithDelta(round($net * 1.07, 2), $r['summary']['total_usd'], 0.011, 'a pickup pays Pasco\'s 7% on the discounted total, like checkout');
 
         // same reply as the summary: refused
         $r = $this->tool($u, 'place_order');

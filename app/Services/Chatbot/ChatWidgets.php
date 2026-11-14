@@ -244,6 +244,7 @@ class ChatWidgets
             'subtotal' => (float) ($s['subtotal_usd'] ?? 0),
             'discount' => $s['business_discount'] ? ['label' => $s['business_discount']['tier'], 'amount' => (float) $s['business_discount']['amount_usd']] : null,
             'shipping' => ['label' => (string) ($s['shipping']['method'] ?? ''), 'cost' => (float) ($s['shipping']['cost_usd'] ?? 0), 'eta' => $s['shipping']['eta'] ?? null],
+            'tax' => !empty($s['sales_tax']) ? ['label' => (string) $s['sales_tax']['label'], 'amount' => (float) $s['sales_tax']['amount_usd']] : null,
             'ship_to' => (string) ($s['ship_to'] ?? ''), 'payment' => (string) ($s['payment'] ?? ''), 'po' => $s['po_number'] ?? null,
             'total' => (float) ($s['total_usd'] ?? 0),
             'yes' => 'Yes, place the order', 'no' => 'Change something',
