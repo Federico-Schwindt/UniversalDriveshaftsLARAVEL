@@ -73,6 +73,9 @@ return [
         'store_user' => env('SHIPSTATION_STORE_USER'),
         'store_password' => env('SHIPSTATION_STORE_PASSWORD'),
         'since' => env('SHIPSTATION_SINCE', '2026-11-13 21:13:00'),   // the launch (UTC): older orders came through WooCommerce
+        // API v1 key + secret (ShipStation → Settings → Account → API Settings): labels from the admin (ShipStationLabelService)
+        'api_key' => env('SHIPSTATION_API_KEY'),
+        'api_secret' => env('SHIPSTATION_API_SECRET'),
     ],
 
     'easypost' => [

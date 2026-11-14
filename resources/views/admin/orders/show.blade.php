@@ -462,7 +462,14 @@
             <div class="field"><label>Height (in)</label><input class="input" type="number" step="0.1" min="0" max="108" name="height_in" data-label-box></div>
           </div>
           <input type="hidden" name="carrier_code" data-label-carrier value="">
+          <input type="hidden" name="provider" data-label-provider value="">
+          <input type="hidden" name="service_name" data-label-service-name value="">
           <div class="form-grid">
+            <div class="field" style="grid-column:1/-1"><label>Buy through</label><select class="select" name="mode" data-label-mode>
+              @foreach(\App\Http\Controllers\Admin\LabelsController::MODES as $k => $v)
+                <option value="{{ $k }}" @selected($ship['mode'] === $k)>{{ $k === 'easypost' ? 'EasyPost' : ($k === 'shipstation' ? 'ShipStation' : $v) }}{{ $k === 'shipstation' && !$ship['shipstation'] ? ' (not connected yet)' : '' }}</option>
+              @endforeach
+            </select><span class="hint">ShipStation labels are paid from the ShipStation balance. Default in Settings → Shipping.</span></div>
             <div class="field"><label>Packaging</label><select class="select" name="package_code"><option value="parcel">My own box</option></select></div>
             @php $sigOver = (float) \App\Support\Settings::get('shipping.signature_over', 500); $sigDefault = $sigOver > 0 && (float) $order->total > $sigOver; @endphp
             <div class="field"><label>Confirmation</label><select class="select" name="confirmation">
@@ -569,15 +576,19 @@ document.addEventListener('click', function (e) {
     var sum = form.querySelector('[data-label-sum]');
     var buy = form.querySelector('[data-label-buy]');
     var paid = list.getAttribute('data-paid') || '';
-    var rateT = null, rates = [], freight = [], picked = '';
+    var mode = form.querySelector('[data-label-mode]');
+    var provider = form.querySelector('[data-label-provider]'), serviceName = form.querySelector('[data-label-service-name]');
+    var rateT = null, rates = [], freight = [], picked = '', note = '';
 
-    function key(r) { return r.carrier + '|' + r.serviceCode; }
+    function key(r) { return (r.provider || '') + '|' + r.carrier + '|' + r.serviceCode; }
 
     function updateSum() {
       var r = form.querySelector('[name=service_code]:checked');
-      if (!r) { sum.textContent = 'Pick a service'; buy.disabled = true; carrier.value = ''; return; }
+      if (!r) { sum.textContent = 'Pick a service'; buy.disabled = true; carrier.value = ''; provider.value = ''; return; }
       picked = r.getAttribute('data-key') || '';
       carrier.value = r.getAttribute('data-carrier') || '';
+      provider.value = r.getAttribute('data-provider') || '';
+      serviceName.value = r.getAttribute('data-name') || '';
       buy.disabled = false;
       var row = rates.filter(function (x) { return key(x) === picked; })[0];
       sum.innerHTML = row ? admEsc(row.carrierName + ' ' + row.serviceName) + ' · <b>$' + row.cost.toFixed(2) + '</b>' : '';
@@ -585,7 +596,7 @@ document.addEventListener('click', function (e) {
 
     function render() {
       if (!rates.length) {
-        list.innerHTML = '<div class="lbl__empty">No prices for this box and address. Check the weight and size.</div>';
+        list.innerHTML = '<div class="lbl__empty">' + admEsc(note || 'No prices for this box and address. Check the weight and size.') + '</div>';
         updateSum(); return;
       }
       var html = '';
@@ -593,7 +604,7 @@ document.addEventListener('click', function (e) {
         var k = key(r);
         var isPaid = paid && r.quoteId === paid;
         var sel = picked ? picked === k : (isPaid || i === 0);
-        html += '<label class="lbl__rate"><input type="radio" name="service_code" value="' + admEsc(r.serviceCode) + '" data-carrier="' + admEsc(r.carrier) + '" data-key="' + admEsc(k) + '" required' + (sel ? ' checked' : '') + '>'
+        html += '<label class="lbl__rate"><input type="radio" name="service_code" value="' + admEsc(r.serviceCode) + '" data-carrier="' + admEsc(r.carrier) + '" data-provider="' + admEsc(r.provider || '') + '" data-name="' + admEsc(r.serviceName) + '" data-key="' + admEsc(k) + '" required' + (sel ? ' checked' : '') + '>'
           + '<b>' + admEsc(r.carrierName + ' ' + r.serviceName) + '</b>'
           + (isPaid ? '<i>Customer paid this</i>' : (i === 0 ? '<i>Cheapest</i>' : ''))
           + '<em>$' + r.cost.toFixed(2) + '</em></label>';
@@ -621,13 +632,13 @@ document.addEventListener('click', function (e) {
         list.innerHTML = '<div class="lbl__empty">Loading prices…</div>';
         var body = new FormData();
         body.append('_token', document.querySelector('meta[name=csrf-token]').content);
-        ['weight_lb', 'length_in', 'width_in', 'height_in'].forEach(function (n) {
+        ['weight_lb', 'length_in', 'width_in', 'height_in', 'mode'].forEach(function (n) {
           var el = form.querySelector('[name=' + n + ']'); if (el && el.value) body.append(n, el.value);
         });
         fetch('{{ url('/admin/orders/'.$order->id.'/labels/rates') }}', { method: 'POST', body: body, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
           .then(function (r) { return r.json(); })
-          .then(function (d) { rates = d.rates || []; freight = d.freight || []; render(); })
-          .catch(function () { rates = []; freight = []; render(); });
+          .then(function (d) { rates = d.rates || []; freight = d.freight || []; note = d.note || ''; render(); })
+          .catch(function () { rates = []; freight = []; note = ''; render(); });
       }, now === true ? 0 : 450);
     }
 
@@ -637,6 +648,7 @@ document.addEventListener('click', function (e) {
       updateSum();
     });
     form.querySelectorAll('[data-label-box]').forEach(function (i) { i.addEventListener('input', function () { picked = ''; loadRates(); }); });
+    if (mode) mode.addEventListener('change', function () { picked = ''; loadRates(true); });
     kinds.forEach(function (k) { k.addEventListener('change', function () { var ret = form.querySelector('[data-label-kind]:checked').value === 'return'; if (notify) notify.hidden = ret; }); });
     loadRates(true);
   }, 30);
