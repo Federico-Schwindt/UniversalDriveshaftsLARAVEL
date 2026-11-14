@@ -307,6 +307,8 @@ Route::get('/pay/{number}/{token}', [\App\Http\Controllers\PayController::class,
 Route::post('/pay/{number}/{token}/intent', [\App\Http\Controllers\PayController::class, 'intent'])->middleware('throttle:lookup')->where('token', '[A-Za-z0-9]{20,64}');
 Route::post('/pay/{number}/{token}/confirm', [\App\Http\Controllers\PayController::class, 'confirm'])->middleware('throttle:lookup')->where('token', '[A-Za-z0-9]{20,64}');
 Route::post('/stripe/webhook', [\App\Http\Controllers\ShopController::class, 'webhook'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class]);
+// ShipStation Custom Store: it pulls the orders to ship and reports the labels bought there (Basic auth inside)
+Route::match(['get', 'post'], '/shipstation/custom-store', [\App\Http\Controllers\ShipStationController::class, 'handle'])->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])->middleware('throttle:120,1');
 Route::get('/search', [\App\Http\Controllers\SearchController::class, 'page'])->middleware('throttle:search');
 Route::get('/api/search', [\App\Http\Controllers\SearchController::class, 'api'])->middleware('throttle:search');
 Route::get('/quick-order', [\App\Http\Controllers\ProductController::class, 'quickOrderPage']);
