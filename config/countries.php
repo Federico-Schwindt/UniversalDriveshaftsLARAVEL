@@ -1,7 +1,7 @@
 <?php
 // ISO 3166-1 countries for the address selects, A to Z (the United States stays the default choice). No "Other":
 // every option is a real country the carriers can quote (owner, 2026-11-13). Left out: the U.S. embargoes (Cuba, Iran,
-// North Korea, Syria), Belarus (UPS, FedEx and DHL suspended service), uninhabited territories, and Guam, American
+// North Korea, Syria), Belarus and Russia (UPS, FedEx and DHL suspended service), uninhabited territories, and Guam, American
 // Samoa, the Northern Mariana and U.S. Virgin Islands, which are states in config/states.php.
 return [
     'AF' => 'Afghanistan',
@@ -175,7 +175,6 @@ return [
     'QA' => 'Qatar',
     'RE' => 'Réunion',
     'RO' => 'Romania',
-    'RU' => 'Russia',
     'RW' => 'Rwanda',
     'WS' => 'Samoa',
     'SM' => 'San Marino',
