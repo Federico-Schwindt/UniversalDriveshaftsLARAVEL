@@ -13,13 +13,13 @@ class LeadsController extends Controller
     {
         $q = DB::table('leads');
         $tab = $r->query('tab', 'open');
-        match ($tab) { 'open' => $q->whereIn('status', ['new', 'contacted']), 'new' => $q->where('status', 'new'), 'quotes' => $q->where('source', 'quote'), 'closed' => $q->where('status', 'closed'), default => null };
+        match ($tab) { 'open' => $q->whereIn('status', ['new', 'contacted']), 'new' => $q->where('status', 'new'), 'quotes' => $q->where('source', 'quote')->where('status', '!=', 'spam'), 'closed' => $q->where('status', 'closed'), 'spam' => $q->where('status', 'spam'), default => $q->where('status', '!=', 'spam') };
         if ($src = $r->query('source')) $q->where('source', $src);
         if ($s = trim((string) $r->query('q', ''))) { $like = "%$s%"; $q->where(fn ($w) => $w->where('name', 'like', $like)->orWhere('email', 'like', $like)->orWhere('phone', 'like', $like)->orWhere('message', 'like', $like)->orWhere('data', 'like', $like)); }
         $rows = $q->orderByDesc('id')->paginate(30)->withQueryString();
         foreach ($rows as $l) $l->d = json_decode($l->data ?: '{}', true) ?: [];
         $sources = DB::table('leads')->select('source')->distinct()->orderBy('source')->pluck('source');
-        $counts = ['open' => DB::table('leads')->whereIn('status', ['new', 'contacted'])->count(), 'new' => DB::table('leads')->where('status', 'new')->count(), 'quotes' => DB::table('leads')->where('source', 'quote')->count(), 'closed' => DB::table('leads')->where('status', 'closed')->count(), 'all' => DB::table('leads')->count()];
+        $counts = ['open' => DB::table('leads')->whereIn('status', ['new', 'contacted'])->count(), 'new' => DB::table('leads')->where('status', 'new')->count(), 'quotes' => DB::table('leads')->where('source', 'quote')->count(), 'closed' => DB::table('leads')->where('status', 'closed')->count(), 'spam' => DB::table('leads')->where('status', 'spam')->count(), 'all' => DB::table('leads')->where('status', '!=', 'spam')->count()];
         return view('admin.leads.index', compact('rows', 'sources', 'tab', 'counts') + ['f' => $r->query()]);
     }
 
@@ -40,7 +40,7 @@ class LeadsController extends Controller
     public function update(Request $r, int $id)
     {
         $lead = DB::table('leads')->find($id); abort_unless($lead, 404);
-        $d = $r->validate(['status' => 'required|in:new,contacted,closed']);
+        $d = $r->validate(['status' => 'required|in:new,contacted,closed,spam']);
         DB::table('leads')->where('id', $id)->update(['status' => $d['status'], 'updated_at' => now()]);
         AdminLog::record('lead.status', "Lead #{$id} ({$lead->source}) → {$d['status']}", 'lead', $id);
         \Illuminate\Support\Facades\Cache::forget('adm_nav_counts');

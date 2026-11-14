@@ -2,7 +2,7 @@
 @section('title','Leads & quotes')
 @section('crumb','Support')
 @section('body')
-<div class="chips">@foreach(['open'=>'Open','new'=>'New','quotes'=>'Quote requests','closed'=>'Closed','all'=>'All'] as $k=>$l)<a href="/admin/leads?tab={{ $k }}" class="chip @if($tab===$k) is-on @endif">{{ $l }} <b>{{ $counts[$k] }}</b></a>@endforeach</div>
+<div class="chips">@foreach(['open'=>'Open','new'=>'New','quotes'=>'Quote requests','closed'=>'Closed','all'=>'All','spam'=>'Spam'] as $k=>$l)<a href="/admin/leads?tab={{ $k }}" class="chip @if($tab===$k) is-on @endif">{{ $l }} <b>{{ $counts[$k] }}</b></a>@endforeach</div>
 <form class="toolbar" method="get" action="/admin/leads"><input type="hidden" name="tab" value="{{ $tab }}"><div class="search">{!! ic('search') !!}<input class="input" type="search" name="q" value="{{ $f['q'] ?? '' }}" placeholder="Name, e-mail, phone, message…"></div><select class="select" name="source" data-autosubmit><option value="">All sources</option>@foreach($sources as $s)<option @selected(($f['source'] ?? '')===$s)>{{ $s }}</option>@endforeach</select><button class="btn btn--sm">Search</button></form>
 <div class="card"><div class="tbl-wrap"><table class="tbl tbl--cards">
   <thead><tr><th>Lead</th><th>Source</th><th>Message</th><th>Status</th><th>Received</th></tr></thead><tbody>
