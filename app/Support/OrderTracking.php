@@ -38,7 +38,7 @@ class OrderTracking
         if (OrderEvents::record($fresh, 'notify:email:shipped', 'Shipping e-mail sent', $fresh->email, true)) {
             try { app(OrderMailer::class)->sendShipped($fresh, $carrier, $trackingNumber, $service); } catch (\Throwable $e) { report($e); }
         }
-        if (($fresh->sms_opt_in ?? false) && $fresh->phone && OrderEvents::record($fresh, 'notify:sms:shipped', 'Shipping text sent', $fresh->phone, true)) {
+        if (($fresh->sms_opt_in ?? false) && $fresh->phone && SmsService::on() && OrderEvents::record($fresh, 'notify:sms:shipped', 'Shipping text sent', $fresh->phone, true)) {
             $link = OrderEvents::carrierUrl($carrier, $trackingNumber);
             try {
                 app(SmsService::class)->send($fresh->phone, "Universal Driveshafts: order {$fresh->order_number} shipped via {$carrier}, tracking {$trackingNumber}. Track: {$link} Status: " . OrderEvents::statusUrl($fresh));

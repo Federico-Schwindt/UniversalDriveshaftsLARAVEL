@@ -152,7 +152,7 @@ class OrderStatusController extends Controller
                 'at' => $shipped ? ($at('shipped') ?: ($order->shipped_at ? \Carbon\Carbon::parse($order->shipped_at) : null)) : null,
                 'sub' => $shipped
                     ? trim(($order->tracking_carrier ?: __('Carrier')) . ($order->tracking_service ? ' · ' . trim(preg_replace(['/^(UPS|FedEx|USPS|DHL)\s+/i', '/Groundsaver Greater Than\s*1lb|Groundsaver Less Than Or Equal To\s*1lb/i'], ['', 'Ground Saver'], $order->tracking_service)) : ''))
-                    : ($order->sms_opt_in ? __('You will get the tracking number by e-mail and text the moment it leaves the shop.') : __('You will get the tracking number by e-mail the moment it leaves the shop.'))];
+                    : ($order->sms_opt_in && \App\Services\SmsService::on() ? __('You will get the tracking number by e-mail and text the moment it leaves the shop.') : __('You will get the tracking number by e-mail the moment it leaves the shop.'))];
             $steps[] = ['key' => 'delivered', 'title' => __('Delivered'), 'state' => $delivered ? 'done' : ($shipped ? 'current' : 'todo'),
                 'at' => $delivered ? ($at('delivered') ?: \Carbon\Carbon::parse($order->delivered_at)) : null,
                 'sub' => $delivered ? __('Check the parts against your order; call within 48 hours if anything is wrong.')

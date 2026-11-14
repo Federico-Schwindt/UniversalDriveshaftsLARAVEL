@@ -127,6 +127,30 @@ class AssistantAuditTest extends TestCase
         $this->assertTrue($this->tool($u, 'place_order')['placed']);
     }
 
+    public function test_a_return_is_filed_only_after_the_customer_says_yes_to_it(): void
+    {
+        $u = $this->user();
+        $n = 'UDS-AUD-' . strtoupper(substr(uniqid(), -6));
+        $oid = DB::table('orders')->insertGetId(['order_number' => $n, 'user_id' => $u->id, 'status' => 'completed', 'source' => 'web', 'payment_status' => 'paid', 'payment_method' => 'stripe',
+            'email' => $u->email, 'billing_first_name' => 'Fiona', 'billing_last_name' => 'Lane', 'billing_country' => 'US', 'ship_to_different' => 0, 'shipping_method' => 'upsdap-ground',
+            'subtotal' => 50, 'shipping_total' => 10, 'discount_total' => 0, 'total' => 60, 'shipped_at' => now()->subDays(3), 'delivered_at' => now()->subDay(), 'created_at' => now()->subDays(4), 'updated_at' => now()]);
+        DB::table('order_items')->insert(['order_id' => $oid, 'type' => 'product', 'name' => 'Transmission Yoke 1350', 'sku' => '3-3-4281X', 'price' => 50, 'qty' => 1, 'line_total' => 50, 'created_at' => now(), 'updated_at' => now()]);
+        $ret = ['order_number' => $n, 'sku' => '3-3-4281X', 'type' => 'return', 'reason' => 'Wrong part', 'details' => 'ordered the wrong size'];
+
+        $this->say("I want to return the yoke from $n, wrong part");
+        $r = $this->tool($u, 'start_return', $ret);
+        $this->assertFalse($r['filed']);
+        $this->assertSame($n, $r['confirm']['order_number']);
+        $this->say('wait, what is the restocking fee?');
+        $this->say('ok');
+        $this->assertFalse($this->tool($u, 'start_return', $ret)['filed'], 'an ok further on is not the answer to the request');
+        $this->assertSame(0, DB::table('rma_requests')->where('order_number', $n)->count());
+        $this->say('yes');
+        $r = $this->tool($u, 'start_return', $ret);
+        $this->assertTrue($r['filed']);
+        $this->assertSame(1, DB::table('rma_requests')->where('order_number', $n)->count());
+    }
+
     public function test_chat_photos_are_for_the_customer_and_staff_who_open_chats(): void
     {
         $u = $this->user();

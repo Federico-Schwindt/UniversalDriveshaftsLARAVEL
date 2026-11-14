@@ -153,7 +153,7 @@ class PayLink
         }
         // an order not paid yet (pay at pickup, invoice) texts only a U.S. / Canadian number: no free texts abroad
         $smsOk = $order->payment_status === 'paid' || \App\Services\SmsService::domestic((string) $order->phone);
-        if ($order->sms_opt_in && $order->phone && $smsOk && OrderEvents::record($order, 'notify:sms:placed', 'Confirmation text sent', $order->phone, true)) {
+        if ($order->sms_opt_in && $order->phone && $smsOk && \App\Services\SmsService::on() && OrderEvents::record($order, 'notify:sms:placed', 'Confirmation text sent', $order->phone, true)) {
             $statusUrl = OrderEvents::statusUrl($order);
             $sms = OrderEvents::isPickup($order)
                 ? "Universal Driveshafts: order {$order->order_number} received for LOCAL PICKUP in Florida, total \${$order->total}. We'll text you when it's ready. Pickup " . config('uds.pickup.hours') . "; other times call (813) 524-6491 first. Status: {$statusUrl}"
@@ -198,7 +198,7 @@ class PayLink
                 'hero' => ['kicker' => 'Payment request', 'title' => "Hi {$name}, your order is ready to be paid.", 'text' => 'Pay in under a minute with any major card — your parts start moving as soon as it clears.'], 'preheader' => "\${$bal} due on order {$order->order_number}",
             ], ['replyTo' => [config('uds.email')]]); $sent[] = 'email';
         } catch (\Throwable $e) { report($e); }
-        if ($sms && $order->phone) {
+        if ($sms && $order->phone && \App\Services\SmsService::on()) {
             try { if (app(\App\Services\SmsService::class)->send($order->phone, "Universal Driveshafts: order {$order->order_number} — \${$bal} due. Pay online: {$url}")) $sent[] = 'sms'; } catch (\Throwable $e) {}
         }
         DB::table('orders')->where('id', $order->id)->update(['pay_link_sent_at' => now()]);

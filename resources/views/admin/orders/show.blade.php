@@ -160,7 +160,7 @@
       <form method="post" action="/admin/orders/{{ $order->id }}/pay-link" class="card__body stack">@csrf
         <div class="field"><label>Payment link <span class="muted">(charges the current balance — edit the order first if it changes)</span></label><div class="input-group"><input class="input input--sm mono" value="{{ $payUrl }}" readonly onclick="this.select()"><button type="button" class="btn btn--sm" data-copy="{{ $payUrl }}">{!! ic('copy','ic--s') !!} Copy</button></div></div>
         <div class="field"><input class="input input--sm" name="note" placeholder="Optional note to include in the e-mail"></div>
-        <label class="check"><input type="checkbox" name="sms" value="1" @checked($order->sms_opt_in && $order->phone) @disabled(!$order->phone)> Also text it to {{ $order->phone ?: 'no phone on file' }}</label>
+        @if(\App\Services\SmsService::on())<label class="check"><input type="checkbox" name="sms" value="1" @checked($order->sms_opt_in && $order->phone) @disabled(!$order->phone)> Also text it to {{ $order->phone ?: 'no phone on file' }}</label>@endif
         <div class="flex"><button class="btn btn--primary btn--sm">{!! ic('send') !!} E-mail payment link</button><a href="{{ $payUrl }}" target="_blank" class="btn btn--ghost btn--sm">Preview page ↗</a></div>
         @if(!\App\Support\PayLink::stripeReady())<div class="small" style="color:var(--warn)">{!! ic('alert','ic--s') !!} Stripe is off on this server (STRIPE_ENABLED) — the page shows the order and asks the customer to call until it is enabled.</div>@endif
       </form>

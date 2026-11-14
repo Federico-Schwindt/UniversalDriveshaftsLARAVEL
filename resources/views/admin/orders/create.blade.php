@@ -79,7 +79,7 @@
         <div class="field span-2"><label>Customer note <span class="muted">(visible to the customer)</span></label><textarea class="input" name="customer_note" rows="2">{{ $v('customer_note') }}</textarea></div>
         <div class="field span-2"><label>Internal note</label><textarea class="input" name="internal_note" rows="2"></textarea></div>
         <label class="check"><input type="checkbox" name="signature_required" value="1"> Signature required</label>
-        <label class="check"><input type="checkbox" name="sms_opt_in" value="1"> Customer wants SMS updates</label>
+        @if(\App\Services\SmsService::on())<label class="check"><input type="checkbox" name="sms_opt_in" value="1"> Customer wants SMS updates</label>@endif
       </div>
     </div>
   </div>

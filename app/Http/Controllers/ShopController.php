@@ -395,7 +395,7 @@ class ShopController extends Controller
                 'tier_discount' => $useTier ? $tierAmt : 0,
                 'email' => $r->input('email'),
                 'phone' => $r->input('phone'),
-                'sms_opt_in' => $r->boolean('sms_opt_in'),
+                'sms_opt_in' => $r->boolean('sms_opt_in') && \App\Services\SmsService::on(),
                 'billing_first_name' => $r->input('billing_first_name'),
                 'billing_last_name' => $r->input('billing_last_name'),
                 'billing_company' => $r->input('billing_company'),

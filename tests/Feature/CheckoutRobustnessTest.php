@@ -96,6 +96,7 @@ class CheckoutRobustnessTest extends TestCase
 
     public function test_coupon_sms_and_crm_wait_for_payment_on_card_orders(): void
     {
+        \App\Support\Settings::set('notify.sms', true);   // texts are off on the site since 2026-11-14; this checks how they behave when on
         $this->fillCart();
         $c = $this->coupon();
         $this->post('/cart/coupon', ['code' => $c->code])->assertOk();

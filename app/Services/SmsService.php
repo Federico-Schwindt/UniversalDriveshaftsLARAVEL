@@ -7,9 +7,18 @@ use Illuminate\Support\Facades\Log;
 
 class SmsService
 {
+    /**
+     * The site's own switch for texts (Settings → Notifications). Owner, 2026-11-14: "disable sms on the website dont show
+     * the sms checkboxes ... only notifications via mail" — off by default: nothing is texted and no SMS option is shown.
+     */
+    public static function on(): bool
+    {
+        return (bool) \App\Support\Settings::get('notify.sms', false);
+    }
+
     public function enabled(): bool
     {
-        return (bool) config('services.twilio.enabled') && config('services.twilio.sid') && config('services.twilio.token') && config('services.twilio.from');
+        return self::on() && (bool) config('services.twilio.enabled') && config('services.twilio.sid') && config('services.twilio.token') && config('services.twilio.from');
     }
 
     /** Send an SMS. No-ops (returns false) unless fully configured + enabled. */

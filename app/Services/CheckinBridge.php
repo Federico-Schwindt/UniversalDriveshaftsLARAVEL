@@ -178,7 +178,7 @@ class CheckinBridge
         if (OrderEvents::record($o, 'notify:email:build_started', 'Build-started e-mail sent', $o->email, true)) {
             try { \App\Support\Mailer::simple($o->email, "We started building your driveshaft — order {$o->order_number}", ['kicker' => 'In production', 'title' => "Your driveshaft is on the bench, {$o->billing_first_name}", 'intro' => "Our technicians started building the driveshaft for order {$o->order_number}.", 'paragraphs' => [$next], 'button' => ['Order status', $url]], ['replyTo' => [config('uds.email')]]); } catch (\Throwable $e) { report($e); }
         }
-        if ($o->sms_opt_in && $o->phone && OrderEvents::record($o, 'notify:sms:build_started', 'Build-started text sent', $o->phone, true)) {
+        if ($o->sms_opt_in && $o->phone && SmsService::on() && OrderEvents::record($o, 'notify:sms:build_started', 'Build-started text sent', $o->phone, true)) {
             try { app(SmsService::class)->send($o->phone, "Universal Driveshafts: we started building your driveshaft for order {$o->order_number}. We'll let you know when it's finished. Status: {$url}"); } catch (\Throwable $e) {}
         }
     }
@@ -192,7 +192,7 @@ class CheckinBridge
         if (OrderEvents::record($o, 'notify:email:build_done', 'Build-finished e-mail sent', $o->email, true)) {
             try { \App\Support\Mailer::simple($o->email, "Your driveshaft is built — order {$o->order_number}", ['kicker' => 'Built and inspected', 'title' => "Your driveshaft is finished, {$o->billing_first_name}", 'intro' => "The driveshaft for order {$o->order_number} is built and inspected.", 'paragraphs' => ['It ships soon. We will e-mail you the tracking number as soon as it is on its way.'], 'button' => ['Order status', $url]], ['replyTo' => [config('uds.email')]]); } catch (\Throwable $e) { report($e); }
         }
-        if ($o->sms_opt_in && $o->phone && OrderEvents::record($o, 'notify:sms:build_done', 'Build-finished text sent', $o->phone, true)) {
+        if ($o->sms_opt_in && $o->phone && SmsService::on() && OrderEvents::record($o, 'notify:sms:build_done', 'Build-finished text sent', $o->phone, true)) {
             try { app(SmsService::class)->send($o->phone, "Universal Driveshafts: your driveshaft for order {$o->order_number} is built and inspected. It ships soon; we'll send you the tracking number. Status: {$url}"); } catch (\Throwable $e) {}
         }
     }
