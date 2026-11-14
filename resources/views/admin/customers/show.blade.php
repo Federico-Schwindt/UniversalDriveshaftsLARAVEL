@@ -42,6 +42,14 @@
         <div class="field"><label>E-mail</label><input class="input" type="email" name="email" value="{{ $user->email }}" required></div>
         <div class="field"><label>Phone</label><input class="input" type="tel" name="phone" value="{{ $user->phone }}"></div>
         <div class="field"><label>Company</label><input class="input" name="company" value="{{ $user->company }}"></div>
+        <div class="field"><label>Billing address</label><input class="input" name="billing_address_1" value="{{ $user->billing_address_1 }}" placeholder="Street"></div>
+        <div class="form-grid">
+          <div class="field"><label>Unit / suite</label><input class="input" name="billing_address_2" value="{{ $user->billing_address_2 }}"></div>
+          <div class="field"><label>City</label><input class="input" name="billing_city" value="{{ $user->billing_city }}"></div>
+          <div class="field"><label>State</label><input class="input" name="billing_state" value="{{ $user->billing_state }}" maxlength="60"></div>
+          <div class="field"><label>ZIP</label><input class="input" name="billing_postcode" value="{{ $user->billing_postcode }}"></div>
+          <div class="field"><label>Country</label><input class="input" name="billing_country" value="{{ $user->billing_country ?: 'US' }}" maxlength="2"></div>
+        </div>
         <div class="field"><label>Tags</label><div class="tagbox" data-tags><input type="hidden" name="tags" value="{{ $user->tags }}"><input type="text" placeholder="fleet, vip, net30…"></div></div>
         @if(adm_can('wholesale'))
         <div class="field"><label>Wholesale</label><select class="select" name="wholesale_status">@foreach(['none'=>'Retail','pending'=>'Application pending','approved'=>'Approved'] as $k=>$l)<option value="{{ $k }}" @selected($user->wholesale_status===$k)>{{ $l }}</option>@endforeach</select></div>
@@ -81,8 +89,19 @@
 {{ $a['a1'] }} {{ $a['a2'] }}
 {{ $a['city'] }}, {{ $a['state'] }} {{ $a['zip'] }} {{ $a['country'] }}@if($a['phone'])
 {{ $a['phone'] }}@endif</div>@endforeach</div></div>@endif
-    @if($dropship->count())<div class="card"><div class="card__head"><h2>Saved addresses</h2></div><div class="card__body stack">@foreach($dropship->sortBy(fn ($d) => $d->kind === 'dropship') as $d)<div class="addr small"><b>{{ ($d->kind ?? '') === 'dropship' ? 'Dropship' : 'Own' }}@if($d->is_default) · default @endif</b> {{ $d->label ?? '' }} {{ $d->name ?? '' }} {{ $d->company ?? '' }}
-{{ $d->street ?? '' }} {{ $d->city ?? '' }} {{ $d->state ?? '' }} {{ $d->postcode ?? '' }}</div>@endforeach</div></div>@endif
+    @if($user)
+    <div class="card"><div class="card__head"><h2>Saved addresses</h2></div><div class="card__body stack">
+      @foreach($dropship->sortBy(fn ($d) => $d->kind === 'dropship') as $d)
+        <div class="addr small"><b>{{ ($d->kind ?? '') === 'dropship' ? 'Dropship' : 'Own' }}@if($d->is_default) · default @endif</b> {{ $d->label ?? '' }} {{ $d->name ?? '' }} {{ $d->company ?? '' }}
+{{ $d->street ?? '' }} {{ $d->unit ?? '' }} {{ $d->city ?? '' }} {{ $d->state ?? '' }} {{ $d->postcode ?? '' }}
+          <details><summary class="small" style="cursor:pointer;color:var(--blue-700)">Edit</summary>@include('admin.customers.address-form', ['a' => $d])
+            <a href="#" class="btn btn--xs" style="margin-top:6px" data-post="/admin/customers/{{ $user->id }}/addresses/{{ $d->id }}/delete" data-confirm="Remove this address from the customer's account?">Remove</a></details>
+        </div>
+      @endforeach
+      @if(!$dropship->count())<p class="small muted" style="margin:0">No saved addresses yet.</p>@endif
+      <details><summary class="btn btn--sm" style="list-style:none;display:inline-flex">{!! ic('plus') !!} Add address</summary>@include('admin.customers.address-form', ['a' => null])</details>
+    </div></div>
+    @endif
     @if($activity->count())<div class="card"><div class="card__head"><h2>Admin changes</h2></div><div class="card__body"><ul class="timeline">@foreach($activity as $a)<li class="done"><b>{{ $a->label }}</b><small>{{ $a->user_name }} · {{ \Carbon\Carbon::parse($a->created_at)->format('M j, g:ia') }}</small></li>@endforeach</ul></div></div>@endif
   </div>
 </div>
