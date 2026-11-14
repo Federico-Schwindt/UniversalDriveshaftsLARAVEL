@@ -25,7 +25,7 @@
       <button type="submit" class="btn btn-primary">{{ __('Track my order') }} <x-icon name="arrow-right"/></button>
     </form>
     @endif
-    <p class="pg-note">{{ __('Stock orders placed before 2pm EST ship the same day from Florida. Custom shafts are cut, welded and balanced, typically 2 to 5 business days. You receive the UPS or FedEx tracking number by e-mail and text.') }}</p>
+    <p class="pg-note">{{ __('Most stock parts ship the same day when ordered before 2 pm EST, though processing times may vary with order volume. Custom and new driveshafts take up to 5 business days to process. You receive the UPS or FedEx tracking number by e-mail and text.') }}</p>
   </div>
 
   <aside class="pg-side">

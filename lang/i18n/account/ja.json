@@ -720,5 +720,7 @@
     "previous store": "以前の店舗",
     "qty :n": "数量: :n",
     "saved :date": "保存日: :date",
-    "there": "こんにちは"
+    "there": "こんにちは",
+    "Most stock parts ship the same day when ordered before 2 pm EST, though processing times may vary with order volume. Custom and new driveshafts take up to 5 business days to process. You receive the UPS or FedEx tracking number by e-mail and text.": "在庫品の多くは東部標準時（EST）午後2時までのご注文で当日出荷しますが、注文状況により処理時間が前後する場合があります。新品・カスタムのプロペラシャフトは処理に最大5営業日かかります。UPSまたはFedExの追跡番号は、メールとテキストメッセージでお届けします。",
+    "Most stock parts ship the same day; custom and new driveshafts take up to 5 business days to process.": "在庫品の多くは当日発送します。新品・カスタムのプロペラシャフトは処理に最大5営業日かかります。"
 }

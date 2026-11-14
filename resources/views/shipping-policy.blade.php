@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title', app()->getLocale() === 'es' ? 'Política de envíos | Universal Driveshafts' : __('Shipping Policy | Universal Driveshafts'))
-@section('desc', app()->getLocale() === 'es' ? 'Cómo envía Universal Driveshafts: tarifas de UPS y FedEx en tiempo real, envío el mismo día antes de las 2 p. m. (EST), flete LTL para pallets, envío gratis en pedidos de más de $' . number_format(config('uds.free_shipping_min')) . ' en los 48 estados contiguos, retiro en el local en Florida, y envíos internacionales.' : __('How Universal Driveshafts ships: live UPS and FedEx rates, same-day shipping before 2pm EST, LTL freight for pallets, free shipping over $:min in the lower 48, local pickup in Florida and international shipping.', ['min' => number_format(config('uds.free_shipping_min'))]))
+@section('desc', app()->getLocale() === 'es' ? 'Cómo envía Universal Driveshafts: tarifas de UPS y FedEx en tiempo real, la mayoría de las piezas en stock sale el mismo día si se pide antes de las 2 p. m. (EST), flete LTL para pallets, envío gratis en pedidos de más de $' . number_format(config('uds.free_shipping_min')) . ' en los 48 estados contiguos, retiro en el local en Florida, y envíos internacionales.' : __('How Universal Driveshafts ships: live UPS and FedEx rates, most stock parts out the same day when ordered before 2pm EST, LTL freight for pallets, free shipping over $:min in the lower 48, local pickup in Florida and international shipping.', ['min' => number_format(config('uds.free_shipping_min'))]))
 @section('content')
 @php $min = number_format(config('uds.free_shipping_min')); @endphp
 @if(app()->getLocale() === 'es')
@@ -22,7 +22,7 @@
   <div class="box">
     <p style="margin-top:0"><b>Resumen</b></p>
     <ul style="margin-bottom:0">
-      <li>Los pedidos realizados antes de las 2 p. m. (EST) en un día hábil se envían el mismo día (artículos en stock).</li>
+      <li>La mayoría de los artículos en stock se envía el mismo día si se pide antes de las 2 p. m. (EST) en un día hábil; los tiempos de procesamiento pueden variar según el volumen de pedidos.</li>
       <li>Tarifas de UPS y FedEx en tiempo real al finalizar la compra, calculadas sobre las cajas reales que necesita su pedido. No realizamos envíos por USPS.</li>
       <li>Los pedidos grandes se envían en un pallet por flete terrestre LTL, cotizado en tiempo real al finalizar la compra.</li>
       <li>Envío terrestre gratis en EE. UU. en pedidos de más de <b>${{ $min }}</b> dentro de los 48 estados contiguos (se excluyen los tubos y los cardanes completos).</li>
@@ -32,7 +32,7 @@
   </div>
 
   <h2>1. Tiempo de procesamiento</h2>
-  <p>Los pedidos realizados antes de las 2 p. m. (EST) en un día hábil se envían el mismo día. Los pedidos realizados más tarde, en fines de semana o en días feriados se envían el siguiente día hábil. Los cardanes fabricados a medida, los tubos cortados a medida y los artículos de pedido especial se envían cuando se fabrican o se reciben; el plazo de entrega estimado se muestra en la página del producto o se le confirma después de realizar el pedido. Los tiempos de entrega indicados por los transportistas son estimaciones y no están garantizados.</p>
+  <p>La mayoría de los pedidos de artículos en stock realizados antes de las 2 p. m. (EST) en un día hábil se envían el mismo día, aunque los tiempos de procesamiento pueden variar según el volumen de pedidos; esté atento a su correo para recibir el e-mail de confirmación de envío. Los pedidos realizados más tarde, en fines de semana o en días feriados normalmente se envían el siguiente día hábil. Los cardanes nuevos o fabricados a medida tardan hasta 5 días hábiles en procesarse. Los tubos cortados a medida y los artículos de pedido especial se envían cuando se fabrican o se reciben; el plazo de entrega estimado se muestra en la página del producto o se le confirma después de realizar el pedido. Los tiempos de entrega indicados por los transportistas son estimaciones y no están garantizados.</p>
 
   <h2>2. Cómo se calcula el envío</h2>
   <p>El envío se calcula al finalizar la compra a partir de las tarifas de UPS y FedEx en tiempo real para su dirección y las cajas reales que necesita su pedido. Embalamos según las normas de los transportistas:</p>
@@ -93,7 +93,7 @@
   <div class="box">
     <p style="margin-top:0"><b>At a glance</b></p>
     <ul style="margin-bottom:0">
-      <li>Orders placed before 2pm EST on a weekday ship the same day (in-stock items).</li>
+      <li>Most in-stock items ship the same day when ordered before 2pm EST on a weekday; processing times may vary with order volume.</li>
       <li>Live UPS and FedEx rates at checkout, priced on the real boxes your order needs. We do not ship by USPS.</li>
       <li>Big orders ship on a pallet by LTL truck freight, priced live at checkout.</li>
       <li>Free U.S. ground shipping over <b>${{ $min }}</b> in the lower 48 states (tubing and complete driveshafts excluded).</li>
@@ -103,7 +103,7 @@
   </div>
 
   <h2>1. Processing time</h2>
-  <p>Orders placed before 2pm EST on a weekday ship the same day. Orders placed later, on weekends or on holidays ship the next business day. Custom-built driveshafts, cut-to-length tubing and special-order items ship when they are built or received; the expected lead time is shown on the product page or confirmed with you after ordering. Delivery times quoted by carriers are estimates and are not guaranteed.</p>
+  <p>Most stock orders placed before 2pm EST on a weekday ship the same day, though processing times may vary with order volume; watch your inbox for the shipping confirmation e-mail. Orders placed later, on weekends or on holidays usually ship the next business day. Custom and new driveshafts take up to 5 business days to process. Cut-to-length tubing and special-order items ship when they are built or received; the expected lead time is shown on the product page or confirmed with you after ordering. Delivery times quoted by carriers are estimates and are not guaranteed.</p>
 
   <h2>2. How shipping is priced</h2>
   <p>Shipping is calculated at checkout from live UPS and FedEx rates for your address and the actual boxes your order needs. We pack to carrier rules:</p>

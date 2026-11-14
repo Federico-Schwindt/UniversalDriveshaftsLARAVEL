@@ -893,5 +893,12 @@
  "Florida orders pay sales tax. A shop that resells the parts, or an exempt organization, can upload its Florida certificate and buy tax-free.": "Los pedidos en Florida pagan impuesto de ventas. Un taller que revende las piezas, o una organización exenta, puede subir su certificado de Florida y comprar sin impuesto.",
  "Certificate expired — upload the new one": "Certificado vencido: subí el nuevo",
  "Select a state": "Elegí un estado",
- "Select a province": "Elegí una provincia"
+ "Select a province": "Elegí una provincia",
+ "U-joints, yokes, center support bearings, flanges and tubing from 1310 to 1810 series. Most stock parts ship the same day when ordered before 2 pm EST.": "Crucetas, yugos, soportes centrales, bridas y tubo de la serie 1310 a la 1810. La mayoría de las piezas en stock salen el mismo día si se piden antes de las 2 pm (EST).",
+ "UPS & FedEx": "UPS y FedEx",
+ "live rates": "tarifas en tiempo real",
+ "Most stock parts ship same day before :time EST": "La mayoría del stock sale el mismo día si se pide antes de las :time EST",
+ "Most stock parts ship same day before 2pm EST": "La mayoría del stock sale el mismo día si se pide antes de las 2pm EST",
+ "Most stock parts ship the same day when ordered before :time EST; processing times may vary.": "La mayoría de las piezas en stock salen el mismo día si se piden antes de las :time EST; los tiempos de procesamiento pueden variar.",
+ "U.S. parts orders in the lower 48": "Pedidos de piezas en los 48 estados contiguos"
 }

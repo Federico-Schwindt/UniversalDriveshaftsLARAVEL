@@ -2,7 +2,7 @@
 @section('robots','noindex,follow')
 @section('canonical','/')
 @section('title','Driveshaft Components & Driveshafts, U-Joints, Yokes | UDS')
-@section('desc','2,200+ driveshaft components in stock, u-joints, yokes, center support bearings, flanges and tubing, plus complete driveshafts built and balanced in Florida. Same-day dispatch.')
+@section('desc','2,200+ driveshaft components in stock, u-joints, yokes, center support bearings, flanges and tubing, plus complete driveshafts built and balanced in Florida. Ships from Florida.')
 
 @section('content')
 
@@ -20,7 +20,7 @@
   <div class="wrap uhero__content">
     <p class="uhero__kicker">Built in Florida</p>
     <h1>Driveshaft components and complete driveshafts.</h1>
-    <p class="uhero__sub">U-joints, yokes, center support bearings, flanges and tubing on the shelf, and the finished shaft when you need the whole thing. Stock parts ship the same day.</p>
+    <p class="uhero__sub">U-joints, yokes, center support bearings, flanges and tubing on the shelf, and the finished shaft when you need the whole thing. Most stock parts ship the same day.</p>
     <div class="uhero__cta">
       <a class="btn btn-primary btn-lg" href="/shop/driveshaft-components">Shop components <x-icon name="arrow-right"/></a>
       <a class="btn btn-ghost btn-lg" href="/shop/complete-driveshafts">Complete driveshafts</a>
@@ -32,7 +32,7 @@
 <section class="ustrip">
   <div class="wrap">
     <div class="ustrip__item"><x-icon name="factory"/><div>Built in the USA<span>Balanced in our Florida shop</span></div></div>
-    <div class="ustrip__item"><x-icon name="truck"/><div>Free over ${{ config('uds.free_shipping_min') }}<span>Same-day dispatch on stock</span></div></div>
+    <div class="ustrip__item"><x-icon name="truck"/><div>Free over ${{ config('uds.free_shipping_min') }}<span>Ships from Florida</span></div></div>
     <div class="ustrip__item"><x-icon name="headset"/><div>Talk to a driveline tech<span>Not a call centre</span></div></div>
     <div class="ustrip__item"><x-icon name="returns"/><div>Prepaid returns<span>Wrong part, no argument</span></div></div>
   </div>

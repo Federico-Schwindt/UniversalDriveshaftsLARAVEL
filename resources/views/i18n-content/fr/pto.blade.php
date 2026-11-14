@@ -4,7 +4,7 @@
     <h1>Arbres de transmission de prise de force (PTO) et agricoles</h1>
     <div class="btn-row"><a href="/shop/driveshaft-components/pto-end-yokes" class="btn btn-primary btn-sm"><x-icon name="package"/> Voir les fourches d'extrémité PTO</a><a href="/online-builder" class="btn btn-ghost btn-sm"><x-icon name="wrench"/> Composer un arbre complet</a></div>
   </div>
-  <p class="pagehead__sub">Fourches d'extrémité PTO, croisillons et ensembles coulissants en stock pour votre faucheuse, votre presse à balles ou votre épandeur, ainsi que des arbres de transmission complets fabriqués sur mesure selon votre tracteur et votre outil. Les commandes de produits en stock passées avant 14 h (EST) sont expédiées le jour même.</p>
+  <p class="pagehead__sub">Fourches d'extrémité PTO, croisillons et ensembles coulissants en stock pour votre faucheuse, votre presse à balles ou votre épandeur, ainsi que des arbres de transmission complets fabriqués sur mesure selon votre tracteur et votre outil. La plupart des commandes de produits en stock passées avant 14 h (EST) sont expédiées le jour même, mais les délais de traitement peuvent varier selon le volume de commandes.</p>
 </div>
 
 <section class="catsec"><div class="wrap">

@@ -4,7 +4,7 @@
     <h1>Cardanes de uso pesado para camiones clase 6 a 8</h1>
     <div class="btn-row"><a href="/online-builder" class="btn btn-primary btn-sm"><x-icon name="wrench"/> Arma un cardán de uso pesado</a><a href="/shop/complete-driveshafts/certifed-driveshafts" class="btn btn-ghost btn-sm">Desmontados certificados en stock</a></div>
   </div>
-  <p class="pagehead__sub">Volteo, recolección, mezcladora, tractocamión: series 1550 a 1810 y SPL 170 / 250, fabricados y balanceados en nuestro taller. Doce series en «Arma tu cardán» de uso pesado; los pedidos de stock hechos antes de las 2 pm (EST) se despachan el mismo día.</p>
+  <p class="pagehead__sub">Volteo, recolección, mezcladora, tractocamión: series 1550 a 1810 y SPL 170 / 250, fabricados y balanceados en nuestro taller. Doce series en «Arma tu cardán» de uso pesado; la mayoría de los pedidos de stock hechos antes de las 2 pm (EST) se despachan el mismo día, aunque los tiempos de procesamiento pueden variar según el volumen de pedidos.</p>
 </div>
 
 <section class="catsec"><div class="wrap">
@@ -14,7 +14,7 @@
         <li><b>Serie acorde al torque</b><span>1610 y 1710 para la mayoría de las aplicaciones clase 7 y 8; 1810 y SPL 250 donde el torque y el peso lo exigen. Confirmamos la serie a partir de los yugos que ya usas.</span></li>
         <li><b>Tubo dimensionado para el largo</b><span>Los cardanes más largos necesitan un tubo más grande y más grueso para mantenerse por encima de la velocidad crítica. «Arma tu cardán» verifica el diámetro exterior del tubo según tu largo y material antes de dar el precio.</span></li>
         <li><b>Balanceados en nuestro taller</b><span>Cada cardán, nuevo o desmontado certificado, se balancea en nuestra máquina antes de ir al estante o a una caja.</span></li>
-        <li><b>Desmontados certificados</b><span>Cardanes retirados de camiones de bajo kilometraje, inspeccionados cruceta por cruceta, rebalanceados y etiquetados con la serie y el largo. SPL 170, SPL 250, 1710 y 1810. Cuestan menos que uno nuevo y salen el día que haces el pedido; la mayoría se puede acortar o cambiar de yugos. <a href="/shop/complete-driveshafts/certifed-driveshafts">Ver cardanes certificados</a></span></li>
+        <li><b>Desmontados certificados</b><span>Cardanes retirados de camiones de bajo kilometraje, inspeccionados cruceta por cruceta, rebalanceados y etiquetados con la serie y el largo. SPL 170, SPL 250, 1710 y 1810. Cuestan menos que uno nuevo y suelen salir el mismo día si pides antes de las 2 pm (EST); la mayoría se puede acortar o cambiar de yugos. <a href="/shop/complete-driveshafts/certifed-driveshafts">Ver cardanes certificados</a></span></li>
       </ul>
       <div class="pg-call" style="margin-top:1rem">
         <p><b>¿Tienes más de un camión?</b> Precios mayoristas, pago con orden de compra y envío directo a tus patios.</p>

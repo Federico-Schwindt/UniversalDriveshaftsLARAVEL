@@ -111,7 +111,7 @@ class SeoController extends Controller
                 . "- U-joint series by bearing cap diameter × width across the caps: 1310 = 1.062\" × 3.219\", 1330 = 1.062\" × 3.625\", 1350 = 1.188\" × 3.625\", 1410 = 1.188\" × 4.188\", 1480 = 1.375\" × 4.188\". Series pages: {$base}/series\n"
                 . "- Every part page lists its measurements, price and live stock; part numbers like 1680-60 are also written 1680/60.\n\n"
                 . "## Buying\n"
-                . "- In-stock parts ordered before 2 pm Eastern on a weekday ship the same day from Florida; custom driveshafts are built to order.\n"
+                . "- Most in-stock parts ship the same day from Florida when ordered before 2 pm Eastern on a weekday, though processing times may vary with order volume; custom and new driveshafts take up to 5 business days to process.\n"
                 . "- Free U.S. shipping on parts orders over \${$free} (tubing and complete driveshafts excluded). Shipping policy: {$base}/shipping-policy\n"
                 . "- Returns: 14 days with an RMA number. Return policy: {$base}/return-policy · start a return: {$base}/rma\n"
                 . "- Business accounts (shops, fleets, resellers) get tier discounts: {$base}/wholesale\n"

@@ -720,5 +720,7 @@
     "The return window for this order has closed": "El plazo de devolución de este pedido terminó",
     "Returns and exchanges can be requested within :days days of delivery. For order :n that time ended on :date.": "Las devoluciones y los cambios se pueden pedir dentro de los :days días posteriores a la entrega. Para el pedido :n ese plazo terminó el :date.",
     "Defective part? UDS-brand parts carry a 12-month warranty. Call us, or send photos and your order number through the contact page.": "¿Pieza defectuosa? Las piezas marca UDS tienen 12 meses de garantía. Llámenos o envíe fotos y su número de pedido desde la página de contacto.",
-    "Contact us": "Contáctenos"
+    "Contact us": "Contáctenos",
+    "Most stock parts ship the same day when ordered before 2 pm EST, though processing times may vary with order volume. Custom and new driveshafts take up to 5 business days to process. You receive the UPS or FedEx tracking number by e-mail and text.": "La mayoría de las piezas en stock se despachan el mismo día si se piden antes de las 2 pm (EST), aunque los tiempos de procesamiento pueden variar según el volumen de pedidos. Los cardanes nuevos o a medida tardan hasta 5 días hábiles en procesarse. Recibes el número de seguimiento de UPS o FedEx por correo electrónico y mensaje de texto.",
+    "Most stock parts ship the same day; custom and new driveshafts take up to 5 business days to process.": "La mayoría de las piezas en stock salen el mismo día; los cardanes nuevos o a medida tardan hasta 5 días hábiles en procesarse."
 }

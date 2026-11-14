@@ -4,7 +4,7 @@
     <h1>PTO(パワーテイクオフ)・農業用プロペラシャフト</h1>
     <div class="btn-row"><a href="/shop/driveshaft-components/pto-end-yokes" class="btn btn-primary btn-sm"><x-icon name="package"/> PTOエンドヨークを見る</a><a href="/online-builder" class="btn btn-ghost btn-sm"><x-icon name="wrench"/> プロペラシャフト一式を組み立てる</a></div>
   </div>
-  <p class="pagehead__sub">モアー、ベーラー、スプレッダー向けのPTOエンドヨーク、ユニバーサルジョイント、スリップアセンブリを在庫しています。また、お使いのトラクターと作業機に合わせて、プロペラシャフト一式をオーダーメイドで製作します。午後2時(EST)までにご注文いただいた在庫品は、当日出荷いたします。</p>
+  <p class="pagehead__sub">モアー、ベーラー、スプレッダー向けのPTOエンドヨーク、ユニバーサルジョイント、スリップアセンブリを在庫しています。また、お使いのトラクターと作業機に合わせて、プロペラシャフト一式をオーダーメイドで製作します。午後2時(EST)までにご注文いただいた在庫品のほとんどは当日出荷いたしますが、ご注文の量によって処理期間が前後する場合があります。</p>
 </div>
 
 <section class="catsec"><div class="wrap">

@@ -73,4 +73,4 @@
 </ul>
 
 <h2 id="send">如何发送测量数据</h2>
-<p>你有三种方式把测量数据交给我们。<a href="/online-builder">在线定制传动轴</a>接收长度和万向节叉的选择，并立即显示组装并动平衡后的传动轴价格。<a href="/driveshaft-designer">传动轴设计器</a>让你画出确切的传动轴，点击每个尺寸填写数值，然后打印图纸，或连同你的联系方式一起发送给修理厂。或者<a href="/contact">致电或发信</a>给修理厂，附上数字和照片，我们为你报价。如果你的车型是常见应用，请先查看<a href="/catalog/driveshafts">按车型查找</a>；可能已经有一根按原厂长度<a href="/shop/complete-driveshafts">预装好的传动轴</a>，当天就能发货。</p>
+<p>你有三种方式把测量数据交给我们。<a href="/online-builder">在线定制传动轴</a>接收长度和万向节叉的选择，并立即显示组装并动平衡后的传动轴价格。<a href="/driveshaft-designer">传动轴设计器</a>让你画出确切的传动轴，点击每个尺寸填写数值，然后打印图纸，或连同你的联系方式一起发送给修理厂。或者<a href="/contact">致电或发信</a>给修理厂，附上数字和照片，我们为你报价。如果你的车型是常见应用，请先查看<a href="/catalog/driveshafts">按车型查找</a>；可能已经有一根按原厂长度<a href="/shop/complete-driveshafts">预装好的传动轴</a>，东部标准时间（EST）下午 2 点前下单通常可当天发货。</p>

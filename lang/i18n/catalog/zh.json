@@ -823,5 +823,12 @@
     "— a different number, brand or lube spec, but the same fitment. Check the notes before you substitute.": "— 编号、品牌或润滑规格不同,但适配相同。替换前请查看备注。",
     "Vehicles this bearing is listed for": "此轴承适用的车辆",
     ":n model|:n models": ":n 个车型|:n 个车型",
-    "From the complete driveshafts listed for these vehicles. Confirm the bearing ID and the mount dimensions above before you order.": "依据这些车辆的整根传动轴资料。下单前请确认轴承内径和上方的支架尺寸。"
+    "From the complete driveshafts listed for these vehicles. Confirm the bearing ID and the mount dimensions above before you order.": "依据这些车辆的整根传动轴资料。下单前请确认轴承内径和上方的支架尺寸。",
+    "Common fitments built ahead of time so you are not waiting on a custom shaft. Every one is balanced in our shop and ready to pack. Most stock orders ship the same day when placed before 2 pm EST.": "提前备好常用规格，让您无需等待定制传动轴。每一根都在我们的车间完成动平衡，随时可以打包。美东标准时间（EST）下午 2 点前下的现货订单大多当天发货。",
+    "Ready to ship from Florida": "可从佛罗里达发货",
+    ":n parts in stock, ships from Florida.": ":n 件现货，从佛罗里达发货。",
+    "Yes. :n is in stock in Florida. Most stock orders placed before 2 pm EST on a weekday ship the same day.": "是的。佛罗里达仓库有 :n 件现货。工作日美东标准时间（EST）下午2点前下的订单大多当天发货。",
+    "Yes. :n are in stock in Florida. Most stock orders placed before 2 pm EST on a weekday ship the same day.": "是的。佛罗里达仓库有 :n 件现货。工作日美东标准时间（EST）下午2点前下的订单大多当天发货。",
+    ". Most parts listed in stock ship the same day from Florida when ordered before 2 pm EST.": ". 库存列出的商品大多在东部标准时间（EST）下午 2 点前下单即可当天从佛罗里达州发货。",
+    ", ships from Florida. ": "，从佛罗里达州发货。 "
 }

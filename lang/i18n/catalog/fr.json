@@ -823,5 +823,12 @@
     "— a different number, brand or lube spec, but the same fitment. Check the notes before you substitute.": "— un numéro, une marque ou une spécification de lubrification différente, mais avec le même montage. Vérifiez les notes avant de procéder au remplacement.",
     "Vehicles this bearing is listed for": "Véhicules pour lesquels ce roulement est référencé",
     ":n model|:n models": ":n modèle|:n modèles",
-    "From the complete driveshafts listed for these vehicles. Confirm the bearing ID and the mount dimensions above before you order.": "D’après les arbres de transmission complets référencés pour ces véhicules. Vérifiez le diamètre intérieur du roulement et les cotes du support avant de commander."
+    "From the complete driveshafts listed for these vehicles. Confirm the bearing ID and the mount dimensions above before you order.": "D’après les arbres de transmission complets référencés pour ces véhicules. Vérifiez le diamètre intérieur du roulement et les cotes du support avant de commander.",
+    "Common fitments built ahead of time so you are not waiting on a custom shaft. Every one is balanced in our shop and ready to pack. Most stock orders ship the same day when placed before 2 pm EST.": "Montages courants pré-assemblés pour vous éviter d'attendre un arbre sur mesure. Chacun est équilibré dans notre atelier et prêt à être emballé. La plupart des commandes en stock passées avant 14 h (EST) sont expédiées le jour même.",
+    "Ready to ship from Florida": "Prêt à expédier depuis la Floride",
+    ":n parts in stock, ships from Florida.": ":n pièces en stock, expédiées depuis la Floride.",
+    "Yes. :n is in stock in Florida. Most stock orders placed before 2 pm EST on a weekday ship the same day.": "Oui. :n est en stock en Floride. La plupart des commandes passées avant 14 h (EST) en semaine sont expédiées le jour même.",
+    "Yes. :n are in stock in Florida. Most stock orders placed before 2 pm EST on a weekday ship the same day.": "Oui. :n sont en stock en Floride. La plupart des commandes passées avant 14 h (EST) en semaine sont expédiées le jour même.",
+    ". Most parts listed in stock ship the same day from Florida when ordered before 2 pm EST.": ". La plupart des articles en stock sont expédiés le jour même depuis la Floride pour toute commande passée avant 14 h (EST).",
+    ", ships from Florida. ": ", expédié depuis la Floride. "
 }

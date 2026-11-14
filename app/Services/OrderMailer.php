@@ -40,7 +40,7 @@ class OrderMailer
         $terms = $order->payment_method === 'net_terms';
         $unpaid = ($order->payment_status ?? 'unpaid') === 'unpaid' && $order->payment_method !== 'pay_at_pickup';
         $data = ['order' => $order, 'items' => $items, 'statusUrl' => OrderEvents::statusUrl($order), 'payUrl' => $unpaid && PayLink::payable($order) ? PayLink::url($order) : null,
-            'hero' => ['kicker' => 'Order ' . $order->order_number, 'title' => "Thanks, {$name} — we have your order.", 'text' => $pickup ? 'We will let you know as soon as it is ready for pickup in Florida.' : 'Stock parts leave Florida the same business day when ordered before 2 pm EST; custom shafts are built to order.'],
+            'hero' => ['kicker' => 'Order ' . $order->order_number, 'title' => "Thanks, {$name} — we have your order.", 'text' => $pickup ? 'We will let you know as soon as it is ready for pickup in Florida.' : 'Most stock parts ship the same day when ordered before 2 pm EST, though processing times may vary with order volume. Watch your inbox for the shipping confirmation e-mail. Custom and new driveshafts take up to 5 business days to process.'],
             'preheader' => 'Order ' . $order->order_number . ' · $' . number_format($order->total, 2) . ($unpaid ? ($terms ? ' · invoice on terms' : ' · payment pending') : '')];
         try { Mailer::send($order->email, "Order {$order->order_number} confirmed — Universal Driveshafts", 'emails.order.confirmation', $data, ['replyTo' => [config('uds.email')]]); } catch (\Throwable $e) { report($e); }
         if (!\App\Support\Settings::get('notify.new_order', true)) return;

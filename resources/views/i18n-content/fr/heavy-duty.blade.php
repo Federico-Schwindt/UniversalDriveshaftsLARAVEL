@@ -4,7 +4,7 @@
     <h1>Arbres de transmission pour usage intensif, pour camions de classe 6 à 8</h1>
     <div class="btn-row"><a href="/online-builder" class="btn btn-primary btn-sm"><x-icon name="wrench"/> Configurer un arbre usage intensif</a><a href="/shop/complete-driveshafts/certifed-driveshafts" class="btn btn-ghost btn-sm">Arbres de dépose certifiés en stock</a></div>
   </div>
-  <p class="pagehead__sub">Benne, collecte des déchets, bétonnière, tracteur routier : séries 1550 à 1810 et SPL 170 / 250, fabriqués et équilibrés dans notre atelier. Douze séries dans le configurateur d'arbres de transmission pour usage intensif ; les commandes de pièces en stock passées avant 14 h (EST) sont expédiées le jour même.</p>
+  <p class="pagehead__sub">Benne, collecte des déchets, bétonnière, tracteur routier : séries 1550 à 1810 et SPL 170 / 250, fabriqués et équilibrés dans notre atelier. Douze séries dans le configurateur d'arbres de transmission pour usage intensif ; la plupart des commandes de pièces en stock passées avant 14 h (EST) sont expédiées le jour même, mais les délais de traitement peuvent varier selon le volume de commandes.</p>
 </div>
 
 <section class="catsec"><div class="wrap">
@@ -14,7 +14,7 @@
         <li><b>Série adaptée au couple</b><span>1610 et 1710 pour la plupart des applications de classe 7 et 8 ; 1810 et SPL 250 lorsque le couple et le poids l'exigent. Nous confirmons la série à partir des fourches que vous utilisez déjà.</span></li>
         <li><b>Tube dimensionné selon la longueur</b><span>Les arbres de transmission plus longs exigent un tube plus gros et plus épais pour rester au-dessus de la vitesse critique. Le configurateur vérifie le diamètre extérieur du tube en fonction de votre longueur et de votre matériau avant d'afficher le prix.</span></li>
         <li><b>Équilibrés dans notre atelier</b><span>Chaque arbre de transmission, neuf ou certifié issu de dépose, est équilibré sur notre machine avant de rejoindre le rayonnage ou un carton d'expédition.</span></li>
-        <li><b>Arbres de transmission certifiés issus de dépose</b><span>Arbres de transmission déposés de camions à faible kilométrage, inspectés croisillon par croisillon, rééquilibrés et étiquetés avec la série et la longueur. SPL 170, SPL 250, 1710 et 1810. Ils coûtent moins cher qu'un arbre neuf et partent le jour même de votre commande ; la plupart peuvent être raccourcis ou équipés d'autres fourches. <a href="/shop/complete-driveshafts/certifed-driveshafts">Voir les arbres de transmission certifiés</a></span></li>
+        <li><b>Arbres de transmission certifiés issus de dépose</b><span>Arbres de transmission déposés de camions à faible kilométrage, inspectés croisillon par croisillon, rééquilibrés et étiquetés avec la série et la longueur. SPL 170, SPL 250, 1710 et 1810. Ils coûtent moins cher qu'un arbre neuf et partent généralement le jour même si vous commandez avant 14 h (EST) ; la plupart peuvent être raccourcis ou équipés d'autres fourches. <a href="/shop/complete-driveshafts/certifed-driveshafts">Voir les arbres de transmission certifiés</a></span></li>
       </ul>
       <div class="pg-call" style="margin-top:1rem">
         <p><b>Vous avez plus d'un camion ?</b> Tarifs de gros, paiement sur bon de commande et expédition directe vers vos dépôts.</p>

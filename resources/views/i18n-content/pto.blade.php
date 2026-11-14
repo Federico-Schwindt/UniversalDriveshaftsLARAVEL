@@ -4,7 +4,7 @@
     <h1>Cardanes de toma de fuerza (PTO) y agrícolas</h1>
     <div class="btn-row"><a href="/shop/driveshaft-components/pto-end-yokes" class="btn btn-primary btn-sm"><x-icon name="package"/> Ver yugos de extremo PTO</a><a href="/online-builder" class="btn btn-ghost btn-sm"><x-icon name="wrench"/> Arma un cardán completo</a></div>
   </div>
-  <p class="pagehead__sub">Yugos de extremo PTO, crucetas y conjuntos deslizantes en stock para la segadora, la enfardadora o la esparcidora, y cardanes completos fabricados a la medida del tractor y del implemento. Los pedidos de stock hechos antes de las 2 pm (EST) se despachan el mismo día.</p>
+  <p class="pagehead__sub">Yugos de extremo PTO, crucetas y conjuntos deslizantes en stock para la segadora, la enfardadora o la esparcidora, y cardanes completos fabricados a la medida del tractor y del implemento. La mayoría de los pedidos de stock hechos antes de las 2 pm (EST) se despachan el mismo día, aunque los tiempos de procesamiento pueden variar según el volumen de pedidos.</p>
 </div>
 
 <section class="catsec"><div class="wrap">

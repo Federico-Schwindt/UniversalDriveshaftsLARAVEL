@@ -87,6 +87,6 @@ $faqs = [
 </ul>
 
 <h2 id="send">Sending the numbers</h2>
-<p>You have three ways to get the measurements to us. The <a href="/online-builder">online builder</a> takes the length and yoke choices and shows the price of the assembled, balanced shaft immediately. The <a href="/driveshaft-designer">driveshaft designer</a> lets you draw the exact shaft, click each dimension to type it in, then print the sheet or send it to the shop with your contact details. Or <a href="/contact">call or email</a> the shop with the numbers and photos and we will quote it. If the vehicle is a common fitment, check the <a href="/catalog/driveshafts">vehicle finder</a> first; a <a href="/shop/complete-driveshafts">premade driveshaft</a> may already exist at the factory length and ship today.</p>
+<p>You have three ways to get the measurements to us. The <a href="/online-builder">online builder</a> takes the length and yoke choices and shows the price of the assembled, balanced shaft immediately. The <a href="/driveshaft-designer">driveshaft designer</a> lets you draw the exact shaft, click each dimension to type it in, then print the sheet or send it to the shop with your contact details. Or <a href="/contact">call or email</a> the shop with the numbers and photos and we will quote it. If the vehicle is a common fitment, check the <a href="/catalog/driveshafts">vehicle finder</a> first; a <a href="/shop/complete-driveshafts">premade driveshaft</a> may already exist at the factory length, usually shipping the same day when ordered before 2 pm EST.</p>
 @endif
 @endsection

@@ -36,7 +36,7 @@
   <p style="margin:0 0 24px;text-align:center;font-size:13px;color:#5c6879;">{{ __('The link rebuilds your cart on any device.') }}</p>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f8fc;border-radius:12px;">
     <tr><td style="padding:16px 18px;font-size:14px;line-height:1.6;color:#3a4557;">
-      {!! __('<b style="color:#0b1a33;">Ready to ship from Florida.</b> In-stock parts ordered before 2pm EST on a weekday ship the same day. Prefer to collect? Choose <b>local pickup</b> at checkout, :hours.', ['hours' => e(__(config('uds.pickup.hours')))]) !!}<br>
+      {!! __('<b style="color:#0b1a33;">Ready to ship from Florida.</b> Most in-stock parts ship the same day when ordered before 2 pm EST on a weekday; processing times may vary. Prefer to collect? Choose <b>local pickup</b> at checkout, :hours.', ['hours' => e(__(config('uds.pickup.hours')))]) !!}<br>
       {!! __('Questions about fit or a measurement? Call :phone and a driveline tech will check it before you order.', ['phone' => '<a href="tel:+18135246491" style="color:#1246ab;font-weight:600;">(813) 524-6491</a>']) !!}
     </td></tr>
   </table>

@@ -141,7 +141,7 @@ class OrderStatusController extends Controller
             'at' => $inProd ? ($at('processing') ?: ($at('paid') ?: null)) : null,
             'sub' => $inProd
                 ? __('Stock parts are pulled; custom shafts are cut, welded and balanced.')
-                : __('Stock parts ship the same day; custom shafts take 2 to 5 business days.')];
+                : __('Most stock parts ship the same day; custom and new driveshafts take up to 5 business days to process.')];
 
         if ($pickup) {
             $steps[] = ['key' => 'ready', 'title' => __('Ready for pickup'), 'state' => $completed ? 'done' : ($inProd ? 'current' : 'todo'),

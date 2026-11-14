@@ -15,7 +15,7 @@ return [
         'u-joints' => [
             'type' => 'U-Joint',
             'title' => 'Driveshaft U-Joints',
-            'desc' => '{count} driveshaft u-joints in stock: 1310, 1350, 1410 and more, greaseable or sealed, inside (ISR) and outside snap ring (OSR). Ships same day from Florida.',
+            'desc' => '{count} driveshaft u-joints in stock: 1310, 1350, 1410 and more, greaseable or sealed, inside (ISR) and outside snap ring (OSR). Ships from Florida.',
             'intro' => 'A universal joint is sized by its series: measure the bearing cap diameter and the width from snap ring to snap ring (1310 = 1.062" caps × 3.219", 1350 = 1.188" × 3.625", 1410 = 1.188" × 4.188"). Then pick the retention style your yokes use (outside snap ring, inside snap ring or combination) and whether you want a greaseable joint or a sealed lube-for-life joint.',
         ],
         'flange-yokes' => [
@@ -36,13 +36,13 @@ return [
         'slip-yoke' => [
             'type' => 'Slip Yoke',
             'title' => 'Driveshaft Slip Yokes',
-            'desc' => '{count} driveshaft slip yokes in stock by series, spline count and diameter: 1310, 1350, 1410, 1480. Ships same day from Florida, live price and stock.',
+            'desc' => '{count} driveshaft slip yokes in stock by series, spline count and diameter: 1310, 1350, 1410, 1480. Ships from Florida, live price and stock.',
             'intro' => 'A slip yoke is the internally splined yoke of a driveshaft\'s slip joint: it slides on a splined stub shaft (or yoke shaft) so the shaft can change length as the suspension moves, and a dust cap or boot keeps grit out of the splines. Match the u-joint series, the spline count and spline diameter of the stub it rides on, the center-of-joint-to-end length and the dust-cap (center-to-washer) dimension. Yokes that slide on a transmission output shaft are listed under Transmission Yokes.',
         ],
         'transmission-yokes' => [
             'type' => 'Transmission Yoke',
             'title' => 'Transmission Slip Yokes',
-            'desc' => '{count} transmission slip yokes (trans yokes) in stock by series and spline: 1310, 1330, 1350, 1410. Match your output shaft; ships same day from Florida.',
+            'desc' => '{count} transmission slip yokes (trans yokes) in stock by series and spline: 1310, 1330, 1350, 1410. Match your output shaft; ships from Florida.',
             'intro' => 'A transmission yoke is a slip yoke that slides onto the transmission or transfer-case output shaft; its polished hub runs inside the output seal and the splines let the driveshaft change length. Order by u-joint series (bearing cap diameter), spline count and spline diameter of the output shaft, hub diameter (the seal surface) and the center-of-joint-to-end length. Count the splines and measure the hub on the old yoke before ordering.',
         ],
         'stub-midship-shaft' => [
@@ -113,7 +113,7 @@ return [
         'center-support-bearing' => [
             'type' => 'Center Support Bearing',
             'title' => 'Driveshaft Center Support Bearings',
-            'desc' => '{count} driveshaft center support bearings in stock, by part number and vehicle (Ford, GM, Dodge, Toyota, Mercedes and more). Ships same day from Florida.',
+            'desc' => '{count} driveshaft center support bearings in stock, by part number and vehicle (Ford, GM, Dodge, Toyota, Mercedes and more). Ships from Florida.',
             'intro' => 'A center support (carrier) bearing holds the midpoint of a two-piece driveshaft. Identify it by bearing inside diameter (the shaft journal), the center-to-center distance of the mounting holes, and the height from the bearing center to the mounting base; the application column lists the vehicles or series each one fits.',
         ],
         'premade-driveshafts' => [
@@ -164,13 +164,13 @@ return [
         'snap-rings' => [
             'type' => 'Snap Ring',
             'title' => 'U-Joint Snap Rings',
-            'desc' => '{count} u-joint snap rings in stock for inside (ISR) and outside snap ring (OSR) universal joints, by series and size. Ships same day from Florida.',
+            'desc' => '{count} u-joint snap rings in stock for inside (ISR) and outside snap ring (OSR) universal joints, by series and size. Ships from Florida.',
             'intro' => '',
         ],
         'washers-snap-rings' => [
             'type' => 'Snap Ring',
             'title' => 'U-Joint Snap Rings & Washers',
-            'desc' => 'U-joint snap rings, retaining clips and washers in stock for inside (ISR) and outside snap ring (OSR) u-joints. Ships same day from Florida.',
+            'desc' => 'U-joint snap rings, retaining clips and washers in stock for inside (ISR) and outside snap ring (OSR) u-joints. Ships from Florida.',
             'intro' => 'Snap rings and washers retain u-joint caps and set bearing position. Snap rings are sized to the series and to the cap groove style (inside or outside); thickness is used to center the joint.',
         ],
         'cv-ball-kit' => [

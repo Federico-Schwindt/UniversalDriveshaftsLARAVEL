@@ -147,7 +147,7 @@
 
         <div class="ship-meta">
           <div class="m"><i><x-icon name="factory"/></i><div><label id="meta-from-l">{!! __('Shipping From') !!}</label><b>{!! __('Florida') !!}</b><span class="muted">{!! __('') !!}</span></div></div>
-          <div class="m"><i><x-icon name="package"/></i><div><label id="meta-date-l">{!! __('Est. Ship Date') !!}</label><b id="meta-date-v">{{ \App\Services\CartService::shipDate()->format('D M j') }}</b><span class="muted" id="meta-date-s">{{ __('Orders before :time EST ship same day', ['time' => \App\Services\CartService::cutoffLabel()]) }}</span></div></div>
+          <div class="m"><i><x-icon name="package"/></i><div><label id="meta-date-l">{!! __('Est. Ship Date') !!}</label><b id="meta-date-v">{{ \App\Services\CartService::shipDate()->format('D M j') }}</b><span class="muted" id="meta-date-s">{{ __('Most stock parts ship same day before :time EST', ['time' => \App\Services\CartService::cutoffLabel()]) }}</span></div></div>
         </div>
       </div>
     </div>
@@ -357,7 +357,6 @@
         <span><svg viewBox="0 0 24 24"><path d="M12 1l9 4v6c0 5.5-3.8 10.7-9 12-5.2-1.3-9-6.5-9-12V5l9-4z"/></svg>{!! __('Secure checkout') !!}</span>
         <span><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>{!! __('Fitment support (813) 524-6491') !!}</span>
         <span><svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4v10l-9 4-9-4V7z"/></svg>{!! __('Built in the USA') !!}</span>
-        <x-google-rating variant="compact"/>
       </div>
     </div>
   </aside>
@@ -609,7 +608,7 @@
     document.getElementById('meta-from-l').textContent=on?udsT('Pick up at'):udsT('Shipping From');
     document.getElementById('meta-date-l').textContent=on?udsT('Pickup hours'):udsT('Est. Ship Date');
     document.getElementById('meta-date-v').textContent=on?PICKUP_HOURS:SHIP_DATE;
-    document.getElementById('meta-date-s').textContent=on?udsT('Other times: call :phone first',{phone:PICKUP_PHONE}):@json(__('Orders before :time EST ship same day', ['time' => \App\Services\CartService::cutoffLabel()]));
+    document.getElementById('meta-date-s').textContent=on?udsT('Other times: call :phone first',{phone:PICKUP_PHONE}):@json(__('Most stock parts ship same day before :time EST', ['time' => \App\Services\CartService::cutoffLabel()]));
   }
   ['billing_country','billing_state','shipping_country','shipping_state'].forEach(id=>{
     const el=document.getElementById(id); if(el)el.addEventListener('change',loadShipping);

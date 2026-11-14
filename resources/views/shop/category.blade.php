@@ -23,7 +23,7 @@
   // description 140–160 from the category copy + live count
   $intro = ($seoCopy['intro'] ?? '') !== '' ? __((string) $seoCopy['intro']) : '';
   $first = $intro !== '' ? preg_split('/(?<=[.!?])\s+/', $intro)[0] : '';
-  $desc = ($count ? number_format($count) . ' ' : '') . $catName . $sfx(' in stock') . ($seriesNames ? $sfx(' in ') . implode(', ', array_slice($seriesNames, 0, 4)) . $sfx(' series') : '') . $sfx(', ships same day from Florida. ') . $first;
+  $desc = ($count ? number_format($count) . ' ' : '') . $catName . $sfx(' in stock') . ($seriesNames ? $sfx(' in ') . implode(', ', array_slice($seriesNames, 0, 4)) . $sfx(' series') : '') . $sfx(', ships from Florida. ') . $first;
   if (mb_strlen($desc) < 120 && $intro !== '') $desc = trim($desc . ' ' . (preg_split('/(?<=[.!?])\s+/', $intro)[1] ?? '')); // tiny categories: add a second sentence of the copy
   if (mb_strlen($desc) < 120) $desc = trim($desc . ' ' . __('Live pricing and stock, UPS rates at checkout, cross-referenced to OEM and Spicer numbers.'));
   if (!empty($seoCopy['desc'])) $desc = str_replace('{count}', $count ? number_format($count) : '', __((string) $seoCopy['desc']));

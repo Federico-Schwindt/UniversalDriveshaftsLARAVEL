@@ -823,5 +823,12 @@
     "— a different number, brand or lube spec, but the same fitment. Check the notes before you substitute.": "— 番号、ブランド、または潤滑仕様は異なりますが、適合性は同じです。代替品をご使用になる前に注意事項をご確認ください。",
     "Vehicles this bearing is listed for": "このベアリングが記載されている車両",
     ":n model|:n models": ":n 車種|:n 車種",
-    "From the complete driveshafts listed for these vehicles. Confirm the bearing ID and the mount dimensions above before you order.": "これらの車両のドライブシャフト完成品の情報によります。ご注文前に、ベアリング内径と上記の取付寸法をご確認ください。"
+    "From the complete driveshafts listed for these vehicles. Confirm the bearing ID and the mount dimensions above before you order.": "これらの車両のドライブシャフト完成品の情報によります。ご注文前に、ベアリング内径と上記の取付寸法をご確認ください。",
+    "Common fitments built ahead of time so you are not waiting on a custom shaft. Every one is balanced in our shop and ready to pack. Most stock orders ship the same day when placed before 2 pm EST.": "カスタムプロペラシャフトをお待ちいただく必要がないよう、一般的な仕様をあらかじめ製造しています。すべて当社のショップでバランス調整を行い、すぐに梱包できる状態です。東部標準時（EST）午後2時までの在庫注文の多くは当日出荷いたします。",
+    "Ready to ship from Florida": "フロリダから発送可能",
+    ":n parts in stock, ships from Florida.": "在庫 :n 点、フロリダから発送。",
+    "Yes. :n is in stock in Florida. Most stock orders placed before 2 pm EST on a weekday ship the same day.": "はい。フロリダ州に :n 点の在庫がございます。平日の東部標準時（EST）午後2時までのご注文の多くは、当日中に発送いたします。",
+    "Yes. :n are in stock in Florida. Most stock orders placed before 2 pm EST on a weekday ship the same day.": "はい。フロリダ州に :n 点の在庫がございます。平日の東部標準時（EST）午後2時までのご注文の多くは、当日中に発送いたします。",
+    ". Most parts listed in stock ship the same day from Florida when ordered before 2 pm EST.": "。在庫ありと表示されている商品の多くは、米国東部標準時（EST）午後2時までにご注文いただくと、フロリダから当日発送します。",
+    ", ships from Florida. ": "、フロリダから発送します。 "
 }
